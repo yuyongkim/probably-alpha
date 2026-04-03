@@ -79,7 +79,7 @@ function renderStrategyGrid() {
             <h3>${esc(s.name)}</h3>
             <small style="color:var(--muted)">${esc(s.trader)} &middot; ${esc(s.category_display || s.category)}</small>
           </div>
-          <span class="score ${hits > 3 ? 'good' : hits > 0 ? 'mid' : 'zero-hits'}">${hits} hits</span>
+          <span class="score ${hits > 3 ? 'good' : hits > 0 ? 'mid' : 'zero-hits'}">${hits} ${txt({ ko: '매칭', en: 'hits' })}</span>
         </div>
         <p style="color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:10px">${esc(s.description || '')}</p>
         <div style="display:flex;flex-wrap:wrap;gap:4px">
@@ -101,7 +101,7 @@ function renderTopStocks() {
   const results = state.screenData?.results || [];
   const el = document.getElementById('topStockRows');
   if (!results.length) {
-    el.innerHTML = '<tr><td colspan="6" class="empty-state">No screening data available. Run the pipeline first.</td></tr>';
+    el.innerHTML = `<tr><td colspan="6" class="empty-state">${txt({ ko: '스크리닝 데이터가 없습니다. 파이프라인을 먼저 실행하세요.', en: 'No screening data available. Run the pipeline first.' })}</td></tr>`;
     return;
   }
 
@@ -137,13 +137,13 @@ function showStrategyDetail(stratName) {
   document.getElementById('detailKicker').textContent = strat.category_display || strat.category;
   document.getElementById('detailTitle').textContent = `${strat.trader} — ${strat.name}`;
   document.getElementById('detailDesc').textContent = strat.description || '';
-  document.getElementById('detailCondCount').textContent = `${(strat.kiwoom_conditions || []).length} conditions`;
+  document.getElementById('detailCondCount').textContent = `${(strat.kiwoom_conditions || []).length} ${txt({ ko: '조건', en: 'conditions' })}`;
 
   // Kiwoom conditions
   const condEl = document.getElementById('detailConditions');
   condEl.innerHTML = (strat.kiwoom_conditions || []).map((c, i) => `
     <div class="definition-card">
-      <label>Condition ${i + 1}</label>
+      <label>${txt({ ko: '조건', en: 'Condition' })} ${i + 1}</label>
       <strong style="font-size:14px;font-family:'IBM Plex Mono',monospace">${esc(c)}</strong>
     </div>
   `).join('');
@@ -228,19 +228,6 @@ function init() {
   document.getElementById('btnRefresh')?.addEventListener('click', loadData);
   document.getElementById('btnCloseDetail')?.addEventListener('click', () => {
     document.getElementById('strategyDetail').style.display = 'none';
-  });
-
-  // Language switch
-  document.querySelectorAll('.lang-chip').forEach(btn => {
-    btn.addEventListener('click', () => {
-      localStorage.setItem('sepa-lang', btn.dataset.lang);
-      location.reload();
-    });
-  });
-
-  const lang = localStorage.getItem('sepa-lang') || 'ko';
-  document.querySelectorAll('.lang-chip').forEach(btn => {
-    btn.classList.toggle('is-active', btn.dataset.lang === lang);
   });
 
   loadData();

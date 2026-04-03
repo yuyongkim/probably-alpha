@@ -15,11 +15,11 @@
   <section class="control-band">
     <header class="page-header">
       <div class="hero-copy">
-        <p class="eyebrow">MARKET WIZARDS / SCREENER</p>
-        <h1>Multi-Strategy Screener</h1>
+        <p class="eyebrow">MARKET WIZARDS / 스크리너</p>
+        <h1>멀티 전략 스크리너</h1>
         <p class="lead">
-          26 strategies from Market Wizards applied to your universe.
-          Each stock is scored against every trader's methodology.
+          Market Wizards의 26개 전략을 유니버스에 적용합니다.
+          각 종목을 모든 트레이더 방법론에 대해 평가합니다.
         </p>
       </div>
       <div class="toolbar">
@@ -33,11 +33,11 @@
     </header>
 
     <nav class="page-nav">
-      <a class="nav-link" href="./index.html">Command Center</a>
-      <a class="nav-link" href="./market-wizards-people.html">Wizard Index</a>
-      <a class="nav-link" href="./market-wizards.html">Strategy Frames</a>
-      <a class="nav-link" href="./market-wizards-korea.html">Korea Presets</a>
-      <a class="nav-link is-active" href="./wizard-screener.html">Wizard Screener</a>
+      <a class="nav-link" href="./index.html">커맨드 센터</a>
+      <a class="nav-link" href="./market-wizards-people.html">트레이더 인덱스</a>
+      <a class="nav-link" href="./market-wizards.html">전략 프레임</a>
+      <a class="nav-link" href="./market-wizards-korea.html">한국 프리셋</a>
+      <a class="nav-link is-active" href="./wizard-screener.html">전략 스크리너</a>
     </nav>
   </section>
 
@@ -45,8 +45,8 @@
   <section class="trader-tab-section">
     <div class="panel-head">
       <div>
-        <h2 id="filterTitle">Strategy Filter</h2>
-        <p class="panel-caption" id="filterCaption">Select categories to filter strategies. Click a strategy card to see matching stocks.</p>
+        <h2 id="filterTitle">전략 필터</h2>
+        <p class="panel-caption" id="filterCaption">카테고리를 선택하여 전략을 필터링합니다. 전략 카드를 클릭하면 매칭 종목을 볼 수 있습니다.</p>
       </div>
       <span id="strategyCountBadge" class="eyebrow">26 strategies</span>
     </div>
@@ -56,29 +56,29 @@
   <!-- KPI Strip -->
   <section class="kpi-strip">
     <article class="kpi-card">
-      <label>Date</label>
+      <label>기준일</label>
       <strong id="wsDate">-</strong>
-      <p>Screening date</p>
+      <p>스크리닝 날짜</p>
     </article>
     <article class="kpi-card">
-      <label>Stocks Screened</label>
+      <label>스크리닝 종목</label>
       <strong id="wsStocksTotal">0</strong>
-      <p>Total universe</p>
+      <p>전체 유니버스</p>
     </article>
     <article class="kpi-card">
-      <label>Stocks Passing</label>
+      <label>통과 종목</label>
       <strong id="wsStocksPassing">0</strong>
-      <p>Any strategy match</p>
+      <p>1개 이상 전략 매칭</p>
     </article>
     <article class="kpi-card">
-      <label>Strategies</label>
+      <label>전략 수</label>
       <strong id="wsStrategies">26</strong>
-      <p>Active strategies</p>
+      <p>활성 전략</p>
     </article>
     <article class="kpi-card">
-      <label>Top Hit Rate</label>
+      <label>최고 적중률</label>
       <strong id="wsTopHitRate">-</strong>
-      <p>Most matched strategy</p>
+      <p>최다 매칭 전략</p>
     </article>
   </section>
 
@@ -86,9 +86,9 @@
   <section class="section-shell">
     <div class="section-header">
       <div>
-        <p class="section-kicker">All Strategies</p>
-        <h2 id="stratGridTitle">Strategy Overview</h2>
-        <p class="panel-caption" id="stratGridCaption">Each card represents one trader's methodology. Hit count shows stocks matching today.</p>
+        <p class="section-kicker">전체 전략</p>
+        <h2 id="stratGridTitle">전략 개요</h2>
+        <p class="panel-caption" id="stratGridCaption">각 카드는 한 트레이더의 방법론을 나타냅니다. 적중 수는 오늘 매칭되는 종목 수입니다.</p>
       </div>
     </div>
     <div id="strategyGrid" class="wizard-grid"></div>
@@ -98,12 +98,12 @@
   <section class="section-shell">
     <div class="section-header">
       <div>
-        <p class="section-kicker">Screener Results</p>
-        <h2 id="topStocksTitle">Top Multi-Strategy Matches</h2>
-        <p class="panel-caption" id="topStocksCaption">Stocks ranked by number of strategies passed. More matches = stronger multi-factor signal.</p>
+        <p class="section-kicker">스크리너 결과</p>
+        <h2 id="topStocksTitle">멀티 전략 상위 종목</h2>
+        <p class="panel-caption" id="topStocksCaption">통과한 전략 수 기준으로 정렬합니다. 더 많은 매칭 = 더 강한 멀티팩터 시그널.</p>
       </div>
       <div class="section-chip-row">
-        <span class="note-pill" id="multiMatchPill">Multi-strategy convergence</span>
+        <span class="note-pill" id="multiMatchPill">멀티 전략 수렴</span>
       </div>
     </div>
     <article class="panel">
@@ -111,11 +111,11 @@
         <thead>
           <tr>
             <th style="width:4%">#</th>
-            <th style="width:14%">Stock</th>
-            <th style="width:10%">Strategies Passed</th>
-            <th style="width:10%">Best Score</th>
-            <th style="width:10%">Avg Score</th>
-            <th style="width:52%">Matched Strategies</th>
+            <th style="width:14%">종목</th>
+            <th style="width:10%">통과 전략</th>
+            <th style="width:10%">최고점수</th>
+            <th style="width:10%">평균점수</th>
+            <th style="width:52%">매칭 전략</th>
           </tr>
         </thead>
         <tbody id="topStockRows"></tbody>
@@ -128,16 +128,16 @@
   <section class="section-shell" id="strategyDetail" style="display:none">
     <div class="section-header">
       <div>
-        <p class="section-kicker" id="detailKicker">Strategy Detail</p>
+        <p class="section-kicker" id="detailKicker">전략 상세</p>
         <h2 id="detailTitle">-</h2>
         <p class="panel-caption" id="detailDesc">-</p>
       </div>
-      <button id="btnCloseDetail" class="nav-link">Close</button>
+      <button id="btnCloseDetail" class="nav-link">닫기</button>
     </div>
     <article class="panel">
       <div class="panel-head">
         <div>
-          <h3 id="detailCondTitle">Kiwoom Conditions</h3>
+          <h3 id="detailCondTitle">키움 조건식</h3>
         </div>
         <span id="detailCondCount" class="eyebrow">-</span>
       </div>
@@ -146,17 +146,17 @@
     <article class="panel" style="margin-top:12px">
       <div class="panel-head">
         <div>
-          <h3 id="detailMatchTitle">Matching Stocks</h3>
+          <h3 id="detailMatchTitle">매칭 종목</h3>
         </div>
       </div>
       <table>
         <thead>
           <tr>
             <th style="width:5%">#</th>
-            <th style="width:18%">Stock</th>
-            <th style="width:10%">Score</th>
-            <th style="width:12%">Conditions Met</th>
-            <th style="width:55%">Condition Details</th>
+            <th style="width:18%">종목</th>
+            <th style="width:10%">점수</th>
+            <th style="width:12%">충족 조건</th>
+            <th style="width:55%">조건 상세</th>
           </tr>
         </thead>
         <tbody id="detailStockRows"></tbody>

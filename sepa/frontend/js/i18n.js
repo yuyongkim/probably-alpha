@@ -587,12 +587,42 @@ function applyWizardPeoplePage() {
   }
 }
 
+function applyWizardScreenerPage() {
+  setText('.page-header .eyebrow', { ko: 'MARKET WIZARDS / 스크리너', en: 'MARKET WIZARDS / SCREENER' });
+  setText('.page-header h1', { ko: '멀티 전략 스크리너', en: 'Multi-Strategy Screener' });
+  setText('.page-header .lead', {
+    ko: 'Market Wizards의 26개 전략을 유니버스에 적용합니다. 각 종목을 모든 트레이더 방법론에 대해 평가합니다.',
+    en: '26 strategies from Market Wizards applied to your universe. Each stock is scored against every trader\'s methodology.',
+  });
+  setText('#filterTitle', { ko: '전략 필터', en: 'Strategy Filter' });
+  setText('#filterCaption', {
+    ko: '카테고리를 선택하여 전략을 필터링합니다. 전략 카드를 클릭하면 매칭 종목을 볼 수 있습니다.',
+    en: 'Select categories to filter strategies. Click a strategy card to see matching stocks.',
+  });
+  const kpiLabels = document.querySelectorAll('.kpi-card label');
+  const kpiDescs = document.querySelectorAll('.kpi-card p');
+  const labels = pick({ ko: ['기준일', '스크리닝 종목', '통과 종목', '전략 수', '최고 적중률'], en: ['Date', 'Stocks Screened', 'Stocks Passing', 'Strategies', 'Top Hit Rate'] });
+  const descs = pick({ ko: ['스크리닝 날짜', '전체 유니버스', '1개 이상 전략 매칭', '활성 전략', '최다 매칭 전략'], en: ['Screening date', 'Total universe', 'Any strategy match', 'Active strategies', 'Most matched strategy'] });
+  if (Array.isArray(labels)) kpiLabels.forEach((n, i) => { if (labels[i]) n.textContent = labels[i]; });
+  if (Array.isArray(descs)) kpiDescs.forEach((n, i) => { if (descs[i]) n.textContent = descs[i]; });
+
+  const topSection = document.querySelector('#topStockRows')?.closest('.panel');
+  if (topSection) {
+    const h2 = topSection.querySelector('.panel-head h2');
+    const cap = topSection.querySelector('.panel-head .panel-caption');
+    if (h2) h2.textContent = pick({ ko: '멀티 전략 상위 종목', en: 'Top Multi-Strategy Matches' });
+    if (cap) cap.textContent = pick({ ko: '2개 이상 전략을 통과한 종목을 점수 순으로 정렬합니다.', en: 'Stocks passing 2+ strategies, ranked by score.' });
+  }
+  setTableHeaders('topStockRows', { ko: ['#', '종목', '통과 전략', '최고점수', '평균점수', '매칭 전략'], en: ['#', 'Stock', 'Passed', 'Best', 'Avg', 'Matched Strategies'] });
+}
+
 const PAGE_APPLIERS = {
   dashboard: applyDashboardPage,
   glossary: applyGlossaryPage,
   'market-wizards-overview': applyWizardOverviewPage,
   'market-wizards-korea': applyWizardKoreaPage,
   'market-wizards-people': applyWizardPeoplePage,
+  'wizard-screener': applyWizardScreenerPage,
 };
 
 export function getLang() {
