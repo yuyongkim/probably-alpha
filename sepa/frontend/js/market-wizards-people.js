@@ -54,22 +54,49 @@ function renderSummary() {
   }).join('');
 }
 
+// Preset mapping: person id -> backtest preset id
+const PERSON_PRESET = {
+  'mark-minervini': 'minervini',
+  'william-oneil': 'oneil',
+  'david-ryan': 'oneil',
+  'richard-dennis': 'dennis',
+  'ed-seykota': 'seykota',
+  'larry-hite': 'hite',
+  'paul-tudor-jones': 'jones',
+  'richard-driehaus': 'driehaus',
+  'marty-schwartz': 'schwartz',
+  'linda-raschke': 'raschke',
+  'mark-weinstein': 'weinstein',
+};
+
 function personCard(person) {
+  const presetId = PERSON_PRESET[person.id] || '';
+  const hasPreset = !!presetId;
   return `
-    <article class="person-card">
+    <article class="person-card" data-person-id="${escapeHtml(person.id)}">
       <div class="person-card__head">
         <div>
           <p class="eyebrow">${escapeHtml(person.bucket)}</p>
           <h3>${escapeHtml(person.name)}</h3>
         </div>
+        ${hasPreset ? `<span style="font-size:10px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:10px">전략 프리셋</span>` : ''}
       </div>
       <p class="person-card__brief">${escapeHtml(person.brief)}</p>
       <div class="person-meta">
         ${person.keywords.map((keyword) => `<span class="wizard-chip">${escapeHtml(keyword)}</span>`).join('')}
       </div>
-      ${person.relatedProfileId
-        ? `<div class="person-card__actions"><a class="ghost-link" href="./market-wizards-korea.html#${escapeHtml(person.relatedProfileId)}">${escapeHtml(txt({ ko: '프리셋 매핑 보기', en: 'Open preset mapping' }))}</a></div>`
-        : ''}
+      <div class="person-card__actions" style="display:flex;gap:8px;flex-wrap:wrap">
+        ${person.relatedProfileId
+          ? `<a class="ghost-link" href="./market-wizards-korea.html#${escapeHtml(person.relatedProfileId)}">${escapeHtml(txt({ ko: '프리셋 매핑', en: 'Preset mapping' }))}</a>`
+          : ''}
+        ${hasPreset
+          ? `<button class="ghost-link btn-screen-trader" data-preset="${escapeHtml(presetId)}" style="cursor:pointer;border:1px solid var(--accent);background:none;color:var(--accent);padding:4px 10px;border-radius:4px;font-size:12px">${escapeHtml(txt({ ko: '오늘의 매수 후보', en: "Today's picks" }))}</button>`
+          : ''}
+        ${hasPreset
+          ? `<a class="ghost-link" href="./backtest.html" style="font-size:12px">${escapeHtml(txt({ ko: '백테스트', en: 'Backtest' }))}</a>`
+          : ''}
+      </div>
+      <div class="person-card__screen-result" id="screen-${escapeHtml(person.id)}" style="display:none;margin-top:10px;padding:10px;background:rgba(255,255,255,.03);border-radius:6px;font-size:13px"></div>
     </article>
   `;
 }
@@ -96,9 +123,64 @@ function renderSections() {
   }).join('');
 }
 
+function getApiBase() {
+  const el = document.getElementById('apiBase');
+  return el ? el.value.replace(/\/+$/, '') : 'http://127.0.0.1:8000';
+}
+
+async function screenTrader(presetId, personId) {
+  const el = document.getElementById(`screen-${personId}`);
+  if (!el) return;
+  el.style.display = '';
+  el.innerHTML = `<p style="color:var(--accent)">${txt({ ko: '스크리닝 중...', en: 'Screening...' })}</p>`;
+
+  try {
+    const resp = await fetch(`${getApiBase()}/api/screen/trader?preset=${presetId}&limit=5`);
+    const data = await resp.json();
+    const items = data.items || [];
+
+    if (!items.length) {
+      el.innerHTML = `<p style="color:var(--muted)">${txt({ ko: '조건에 맞는 종목 없음', en: 'No stocks match' })}</p>`;
+      return;
+    }
+
+    el.innerHTML = `
+      <p style="margin-bottom:6px"><strong>${escapeHtml(data.trader || presetId)}</strong> — ${data.passed || 0}/${data.screened_symbols || 0} ${txt({ ko: '통과', en: 'passed' })}</p>
+      <table style="width:100%;font-size:12px">
+        <tr style="color:var(--muted)"><th>#</th><th>${txt({ ko: '종목', en: 'Stock' })}</th><th>TT</th><th>RS</th><th>${txt({ ko: '점수', en: 'Score' })}</th></tr>
+        ${items.map((s, i) => `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${escapeHtml(s.name || s.symbol)}</td>
+            <td>${s.tt_passed}/8</td>
+            <td>${s.rs_percentile?.toFixed(0) || '-'}%</td>
+            <td><strong>${s.score?.toFixed(1) || '-'}</strong></td>
+          </tr>
+        `).join('')}
+      </table>
+    `;
+  } catch (e) {
+    el.innerHTML = `<p style="color:#ff6b6b">${txt({ ko: '스크리닝 실패', en: 'Failed' })}: ${escapeHtml(String(e))}</p>`;
+  }
+}
+
+function bindScreenButtons() {
+  document.querySelectorAll('.btn-screen-trader').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const presetId = btn.dataset.preset;
+      const card = btn.closest('.person-card');
+      const personId = card?.dataset.personId;
+      if (presetId && personId) screenTrader(presetId, personId);
+    });
+  });
+}
+
 setupPageI18n('market-wizards-people', () => {
   renderSummary();
   renderSections();
+  bindScreenButtons();
 });
 renderSummary();
 renderSections();
+bindScreenButtons();

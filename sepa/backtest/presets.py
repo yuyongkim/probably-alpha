@@ -121,6 +121,27 @@ def get_preset(name: str) -> StrategyConfig | None:
     return PRESETS.get(name)
 
 
+# Mapping: preset id -> wizard index person id(s)
+PRESET_PERSON_MAP: dict[str, list[str]] = {
+    'minervini': ['mark-minervini'],
+    'oneil': ['william-oneil', 'david-ryan'],
+    'dennis': ['richard-dennis'],
+    'seykota': ['ed-seykota'],
+    'hite': ['larry-hite'],
+    'jones': ['paul-tudor-jones'],
+    'driehaus': ['richard-driehaus'],
+    'schwartz': ['marty-schwartz'],
+    'raschke': ['linda-raschke'],
+    'weinstein': ['mark-weinstein'],
+}
+
+# Reverse mapping: person id -> preset id
+PERSON_PRESET_MAP: dict[str, str] = {}
+for _preset_id, _person_ids in PRESET_PERSON_MAP.items():
+    for _pid in _person_ids:
+        PERSON_PRESET_MAP[_pid] = _preset_id
+
+
 def list_presets() -> list[dict]:
     return [
         {
@@ -128,6 +149,7 @@ def list_presets() -> list[dict]:
             'name': v.name,
             'description': v.description,
             'family': v.family,
+            'person_ids': PRESET_PERSON_MAP.get(k, []),
             'params': {
                 'min_tt_pass': v.min_tt_pass,
                 'rs_threshold': v.rs_threshold,

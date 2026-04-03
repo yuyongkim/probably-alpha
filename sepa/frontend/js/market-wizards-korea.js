@@ -729,4 +729,24 @@ async function runTraderScreen() {
 
 $('btnTraderScreen')?.addEventListener('click', runTraderScreen);
 
+// Load preset dropdown from API
+async function loadTraderPresets() {
+  try {
+    const data = await fetchJSON(`${DEFAULT_API_BASE}/api/backtest/presets`);
+    const items = data.items || [];
+    const sel = $('traderScreenPreset');
+    if (!sel) return;
+    items.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = `${p.name} (${p.family})`;
+      sel.appendChild(opt);
+    });
+    if (items.length) sel.value = items[0].id;
+  } catch (e) {
+    console.warn('Failed to load presets:', e);
+  }
+}
+loadTraderPresets();
+
 init();
