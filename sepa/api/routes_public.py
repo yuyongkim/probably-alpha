@@ -215,6 +215,52 @@ def backtest_presets() -> dict:
     return {'items': list_presets()}
 
 
+@router.get('/api/screen/multi')
+def screen_multi_trader(as_of_date: str | None = None, limit: int = 20) -> dict:
+    """Screen stocks against ALL trader presets at once.
+
+    Returns each stock with a list of which presets it passes.
+    For the "섹터별 주도주" view showing trader pick badges.
+    """
+    from sepa.backtest.presets import PRESETS
+    from sepa.backtest.screener import screen_universe
+    from sepa.data.ohlcv_db import read_ohlcv_batch
+
+    price_data = read_ohlcv_batch(as_of_date=as_of_date, min_rows=200)
+    if not price_data:
+        return {'items': []}
+
+    # Run each preset and collect which symbols pass
+    symbol_presets: dict[str, dict] = {}  # {symbol: {info + presets: [...]}}
+    for preset_id, config in PRESETS.items():
+        results = screen_universe(config, price_data)
+        for r in results[:config.max_positions]:
+            sym = r['symbol']
+            if sym not in symbol_presets:
+                symbol_presets[sym] = {
+                    'symbol': sym,
+                    'name': r.get('name', sym),
+                    'sector': r.get('sector', ''),
+                    'close': r.get('close', 0),
+                    'tt_passed': r.get('tt_passed', 0),
+                    'rs_percentile': r.get('rs_percentile', 0),
+                    'score': r.get('score', 0),
+                    'presets': [],
+                }
+            symbol_presets[sym]['presets'].append(preset_id)
+            # Keep highest score
+            if r.get('score', 0) > symbol_presets[sym]['score']:
+                symbol_presets[sym]['score'] = r.get('score', 0)
+
+    # Sort by number of presets matched (more = stronger consensus)
+    items = sorted(symbol_presets.values(), key=lambda x: (len(x['presets']), x['score']), reverse=True)
+    return {
+        'date': as_of_date or 'latest',
+        'total_presets': len(PRESETS),
+        'items': items[:limit],
+    }
+
+
 @router.get('/api/screen/trader')
 def screen_by_trader(
     preset: str = 'minervini',

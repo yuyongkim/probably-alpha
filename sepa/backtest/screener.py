@@ -164,9 +164,11 @@ def screen_universe(
     # Filter by min TT pass (recheck)
     candidates = [c for c in candidates if c['tt_passed'] >= config.min_tt_pass]
 
-    # Score
+    # Score (0~100 normalized)
     for c in candidates:
-        c['score'] = round(c['tt_passed'] * 10.0 + c['rs_percentile'] * 0.2, 2)
+        tt_score = c['tt_passed'] / 8.0 * 50  # max 50
+        rs_score = c['rs_percentile'] / 100.0 * 50  # max 50
+        c['score'] = round(tt_score + rs_score, 1)  # max 100
 
     # Sector filtering
     if config.sector_filter:

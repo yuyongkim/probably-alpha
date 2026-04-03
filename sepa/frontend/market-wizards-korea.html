@@ -116,6 +116,33 @@
     <div id="koreaGroupedView" class="sector-grouped-grid"></div>
   </section>
 
+  <!-- Trader Consensus: multi-preset screening -->
+  <section class="panel" id="traderConsensusPanel">
+    <div class="panel-head">
+      <div>
+        <h2>트레이더 컨센서스</h2>
+        <p class="panel-caption">10개 트레이더 프리셋을 동시에 돌려서, 여러 트레이더가 동시에 주목하는 종목을 찾습니다.</p>
+      </div>
+      <button id="btnConsensus" style="padding:6px 14px;background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer">컨센서스 스캔</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:4%">#</th>
+          <th style="width:16%">종목</th>
+          <th style="width:10%">섹터</th>
+          <th style="width:6%">TT</th>
+          <th style="width:6%">RS</th>
+          <th style="width:8%">점수</th>
+          <th>매칭 트레이더</th>
+        </tr>
+      </thead>
+      <tbody id="consensusRows">
+        <tr><td colspan="7" class="empty-state">컨센서스 스캔 버튼을 클릭하세요.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
   <!-- Trader Screening: today's picks -->
   <section class="panel" id="traderScreenPanel">
     <div class="panel-head">

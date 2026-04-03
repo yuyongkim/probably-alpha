@@ -729,6 +729,53 @@ async function runTraderScreen() {
 
 $('btnTraderScreen')?.addEventListener('click', runTraderScreen);
 
+// ── Trader Consensus (multi-preset scan) ──
+const PRESET_COLORS = {
+  minervini: '#6ee7a8', oneil: '#4db8ff', dennis: '#ffb84d', seykota: '#ff9966',
+  hite: '#c4b5fd', jones: '#ffd700', driehaus: '#ff8f8f', schwartz: '#7fd4ff',
+  raschke: '#e0a0ff', weinstein: '#90caf9',
+};
+const PRESET_LABELS = {
+  minervini: 'Minervini', oneil: "O'Neil", dennis: 'Dennis', seykota: 'Seykota',
+  hite: 'Hite', jones: 'Jones', driehaus: 'Driehaus', schwartz: 'Schwartz',
+  raschke: 'Raschke', weinstein: 'Weinstein',
+};
+
+async function runConsensus() {
+  const rows = $('consensusRows');
+  rows.innerHTML = `<tr><td colspan="7" class="empty-state">${txt({ ko: '스캔 중... (10개 프리셋, 약 30초)', en: 'Scanning... (10 presets, ~30s)' })}</td></tr>`;
+
+  try {
+    const data = await fetchJSON(`${DEFAULT_API_BASE}/api/screen/multi?limit=20`);
+    const items = data.items || [];
+
+    if (!items.length) {
+      rows.innerHTML = `<tr><td colspan="7" class="empty-state">${txt({ ko: '매칭 종목 없음', en: 'No matches' })}</td></tr>`;
+      return;
+    }
+
+    rows.innerHTML = items.map((s, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td><strong>${escapeHtml(s.name || s.symbol)}</strong><br><small style="color:var(--muted)">${escapeHtml(s.symbol)}</small></td>
+        <td>${escapeHtml(s.sector || '-')}</td>
+        <td>${s.tt_passed}/8</td>
+        <td>${s.rs_percentile?.toFixed(0) || '-'}%</td>
+        <td><strong>${s.score?.toFixed(1) || '-'}</strong></td>
+        <td>
+          <div style="display:flex;flex-wrap:wrap;gap:3px">
+            ${(s.presets || []).map(p => `<span style="font-size:10px;padding:2px 6px;border-radius:8px;background:${PRESET_COLORS[p] || '#666'}20;color:${PRESET_COLORS[p] || '#aaa'};border:1px solid ${PRESET_COLORS[p] || '#666'}40">${PRESET_LABELS[p] || p}</span>`).join('')}
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  } catch (e) {
+    rows.innerHTML = `<tr><td colspan="7" class="empty-state">${txt({ ko: '스캔 실패', en: 'Scan failed' })}: ${escapeHtml(String(e))}</td></tr>`;
+  }
+}
+
+$('btnConsensus')?.addEventListener('click', runConsensus);
+
 // Load preset dropdown from API
 async function loadTraderPresets() {
   try {
