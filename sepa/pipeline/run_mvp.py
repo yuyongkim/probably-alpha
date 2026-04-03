@@ -15,6 +15,7 @@ from sepa.agents.beta import BetaChartist
 from sepa.agents.gamma import GammaResearcher
 from sepa.agents.delta import DeltaRiskManager
 from sepa.agents.omega import OmegaPM
+from sepa.contracts.envelope import reset_run_id, wrap_output
 from sepa.data.price_history import normalize_date_token
 
 
@@ -35,25 +36,26 @@ def _maybe_refresh_live_data(enabled: bool) -> None:
 
 def run_pipeline(as_of_date: str | None = None, refresh_live: bool = True) -> str:
     date_dir = normalize_date_token(as_of_date) or datetime.now().strftime('%Y%m%d')
+    reset_run_id()
     _maybe_refresh_live_data(enabled=refresh_live and not as_of_date)
 
     out = Path(f'.omx/artifacts/daily-signals/{date_dir}')
 
     alpha = AlphaScreener().run(as_of_date=date_dir)
-    write_json(out / 'alpha-passed.json', alpha)
+    write_json(out / 'alpha-passed.json', wrap_output(alpha, date_dir=date_dir))
 
     beta = BetaChartist().run(alpha, as_of_date=date_dir)
-    write_json(out / 'beta-vcp-candidates.json', beta)
+    write_json(out / 'beta-vcp-candidates.json', wrap_output(beta, date_dir=date_dir))
 
     gamma = GammaResearcher().run(beta, as_of_date=date_dir)
-    write_json(out / 'gamma-insights.json', gamma)
-    write_json(out / 'gamma-chem-insights.json', gamma.get('chem', []))
+    write_json(out / 'gamma-insights.json', wrap_output(gamma, date_dir=date_dir))
+    write_json(out / 'gamma-chem-insights.json', wrap_output(gamma.get('chem', []), date_dir=date_dir))
 
     delta = DeltaRiskManager().run(gamma, as_of_date=date_dir)
-    write_json(out / 'delta-risk-plan.json', delta)
+    write_json(out / 'delta-risk-plan.json', wrap_output(delta, date_dir=date_dir))
 
     omega = OmegaPM().run(delta, output_dir=out)
-    write_json(out / 'omega-final-picks.json', omega)
+    write_json(out / 'omega-final-picks.json', wrap_output(omega, date_dir=date_dir))
 
     print(
         f"[OK] saved to {out} | alpha={len(alpha)} beta={len(beta)} "

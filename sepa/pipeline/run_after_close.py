@@ -8,6 +8,7 @@ from pathlib import Path
 
 from sepa.agents.leaders import MinerviniLeaders
 from sepa.agents.recommender import MinerviniRecommender
+from sepa.contracts.envelope import wrap_output
 from sepa.data.price_history import format_date_token, normalize_date_token
 from sepa.pipeline.run_live_cycle import main as run_live_cycle
 from sepa.pipeline.run_mvp import run_pipeline
@@ -128,27 +129,27 @@ def build_after_close(as_of_date: str | None = None, refresh_live: bool = True) 
     leaders = MinerviniLeaders()
     sectors, stocks = leaders.run(date_dir, as_of_date=date_dir)
 
-    write_json(out / 'leader-sectors.json', sectors)
-    write_json(out / 'leader-stocks.json', stocks)
+    write_json(out / 'leader-sectors.json', wrap_output(sectors, date_dir=date_dir))
+    write_json(out / 'leader-stocks.json', wrap_output(stocks, date_dir=date_dir))
 
     grouped = leaders.run_grouped(date_dir, as_of_date=date_dir, per_sector_n=5)
-    write_json(out / 'leader-sectors-grouped.json', grouped)
+    write_json(out / 'leader-sectors-grouped.json', wrap_output(grouped, date_dir=date_dir))
 
     delta = _read_delta(out / 'delta-risk-plan.json')
     recs = MinerviniRecommender(top_n=5).run(stocks, delta, as_of_date=date_dir)
-    write_json(out / 'recommendations.json', recs)
+    write_json(out / 'recommendations.json', wrap_output(recs, date_dir=date_dir))
 
     write_report(out / 'daily-leaders-report.md', date_dir, sectors, stocks, recs)
     write_html_report(out / 'recommendations-report.html', date_dir, recs)
 
     briefing = build_briefing(date_dir, sectors, recs)
-    write_json(out / 'briefing.json', briefing)
+    write_json(out / 'briefing.json', wrap_output(briefing, date_dir=date_dir))
     (out / 'briefing.md').write_text('# Daily Briefing\n\n' + briefing['message_ko'], encoding='utf-8')
 
     # Market Wizards multi-strategy screening
     try:
         wizard_results = run_wizard_screen(date_dir)
-        write_json(out / 'wizard-screen.json', wizard_results)
+        write_json(out / 'wizard-screen.json', wrap_output(wizard_results, date_dir=date_dir))
         print(f'  wizard-screen: {wizard_results.get("stocks_passing_any", 0)} stocks matched')
     except (ValueError, TypeError, KeyError, OSError) as exc:
         logger.warning('wizard-screen skipped: %s', exc)
