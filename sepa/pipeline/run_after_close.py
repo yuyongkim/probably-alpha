@@ -105,7 +105,13 @@ def write_html_report(path: Path, date_dir: str, recs: list[dict]) -> None:
 def _read_delta(path: Path) -> list[dict]:
     if not path.exists():
         return []
-    return json.loads(path.read_text(encoding='utf-8'))
+    data = json.loads(path.read_text(encoding='utf-8'))
+    # Handle envelope-wrapped output
+    if isinstance(data, dict) and 'items' in data:
+        return data['items']
+    if isinstance(data, list):
+        return data
+    return []
 
 
 def _should_write_latest(date_dir: str) -> bool:
