@@ -48,6 +48,18 @@ def read_price_series(
 
 
 def read_price_series_from_path(path: Path, as_of_date: str | None = None) -> list[dict]:
+    # Try SQLite first (fast path)
+    try:
+        from sepa.data.ohlcv_db import read_ohlcv, DB_PATH
+        if DB_PATH.exists():
+            symbol = path.stem
+            rows = read_ohlcv(symbol, as_of_date=as_of_date)
+            if rows:
+                return rows
+    except Exception:
+        pass
+
+    # Fallback to CSV
     cutoff = normalize_date_token(as_of_date)
     rows = _read_price_rows_cached(str(path), _path_mtime_ns(path))
     if not cutoff:

@@ -191,6 +191,14 @@ def main() -> None:
     else:
         print('[INDEX] market benchmark fetch skipped; keeping local index csv if present')
 
+    # Sync CSV data to SQLite for fast batch queries
+    try:
+        from sepa.data.ohlcv_db import sync_from_csv_dir
+        synced = sync_from_csv_dir(outdir)
+        print(f'[DB] synced {synced:,} rows to ohlcv.db')
+    except Exception as exc:
+        print(f'[DB] sync skipped: {exc}')
+
     print(
         f'[DONE] refreshed symbols: cache={cached_updated} quantdb={quantdb_updated} '
         f'live={updated} yfinance={yf_updated} sample={len(generated)} total_universe={len(symbols)}'

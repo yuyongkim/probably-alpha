@@ -65,7 +65,7 @@ class AlphaScreener:
         return {}
 
     def run(self, as_of_date: str | None = None) -> list[dict]:
-        metrics = [self._collect_metrics(path, as_of_date=as_of_date) for path in self._iter_csv_files()]
+        metrics = self._collect_all_metrics(as_of_date=as_of_date)
         valid = [m for m in metrics if m.valid]
 
         if not valid:
@@ -116,6 +116,40 @@ class AlphaScreener:
         if self.top_n > 0:
             return results[: self.top_n]
         return results
+
+    def _collect_all_metrics(self, as_of_date: str | None = None) -> list[SymbolMetrics]:
+        """Load all symbols and compute metrics. Uses DB batch when available."""
+        csv_files = list(self._iter_csv_files())
+        # Only use DB batch when scanning the real data dir (not test dirs)
+        if csv_files and str(self.data_dir) == str(Path('.omx/artifacts/market-data/ohlcv')):
+            try:
+                from sepa.data.ohlcv_db import read_ohlcv_batch, DB_PATH
+                if DB_PATH.exists():
+                    batch = read_ohlcv_batch(as_of_date=as_of_date, min_rows=200)
+                    if batch:
+                        return [self._metrics_from_closes(sym, data['closes']) for sym, data in batch.items()]
+            except Exception:
+                pass
+        # Fallback: CSV
+        return [self._collect_metrics(path, as_of_date=as_of_date) for path in csv_files]
+
+    def _metrics_from_closes(self, symbol: str, closes: list[float]) -> SymbolMetrics:
+        """Compute metrics from pre-loaded close prices."""
+        if len(closes) < 200:
+            return SymbolMetrics(symbol, 0, 0, 0, 0, 0, 0, 0, 0, False, "insufficient_history")
+        close = closes[-1]
+        sma50 = mean(closes[-50:])
+        sma150 = mean(closes[-150:])
+        sma200 = mean(closes[-200:])
+        sma200_prev20 = mean(closes[-220:-20]) if len(closes) >= 220 else sma200
+        w = closes[-252:] if len(closes) >= 252 else closes
+        high52 = max(w)
+        low52 = min(w)
+        base = closes[-121] if len(closes) >= 121 else closes[0]
+        ret120 = (close / base - 1.0) if base > 0 else 0.0
+        return SymbolMetrics(symbol=symbol, close=close, sma50=sma50, sma150=sma150,
+                             sma200=sma200, sma200_prev20=sma200_prev20, high52=high52,
+                             low52=low52, ret120=ret120, valid=True)
 
     def _iter_csv_files(self) -> Iterable[Path]:
         if not self.data_dir.exists():

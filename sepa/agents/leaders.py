@@ -74,7 +74,21 @@ class MinerviniLeaders:
     # ------------------------------------------------------------------
 
     def _load_price_cache(self, as_of_date: str | None = None) -> dict[str, dict]:
-        """Load closes and volumes for all symbols. Returns {symbol: {closes, volumes}}."""
+        """Load closes and volumes for all symbols. Returns {symbol: {closes, volumes}}.
+
+        Uses SQLite batch query (fast) with CSV fallback (slow).
+        """
+        # Fast path: batch read from SQLite
+        try:
+            from sepa.data.ohlcv_db import read_ohlcv_batch, DB_PATH
+            if DB_PATH.exists():
+                cache = read_ohlcv_batch(as_of_date=as_of_date, min_rows=50)
+                if cache:
+                    return cache
+        except Exception:
+            pass
+
+        # Slow fallback: sequential CSV reads
         cache: dict[str, dict] = {}
         for path in sorted(self.data_dir.glob('*.csv')):
             symbol = path.stem
