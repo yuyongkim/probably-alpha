@@ -215,6 +215,40 @@ def backtest_presets() -> dict:
     return {'items': list_presets()}
 
 
+@router.get('/api/screen/trader')
+def screen_by_trader(
+    preset: str = 'minervini',
+    as_of_date: str | None = None,
+    limit: int = 10,
+) -> dict:
+    """Screen stocks using a trader preset for a specific date.
+
+    This is NOT a backtest — it answers "what would this trader buy today?"
+    """
+    from sepa.backtest.presets import get_preset
+    from sepa.backtest.screener import screen_universe
+    from sepa.data.ohlcv_db import read_ohlcv_batch
+
+    config = get_preset(preset)
+    if not config:
+        raise HTTPException(status_code=400, detail=f'Unknown preset: {preset}')
+
+    price_data = read_ohlcv_batch(as_of_date=as_of_date, min_rows=200)
+    if not price_data:
+        return {'preset': preset, 'date': as_of_date, 'items': [], 'error': 'No price data'}
+
+    results = screen_universe(config, price_data)
+    return {
+        'preset': preset,
+        'trader': config.name,
+        'description': config.description,
+        'date': as_of_date or 'latest',
+        'screened_symbols': len(price_data),
+        'passed': len(results),
+        'items': results[:limit],
+    }
+
+
 @router.get('/api/backtest/run')
 def backtest_run(
     start: str = '20251112',

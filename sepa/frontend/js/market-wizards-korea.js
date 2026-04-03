@@ -692,4 +692,41 @@ async function init() {
   }
 }
 
+// ── Trader Screening (today's picks) ──
+async function runTraderScreen() {
+  const preset = $('traderScreenPreset')?.value || 'minervini';
+  const rows = $('traderScreenRows');
+  const meta = $('traderScreenMeta');
+  rows.innerHTML = `<tr><td colspan="8" class="empty-state">${txt({ ko: '스크리닝 중...', en: 'Screening...' })}</td></tr>`;
+  meta.textContent = '';
+
+  try {
+    const data = await fetchJSON(`${DEFAULT_API_BASE}/api/screen/trader?preset=${preset}&limit=10`);
+    const items = data.items || [];
+    meta.innerHTML = `<strong>${escapeHtml(data.trader || preset)}</strong> — ${escapeHtml(data.description || '')} | ${txt({ ko: '대상', en: 'Universe' })}: ${fmtNum(data.screened_symbols || 0)} | ${txt({ ko: '통과', en: 'Passed' })}: ${fmtNum(data.passed || 0)} | ${txt({ ko: '기준일', en: 'Date' })}: ${data.date || 'latest'}`;
+
+    if (!items.length) {
+      rows.innerHTML = `<tr><td colspan="8" class="empty-state">${txt({ ko: '조건에 맞는 종목이 없습니다.', en: 'No stocks match the conditions.' })}</td></tr>`;
+      return;
+    }
+
+    rows.innerHTML = items.map((s, i) => `
+      <tr>
+        <td>${i + 1}</td>
+        <td><strong>${escapeHtml(s.name || s.symbol)}</strong><br><small style="color:var(--muted)">${escapeHtml(s.symbol)}</small></td>
+        <td>${escapeHtml(s.sector || '-')}</td>
+        <td><span class="score ${s.tt_passed >= 7 ? 'good' : s.tt_passed >= 5 ? 'mid' : 'bad'}">${s.tt_passed}/8</span></td>
+        <td>${s.rs_percentile?.toFixed(0) || '-'}%</td>
+        <td style="text-align:right">${fmtPrice(s.close)}</td>
+        <td style="text-align:right">${fmtPrice(s.high52)}</td>
+        <td style="text-align:right"><strong>${s.score?.toFixed(1) || '-'}</strong></td>
+      </tr>
+    `).join('');
+  } catch (e) {
+    rows.innerHTML = `<tr><td colspan="8" class="empty-state">${txt({ ko: '스크리닝 실패', en: 'Screening failed' })}: ${escapeHtml(String(e))}</td></tr>`;
+  }
+}
+
+$('btnTraderScreen')?.addEventListener('click', runTraderScreen);
+
 init();

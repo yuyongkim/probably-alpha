@@ -45,9 +45,9 @@
   <section class="panel">
     <div class="panel-head">
       <div>
-        <h2>Select A Trader</h2>
+        <h2>트레이더 선택</h2>
         <p class="panel-caption">
-          Pick a profile to see how its rules re-rank the current sector and stock universe.
+          트레이더를 선택하면 해당 규칙으로 현재 섹터/종목 유니버스를 재평가합니다.
         </p>
       </div>
     </div>
@@ -58,8 +58,8 @@
   <section class="panel">
     <div class="panel-head">
       <div>
-        <h2>Preset Ranking Output</h2>
-        <p id="presetDateMeta" class="panel-caption">Loading preset candidates...</p>
+        <h2>프리셋 랭킹 결과</h2>
+        <p id="presetDateMeta" class="panel-caption">프리셋 후보 로딩 중...</p>
       </div>
       <div class="toolbar compact">
         <input id="presetDatePicker" type="date" aria-label="Query date" />
@@ -108,12 +108,55 @@
   <section class="panel" id="sectorOverviewPanel">
     <div class="panel-head">
       <div>
-        <h2>Sector Leaders At A Glance</h2>
+        <h2>섹터별 주도주 한눈에 보기</h2>
         <p class="panel-caption">상위 섹터별 주도주를 한눈에 확인합니다. 용어 옆 <strong style="color:var(--accent)">&nbsp;?&nbsp;</strong> 를 누르면 설명이 나옵니다.</p>
       </div>
       <span id="sectorOverviewMeta" class="eyebrow">Loading...</span>
     </div>
     <div id="koreaGroupedView" class="sector-grouped-grid"></div>
+  </section>
+
+  <!-- Trader Screening: today's picks -->
+  <section class="panel" id="traderScreenPanel">
+    <div class="panel-head">
+      <div>
+        <h2 id="traderScreenTitle">트레이더별 매수 후보</h2>
+        <p class="panel-caption" id="traderScreenCaption">선택한 트레이더의 철학으로 오늘 종가 기준 매수 후보를 스크리닝합니다.</p>
+      </div>
+      <div class="toolbar compact">
+        <select id="traderScreenPreset" style="padding:6px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text)">
+          <option value="minervini">Minervini SEPA</option>
+          <option value="oneil">O'Neil CAN SLIM</option>
+          <option value="dennis">Dennis 터틀</option>
+          <option value="seykota">Seykota 추세</option>
+          <option value="hite">Hite 1% 룰</option>
+          <option value="jones">Jones 200MA</option>
+          <option value="driehaus">Driehaus 성장</option>
+          <option value="schwartz">Schwartz 스윙</option>
+          <option value="raschke">Raschke NR7</option>
+          <option value="weinstein">Weinstein Stage2</option>
+        </select>
+        <button id="btnTraderScreen" style="padding:6px 14px;background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer">스크리닝</button>
+      </div>
+    </div>
+    <div id="traderScreenMeta" style="padding:0 16px;font-size:13px;color:var(--muted)"></div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:4%">#</th>
+          <th style="width:18%">종목</th>
+          <th style="width:12%">섹터</th>
+          <th style="width:8%">TT</th>
+          <th style="width:8%">RS</th>
+          <th style="width:10%" style="text-align:right">현재가</th>
+          <th style="width:10%" style="text-align:right">52주고점</th>
+          <th style="width:8%" style="text-align:right">점수</th>
+        </tr>
+      </thead>
+      <tbody id="traderScreenRows">
+        <tr><td colspan="8" class="empty-state">트레이더를 선택하고 스크리닝 버튼을 클릭하세요.</td></tr>
+      </tbody>
+    </table>
   </section>
 
   <dialog id="companyProfileDialog" class="company-profile-dialog">
