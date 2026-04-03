@@ -122,6 +122,27 @@ def _cached_quantdb_universe(limit: int, markets_key: str) -> tuple[dict[str, st
 
 
 def load_universe(path: Path | None = None) -> list[dict[str, str]]:
+    # Priority 1: ohlcv.db symbol_meta (fastest, most complete)
+    try:
+        from sepa.data.ohlcv_db import get_active_universe, DB_PATH
+        if DB_PATH.exists():
+            rows = get_active_universe(min_date='20260101', min_rows=200)
+            if rows:
+                return [
+                    {
+                        'symbol': r.get('symbol', ''),
+                        'name': r.get('name', '') or r.get('symbol', ''),
+                        'sector': group_sector_name(r.get('sector', '') or 'Other'),
+                        'sector_group': group_sector_name(r.get('sector', '') or 'Other'),
+                        'industry': r.get('industry', '') or r.get('sector', '') or 'Other',
+                        'sample_profile': 'steady',
+                        'eps_profile': 'positive_growth',
+                    }
+                    for r in rows
+                ]
+    except Exception:
+        pass
+    # Priority 2: QuantDB
     if path is None:
         source = _universe_source()
         quantdb_ready = quantdb_health().get('has_quantking_snapshot')
@@ -129,6 +150,7 @@ def load_universe(path: Path | None = None) -> list[dict[str, str]]:
             records = list(_cached_quantdb_universe(_quantdb_universe_limit(), '|'.join(_quantdb_markets())))
             if records:
                 return records
+    # Priority 3: CSV fallback
     return _read_csv_universe(path=path)
 
 
