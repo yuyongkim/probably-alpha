@@ -2,12 +2,12 @@
 from __future__ import annotations
 
 
-def detect_cup_with_handle(price_series: list[dict], min_cup_days: int = 30, max_cup_days: int = 150) -> dict:
+def detect_cup_with_handle(price_series: list[dict], min_cup_days: int = 20, max_cup_days: int = 200) -> dict:
     """Detect a Cup-with-Handle (CWH) chart pattern.
 
     Looks for a U-shaped cup formation followed by a small handle pullback.
-    Cup depth: 15-35% from the left rim.
-    Handle depth: 5-15% from the right rim.
+    Cup depth: 12-45% from the left rim (relaxed for KRX volatility).
+    Handle depth: 3-20% from the right rim (relaxed).
     """
     default = {
         'detected': False,
@@ -55,11 +55,11 @@ def detect_cup_with_handle(price_series: list[dict], min_cup_days: int = 30, max
             cup_bottom_price = window_closes[i]
             cup_bottom_idx = i
 
-    # Cup depth check: 15-35%
+    # Cup depth check: 12-45% (relaxed for KRX)
     cup_depth_pct = ((left_rim_price - cup_bottom_price) / left_rim_price) * 100.0
-    if cup_depth_pct < 15.0 or cup_depth_pct > 35.0:
+    if cup_depth_pct < 12.0 or cup_depth_pct > 45.0:
         # Cup depth outside acceptable range — check if still forming
-        if cup_depth_pct >= 10.0 and cup_depth_pct < 15.0:
+        if cup_depth_pct >= 8.0 and cup_depth_pct < 12.0:
             # Shallow cup still forming
             return {
                 **default,
@@ -75,7 +75,7 @@ def detect_cup_with_handle(price_series: list[dict], min_cup_days: int = 30, max
     right_rim_idx = None
     right_rim_price = 0.0
     for i in range(cup_bottom_idx + 1, len(window_closes)):
-        if window_closes[i] >= left_rim_price * 0.90:
+        if window_closes[i] >= left_rim_price * 0.85:
             right_rim_idx = i
             right_rim_price = window_closes[i]
             break
@@ -141,7 +141,7 @@ def detect_cup_with_handle(price_series: list[dict], min_cup_days: int = 30, max
     pivot_price = round(handle_high * 1.005, 2)
 
     # Determine stage
-    if 5.0 <= handle_depth_pct <= 15.0 and 5 <= handle_days <= 25:
+    if 3.0 <= handle_depth_pct <= 20.0 and 3 <= handle_days <= 35:
         # Valid handle exists
         current_price = window_closes[-1]
         if current_price >= handle_high * 0.995:
