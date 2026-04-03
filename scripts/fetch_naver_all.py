@@ -89,7 +89,16 @@ def _parse_float(s: str | None) -> float | None:
     if not v or v in ('-', 'N/A', ''):
         return None
     try:
-        return float(v.replace('배', '').replace('원', '').replace('%', '').replace('조', '').replace('억', ''))
+        clean = v.replace('배', '').replace('원', '').replace('%', '').replace('만', '')
+        # Handle '조/억' mixed format like '1102조 2366억'
+        if '조' in clean:
+            parts = clean.split('조')
+            jo = float(parts[0].strip()) if parts[0].strip() else 0
+            eok_str = parts[1].replace('억', '').strip() if len(parts) > 1 else ''
+            eok = float(eok_str) if eok_str else 0
+            return jo * 10000 + eok  # Return in 억원
+        clean = clean.replace('억', '')
+        return float(clean)
     except (ValueError, TypeError):
         return None
 
@@ -102,32 +111,33 @@ def _fetch_and_save(conn: sqlite3.Connection, code: str, symbol: str) -> dict:
     integ = _fetch(f'{NAVER_API}/{code}/integration')
     if integ:
         stats['integration'] = True
-        infos = {i.get('key', ''): i.get('value', '') for i in integ.get('totalInfos', [])}
+        # Use 'code' field for reliable matching (not Korean key which has encoding issues)
+        infos = {i.get('code', ''): i.get('value', '') for i in integ.get('totalInfos', [])}
         consensus = integ.get('consensusInfo') or {}
 
         updates = {}
-        if infos.get('시가총액'):
-            updates['market_cap'] = infos['시가총액']
-        if infos.get('외국인비율'):
-            updates['foreign_ratio'] = infos['외국인비율']
-        if infos.get('52주 최고'):
-            updates['high_52w'] = _parse_val(infos['52주 최고'])
-        if infos.get('52주 최저'):
-            updates['low_52w'] = _parse_val(infos['52주 최저'])
-        if infos.get('PER'):
-            updates['per'] = _parse_float(infos['PER'])
-        if infos.get('EPS'):
-            updates['eps'] = _parse_float(infos['EPS'])
-        if infos.get('PBR'):
-            updates['pbr'] = _parse_float(infos['PBR'])
-        if infos.get('BPS'):
-            updates['bps'] = _parse_float(infos['BPS'])
-        if infos.get('추정PER'):
-            updates['est_per'] = infos['추정PER']
-        if infos.get('추정EPS'):
-            updates['est_eps'] = infos['추정EPS']
-        if infos.get('배당수익률'):
-            updates['dividend_yield'] = infos['배당수익률']
+        if infos.get('marketValue'):
+            updates['market_cap'] = infos['marketValue']
+        if infos.get('foreignRate'):
+            updates['foreign_ratio'] = infos['foreignRate']
+        if infos.get('highPriceOf52Weeks'):
+            updates['high_52w'] = _parse_val(infos['highPriceOf52Weeks'])
+        if infos.get('lowPriceOf52Weeks'):
+            updates['low_52w'] = _parse_val(infos['lowPriceOf52Weeks'])
+        if infos.get('per'):
+            updates['per'] = _parse_float(infos['per'])
+        if infos.get('eps'):
+            updates['eps'] = _parse_float(infos['eps'])
+        if infos.get('pbr'):
+            updates['pbr'] = _parse_float(infos['pbr'])
+        if infos.get('bps'):
+            updates['bps'] = _parse_float(infos['bps'])
+        if infos.get('cnsPer'):
+            updates['est_per'] = infos['cnsPer']
+        if infos.get('cnsEps'):
+            updates['est_eps'] = infos['cnsEps']
+        if infos.get('dividendYieldRatio'):
+            updates['dividend_yield'] = infos['dividendYieldRatio']
         if consensus.get('priceTargetMean'):
             updates['consensus_target'] = str(consensus['priceTargetMean'])
         if consensus.get('recommMean'):
@@ -146,13 +156,13 @@ def _fetch_and_save(conn: sqlite3.Connection, code: str, symbol: str) -> dict:
         cs = annual_data.get('corporationSummary') or {}
         if cs:
             desc_parts = []
-            for k in ('businessSummary', 'companyOverview', 'mainProduct'):
+            for k in ('comment1', 'comment2', 'comment3', 'businessSummary', 'companyOverview', 'mainProduct'):
                 v = cs.get(k)
-                if v:
-                    desc_parts.append(str(v))
+                if v and str(v).strip():
+                    desc_parts.append(str(v).strip())
             if desc_parts:
                 conn.execute('UPDATE symbol_meta SET description = ? WHERE symbol = ?',
-                             ('\n'.join(desc_parts)[:2000], symbol))
+                             (' '.join(desc_parts)[:2000], symbol))
 
         # Save annual financials
         stats['annual'] = _save_financials(conn, code, annual_data, 'annual')
