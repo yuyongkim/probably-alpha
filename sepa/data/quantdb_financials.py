@@ -296,9 +296,13 @@ def read_financial_summary(symbol: str) -> dict:
             # DPS placeholder (would need dividend data)
             # dividend_yield placeholder (would need DPS)
 
-    # Sort and trim: last 4 years, last 8 quarters
-    sorted_years = sorted(annual_data.keys())[-4:]
-    sorted_quarters = sorted(quarter_data.keys())[-8:]
+    # Sort and trim: most recent 4 years (2022+), most recent 8 quarters
+    from datetime import datetime
+    current_year = str(datetime.now().year)
+    min_year = str(int(current_year) - 4)  # e.g. '2022' if current is 2026
+    sorted_years = sorted(y for y in annual_data.keys() if y >= min_year)[-4:]
+    min_quarter = f'{min_year}Q1'
+    sorted_quarters = sorted(q for q in quarter_data.keys() if q >= min_quarter)[-8:]
 
     def _build_row(period: str, metrics: dict[str, float | None]) -> dict:
         row_out: dict[str, object] = {'period': period}
