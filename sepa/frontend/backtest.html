@@ -23,9 +23,54 @@
     </header>
     <nav class="page-nav">
       <a class="nav-link" href="./index.html">커맨드 센터</a>
+      <a class="nav-link" href="./glossary.html">용어집</a>
+      <a class="nav-link" href="./market-wizards-people.html">트레이더 인덱스</a>
+      <a class="nav-link" href="./market-wizards.html">전략 프레임</a>
+      <a class="nav-link" href="./market-wizards-korea.html">한국 프리셋</a>
       <a class="nav-link" href="./wizard-screener.html">전략 스크리너</a>
+      <a class="nav-link" href="./trader-debate.html">트레이더 토론</a>
       <a class="nav-link is-active" href="./backtest.html">백테스트</a>
     </nav>
+  </section>
+
+  <!-- Strategy Description -->
+  <section class="section-shell">
+    <div class="section-header">
+      <div>
+        <p class="section-kicker">전략 개요</p>
+        <h2>주도섹터·주도주 로테이션 전략 (LeaderSectorStock v1)</h2>
+      </div>
+    </div>
+    <article class="panel" style="padding:20px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
+        <div>
+          <h3 style="margin-bottom:8px;color:var(--accent)">매수 규칙</h3>
+          <ul style="color:var(--muted);line-height:2;font-size:14px;padding-left:18px">
+            <li>LEADER_SCORING_SPEC 기준 <strong>상위 5개 섹터</strong> 선정</li>
+            <li>각 섹터 내 <strong>LeaderScore 상위 종목</strong> 매수</li>
+            <li>Trend Template 5/8 이상 + close > MA50 필수</li>
+            <li>섹터당 최대 N종목 제한</li>
+          </ul>
+        </div>
+        <div>
+          <h3 style="margin-bottom:8px;color:var(--accent)">매도 규칙</h3>
+          <ul style="color:var(--muted);line-height:2;font-size:14px;padding-left:18px">
+            <li><strong>손절</strong>: 진입가 대비 -7.5% 하락 시 즉시</li>
+            <li><strong>리밸런싱 이탈</strong>: 종목이 Top 리더에서 빠질 때</li>
+            <li><strong>섹터 이탈</strong>: 섹터가 Top 5에서 빠질 때</li>
+          </ul>
+        </div>
+        <div>
+          <h3 style="margin-bottom:8px;color:var(--accent)">비용 모델</h3>
+          <ul style="color:var(--muted);line-height:2;font-size:14px;padding-left:18px">
+            <li>수수료: 매수/매도 각 0.015%</li>
+            <li>슬리피지: 0.1%</li>
+            <li>거래세: 매도 시 0.18%</li>
+            <li>체결: <strong>익일 시가</strong> (next-open)</li>
+          </ul>
+        </div>
+      </div>
+    </article>
   </section>
 
   <!-- Parameters -->
