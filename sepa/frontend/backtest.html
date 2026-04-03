@@ -43,6 +43,20 @@
     </nav>
   </section>
 
+  <!-- Trader Presets -->
+  <section class="section-shell">
+    <div class="section-header">
+      <div>
+        <p class="section-kicker">트레이더 프리셋</p>
+        <h2>Market Wizards 전략 빠른 시작</h2>
+        <p class="panel-caption">트레이더를 선택하면 해당 전략에 맞는 규칙이 자동으로 설정됩니다.</p>
+      </div>
+    </div>
+    <article class="panel" style="padding:20px">
+      <div id="presetCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px"></div>
+    </article>
+  </section>
+
   <!-- Strategy Description -->
   <section class="section-shell">
     <div class="section-header">
@@ -305,6 +319,104 @@
   <script type="module">
     const $ = id => document.getElementById(id);
     const api = () => ($('apiBase')?.value || 'http://127.0.0.1:8000').replace(/\/+$/, '');
+
+    // ── Trader Presets ──
+    const PRESETS = [
+      {
+        id: 'minervini', trader: 'Mark Minervini', style: 'SEPA 성장 모멘텀',
+        color: '#6ee7a8',
+        desc: 'Trend Template 8조건 + VCP + RS 상위. 핵심 SEPA 전략.',
+        rules: { alphaTT: true, minTT: 5, alphaRS: true, rsVal: 70, ma50: true, sectorFilter: true, topSectors: 5, sectorLimit: 3, stopLoss: true, stopPct: 7.5, sectorExit: true, leaderExit: true, maxPos: 10, rebalance: 'weekly' },
+      },
+      {
+        id: 'oneil', trader: "William O'Neil", style: 'CAN SLIM 성장주',
+        color: '#4db8ff',
+        desc: 'RS 상위 + 실적 가속 + 신고가 돌파. 엄격한 손절.',
+        rules: { alphaTT: true, minTT: 6, alphaRS: true, rsVal: 80, ma50: true, sectorFilter: true, topSectors: 3, sectorLimit: 2, stopLoss: true, stopPct: 7.0, sectorExit: true, leaderExit: true, maxPos: 8, rebalance: 'weekly' },
+      },
+      {
+        id: 'seykota', trader: 'Ed Seykota', style: '시스템 추세추종',
+        color: '#ffb84d',
+        desc: '추세 정배열만 따라가고, 규칙을 절대 어기지 않는다.',
+        rules: { alphaTT: true, minTT: 7, alphaRS: true, rsVal: 60, ma50: true, sectorFilter: false, topSectors: 10, sectorLimit: 5, stopLoss: true, stopPct: 8.0, sectorExit: false, leaderExit: true, maxPos: 15, rebalance: 'weekly' },
+      },
+      {
+        id: 'hite', trader: 'Larry Hite', style: '1% 리스크 룰',
+        color: '#c4b5fd',
+        desc: '한 종목당 최대 손실 1%. 작게 잃고, 크게 벌기.',
+        rules: { alphaTT: true, minTT: 5, alphaRS: true, rsVal: 50, ma50: true, sectorFilter: true, topSectors: 5, sectorLimit: 2, stopLoss: true, stopPct: 5.0, sectorExit: true, leaderExit: true, maxPos: 20, rebalance: 'weekly' },
+      },
+      {
+        id: 'driehaus', trader: 'Richard Driehaus', style: '실적 서프라이즈',
+        color: '#ff8f8f',
+        desc: 'RS 최상위 + 실적 깜짝 성장주만. 공격적 집중투자.',
+        rules: { alphaTT: true, minTT: 5, alphaRS: true, rsVal: 85, ma50: true, sectorFilter: true, topSectors: 3, sectorLimit: 2, stopLoss: true, stopPct: 10.0, sectorExit: true, leaderExit: true, maxPos: 5, rebalance: 'weekly' },
+      },
+      {
+        id: 'schwartz', trader: 'Marty Schwartz', style: '단기 스윙',
+        color: '#7fd4ff',
+        desc: 'MA 위에서만 진입, 빠른 손절, 일간 리밸런싱.',
+        rules: { alphaTT: true, minTT: 4, alphaRS: true, rsVal: 50, ma50: true, sectorFilter: false, topSectors: 10, sectorLimit: 5, stopLoss: true, stopPct: 5.0, sectorExit: false, leaderExit: true, maxPos: 10, rebalance: 'daily' },
+      },
+      {
+        id: 'jones', trader: 'Paul Tudor Jones', style: '200MA 필터 매크로',
+        color: '#ffd700',
+        desc: '200일선 위에서만 투자. 방어적 포지션 관리.',
+        rules: { alphaTT: true, minTT: 6, alphaRS: true, rsVal: 60, ma50: true, sectorFilter: true, topSectors: 5, sectorLimit: 3, stopLoss: true, stopPct: 6.0, sectorExit: true, leaderExit: true, maxPos: 8, rebalance: 'weekly' },
+      },
+      {
+        id: 'custom', trader: '커스텀', style: '직접 설정',
+        color: 'var(--muted)',
+        desc: '모든 규칙을 직접 설정합니다.',
+        rules: null,
+      },
+    ];
+
+    function renderPresets() {
+      const el = $('presetCards');
+      el.innerHTML = PRESETS.map(p => `
+        <div class="preset-card" data-preset="${p.id}" style="border-left:3px solid ${p.color};padding:14px;background:var(--surface);border-radius:8px;cursor:pointer;transition:opacity .15s">
+          <div style="display:flex;justify-content:space-between;align-items:start">
+            <div>
+              <strong style="font-size:15px">${p.trader}</strong>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px">${p.style}</div>
+            </div>
+            ${p.rules ? `<span style="font-size:11px;background:rgba(255,255,255,.06);padding:2px 8px;border-radius:10px">${p.rules.maxPos}종목</span>` : ''}
+          </div>
+          <p style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5">${p.desc}</p>
+        </div>
+      `).join('');
+
+      el.querySelectorAll('.preset-card').forEach(card => {
+        card.addEventListener('click', () => {
+          el.querySelectorAll('.preset-card').forEach(c => c.style.opacity = '0.5');
+          card.style.opacity = '1';
+          applyPreset(card.dataset.preset);
+        });
+      });
+    }
+
+    function applyPreset(presetId) {
+      const preset = PRESETS.find(p => p.id === presetId);
+      if (!preset || !preset.rules) return;
+      const r = preset.rules;
+      $('rAlphaTT').checked = r.alphaTT;
+      $('rAlphaMinTT').value = r.minTT;
+      $('rAlphaRS').checked = r.alphaRS;
+      $('rAlphaRSVal').value = r.rsVal;
+      $('rAlphaMA50').checked = r.ma50;
+      $('rSectorFilter').checked = r.sectorFilter;
+      $('rSectorTopN').value = r.topSectors;
+      $('btSectorLimit').value = r.sectorLimit;
+      $('rStopLoss').checked = r.stopLoss;
+      $('rStopPct').value = r.stopPct;
+      $('rSectorExit').checked = r.sectorExit;
+      $('rLeaderExit').checked = r.leaderExit;
+      $('btMaxPos').value = r.maxPos;
+      $('btRebalance').value = r.rebalance;
+    }
+
+    renderPresets();
 
     function pct(v) { return v != null ? (v * 100).toFixed(1) + '%' : '-'; }
     function num(v) { return v != null ? Number(v).toLocaleString('ko-KR') : '-'; }
