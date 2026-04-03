@@ -230,6 +230,30 @@ class BacktestEngine:
                 returns.append(0.0)
         return returns
 
+    def _build_trade_pairs(self, trades: list) -> list[dict]:
+        """Match buy/sell trades into pairs for reporting."""
+        buy_map: dict[str, dict] = {}
+        pairs: list[dict] = []
+        for t in trades:
+            if t.side == 'buy':
+                buy_map[t.symbol] = {'entry_date': t.date, 'entry_price': int(t.price), 'qty': t.qty, 'symbol': t.symbol}
+            elif t.side == 'sell' and t.symbol in buy_map:
+                entry = buy_map.pop(t.symbol)
+                pnl = int((t.price - entry['entry_price']) * entry['qty'])
+                pnl_pct = round((t.price / entry['entry_price'] - 1.0) * 100, 2) if entry['entry_price'] > 0 else 0.0
+                pairs.append({
+                    'symbol': t.symbol,
+                    'entry_date': entry['entry_date'],
+                    'exit_date': t.date,
+                    'entry_price': entry['entry_price'],
+                    'exit_price': int(t.price),
+                    'qty': entry['qty'],
+                    'pnl': pnl,
+                    'pnl_pct': pnl_pct,
+                    'reason_exit': t.reason,
+                })
+        return pairs
+
     def _trade_stats(self, trades: list) -> dict:
         buys = [t for t in trades if t.side == 'buy']
         sells = [t for t in trades if t.side == 'sell']
@@ -253,12 +277,15 @@ class BacktestEngine:
         }
 
     def _build_result(self, start: str, end: str, metrics: dict, portfolio: Portfolio, dates: list[str]) -> dict:
+        # Build trade pairs for detailed reporting
+        trade_pairs = self._build_trade_pairs(portfolio.trades)
+
         return {
             'run_id': f"bt_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
             'strategy': 'LeaderSectorStock_v1',
             'period': {'start': start, 'end': end},
             'params': {
-                'initial_cash': self.initial_cash,
+                'initial_cash': int(self.initial_cash),
                 'max_positions': self.max_positions,
                 'sector_limit': self.sector_limit,
                 'rebalance': self.rebalance,
@@ -269,6 +296,8 @@ class BacktestEngine:
                 'tax': Portfolio.TAX_RATE,
             },
             'metrics': metrics,
+            'equity_curve': portfolio.equity_curve,
+            'trades': trade_pairs,
             'survivorship_bias_note': 'Includes all symbols present in signal files; delisted stocks not separately tracked',
             'lookback_check': 'PASSED' if self.execution == 'next-open' else 'WARNING',
             'schema_version': '1.0',

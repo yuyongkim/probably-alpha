@@ -236,6 +236,34 @@
       </table>
     </article>
 
+    <!-- Equity Curve -->
+    <article class="panel" style="margin-top:16px">
+      <div class="panel-head">
+        <div><h3>자산 곡선</h3><p class="panel-caption">전략 자산 vs 벤치마크 추이</p></div>
+      </div>
+      <canvas id="equityChart" style="width:100%;height:300px"></canvas>
+    </article>
+
+    <!-- Trade Log -->
+    <article class="panel" style="margin-top:16px">
+      <div class="panel-head">
+        <div><h3>거래 로그</h3><p class="panel-caption" id="tradeLogCaption">개별 매매 내역</p></div>
+      </div>
+      <div style="max-height:400px;overflow-y:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>종목</th><th>매수일</th><th>매도일</th>
+              <th style="text-align:right">매수가</th><th style="text-align:right">매도가</th>
+              <th style="text-align:right">수량</th><th style="text-align:right">손익</th>
+              <th style="text-align:right">수익률</th><th>청산 사유</th>
+            </tr>
+          </thead>
+          <tbody id="tradeRows"></tbody>
+        </table>
+      </div>
+    </article>
+
     <!-- Params -->
     <article class="panel" style="margin-top:16px">
       <div class="panel-head">
@@ -246,6 +274,28 @@
           <tr><th>파라미터</th><th>값</th></tr>
         </thead>
         <tbody id="paramsRows"></tbody>
+      </table>
+    </article>
+  </section>
+
+  <!-- Past Results -->
+  <section class="section-shell">
+    <div class="section-header">
+      <div>
+        <p class="section-kicker">히스토리</p>
+        <h2>과거 백테스트 결과</h2>
+        <p class="panel-caption">이전에 실행한 백테스트 결과를 비교합니다.</p>
+      </div>
+      <button id="btnLoadHistory" style="padding:8px 16px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);cursor:pointer">불러오기</button>
+    </div>
+    <article class="panel">
+      <table>
+        <thead>
+          <tr><th>Run ID</th><th>전략</th><th>기간</th><th>CAGR</th><th>MDD</th><th>샤프</th><th>거래 수</th></tr>
+        </thead>
+        <tbody id="historyRows">
+          <tr><td colspan="7" class="empty-state">불러오기 버튼을 클릭하세요.</td></tr>
+        </tbody>
       </table>
     </article>
   </section>
@@ -374,8 +424,130 @@
         ...rulesList.map(([k, v]) => `<tr><td>${k}</td><td><strong>${v}</strong></td></tr>`),
       ].join('');
 
+      // Equity curve chart
+      renderEquityChart(r.equity_curve || []);
+
+      // Trade log
+      renderTradeLog(r.trades || []);
+
       $('resultSection').scrollIntoView({ behavior: 'smooth' });
     }
+
+    function renderEquityChart(curve) {
+      const canvas = $('equityChart');
+      if (!canvas || !curve.length) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = 300 * dpr;
+      ctx.scale(dpr, dpr);
+      const W = rect.width, H = 300;
+      ctx.clearRect(0, 0, W, H);
+
+      const equities = curve.map(p => p.equity);
+      const maxE = Math.max(...equities);
+      const minE = Math.min(...equities);
+      const range = maxE - minE || 1;
+      const pad = { t: 20, b: 30, l: 60, r: 20 };
+
+      // Grid
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = pad.t + (H - pad.t - pad.b) * i / 4;
+        ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
+        const val = maxE - range * i / 4;
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.font = '11px monospace';
+        ctx.textAlign = 'right';
+        ctx.fillText((val / 1e6).toFixed(0) + 'M', pad.l - 6, y + 4);
+      }
+
+      // Equity line
+      ctx.strokeStyle = '#4db8ff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      curve.forEach((p, i) => {
+        const x = pad.l + (W - pad.l - pad.r) * i / (curve.length - 1);
+        const y = pad.t + (H - pad.t - pad.b) * (1 - (p.equity - minE) / range);
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // Initial capital line
+      const initY = pad.t + (H - pad.t - pad.b) * (1 - (curve[0].equity - minE) / range);
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(pad.l, initY); ctx.lineTo(W - pad.r, initY); ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Date labels
+      ctx.fillStyle = 'rgba(255,255,255,0.4)';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'center';
+      [0, Math.floor(curve.length / 2), curve.length - 1].forEach(i => {
+        const x = pad.l + (W - pad.l - pad.r) * i / (curve.length - 1);
+        const d = curve[i]?.date || '';
+        ctx.fillText(d.slice(0, 4) + '-' + d.slice(4, 6) + '-' + d.slice(6, 8), x, H - 8);
+      });
+    }
+
+    function renderTradeLog(trades) {
+      const el = $('tradeRows');
+      if (!trades.length) {
+        el.innerHTML = '<tr><td colspan="10" class="empty-state">거래 내역이 없습니다.</td></tr>';
+        $('tradeLogCaption').textContent = '거래 0건';
+        return;
+      }
+      const wins = trades.filter(t => t.pnl > 0).length;
+      $('tradeLogCaption').textContent = `총 ${trades.length}건 (수익 ${wins}건, 손실 ${trades.length - wins}건)`;
+
+      const reasonMap = { stop_loss: '손절', rebalance_exit: '리밸런싱', backtest_end: '기간종료', signal: '시그널' };
+      el.innerHTML = trades.map((t, i) => {
+        const pnlClass = t.pnl > 0 ? 'color:#6ee7a8' : t.pnl < 0 ? 'color:#ff6b6b' : '';
+        return `<tr>
+          <td>${i + 1}</td>
+          <td>${t.symbol}</td>
+          <td>${t.entry_date}</td>
+          <td>${t.exit_date}</td>
+          <td style="text-align:right">${num(t.entry_price)}</td>
+          <td style="text-align:right">${num(t.exit_price)}</td>
+          <td style="text-align:right">${num(t.qty)}</td>
+          <td style="text-align:right;${pnlClass}"><strong>${num(t.pnl)}</strong></td>
+          <td style="text-align:right;${pnlClass}">${t.pnl_pct > 0 ? '+' : ''}${t.pnl_pct}%</td>
+          <td>${reasonMap[t.reason_exit] || t.reason_exit}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    // History loader
+    $('btnLoadHistory')?.addEventListener('click', async () => {
+      try {
+        const resp = await fetch(`${api()}/api/backtest/results`);
+        const data = await resp.json();
+        const items = data.items || [];
+        if (!items.length) {
+          $('historyRows').innerHTML = '<tr><td colspan="7" class="empty-state">저장된 백테스트 결과가 없습니다.</td></tr>';
+          return;
+        }
+        $('historyRows').innerHTML = items.map(r => {
+          const m = r.metrics || {};
+          const p = r.period || {};
+          return `<tr>
+            <td><small>${r.run_id || '-'}</small></td>
+            <td>${r.strategy || '-'}</td>
+            <td>${p.start || '?'}~${p.end || '?'}</td>
+            <td>${pct(m.cagr)}</td>
+            <td>${pct(m.max_drawdown)}</td>
+            <td>${fixed(m.sharpe)}</td>
+            <td>${num(m.total_trades)}</td>
+          </tr>`;
+        }).join('');
+      } catch (e) {
+        $('historyRows').innerHTML = `<tr><td colspan="7" class="empty-state">불러오기 실패: ${e.message}</td></tr>`;
+      }
+    });
   </script>
 </body>
 </html>
