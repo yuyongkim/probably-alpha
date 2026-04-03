@@ -171,6 +171,26 @@
       </div>
     </article>
 
+    <!-- Extra Entry Conditions -->
+    <article class="panel" style="padding:20px;margin-bottom:12px">
+      <h3 style="margin-bottom:12px;color:var(--accent)">추가 진입 조건 (트레이더 철학)</h3>
+      <div class="rule-grid">
+        <label class="rule-toggle"><input type="checkbox" id="rVolExpansion" /><span>거래량 팽창</span><small>최근 5일 거래량 > 50일 평균 × N배</small></label>
+        <div style="display:flex;align-items:center;gap:8px;margin-left:28px">
+          <label class="rule-label" style="margin:0;white-space:nowrap">최소 배수</label>
+          <input id="rVolRatio" type="number" value="1.5" min="1" max="5" step="0.1" class="rule-input" style="width:70px" /><span style="color:var(--muted)">배</span>
+        </div>
+        <label class="rule-toggle"><input type="checkbox" id="rNear52W" /><span>52주 고점 근접</span><small>현재가 >= 52주 고점 × N%</small></label>
+        <div style="display:flex;align-items:center;gap:8px;margin-left:28px">
+          <label class="rule-label" style="margin:0;white-space:nowrap">근접 임계값</label>
+          <input id="rNear52WVal" type="number" value="85" min="50" max="100" class="rule-input" style="width:70px" /><span style="color:var(--muted)">%</span>
+        </div>
+        <label class="rule-toggle"><input type="checkbox" id="rVCP" /><span>변동성 수축 (VCP)</span><small>ATR(10) < ATR(50) — 가격 수축 진행 중</small></label>
+        <label class="rule-toggle"><input type="checkbox" id="r20dBreak" /><span>20일 채널 돌파</span><small>현재가 >= 최근 20일 최고가 (터틀 시스템)</small></label>
+        <label class="rule-toggle"><input type="checkbox" id="rSMA200" checked /><span>close > SMA200 필수</span><small>200일 이동평균 위에서만 진입</small></label>
+      </div>
+    </article>
+
     <!-- Risk Rules -->
     <article class="panel" style="padding:20px;margin-bottom:12px">
       <h3 style="margin-bottom:12px;color:var(--accent)">Delta — 리스크 관리</h3>
@@ -326,43 +346,49 @@
         id: 'minervini', trader: 'Mark Minervini', style: 'SEPA 성장 모멘텀',
         color: '#6ee7a8',
         desc: 'Trend Template 8조건 + VCP + RS 상위. 핵심 SEPA 전략.',
-        rules: { alphaTT: true, minTT: 5, alphaRS: true, rsVal: 70, ma50: true, sectorFilter: true, topSectors: 5, sectorLimit: 3, stopLoss: true, stopPct: 7.5, sectorExit: true, leaderExit: true, maxPos: 10, rebalance: 'weekly' },
+        rules: { alphaTT: true, minTT: 5, alphaRS: true, rsVal: 70, ma50: true, sma200: true, sectorFilter: true, topSectors: 5, sectorLimit: 3, stopLoss: true, stopPct: 7.5, sectorExit: true, leaderExit: true, maxPos: 10, rebalance: 'weekly', vcp: true, near52w: true, near52wThreshold: 0.75 },
       },
       {
         id: 'oneil', trader: "William O'Neil", style: 'CAN SLIM 성장주',
         color: '#4db8ff',
         desc: 'RS 상위 + 실적 가속 + 신고가 돌파. 엄격한 손절.',
-        rules: { alphaTT: true, minTT: 6, alphaRS: true, rsVal: 80, ma50: true, sectorFilter: true, topSectors: 3, sectorLimit: 2, stopLoss: true, stopPct: 7.0, sectorExit: true, leaderExit: true, maxPos: 8, rebalance: 'weekly' },
+        rules: { alphaTT: true, minTT: 6, alphaRS: true, rsVal: 80, ma50: true, sma200: true, sectorFilter: true, topSectors: 3, sectorLimit: 2, stopLoss: true, stopPct: 7.0, sectorExit: true, leaderExit: true, maxPos: 8, rebalance: 'weekly', volExpansion: true, volRatio: 1.5, near52w: true, near52wThreshold: 0.85 },
+      },
+      {
+        id: 'dennis', trader: 'Richard Dennis', style: '터틀 추세추종',
+        color: '#ffb84d',
+        desc: '20일 채널 돌파 + 거래량 확인. 추세추종의 원조.',
+        rules: { alphaTT: true, minTT: 4, alphaRS: true, rsVal: 50, ma50: true, sma200: false, sectorFilter: false, topSectors: 10, sectorLimit: 5, stopLoss: true, stopPct: 8.0, sectorExit: false, leaderExit: true, maxPos: 15, rebalance: 'weekly', breakout20d: true, volExpansion: true, volRatio: 1.3 },
       },
       {
         id: 'seykota', trader: 'Ed Seykota', style: '시스템 추세추종',
-        color: '#ffb84d',
+        color: '#ff9966',
         desc: '추세 정배열만 따라가고, 규칙을 절대 어기지 않는다.',
-        rules: { alphaTT: true, minTT: 7, alphaRS: true, rsVal: 60, ma50: true, sectorFilter: false, topSectors: 10, sectorLimit: 5, stopLoss: true, stopPct: 8.0, sectorExit: false, leaderExit: true, maxPos: 15, rebalance: 'weekly' },
+        rules: { alphaTT: true, minTT: 7, alphaRS: true, rsVal: 60, ma50: true, sma200: true, sectorFilter: false, topSectors: 10, sectorLimit: 5, stopLoss: true, stopPct: 8.0, sectorExit: false, leaderExit: true, maxPos: 15, rebalance: 'weekly' },
       },
       {
         id: 'hite', trader: 'Larry Hite', style: '1% 리스크 룰',
         color: '#c4b5fd',
         desc: '한 종목당 최대 손실 1%. 작게 잃고, 크게 벌기.',
-        rules: { alphaTT: true, minTT: 5, alphaRS: true, rsVal: 50, ma50: true, sectorFilter: true, topSectors: 5, sectorLimit: 2, stopLoss: true, stopPct: 5.0, sectorExit: true, leaderExit: true, maxPos: 20, rebalance: 'weekly' },
+        rules: { alphaTT: true, minTT: 5, alphaRS: true, rsVal: 50, ma50: true, sma200: false, sectorFilter: true, topSectors: 10, sectorLimit: 2, stopLoss: true, stopPct: 5.0, sectorExit: true, leaderExit: true, maxPos: 20, rebalance: 'weekly' },
       },
       {
         id: 'driehaus', trader: 'Richard Driehaus', style: '실적 서프라이즈',
         color: '#ff8f8f',
-        desc: 'RS 최상위 + 실적 깜짝 성장주만. 공격적 집중투자.',
-        rules: { alphaTT: true, minTT: 5, alphaRS: true, rsVal: 85, ma50: true, sectorFilter: true, topSectors: 3, sectorLimit: 2, stopLoss: true, stopPct: 10.0, sectorExit: true, leaderExit: true, maxPos: 5, rebalance: 'weekly' },
+        desc: 'RS 최상위 + 공격적 집중투자. 적은 종목, 큰 베팅.',
+        rules: { alphaTT: true, minTT: 5, alphaRS: true, rsVal: 85, ma50: true, sma200: true, sectorFilter: true, topSectors: 3, sectorLimit: 2, stopLoss: true, stopPct: 10.0, sectorExit: true, leaderExit: true, maxPos: 5, rebalance: 'weekly', volExpansion: true, volRatio: 1.5, near52w: true, near52wThreshold: 0.90 },
       },
       {
         id: 'schwartz', trader: 'Marty Schwartz', style: '단기 스윙',
         color: '#7fd4ff',
         desc: 'MA 위에서만 진입, 빠른 손절, 일간 리밸런싱.',
-        rules: { alphaTT: true, minTT: 4, alphaRS: true, rsVal: 50, ma50: true, sectorFilter: false, topSectors: 10, sectorLimit: 5, stopLoss: true, stopPct: 5.0, sectorExit: false, leaderExit: true, maxPos: 10, rebalance: 'daily' },
+        rules: { alphaTT: true, minTT: 4, alphaRS: true, rsVal: 40, ma50: true, sma200: false, sectorFilter: false, topSectors: 10, sectorLimit: 5, stopLoss: true, stopPct: 5.0, sectorExit: false, leaderExit: true, maxPos: 10, rebalance: 'daily', vcp: true },
       },
       {
         id: 'jones', trader: 'Paul Tudor Jones', style: '200MA 필터 매크로',
         color: '#ffd700',
         desc: '200일선 위에서만 투자. 방어적 포지션 관리.',
-        rules: { alphaTT: true, minTT: 6, alphaRS: true, rsVal: 60, ma50: true, sectorFilter: true, topSectors: 5, sectorLimit: 3, stopLoss: true, stopPct: 6.0, sectorExit: true, leaderExit: true, maxPos: 8, rebalance: 'weekly' },
+        rules: { alphaTT: true, minTT: 6, alphaRS: true, rsVal: 60, ma50: true, sma200: true, sectorFilter: true, topSectors: 5, sectorLimit: 3, stopLoss: true, stopPct: 6.0, sectorExit: true, leaderExit: true, maxPos: 8, rebalance: 'weekly' },
       },
       {
         id: 'custom', trader: '커스텀', style: '직접 설정',
@@ -396,9 +422,12 @@
       });
     }
 
+    let activePresetId = null;
+
     function applyPreset(presetId) {
+      activePresetId = presetId;
       const preset = PRESETS.find(p => p.id === presetId);
-      if (!preset || !preset.rules) return;
+      if (!preset || !preset.rules) { activePresetId = null; return; }
       const r = preset.rules;
       $('rAlphaTT').checked = r.alphaTT;
       $('rAlphaMinTT').value = r.minTT;
@@ -414,6 +443,14 @@
       $('rLeaderExit').checked = r.leaderExit;
       $('btMaxPos').value = r.maxPos;
       $('btRebalance').value = r.rebalance;
+      // Extra conditions
+      $('rVolExpansion').checked = r.volExpansion || false;
+      $('rVolRatio').value = r.volRatio || 1.5;
+      $('rNear52W').checked = r.near52w || false;
+      $('rNear52WVal').value = (r.near52wThreshold || 0.85) * 100;
+      $('rVCP').checked = r.vcp || false;
+      $('r20dBreak').checked = r.breakout20d || false;
+      $('rSMA200').checked = r.sma200 !== false;
     }
 
     renderPresets();
@@ -439,17 +476,27 @@
           top_sectors: $('rSectorTopN').value,
           rebalance: $('btRebalance').value,
           stop_loss_pct: ($('rStopLoss').checked ? parseFloat($('rStopPct').value) / 100 : 0).toString(),
-          execution: $('rExecution').value,
           commission: (parseFloat($('rCommission').value) / 100).toString(),
           slippage: (parseFloat($('rSlippage').value) / 100).toString(),
           tax: (parseFloat($('rTax').value) / 100).toString(),
           alpha_min_tt: $('rAlphaTT').checked ? $('rAlphaMinTT').value : '0',
           alpha_rs_threshold: $('rAlphaRS').checked ? $('rAlphaRSVal').value : '0',
           require_ma50: $('rAlphaMA50').checked ? '1' : '0',
+          require_sma200: $('rSMA200').checked ? '1' : '0',
           sector_filter: $('rSectorFilter').checked ? '1' : '0',
           sector_exit: $('rSectorExit').checked ? '1' : '0',
           leader_exit: $('rLeaderExit').checked ? '1' : '0',
+          require_volume_expansion: $('rVolExpansion').checked ? '1' : '0',
+          min_volume_ratio: $('rVolRatio').value,
+          require_near_52w_high: $('rNear52W').checked ? '1' : '0',
+          near_52w_threshold: (parseFloat($('rNear52WVal').value) / 100).toString(),
+          require_volatility_contraction: $('rVCP').checked ? '1' : '0',
+          require_20d_breakout: $('r20dBreak').checked ? '1' : '0',
         });
+        // If using a preset, send preset name for server-side config
+        if (activePresetId && activePresetId !== 'custom') {
+          params.set('preset', activePresetId);
+        }
         const resp = await fetch(`${api()}/api/backtest/run?${params}`);
         const result = await resp.json();
 

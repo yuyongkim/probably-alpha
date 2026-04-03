@@ -1,89 +1,104 @@
-"""Backtest engine per docs/20_architecture/BACKTEST_RULES.md.
+"""Backtest engine v2: on-the-fly signal generation with trader presets.
 
-Key rules:
+Instead of reading pre-computed signal files, this engine runs Alpha screening
+with trader-specific parameters on each rebalance date using the OHLCV database.
+
+Key rules per BACKTEST_RULES.md:
 - next-open execution (default)
 - Weekly rebalancing (Friday close -> Monday open)
-- Stop-loss at -7.5%
 - Cost model: commission 0.015%, slippage 0.1%, tax 0.18%
-- No look-ahead bias
+- No look-ahead bias: signals use data up to signal_date only
 """
 from __future__ import annotations
 
-import json
 import logging
 from datetime import datetime
 from pathlib import Path
 
 from sepa.backtest.metrics import compute_metrics
 from sepa.backtest.portfolio import Portfolio
+from sepa.backtest.screener import screen_universe
+from sepa.backtest.strategy import StrategyConfig
 from sepa.data.market_index import market_index_path
+from sepa.data.ohlcv_db import read_ohlcv_batch, DB_PATH, get_all_symbols
 from sepa.data.price_history import read_price_series_from_path
 from sepa.data.sector_map import get_sector, load_sector_map
+from sepa.data.universe import get_symbol_name
 
 logger = logging.getLogger(__name__)
 
 
 class BacktestEngine:
-    """Leader Sector/Stock rotation backtest engine."""
+    """On-the-fly signal generation backtest engine."""
 
-    def __init__(
-        self,
-        *,
-        initial_cash: float = 100_000_000.0,
-        max_positions: int = 10,
-        sector_limit: int = 3,
-        rebalance: str = 'weekly',
-        execution: str = 'next-open',
-        stop_loss_pct: float = 0.075,
-    ) -> None:
-        self.initial_cash = initial_cash
-        self.max_positions = max_positions
-        self.sector_limit = sector_limit
-        self.rebalance = rebalance
-        self.execution = execution
-        self.stop_loss_pct = stop_loss_pct
+    def __init__(self, strategy: StrategyConfig | None = None) -> None:
+        self.strategy = strategy or StrategyConfig()
 
-    def run(
-        self,
-        start_date: str,
-        end_date: str,
-        *,
-        signal_root: Path = Path('.omx/artifacts/daily-signals'),
-        data_dir: Path = Path('.omx/artifacts/market-data/ohlcv'),
-    ) -> dict:
-        """Run backtest over date range. Returns backtest_result dict."""
-        dates = self._get_trading_dates(signal_root, start_date, end_date)
+    def run(self, start_date: str, end_date: str) -> dict:
+        """Run backtest over date range with on-the-fly screening."""
+        config = self.strategy
+
+        # Load full price history once (performance: 1 SQL query)
+        print(f'[BT] Loading price data from DB...')
+        full_data = read_ohlcv_batch(min_rows=200)
+        if not full_data:
+            return {'error': 'No price data in ohlcv.db. Run: python scripts/import_csv_to_db.py'}
+
+        # Build date-indexed price cache: {symbol: {date: (close, volume)}}
+        print(f'[BT] Building price index for {len(full_data)} symbols...')
+        price_index = self._build_date_index(full_data)
+
+        # Get trading dates from price data
+        all_dates = sorted(set(d for sym_dates in price_index.values() for d in sym_dates))
+        dates = [d for d in all_dates if start_date <= d <= end_date]
+
+        # Filter weekdays
+        dates = [d for d in dates if self._is_weekday(d)]
         if len(dates) < 5:
-            return {'error': f'Insufficient dates: {len(dates)}'}
+            return {'error': f'Insufficient trading dates: {len(dates)}'}
 
-        portfolio = Portfolio(initial_cash=self.initial_cash, max_positions=self.max_positions)
+        print(f'[BT] Running {config.name} over {len(dates)} days ({dates[0]}~{dates[-1]})...')
+
+        portfolio = Portfolio(initial_cash=config.initial_cash, max_positions=config.max_positions)
         sector_map = load_sector_map()
-        price_cache = self._build_price_index(data_dir, dates)
-        benchmark_prices = self._load_benchmark_prices(dates)
-        rebalance_dates = self._get_rebalance_dates(dates)
+        benchmark_prices = self._load_benchmark_prices()
+        rebalance_dates = self._get_rebalance_dates(dates, config.rebalance)
+        rebalance_count = 0
 
         for i, date_str in enumerate(dates):
-            day_prices = {sym: p for sym in price_cache if (p := self._get_price(price_cache, sym, date_str)) > 0}
+            # Get today's prices
+            day_prices = {sym: price_index[sym][date_str][0]
+                          for sym in price_index
+                          if date_str in price_index[sym] and price_index[sym][date_str][0] > 0}
 
-            # Skip non-trading days (no price data)
             if not day_prices:
                 continue
 
-            # Check stops first
+            # Check stops
             portfolio.check_stops(date_str, day_prices)
 
-            # Rebalance on rebalance dates (execute on next trading day)
+            # Rebalance: screen universe on signal_date, execute on next trading day
             if date_str in rebalance_dates and i + 1 < len(dates):
                 next_date = dates[i + 1]
-                next_prices = {sym: self._get_price(price_cache, sym, next_date) for sym in price_cache}
-                self._rebalance(portfolio, date_str, next_date, next_prices, signal_root, sector_map)
+                next_prices = {sym: price_index[sym][next_date][0]
+                               for sym in price_index
+                               if next_date in price_index[sym] and price_index[sym][next_date][0] > 0}
+
+                # ON-THE-FLY SCREENING: slice price data to signal_date
+                sliced_data = self._slice_to_date(full_data, price_index, date_str)
+                signals = screen_universe(config, sliced_data)
+
+                self._rebalance(portfolio, date_str, next_date, next_prices, signals, sector_map)
+                rebalance_count += 1
 
             # Mark to market
             portfolio.mark_to_market(date_str, day_prices)
 
-        # Close all remaining positions at last day
+        # Close all positions at end
         last_date = dates[-1]
-        last_prices = {sym: self._get_price(price_cache, sym, last_date) for sym in price_cache}
+        last_prices = {sym: price_index[sym][last_date][0]
+                       for sym in price_index
+                       if last_date in price_index[sym] and price_index[sym][last_date][0] > 0}
         for symbol in list(portfolio.positions):
             price = last_prices.get(symbol, 0.0)
             if price > 0:
@@ -92,12 +107,52 @@ class BacktestEngine:
         # Compute metrics
         bench_returns = self._benchmark_returns(benchmark_prices, dates)
         metrics = compute_metrics(portfolio.equity_curve, benchmark_returns=bench_returns)
-
-        # Compute trade-level stats
         trade_stats = self._trade_stats(portfolio.trades)
         metrics.update(trade_stats)
 
-        return self._build_result(start_date, end_date, metrics, portfolio, dates)
+        trade_pairs = self._build_trade_pairs(portfolio.trades)
+
+        print(f'[BT] Done: {rebalance_count} rebalances, {len(trade_pairs)} trades')
+
+        return {
+            'run_id': f"bt_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+            'strategy': config.name,
+            'strategy_description': config.description,
+            'period': {'start': start_date, 'end': end_date},
+            'params': {
+                'initial_cash': int(config.initial_cash),
+                'max_positions': config.max_positions,
+                'sector_limit': config.sector_limit,
+                'rebalance': config.rebalance,
+                'execution': 'next-open',
+                'stop_loss_pct': config.stop_loss_pct,
+                'commission': Portfolio.COMMISSION_RATE,
+                'slippage': Portfolio.SLIPPAGE_RATE,
+                'tax': Portfolio.TAX_RATE,
+            },
+            'rules': {
+                'min_tt_pass': config.min_tt_pass,
+                'rs_threshold': config.rs_threshold,
+                'require_ma50': config.require_ma50,
+                'require_close_gt_sma200': config.require_close_gt_sma200,
+                'require_volume_expansion': config.require_volume_expansion,
+                'require_near_52w_high': config.require_near_52w_high,
+                'require_volatility_contraction': config.require_volatility_contraction,
+                'require_20d_breakout': config.require_20d_breakout,
+                'sector_filter': config.sector_filter,
+                'top_sectors': config.top_sectors,
+                'stop_loss_pct': config.stop_loss_pct,
+            },
+            'metrics': metrics,
+            'equity_curve': portfolio.equity_curve,
+            'trades': trade_pairs,
+            'survivorship_bias_note': 'Includes all symbols present in ohlcv.db',
+            'lookback_check': 'PASSED',
+            'schema_version': '1.0',
+            'generated_at': datetime.now().isoformat(timespec='seconds'),
+            'trading_days': len(dates),
+            'rebalance_count': rebalance_count,
+        }
 
     def _rebalance(
         self,
@@ -105,94 +160,115 @@ class BacktestEngine:
         signal_date: str,
         exec_date: str,
         exec_prices: dict[str, float],
-        signal_root: Path,
+        signals: list[dict],
         sector_map: dict,
     ) -> None:
-        """Rebalance: sell exits, buy new leaders."""
-        # Read signals from signal_date
-        signals = self._read_signals(signal_root, signal_date)
-        if not signals:
-            return
+        config = self.strategy
+        top_symbols = {s['symbol'] for s in signals[:config.max_positions]}
 
-        top_sectors = {s.get('sector') for s in signals.get('sectors', [])[:5]}
-        top_stocks = signals.get('stocks', [])
-
-        # Sell: positions not in top sectors or top stocks
-        top_symbols = {s.get('symbol') for s in top_stocks[:self.max_positions]}
+        # Sell: positions not in new signal list
         for symbol in list(portfolio.positions):
-            pos = portfolio.positions[symbol]
-            sector = get_sector(symbol, sector_map)
             price = exec_prices.get(symbol, 0.0)
             if price <= 0:
                 continue
-            if sector not in top_sectors or symbol not in top_symbols:
+            if config.leader_exit and symbol not in top_symbols:
                 portfolio.sell(symbol, exec_date, price, reason='rebalance_exit')
 
-        # Buy: new top stocks not already held
+        # Buy: new top stocks
         sector_count: dict[str, int] = {}
         for pos in portfolio.positions.values():
             sector_count[pos.sector] = sector_count.get(pos.sector, 0) + 1
 
-        for stock in top_stocks:
-            symbol = stock.get('symbol', '')
+        for stock in signals:
+            symbol = stock['symbol']
             if symbol in portfolio.positions:
                 continue
             sector = get_sector(symbol, sector_map)
-            if sector_count.get(sector, 0) >= self.sector_limit:
+            if config.sector_limit > 0 and sector_count.get(sector, 0) >= config.sector_limit:
                 continue
             price = exec_prices.get(symbol, 0.0)
             if price <= 0:
                 continue
-            stop = price * (1.0 - self.stop_loss_pct)
+            stop = int(price * (1.0 - config.stop_loss_pct))
             if portfolio.buy(symbol, exec_date, price, sector=sector, stop=stop):
                 sector_count[sector] = sector_count.get(sector, 0) + 1
 
-    def _read_signals(self, signal_root: Path, date_str: str) -> dict:
-        d = signal_root / date_str
-        sectors_path = d / 'leader-sectors.json'
-        stocks_path = d / 'leader-stocks.json'
-        result: dict = {'sectors': [], 'stocks': []}
-        for key, path in [('sectors', sectors_path), ('stocks', stocks_path)]:
-            if path.exists():
-                try:
-                    data = json.loads(path.read_text(encoding='utf-8'))
-                    if isinstance(data, dict) and 'items' in data:
-                        result[key] = data['items']
-                    elif isinstance(data, list):
-                        result[key] = data
-                except json.JSONDecodeError:
-                    pass
-        return result
+    def _slice_to_date(
+        self,
+        full_data: dict[str, dict],
+        price_index: dict[str, dict],
+        as_of_date: str,
+    ) -> dict[str, dict]:
+        """Slice full price data to only include data up to as_of_date."""
+        sliced: dict[str, dict] = {}
+        for symbol, data in full_data.items():
+            closes = data.get('closes', [])
+            volumes = data.get('volumes', [])
+            dates_for_sym = sorted(price_index.get(symbol, {}).keys())
+            cutoff = 0
+            for i, d in enumerate(dates_for_sym):
+                if d <= as_of_date:
+                    cutoff = i + 1
+            if cutoff >= 200:
+                sliced[symbol] = {
+                    'closes': closes[:cutoff],
+                    'volumes': volumes[:cutoff],
+                }
+        return sliced
 
-    def _get_trading_dates(self, signal_root: Path, start: str, end: str) -> list[str]:
-        # Read dates from subdirectory names (YYYYMMDD folders), not CSV files
-        all_dates = sorted(
-            d.name for d in signal_root.iterdir()
-            if d.is_dir() and len(d.name) == 8 and d.name.isdigit()
-        )
-        # Filter to weekdays only (Mon=0 ~ Fri=4)
-        filtered = []
-        for d in all_dates:
-            if d < start or d > end:
-                continue
-            try:
-                dt = datetime.strptime(d, '%Y%m%d')
-                if dt.weekday() < 5:
-                    filtered.append(d)
-            except ValueError:
-                continue
-        return filtered
+    def _build_date_index(self, full_data: dict[str, dict]) -> dict[str, dict[str, tuple]]:
+        """Build {symbol: {date: (close, volume)}} from ohlcv_db batch data.
 
-    def _get_rebalance_dates(self, dates: list[str]) -> set[str]:
-        if self.rebalance == 'daily':
+        Note: ohlcv_db returns closes/volumes as parallel lists without dates.
+        We need to read dates from DB directly for indexing.
+        """
+        from sepa.data.ohlcv_db import _connect, DB_PATH
+        index: dict[str, dict[str, tuple]] = {}
+
+        conn = _connect(DB_PATH)
+        try:
+            rows = conn.execute(
+                'SELECT symbol, trade_date, close, volume FROM ohlcv ORDER BY symbol, trade_date'
+            ).fetchall()
+        finally:
+            conn.close()
+
+        for row in rows:
+            sym = row['symbol']
+            close = float(row['close'])
+            vol = int(row['volume'])
+            date = row['trade_date'].replace('-', '')
+            if close <= 0:
+                continue
+            if sym not in index:
+                index[sym] = {}
+            index[sym][date] = (close, vol)
+
+        return index
+
+    def _load_benchmark_prices(self) -> dict[str, float]:
+        path = market_index_path('KOSPI')
+        if not path.exists():
+            return {}
+        rows = read_price_series_from_path(path)
+        return {str(r.get('date', '')).replace('-', ''): r.get('close', 0.0) for r in rows if r.get('close', 0.0) > 0}
+
+    def _benchmark_returns(self, prices: dict[str, float], dates: list[str]) -> list[float]:
+        returns: list[float] = []
+        for i in range(1, len(dates)):
+            prev = prices.get(dates[i - 1], 0.0)
+            curr = prices.get(dates[i], 0.0)
+            returns.append(curr / prev - 1.0 if prev > 0 and curr > 0 else 0.0)
+        return returns
+
+    def _get_rebalance_dates(self, dates: list[str], freq: str) -> set[str]:
+        if freq == 'daily':
             return set(dates)
-        # Weekly: every Friday (or last trading day of the week)
         rebal: set[str] = set()
         for i, d in enumerate(dates):
             try:
                 dt = datetime.strptime(d, '%Y%m%d')
-                # Friday = 4
-                if dt.weekday() == 4:
+                if dt.weekday() == 4:  # Friday
                     rebal.add(d)
                 elif i + 1 < len(dates):
                     next_dt = datetime.strptime(dates[i + 1], '%Y%m%d')
@@ -202,52 +278,14 @@ class BacktestEngine:
                 continue
         return rebal
 
-    def _build_price_index(self, data_dir: Path, dates: list[str]) -> dict[str, dict[str, float]]:
-        """Build {symbol: {date: close}} index."""
-        index: dict[str, dict[str, float]] = {}
-        for path in sorted(data_dir.glob('*.csv')):
-            symbol = path.stem
-            rows = read_price_series_from_path(path)
-            price_by_date: dict[str, float] = {}
-            for row in rows:
-                d = str(row.get('date', '')).replace('-', '')
-                c = row.get('close', 0.0)
-                if d and c > 0:
-                    price_by_date[d] = c
-            if price_by_date:
-                index[symbol] = price_by_date
-        return index
-
-    def _get_price(self, cache: dict[str, dict[str, float]], symbol: str, date_str: str) -> float:
-        return cache.get(symbol, {}).get(date_str, 0.0)
-
-    def _load_benchmark_prices(self, dates: list[str]) -> dict[str, float]:
-        path = market_index_path('KOSPI')
-        if not path.exists():
-            return {}
-        rows = read_price_series_from_path(path)
-        result: dict[str, float] = {}
-        for row in rows:
-            d = str(row.get('date', '')).replace('-', '')
-            c = row.get('close', 0.0)
-            if d and c > 0:
-                result[d] = c
-        return result
-
-    def _benchmark_returns(self, prices: dict[str, float], dates: list[str]) -> list[float]:
-        returns: list[float] = []
-        for i in range(1, len(dates)):
-            prev = prices.get(dates[i - 1], 0.0)
-            curr = prices.get(dates[i], 0.0)
-            if prev > 0 and curr > 0:
-                returns.append(curr / prev - 1.0)
-            else:
-                returns.append(0.0)
-        return returns
+    @staticmethod
+    def _is_weekday(date_str: str) -> bool:
+        try:
+            return datetime.strptime(date_str, '%Y%m%d').weekday() < 5
+        except ValueError:
+            return False
 
     def _build_trade_pairs(self, trades: list) -> list[dict]:
-        """Match buy/sell trades into pairs for reporting."""
-        from sepa.data.universe import get_symbol_name
         buy_map: dict[str, dict] = {}
         pairs: list[dict] = []
         for t in trades:
@@ -272,17 +310,15 @@ class BacktestEngine:
         return pairs
 
     def _trade_stats(self, trades: list) -> dict:
-        buys = [t for t in trades if t.side == 'buy']
         sells = [t for t in trades if t.side == 'sell']
-        pairs: list[float] = []
         buy_map: dict[str, float] = {}
+        pairs: list[float] = []
         for t in trades:
             if t.side == 'buy':
                 buy_map[t.symbol] = t.price
             elif t.side == 'sell' and t.symbol in buy_map:
                 pnl_pct = (t.price / buy_map.pop(t.symbol) - 1.0) if buy_map.get(t.symbol, 0) > 0 else 0.0
                 pairs.append(pnl_pct)
-
         wins = [p for p in pairs if p > 0]
         losses = [p for p in pairs if p <= 0]
         return {
@@ -291,33 +327,4 @@ class BacktestEngine:
             'avg_win_pct': round(sum(wins) / len(wins) * 100, 2) if wins else 0.0,
             'avg_loss_pct': round(sum(losses) / len(losses) * 100, 2) if losses else 0.0,
             'stop_loss_exits': sum(1 for t in sells if t.reason == 'stop_loss'),
-        }
-
-    def _build_result(self, start: str, end: str, metrics: dict, portfolio: Portfolio, dates: list[str]) -> dict:
-        # Build trade pairs for detailed reporting
-        trade_pairs = self._build_trade_pairs(portfolio.trades)
-
-        return {
-            'run_id': f"bt_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
-            'strategy': 'LeaderSectorStock_v1',
-            'period': {'start': start, 'end': end},
-            'params': {
-                'initial_cash': int(self.initial_cash),
-                'max_positions': self.max_positions,
-                'sector_limit': self.sector_limit,
-                'rebalance': self.rebalance,
-                'execution': self.execution,
-                'stop_loss_pct': self.stop_loss_pct,
-                'commission': Portfolio.COMMISSION_RATE,
-                'slippage': Portfolio.SLIPPAGE_RATE,
-                'tax': Portfolio.TAX_RATE,
-            },
-            'metrics': metrics,
-            'equity_curve': portfolio.equity_curve,
-            'trades': trade_pairs,
-            'survivorship_bias_note': 'Includes all symbols present in signal files; delisted stocks not separately tracked',
-            'lookback_check': 'PASSED' if self.execution == 'next-open' else 'WARNING',
-            'schema_version': '1.0',
-            'generated_at': datetime.now().isoformat(timespec='seconds'),
-            'trading_days': len(dates),
         }

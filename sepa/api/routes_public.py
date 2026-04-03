@@ -209,66 +209,84 @@ def sector_members(sector: str, date_dir: str | None = None) -> dict:
     return sector_members_payload(sector=sector, date_dir=date_dir)
 
 
+@router.get('/api/backtest/presets')
+def backtest_presets() -> dict:
+    from sepa.backtest.presets import list_presets
+    return {'items': list_presets()}
+
+
 @router.get('/api/backtest/run')
 def backtest_run(
     start: str = '20251112',
     end: str = '20260402',
+    preset: str | None = None,
     initial_cash: float = 100_000_000,
     max_positions: int = 10,
     sector_limit: int = 3,
     top_sectors: int = 5,
     rebalance: str = 'weekly',
     stop_loss_pct: float = 0.075,
-    execution: str = 'next-open',
     commission: float = 0.00015,
     slippage: float = 0.001,
     tax: float = 0.0018,
     alpha_min_tt: int = 5,
     alpha_rs_threshold: float = 70.0,
     require_ma50: int = 1,
+    require_sma200: int = 1,
     sector_filter: int = 1,
     sector_exit: int = 1,
     leader_exit: int = 1,
+    require_volume_expansion: int = 0,
+    min_volume_ratio: float = 1.5,
+    require_near_52w_high: int = 0,
+    near_52w_threshold: float = 0.85,
+    require_volatility_contraction: int = 0,
+    require_20d_breakout: int = 0,
 ) -> dict:
     from sepa.backtest.engine import BacktestEngine
     from sepa.backtest.portfolio import Portfolio
+    from sepa.backtest.presets import get_preset
     from sepa.backtest.report import save_result
+    from sepa.backtest.strategy import StrategyConfig
 
     # Apply cost overrides
     Portfolio.COMMISSION_RATE = commission
     Portfolio.SLIPPAGE_RATE = slippage
     Portfolio.TAX_RATE = tax
 
-    engine = BacktestEngine(
-        initial_cash=initial_cash,
-        max_positions=max_positions,
-        sector_limit=sector_limit,
-        rebalance=rebalance,
-        execution=execution,
-        stop_loss_pct=stop_loss_pct,
-    )
-    # Pass rule config to engine
-    engine.top_sectors = top_sectors
-    engine.alpha_min_tt = alpha_min_tt
-    engine.alpha_rs_threshold = alpha_rs_threshold
-    engine.require_ma50 = bool(require_ma50)
-    engine.sector_filter = bool(sector_filter)
-    engine.sector_exit = bool(sector_exit)
-    engine.leader_exit = bool(leader_exit)
+    # Build strategy config
+    if preset:
+        config = get_preset(preset)
+        if not config:
+            return {'error': f'Unknown preset: {preset}'}
+        # Override cash/dates
+        config.initial_cash = int(initial_cash)
+    else:
+        config = StrategyConfig(
+            name='Custom',
+            initial_cash=int(initial_cash),
+            max_positions=max_positions,
+            sector_limit=sector_limit,
+            top_sectors=top_sectors,
+            rebalance=rebalance,
+            stop_loss_pct=stop_loss_pct,
+            min_tt_pass=alpha_min_tt,
+            rs_threshold=alpha_rs_threshold,
+            require_ma50=bool(require_ma50),
+            require_close_gt_sma200=bool(require_sma200),
+            sector_filter=bool(sector_filter),
+            sector_exit=bool(sector_exit),
+            leader_exit=bool(leader_exit),
+            require_volume_expansion=bool(require_volume_expansion),
+            min_volume_ratio=min_volume_ratio,
+            require_near_52w_high=bool(require_near_52w_high),
+            near_52w_threshold=near_52w_threshold,
+            require_volatility_contraction=bool(require_volatility_contraction),
+            require_20d_breakout=bool(require_20d_breakout),
+        )
 
+    engine = BacktestEngine(strategy=config)
     result = engine.run(start, end)
-
-    # Add applied rules to result
-    result['rules'] = {
-        'alpha_min_tt': alpha_min_tt,
-        'alpha_rs_threshold': alpha_rs_threshold,
-        'require_ma50': bool(require_ma50),
-        'sector_filter': bool(sector_filter),
-        'top_sectors': top_sectors,
-        'sector_exit': bool(sector_exit),
-        'leader_exit': bool(leader_exit),
-        'stop_loss_pct': stop_loss_pct,
-    }
 
     if 'error' not in result:
         save_result(result)
