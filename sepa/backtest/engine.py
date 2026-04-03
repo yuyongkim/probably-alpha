@@ -74,24 +74,40 @@ class BacktestEngine:
             if not day_prices:
                 continue
 
-            # Check stops
+            # 1) Check stops — 손절 발동된 종목 즉시 청산
             portfolio.check_stops(date_str, day_prices)
 
-            # Rebalance: screen universe on signal_date, execute on next trading day
-            if date_str in rebalance_dates and i + 1 < len(dates):
+            # 2) Exit check — 시그널 이탈 종목 청산 (리밸런싱 날에만)
+            is_rebalance = date_str in rebalance_dates
+            if is_rebalance and config.leader_exit and i + 1 < len(dates):
+                sliced_data = self._slice_to_date(full_data, price_index, date_str)
+                signals = screen_universe(config, sliced_data)
+                signal_symbols = {s['symbol'] for s in signals[:config.max_positions]}
+                next_date = dates[i + 1]
+                next_prices = {sym: price_index[sym][next_date][0]
+                               for sym in price_index
+                               if next_date in price_index[sym] and price_index[sym][next_date][0] > 0}
+                for symbol in list(portfolio.positions):
+                    if symbol not in signal_symbols:
+                        price = next_prices.get(symbol, 0.0)
+                        if price > 0:
+                            portfolio.sell(symbol, next_date, price, reason='rebalance_exit')
+
+            # 3) Daily entry — 빈 자리가 있으면 매일 신규 매수
+            if i + 1 < len(dates) and len(portfolio.positions) < config.max_positions:
+                if not is_rebalance:
+                    sliced_data = self._slice_to_date(full_data, price_index, date_str)
+                    signals = screen_universe(config, sliced_data)
+
                 next_date = dates[i + 1]
                 next_prices = {sym: price_index[sym][next_date][0]
                                for sym in price_index
                                if next_date in price_index[sym] and price_index[sym][next_date][0] > 0}
 
-                # ON-THE-FLY SCREENING: slice price data to signal_date
-                sliced_data = self._slice_to_date(full_data, price_index, date_str)
-                signals = screen_universe(config, sliced_data)
-
-                self._rebalance(portfolio, date_str, next_date, next_prices, signals, sector_map)
+                self._fill_positions(portfolio, next_date, next_prices, signals, sector_map)
                 rebalance_count += 1
 
-            # Mark to market
+            # 4) Mark to market
             portfolio.mark_to_market(date_str, day_prices)
 
         # Close all positions at end
@@ -154,32 +170,23 @@ class BacktestEngine:
             'rebalance_count': rebalance_count,
         }
 
-    def _rebalance(
+    def _fill_positions(
         self,
         portfolio: Portfolio,
-        signal_date: str,
         exec_date: str,
         exec_prices: dict[str, float],
         signals: list[dict],
         sector_map: dict,
     ) -> None:
+        """Fill empty slots with top-scored stocks from today's screening."""
         config = self.strategy
-        top_symbols = {s['symbol'] for s in signals[:config.max_positions]}
-
-        # Sell: positions not in new signal list
-        for symbol in list(portfolio.positions):
-            price = exec_prices.get(symbol, 0.0)
-            if price <= 0:
-                continue
-            if config.leader_exit and symbol not in top_symbols:
-                portfolio.sell(symbol, exec_date, price, reason='rebalance_exit')
-
-        # Buy: new top stocks
         sector_count: dict[str, int] = {}
         for pos in portfolio.positions.values():
             sector_count[pos.sector] = sector_count.get(pos.sector, 0) + 1
 
         for stock in signals:
+            if len(portfolio.positions) >= config.max_positions:
+                break
             symbol = stock['symbol']
             if symbol in portfolio.positions:
                 continue

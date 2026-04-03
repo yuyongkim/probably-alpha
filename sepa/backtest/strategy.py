@@ -41,7 +41,7 @@ class StrategyConfig:
 
     # Portfolio / Risk
     initial_cash: int = 100_000_000
-    max_positions: int = 10
+    max_positions: int = 5
     stop_loss_pct: float = 0.075   # 손절 비율
     rebalance: str = 'weekly'      # weekly or daily
 

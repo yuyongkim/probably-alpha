@@ -9,13 +9,12 @@ from sepa.backtest.strategy import StrategyConfig
 PRESETS: dict[str, StrategyConfig] = {
     'minervini': StrategyConfig(
         name='Minervini SEPA',
-        description='Trend Template 8조건 + VCP 수축 + RS 상위. SEPA의 핵심 전략.',
+        description='Trend Template 5/8 + RS 상위. SEPA의 핵심 전략.',
         family='growth_momentum',
         min_tt_pass=5, rs_threshold=70.0,
         require_ma50=True, require_close_gt_sma200=True,
-        require_volatility_contraction=True,
         require_near_52w_high=True, near_52w_threshold=0.75,
-        max_positions=10, stop_loss_pct=0.075, sector_limit=3,
+        max_positions=5, stop_loss_pct=0.075, sector_limit=2,
         rebalance='weekly',
     ),
     'oneil': StrategyConfig(
@@ -26,7 +25,7 @@ PRESETS: dict[str, StrategyConfig] = {
         require_ma50=True, require_close_gt_sma200=True,
         require_volume_expansion=True, min_volume_ratio=1.5,
         require_near_52w_high=True, near_52w_threshold=0.85,
-        max_positions=8, stop_loss_pct=0.07, sector_limit=2, top_sectors=3,
+        max_positions=4, stop_loss_pct=0.07, sector_limit=2, top_sectors=3,
         rebalance='weekly',
     ),
     'dennis': StrategyConfig(
@@ -38,7 +37,7 @@ PRESETS: dict[str, StrategyConfig] = {
         require_20d_breakout=True,
         require_volume_expansion=True, min_volume_ratio=1.3,
         sector_filter=False,
-        max_positions=15, stop_loss_pct=0.08,
+        max_positions=5, stop_loss_pct=0.08,
         rebalance='weekly',
     ),
     'seykota': StrategyConfig(
@@ -48,17 +47,17 @@ PRESETS: dict[str, StrategyConfig] = {
         min_tt_pass=7, rs_threshold=60.0,
         require_ma50=True, require_close_gt_sma200=True,
         sector_filter=False,
-        max_positions=15, stop_loss_pct=0.08,
+        max_positions=4, stop_loss_pct=0.08,
         rebalance='weekly',
     ),
     'hite': StrategyConfig(
         name='Hite 1% 리스크 룰',
-        description='한 종목당 최대 손실 1%. 작게 잃고, 크게 벌기. 극도로 분산.',
+        description='한 종목당 최대 손실 1%. 작게 잃고, 크게 벌기.',
         family='trend_following',
         min_tt_pass=5, rs_threshold=50.0,
         require_ma50=True, require_close_gt_sma200=False,
         sector_filter=True, top_sectors=10, sector_limit=2,
-        max_positions=20, stop_loss_pct=0.05,
+        max_positions=5, stop_loss_pct=0.05,
         rebalance='weekly',
     ),
     'jones': StrategyConfig(
@@ -67,7 +66,7 @@ PRESETS: dict[str, StrategyConfig] = {
         family='trend_following',
         min_tt_pass=6, rs_threshold=60.0,
         require_ma50=True, require_close_gt_sma200=True,
-        max_positions=8, stop_loss_pct=0.06,
+        max_positions=4, stop_loss_pct=0.06,
         rebalance='weekly',
     ),
     'driehaus': StrategyConfig(
@@ -79,7 +78,7 @@ PRESETS: dict[str, StrategyConfig] = {
         require_volume_expansion=True, min_volume_ratio=1.5,
         require_near_52w_high=True, near_52w_threshold=0.90,
         sector_filter=True, top_sectors=3, sector_limit=2,
-        max_positions=5, stop_loss_pct=0.10,
+        max_positions=3, stop_loss_pct=0.10,
         rebalance='weekly',
     ),
     'schwartz': StrategyConfig(
@@ -90,7 +89,7 @@ PRESETS: dict[str, StrategyConfig] = {
         require_ma50=True, require_close_gt_sma200=False,
         require_volatility_contraction=True,
         sector_filter=False,
-        max_positions=10, stop_loss_pct=0.05,
+        max_positions=5, stop_loss_pct=0.05,
         rebalance='daily',
     ),
     'raschke': StrategyConfig(
@@ -101,7 +100,7 @@ PRESETS: dict[str, StrategyConfig] = {
         require_ma50=True, require_close_gt_sma200=False,
         require_volatility_contraction=True,
         sector_filter=False,
-        max_positions=10, stop_loss_pct=0.04,
+        max_positions=5, stop_loss_pct=0.04,
         rebalance='daily',
     ),
     'weinstein': StrategyConfig(
@@ -112,7 +111,7 @@ PRESETS: dict[str, StrategyConfig] = {
         require_ma50=True, require_close_gt_sma200=True,
         require_near_52w_high=True, near_52w_threshold=0.80,
         require_volume_expansion=True, min_volume_ratio=1.2,
-        max_positions=10, stop_loss_pct=0.08,
+        max_positions=5, stop_loss_pct=0.08,
         rebalance='weekly',
     ),
 }
