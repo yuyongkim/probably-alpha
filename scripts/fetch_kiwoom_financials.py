@@ -132,6 +132,14 @@ def _insert_financials(conn: sqlite3.Connection, symbol: str, info: dict, period
 
 
 def main() -> None:
+    import argparse
+    parser = argparse.ArgumentParser(description='Fetch Kiwoom ka10001 financials')
+    parser.add_argument('--limit', type=int, default=0, help='Max stocks to fetch (0=all)')
+    parser.add_argument('--skip', type=int, default=0, help='Skip first N stocks (for resume)')
+    parser.add_argument('--delay', type=float, default=1.0, help='Seconds between API calls')
+    parser.add_argument('--max-errors', type=int, default=10, help='Stop after N consecutive errors')
+    args = parser.parse_args()
+
     if not DB_PATH.exists():
         print(f'ERROR: Database not found at {DB_PATH}')
         sys.exit(1)
@@ -140,10 +148,13 @@ def main() -> None:
     _ensure_columns(conn)
     _ensure_financials_table(conn)
 
-    symbols = _get_all_symbols(conn)
+    all_symbols = _get_all_symbols(conn)
+    symbols = all_symbols[args.skip:]
+    if args.limit > 0:
+        symbols = symbols[:args.limit]
     total = len(symbols)
-    print(f'Found {total} symbols in symbol_meta')
-    print(f'Estimated time: {total * 0.25 / 60:.1f} minutes')
+    print(f'Target: {total} symbols (skip={args.skip}, limit={args.limit or "all"})')
+    print(f'Delay: {args.delay}s/call, estimated: {total * args.delay / 60:.1f} min')
     print()
 
     provider = KiwoomProvider()
@@ -158,10 +169,23 @@ def main() -> None:
     success_count = 0
     skip_count = 0
     error_count = 0
+    consecutive_errors = 0
     start_time = time.time()
 
     for i, symbol in enumerate(symbols):
-        info = provider.fetch_stock_info(symbol)
+        try:
+            info = provider.fetch_stock_info(symbol)
+        except Exception as e:
+            print(f'  ERROR {symbol}: {e}')
+            error_count += 1
+            consecutive_errors += 1
+            if consecutive_errors >= args.max_errors:
+                print(f'\n  STOPPED: {args.max_errors} consecutive errors. Resume with --skip {args.skip + i}')
+                break
+            time.sleep(args.delay * 3)  # Extra delay on error
+            continue
+
+        consecutive_errors = 0  # Reset on success
 
         if not info:
             skip_count += 1
@@ -170,20 +194,19 @@ def main() -> None:
             _insert_financials(conn, symbol, info, current_year)
             success_count += 1
 
-        # Commit every 100 stocks
-        if (i + 1) % 100 == 0:
+        # Commit every 50 stocks
+        if (i + 1) % 50 == 0:
             conn.commit()
             elapsed = time.time() - start_time
             rate = (i + 1) / elapsed if elapsed > 0 else 0
             remaining = (total - i - 1) / rate if rate > 0 else 0
             print(
-                f'  [{i + 1}/{total}] '
+                f'  [{args.skip + i + 1}/{len(all_symbols)}] '
                 f'ok={success_count} skip={skip_count} err={error_count} '
                 f'elapsed={elapsed:.0f}s remaining~{remaining:.0f}s'
             )
 
-        # Rate limit: 1 call/sec (safe for Kiwoom API)
-        time.sleep(1.0)
+        time.sleep(args.delay)
 
     conn.commit()
     conn.close()
