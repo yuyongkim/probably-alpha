@@ -108,7 +108,7 @@ function renderTopStocks() {
   el.innerHTML = results.slice(0, 30).map((r, i) => `
     <tr>
       <td>${i + 1}</td>
-      <td><strong>${esc(r.symbol)}</strong></td>
+      <td><strong>${esc(r.name || r.symbol)}</strong><br><small style="color:var(--muted)">${esc(r.symbol)}</small></td>
       <td><span class="score ${r.strategies_passed >= 5 ? 'good' : r.strategies_passed >= 2 ? 'mid' : 'bad'}">${r.strategies_passed} / ${r.strategies_total}</span></td>
       <td>${r.best_score.toFixed(1)}</td>
       <td>${r.avg_score.toFixed ? r.avg_score.toFixed(1) : r.avg_score}</td>
@@ -165,7 +165,7 @@ function showStrategyDetail(stratName) {
     rowsEl.innerHTML = matches.map((m, i) => `
       <tr>
         <td>${i + 1}</td>
-        <td><strong>${esc(m.symbol)}</strong></td>
+        <td><strong>${esc(m.name || m.symbol)}</strong><br><small style="color:var(--muted)">${esc(m.symbol)}</small></td>
         <td><span class="score ${m.score >= 80 ? 'good' : m.score >= 50 ? 'mid' : 'bad'}">${m.score.toFixed(1)}</span></td>
         <td>${m.conditions_met} / ${m.conditions_total}</td>
         <td>
@@ -204,7 +204,9 @@ async function loadData() {
       fetchJSON(`${apiBase()}/api/wizards/screen`).catch(() => ({ items: [] })),
     ]);
     state.strategies = strats.items || strats;
-    state.screenData = screen.items || screen;
+    // Unwrap: API returns {date_dir, items: {results, ...}} or direct {results, ...}
+    const raw = screen.items || screen;
+    state.screenData = (raw && raw.results) ? raw : screen;
   } catch (e) {
     console.error('Wizard screener load error:', e);
     state.strategies = [];

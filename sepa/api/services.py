@@ -91,7 +91,11 @@ def resolve_backfill_window(
 def read_json(path: Path):
     if not path.exists():
         raise HTTPException(status_code=404, detail=f'missing file: {path.name}')
-    return json.loads(path.read_text(encoding='utf-8'))
+    data = json.loads(path.read_text(encoding='utf-8'))
+    # Unwrap envelope: if data has schema_version + items, return the inner content
+    if isinstance(data, dict) and 'schema_version' in data and 'items' in data:
+        return data['items']
+    return data
 
 
 def decorate_payload(payload):
