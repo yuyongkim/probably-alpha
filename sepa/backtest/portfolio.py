@@ -68,10 +68,10 @@ class Portfolio:
         if qty <= 0:
             return False
 
-        total_cost = qty * cost_per_share
+        total_cost = int(qty * cost_per_share)
         if total_cost > self.cash:
             qty = int(self.cash / cost_per_share)
-            total_cost = qty * cost_per_share
+            total_cost = int(qty * cost_per_share)
         if qty <= 0:
             return False
 
@@ -104,8 +104,8 @@ class Portfolio:
         tax = gross * self.TAX_RATE
         net = gross - commission - tax
 
-        self.cash += net
-        pnl = net - (pos.qty * pos.entry_price * (1.0 + self.SLIPPAGE_RATE) * (1.0 + self.COMMISSION_RATE))
+        self.cash += int(net)
+        pnl = int(net) - int(pos.qty * pos.entry_price * (1.0 + self.SLIPPAGE_RATE) * (1.0 + self.COMMISSION_RATE))
 
         self.trades.append(Trade(
             symbol=symbol, side='sell', date=date_str,
@@ -119,12 +119,12 @@ class Portfolio:
             pos.qty * prices.get(pos.symbol, pos.entry_price)
             for pos in self.positions.values()
         )
-        equity = self.cash + positions_value
+        equity = int(self.cash + positions_value)
         self.equity_curve.append({
             'date': date_str,
-            'equity': round(equity, 2),
-            'cash': round(self.cash, 2),
-            'positions_value': round(positions_value, 2),
+            'equity': equity,
+            'cash': int(self.cash),
+            'positions_value': int(positions_value),
             'num_positions': len(self.positions),
         })
         return equity

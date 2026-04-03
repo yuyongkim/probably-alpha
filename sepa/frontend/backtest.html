@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#060e18" />
+  <meta name="color-scheme" content="dark" />
+  <title>백테스트 — SEPA</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <section class="control-band">
+    <header class="page-header">
+      <div class="hero-copy">
+        <p class="eyebrow">SEPA / 백테스트</p>
+        <h1>주도섹터·주도주 로테이션 백테스트</h1>
+        <p class="lead">리더 섹터/리더 종목 전략의 과거 성과를 검증합니다.</p>
+      </div>
+      <div class="toolbar">
+        <input id="apiBase" value="http://127.0.0.1:8000" aria-label="API Base URL" />
+      </div>
+    </header>
+    <nav class="page-nav">
+      <a class="nav-link" href="./index.html">커맨드 센터</a>
+      <a class="nav-link" href="./wizard-screener.html">전략 스크리너</a>
+      <a class="nav-link is-active" href="./backtest.html">백테스트</a>
+    </nav>
+  </section>
+
+  <!-- Parameters -->
+  <section class="section-shell">
+    <div class="section-header">
+      <div>
+        <p class="section-kicker">설정</p>
+        <h2>백테스트 파라미터</h2>
+      </div>
+    </div>
+    <article class="panel" style="padding:20px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;align-items:end">
+        <div>
+          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:4px">시작일</label>
+          <input id="btStart" type="text" value="20251112" style="width:100%;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text)" />
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:4px">종료일</label>
+          <input id="btEnd" type="text" value="20260402" style="width:100%;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text)" />
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:4px">최대 종목 수</label>
+          <input id="btMaxPos" type="number" value="10" min="1" max="30" style="width:100%;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text)" />
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:4px">섹터당 최대</label>
+          <input id="btSectorLimit" type="number" value="3" min="1" max="10" style="width:100%;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text)" />
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:4px">리밸런싱</label>
+          <select id="btRebalance" style="width:100%;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text)">
+            <option value="weekly">주간 (금요일)</option>
+            <option value="daily">일간</option>
+          </select>
+        </div>
+        <div>
+          <button id="btnRunBacktest" style="width:100%;padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600">백테스트 실행</button>
+        </div>
+      </div>
+      <p id="btStatus" style="margin-top:12px;color:var(--muted);font-size:13px"></p>
+    </article>
+  </section>
+
+  <!-- Results -->
+  <section class="section-shell" id="resultSection" style="display:none">
+    <div class="section-header">
+      <div>
+        <p class="section-kicker">결과</p>
+        <h2 id="resultTitle">백테스트 결과</h2>
+      </div>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpi-strip">
+      <article class="kpi-card"><label>CAGR</label><strong id="kCagr">-</strong><p>연환산 수익률</p></article>
+      <article class="kpi-card"><label>총 수익률</label><strong id="kTotal">-</strong><p>전체 기간</p></article>
+      <article class="kpi-card"><label>샤프</label><strong id="kSharpe">-</strong><p>위험 대비 수익</p></article>
+      <article class="kpi-card"><label>최대 낙폭</label><strong id="kMDD">-</strong><p>MDD</p></article>
+      <article class="kpi-card"><label>승률</label><strong id="kWinRate">-</strong><p>수익 거래 비율</p></article>
+      <article class="kpi-card"><label>총 거래</label><strong id="kTrades">-</strong><p>매수+매도</p></article>
+    </div>
+
+    <!-- Detail Table -->
+    <article class="panel" style="margin-top:16px">
+      <div class="panel-head">
+        <div><h3>상세 지표</h3></div>
+      </div>
+      <table>
+        <thead>
+          <tr><th>지표</th><th>값</th><th>설명</th></tr>
+        </thead>
+        <tbody id="metricsRows"></tbody>
+      </table>
+    </article>
+
+    <!-- Params -->
+    <article class="panel" style="margin-top:16px">
+      <div class="panel-head">
+        <div><h3>실행 파라미터</h3></div>
+      </div>
+      <table>
+        <thead>
+          <tr><th>파라미터</th><th>값</th></tr>
+        </thead>
+        <tbody id="paramsRows"></tbody>
+      </table>
+    </article>
+  </section>
+
+  <script type="module">
+    const $ = id => document.getElementById(id);
+    const api = () => ($('apiBase')?.value || 'http://127.0.0.1:8000').replace(/\/+$/, '');
+
+    function pct(v) { return v != null ? (v * 100).toFixed(1) + '%' : '-'; }
+    function num(v) { return v != null ? Number(v).toLocaleString('ko-KR') : '-'; }
+    function fixed(v, d=2) { return v != null ? Number(v).toFixed(d) : '-'; }
+
+    $('btnRunBacktest').addEventListener('click', async () => {
+      const status = $('btStatus');
+      status.textContent = '백테스트 실행 중... (수 분 소요될 수 있습니다)';
+      status.style.color = 'var(--accent)';
+      $('btnRunBacktest').disabled = true;
+      $('resultSection').style.display = 'none';
+
+      try {
+        const params = new URLSearchParams({
+          start: $('btStart').value,
+          end: $('btEnd').value,
+          max_positions: $('btMaxPos').value,
+          sector_limit: $('btSectorLimit').value,
+          rebalance: $('btRebalance').value,
+        });
+        const resp = await fetch(`${api()}/api/backtest/run?${params}`);
+        const result = await resp.json();
+
+        if (result.error) {
+          status.textContent = `오류: ${result.error}`;
+          status.style.color = '#ff6b6b';
+          return;
+        }
+
+        renderResult(result);
+        status.textContent = `완료: ${result.run_id} (${result.trading_days || 0}거래일)`;
+        status.style.color = '#6ee7a8';
+      } catch (e) {
+        status.textContent = `실행 실패: ${e.message}`;
+        status.style.color = '#ff6b6b';
+      } finally {
+        $('btnRunBacktest').disabled = false;
+      }
+    });
+
+    function renderResult(r) {
+      const m = r.metrics || {};
+      const p = r.params || {};
+      const period = r.period || {};
+      const bench = m.benchmark || {};
+
+      $('resultSection').style.display = '';
+      $('resultTitle').textContent = `${r.strategy || '?'} — ${period.start || '?'} ~ ${period.end || '?'}`;
+
+      $('kCagr').textContent = pct(m.cagr);
+      $('kTotal').textContent = pct(m.total_return);
+      $('kSharpe').textContent = fixed(m.sharpe);
+      $('kMDD').textContent = pct(m.max_drawdown);
+      $('kWinRate').textContent = pct(m.trade_win_rate ?? m.win_rate);
+      $('kTrades').textContent = num(m.total_trades);
+
+      const metrics = [
+        ['CAGR', pct(m.cagr), '연환산 복리 수익률'],
+        ['총 수익률', pct(m.total_return), '전체 기간 수익률'],
+        ['샤프 비율', fixed(m.sharpe), '(수익률-무위험)/변동성'],
+        ['소르티노', fixed(m.sortino), '하방 변동성만 사용'],
+        ['최대 낙폭(MDD)', pct(m.max_drawdown), '최대 고점 대비 하락'],
+        ['MDD 지속일', num(m.mdd_duration_days) + '일', '최대 낙폭 지속 기간'],
+        ['변동성', pct(m.volatility), '연환산 변동성'],
+        ['승률(일간)', pct(m.win_rate), '일간 수익일 비율'],
+        ['승률(거래)', pct(m.trade_win_rate), '수익 거래 비율'],
+        ['평균 수익', fixed(m.avg_win_pct) + '%', '수익 거래 평균 수익률'],
+        ['평균 손실', fixed(m.avg_loss_pct) + '%', '손실 거래 평균 손실률'],
+        ['손절 횟수', num(m.stop_loss_exits), '스탑로스 발동 횟수'],
+        ['총 거래 수', num(m.total_trades), '매수+매도 쌍'],
+        ['거래일 수', num(r.trading_days), '백테스트 기간 거래일'],
+      ];
+      if (bench.cagr != null) {
+        metrics.push(['벤치마크 CAGR', pct(bench.cagr), 'KOSPI 연환산 수익률']);
+        metrics.push(['알파', pct(bench.alpha), '벤치마크 대비 초과 수익']);
+        metrics.push(['베타', fixed(bench.beta), '시장 민감도']);
+      }
+      $('metricsRows').innerHTML = metrics.map(([k, v, d]) =>
+        `<tr><td>${k}</td><td><strong>${v}</strong></td><td style="color:var(--muted)">${d}</td></tr>`
+      ).join('');
+
+      const paramsList = [
+        ['초기 자금', num(p.initial_cash) + '원'],
+        ['최대 종목 수', num(p.max_positions)],
+        ['섹터당 최대', num(p.sector_limit)],
+        ['리밸런싱', p.rebalance === 'weekly' ? '주간 (금요일)' : '일간'],
+        ['체결 방식', p.execution],
+        ['손절 비율', pct(p.stop_loss_pct)],
+        ['수수료', pct(p.commission)],
+        ['슬리피지', pct(p.slippage)],
+        ['거래세', pct(p.tax)],
+      ];
+      $('paramsRows').innerHTML = paramsList.map(([k, v]) =>
+        `<tr><td>${k}</td><td>${v}</td></tr>`
+      ).join('');
+
+      $('resultSection').scrollIntoView({ behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>

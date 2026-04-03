@@ -209,6 +209,43 @@ def sector_members(sector: str, date_dir: str | None = None) -> dict:
     return sector_members_payload(sector=sector, date_dir=date_dir)
 
 
+@router.get('/api/backtest/run')
+def backtest_run(start: str = '20251112', end: str = '20260402', max_positions: int = 10, sector_limit: int = 3, rebalance: str = 'weekly') -> dict:
+    from sepa.backtest.engine import BacktestEngine
+    from sepa.backtest.report import save_result
+    engine = BacktestEngine(
+        max_positions=max_positions,
+        sector_limit=sector_limit,
+        rebalance=rebalance,
+    )
+    result = engine.run(start, end)
+    if 'error' not in result:
+        save_result(result)
+    return result
+
+
+@router.get('/api/backtest/results')
+def backtest_results() -> dict:
+    import json
+    from pathlib import Path
+    out_dir = Path('.omx/artifacts/backtest')
+    if not out_dir.exists():
+        return {'items': []}
+    results = []
+    for f in sorted(out_dir.glob('bt_*.json'), reverse=True)[:10]:
+        try:
+            data = json.loads(f.read_text(encoding='utf-8'))
+            results.append({
+                'run_id': data.get('run_id'),
+                'strategy': data.get('strategy'),
+                'period': data.get('period'),
+                'metrics': data.get('metrics'),
+            })
+        except Exception:
+            continue
+    return {'items': results}
+
+
 @router.get('/api/wizards/strategies')
 def wizard_strategies() -> dict:
     from sepa.wizards import WizardScreener
