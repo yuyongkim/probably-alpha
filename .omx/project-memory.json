@@ -1,0 +1,19 @@
+{
+  "notes": [
+    {
+      "category": "env",
+      "content": "SEPA env loading now checks Desktop/QuantDB/.env and Desktop/QuantDB/mvp_platform/.env before repo-local .env. Current QuantDB mvp_platform .env contains KIWOOM_APP_KEY/KIWOOM_SECRET_KEY but not KIWOOM_TOKEN_URL/KIWOOM_OHLCV_URL, so live OHLCV falls back to yfinance unless those endpoint vars are added.",
+      "timestamp": "2026-03-11T11:58:44.046Z"
+    },
+    {
+      "category": "architecture",
+      "content": "Refresh pipeline now prefers cached local OHLCV first, then QuantDB prices, then live fetch. QuantDB mvp backup DB currently provides only 65 daily rows for 005930.KS/000660.KS/051910.KS, so it supplements but does not replace long-history live/yfinance backfill yet.",
+      "timestamp": "2026-03-11T12:07:23.184Z"
+    },
+    {
+      "category": "build",
+      "content": "BetaChartist thresholds are now configurable via SEPA_BETA_MIN_CONFIDENCE and SEPA_BETA_MAX_CONSISTENCY, defaulting to 1.8 and 1.9 (relaxed from previous implicit 2.0/1.4). 2026-03-11 pipeline output changed from beta=0 gamma=0 delta=0 picks=0 to beta=3 gamma=3 delta=3 picks=3 while recommendations stayed at 2 due sector_leadership_ready gate.",
+      "timestamp": "2026-03-11T12:07:23.187Z"
+    }
+  ]
+}

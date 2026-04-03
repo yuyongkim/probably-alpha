@@ -1,0 +1,108 @@
+/* === Sector Tiles & Heatmap === */
+pre{
+  margin:0;
+  min-height:160px;
+  max-height:220px;
+  overflow:auto;
+  padding:14px;
+  border-radius:18px;
+  border:1px solid rgba(92,133,171,.16);
+  background:rgba(8,18,31,.76);
+  color:#dce8f6;
+  white-space:pre-wrap;
+}
+.empty-state{
+  padding:16px;
+  border-radius:18px;
+  color:var(--muted);
+}
+
+.summary-card small{
+  display:block;
+  margin-top:6px;
+  color:#8fa4c1;
+  font-size:11px;
+}
+
+.sector-heatmap{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:10px;
+  margin:0 0 14px;
+}
+
+.sector-tile{
+  position:relative;
+  display:grid;
+  gap:8px;
+  padding:16px;
+  text-align:left;
+  border-radius:var(--radius-md);
+  border:1px solid rgba(92,133,171,.12);
+  background:
+    linear-gradient(180deg, rgba(9,20,34,.92), rgba(5,12,22,.95)),
+    linear-gradient(135deg, rgba(77,184,255,var(--heat)), transparent 70%);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  cursor:pointer;
+  transition:all var(--transition-fast);
+  overflow:hidden;
+}
+.sector-tile::after{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.06), transparent);
+  pointer-events:none;
+}
+
+.sector-tile:hover,
+.sector-tile.is-active{
+  transform:translateY(-2px) scale(1.01);
+  border-color:rgba(128,208,255,.30);
+  box-shadow:0 18px 36px rgba(0,0,0,.22), 0 0 24px var(--accent-glow);
+}
+
+.sector-tile.tone-good{
+  background:
+    linear-gradient(180deg, rgba(9,20,34,.96), rgba(5,12,22,.98)),
+    linear-gradient(135deg, rgba(87,180,255,var(--heat)), rgba(138,240,184,.18));
+}
+
+.sector-tile.tone-mid{
+  background:
+    linear-gradient(180deg, rgba(9,20,34,.96), rgba(5,12,22,.98)),
+    linear-gradient(135deg, rgba(255,189,99,var(--heat)), rgba(87,180,255,.12));
+}
+
+.sector-tile.tone-bad{
+  background:
+    linear-gradient(180deg, rgba(9,20,34,.96), rgba(5,12,22,.98)),
+    linear-gradient(135deg, rgba(255,155,146,var(--heat)), rgba(255,189,99,.10));
+}
+
+.sector-tile__head,
+.sector-tile__meta{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  gap:6px 10px;
+}
+
+.sector-tile__rank,
+.sector-tile__state{
+  color:#8fa4c1;
+  font:11px/1.2 "IBM Plex Mono", monospace;
+}
+
+.sector-tile__score{
+  font-size:24px;
+  font-weight:700;
+  line-height:1;
+}
+
+.sector-tile__meta small{
+  color:#a7bdd6;
+  font-size:11px;
+}

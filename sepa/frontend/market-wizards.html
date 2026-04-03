@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#060e18" />
+  <meta name="color-scheme" content="dark" />
+  <title>SEPA Strategy Frames</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="page-header subpage-hero">
+    <div class="hero-copy">
+      <p class="eyebrow">SEPA / STRATEGY FRAMES</p>
+      <h1>Strategy Frames</h1>
+      <p class="lead">
+        A compact comparison page for six frequently referenced traders and how their ideas
+        map into the current SEPA dashboard.
+      </p>
+    </div>
+    <div class="toolbar">
+      <div class="lang-switch" aria-label="Language switch">
+        <button type="button" class="lang-chip" data-lang="ko">KO</button>
+        <button type="button" class="lang-chip" data-lang="en">EN</button>
+      </div>
+      <a class="nav-link nav-link--button" href="./index.html">Command Center</a>
+      <a class="nav-link nav-link--button" href="./market-wizards-korea.html">Korea Presets</a>
+    </div>
+  </header>
+
+  <nav class="page-nav scroll-hint">
+    <a class="nav-link" href="./index.html">Command Center</a>
+    <a class="nav-link" href="./glossary.html">Playbook Terms</a>
+    <a class="nav-link" href="./market-wizards-people.html">Wizard Index</a>
+    <a class="nav-link is-active" href="./market-wizards.html">Strategy Frames</a>
+    <a class="nav-link" href="./market-wizards-korea.html">Korea Presets</a>
+    <a class="nav-link" href="./wizard-screener.html">Wizard Screener</a>
+  </nav>
+
+  <section class="note-strip">
+    <div class="note-pill">Price and RS first</div>
+    <div class="note-pill">Theme and leadership concentration</div>
+    <div class="note-pill">Risk management before conviction</div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Six Anchor Profiles</h2>
+        <p class="panel-caption">
+          Each card shows the core philosophy, checklist, and where it maps into SEPA.
+        </p>
+      </div>
+    </div>
+    <div id="wizardCards" class="wizard-grid"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Comparison Matrix</h2>
+        <p class="panel-caption">
+          A fast view of what each trader emphasizes most, how they trigger entries,
+          and how they treat risk.
+        </p>
+      </div>
+    </div>
+    <div id="wizardCompare"></div>
+  </section>
+
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">&uarr;</button>
+
+  <footer class="page-footer">
+    <div class="page-footer__brand">
+      <strong>SEPA Strategy Frames</strong>
+    </div>
+    <p class="page-footer__copy">Six anchor trader philosophies mapped to SEPA methodology</p>
+    <div class="page-footer__links">
+      <a href="./index.html">Command Center</a>
+      <a href="./market-wizards-korea.html">Korea Presets</a>
+      <a href="./wizard-screener.html">Wizard Screener</a>
+    </div>
+  </footer>
+
+  <script type="module" src="./js/market-wizards-overview.js"></script>
+  <script>
+    (function(){
+      var btn=document.getElementById('backToTop');
+      if(!btn)return;
+      window.addEventListener('scroll',function(){
+        btn.classList.toggle('is-visible',window.scrollY>400);
+      },{passive:true});
+      btn.addEventListener('click',function(){
+        window.scrollTo({top:0,behavior:'smooth'});
+      });
+    })();
+  </script>
+</body>
+</html>

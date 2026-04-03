@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#060e18" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="description" content="SEPA Command Center — Leader Scan to Execution Review for Korean Stock Market Analysis" />
+  <title>SEPA Command Center</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <a href="#leader-pipeline" class="skip-link">Skip to main content</a>
+  <section class="control-band">
+    <header class="page-header">
+      <div class="hero-copy">
+        <p class="eyebrow">SEPA / COMMAND CENTER</p>
+        <h1>Leader Scan To Execution Review</h1>
+        <p class="lead">
+          Reframe the dashboard as one operating sequence: scan confirmed leadership, inspect sector evidence,
+          validate the chart desk, and finish on backtest and recommendation review without leaving the page.
+        </p>
+      </div>
+      <div class="toolbar">
+        <div class="lang-switch" aria-label="Language switch">
+          <button type="button" class="lang-chip" data-lang="ko">KO</button>
+          <button type="button" class="lang-chip" data-lang="en">EN</button>
+        </div>
+        <input id="apiBase" value="http://127.0.0.1:8000" aria-label="API Base URL" placeholder="API Base URL" />
+        <button id="btnRefresh" aria-label="Refresh all data">Refresh</button>
+      </div>
+    </header>
+
+    <nav class="page-nav scroll-hint">
+      <a class="nav-link is-active" href="./index.html">Command Center</a>
+      <a class="nav-link" href="./glossary.html">Playbook Terms</a>
+      <a class="nav-link" href="./market-wizards-people.html">Wizard Index</a>
+      <a class="nav-link" href="./market-wizards.html">Strategy Frames</a>
+      <a class="nav-link" href="./market-wizards-korea.html">Korea Presets</a>
+      <a class="nav-link" href="./wizard-screener.html">Wizard Screener</a>
+      <a class="nav-link" href="./trader-debate.html">Trader Debate</a>
+    </nav>
+
+    <div class="control-band__meta control-band__meta--wide">
+      <section class="panel workflow-panel">
+        <div class="panel-head">
+          <div>
+            <h2>SEPA Workflow</h2>
+            <p class="panel-caption">Borrow the staged page flow from the benchmark, but map every stop to this project's actual data pipeline.</p>
+          </div>
+          <span class="eyebrow">4 stages</span>
+        </div>
+        <div class="workflow-grid">
+          <a class="workflow-card" href="#leader-pipeline">
+            <span class="workflow-card__step">Stage 1</span>
+            <strong>Leader Pipeline</strong>
+            <p>Start with confirmed sectors and confirmed stocks before opening any deeper analysis.</p>
+            <small>Confirmed leadership + near-ready queue</small>
+          </a>
+          <a class="workflow-card" href="#sector-lab">
+            <span class="workflow-card__step">Stage 2</span>
+            <strong>Sector Lab</strong>
+            <p>Drill into sector membership, persistence, and the logic formula used for ranking.</p>
+            <small>Evidence, context, formula</small>
+          </a>
+          <a class="workflow-card" href="#analysis-desk">
+            <span class="workflow-card__step">Stage 3</span>
+            <strong>Chart Desk</strong>
+            <p>Inspect price, volume, relative strength, MACD, and quarterly EPS on one aligned desk.</p>
+            <small>Single-stock validation</small>
+          </a>
+          <a class="workflow-card" href="#execution-hub">
+            <span class="workflow-card__step">Stage 4</span>
+            <strong>Validation And Execution</strong>
+            <p>Finish on backtest buckets, recommendation gates, and the Omega execution plan.</p>
+            <small>Backtest + recommendation review</small>
+          </a>
+        </div>
+        <div class="section-chip-row">
+          <span class="note-pill">Confirmed leadership first</span>
+          <span class="note-pill">Historical date recalculation</span>
+          <span class="note-pill">Research pages moved out of the main flow</span>
+        </div>
+      </section>
+
+      <section class="panel query-panel">
+        <div class="panel-head">
+          <div>
+            <h2>Historical Date Query</h2>
+            <p class="panel-caption">Choose any supported date and rebuild the full operating sequence for that session.</p>
+          </div>
+          <div class="toolbar compact">
+            <input id="asOfDatePicker" type="date" aria-label="Historical date" />
+            <select id="persistenceWindow" aria-label="Persistence window">
+              <option value="63">63D</option>
+              <option value="126" selected>126D</option>
+              <option value="252">252D</option>
+              <option value="504">504D</option>
+            </select>
+            <button id="btnLoadDate">Load Date</button>
+            <button id="btnLatestDate">Latest</button>
+          </div>
+        </div>
+        <p id="dateRangeMeta" class="panel-caption">Loading supported date range...</p>
+      </section>
+    </div>
+  </section>
+
+  <section class="hero-grid">
+    <article class="panel briefing-panel">
+      <div class="panel-head">
+        <div>
+          <h2>Daily Briefing</h2>
+          <p class="panel-caption">Latest after-close note generated by the pipeline.</p>
+        </div>
+        <span class="eyebrow">Latest</span>
+      </div>
+      <p id="briefingBox" class="briefing-copy">Loading briefing...</p>
+      <div class="briefing-actions">
+        <a class="nav-link" href="#leader-pipeline">Open Leader Pipeline</a>
+        <a class="nav-link" href="#analysis-desk">Jump To Chart Desk</a>
+        <a class="nav-link" href="#execution-hub">Review Execution</a>
+      </div>
+    </article>
+
+    <article class="panel glossary-panel">
+      <div class="panel-head">
+        <div>
+          <h2>Command Lanes</h2>
+          <p class="panel-caption">Keep the benchmark's menu-driven discovery pattern, but remap every lane to SEPA tasks and references.</p>
+        </div>
+      </div>
+      <div class="hub-links command-links">
+        <a class="hub-link-card" href="#leader-pipeline">
+          <strong>Leader Pipeline</strong>
+          <p>Confirmed sectors, leader stocks, watchlist sectors, and setup candidates.</p>
+        </a>
+        <a class="hub-link-card" href="#sector-lab">
+          <strong>Sector Lab</strong>
+          <p>Sector drill-down, membership evidence, and scoring formula reference.</p>
+        </a>
+        <a class="hub-link-card" href="#analysis-desk">
+          <strong>Chart Desk</strong>
+          <p>Terminal-style charting, EPS history, and same-sector peer comparison.</p>
+        </a>
+        <a class="hub-link-card" href="#execution-hub">
+          <strong>Execution Review</strong>
+          <p>Backtest buckets, recommendations, Omega plans, and snapshot history.</p>
+        </a>
+        <a class="hub-link-card" href="./glossary.html">
+          <strong>Playbook Terms</strong>
+          <p>Definitions for Alpha, Beta, Gamma, EPS, and other workflow terms.</p>
+        </a>
+        <a class="hub-link-card" href="./market-wizards.html">
+          <strong>Strategy Frames</strong>
+          <p>External philosophy pages stay available without crowding the command flow.</p>
+        </a>
+      </div>
+    </article>
+  </section>
+
+  <section class="trader-tab-section">
+    <div class="panel-head">
+      <div>
+        <h2>Trader View</h2>
+        <p class="panel-caption">Select any Market Wizard to re-rank sectors and stocks through their lens. 73 traders across 5 series.</p>
+      </div>
+      <span id="traderPresetMeta" class="eyebrow">Default SEPA</span>
+    </div>
+    <div id="traderTabs" class="selector-row"></div>
+    <div id="traderPresetFormula" class="logic-formula" style="display:none;"></div>
+  </section>
+
+  <section class="kpi-strip">
+    <article class="kpi-card">
+      <label>Date</label>
+      <strong id="kpiDate">-</strong>
+      <p>Resolved trading date shown by the dashboard.</p>
+    </article>
+    <article class="kpi-card">
+      <label>Total Sectors</label>
+      <strong id="kpiSectorCount">0</strong>
+      <p>Tracked sectors inside the current universe.</p>
+    </article>
+    <article class="kpi-card">
+      <label>Leader Stocks</label>
+      <strong id="kpiLeaderStocks">0</strong>
+      <p>Stocks currently ranked as leaders.</p>
+    </article>
+    <article class="kpi-card">
+      <label id="kpiAlphaLabel">Alpha Pass</label>
+      <strong id="kpiAlpha">0</strong>
+      <p>Trend-template pass count.</p>
+    </article>
+    <article class="kpi-card">
+      <label id="kpiBetaLabel">Beta Pass</label>
+      <strong id="kpiBeta">0</strong>
+      <p>VCP and contraction pass count.</p>
+    </article>
+    <article class="kpi-card">
+      <label id="kpiPicksLabel">Omega Picks</label>
+      <strong id="kpiPicks">0</strong>
+      <p>Final execution ideas from Omega.</p>
+    </article>
+    <article class="kpi-card">
+      <label>Status</label>
+      <strong id="kpiStatus">Ready</strong>
+      <p id="statusLog">Waiting for data...</p>
+    </article>
+  </section>
+
+  <section id="leader-pipeline" class="section-shell">
+    <div class="section-header">
+      <div>
+        <p class="section-kicker">Stage 1</p>
+        <h2>Leader Pipeline</h2>
+        <p class="panel-caption">Open the day with confirmed leadership first, then move to the near-ready queue.</p>
+      </div>
+      <div class="section-chip-row">
+        <span class="note-pill">Confirmed sectors</span>
+        <span class="note-pill">Confirmed stocks</span>
+        <span class="note-pill">Watchlist and setups</span>
+      </div>
+    </div>
+
+    <section class="board-grid two-col">
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Confirmed Leader Sectors</h2>
+            <p class="panel-caption">Only sectors that have actually turned into leadership stay here.</p>
+          </div>
+          <span id="confirmedSectorCount" class="eyebrow">0 confirmed</span>
+        </div>
+        <div id="sectorHeatmap" class="sector-heatmap"></div>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Sector</th>
+              <th>Leader Score</th>
+              <th>Alpha / Universe</th>
+              <th>Beta</th>
+              <th>120D Return</th>
+            </tr>
+          </thead>
+          <tbody id="sectorRows"></tbody>
+        </table>
+        <div id="sectorRowsPager" class="pagination-bar"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Confirmed Leader Stocks</h2>
+            <p class="panel-caption">Stocks inside confirmed leader sectors, ready for deeper chart review.</p>
+          </div>
+          <div class="toolbar compact">
+            <span id="confirmedStockCount" class="eyebrow">0 confirmed</span>
+            <input id="stockFilter" placeholder="Filter by name, symbol, or sector" />
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Stock</th>
+              <th>Sector</th>
+              <th>Leader Score</th>
+              <th>Alpha</th>
+              <th>Beta</th>
+              <th>Gamma</th>
+              <th>120D Return</th>
+            </tr>
+          </thead>
+          <tbody id="stockRows"></tbody>
+        </table>
+        <div id="stockRowsPager" class="pagination-bar"></div>
+      </article>
+    </section>
+
+    <section class="board-grid two-col">
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Ranked Sector Watchlist</h2>
+            <p class="panel-caption">High-ranking sectors that are close, but not yet confirmed as leadership.</p>
+          </div>
+          <span id="watchSectorCount" class="eyebrow">0 watchlist</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Sector</th>
+              <th>Leader Score</th>
+              <th>Alpha / Universe</th>
+              <th>Beta</th>
+              <th>120D Return</th>
+            </tr>
+          </thead>
+          <tbody id="watchSectorRows"></tbody>
+        </table>
+        <div id="watchSectorRowsPager" class="pagination-bar"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Setup Candidates</h2>
+            <p class="panel-caption">Stocks from ranked watchlist sectors that are worth monitoring before they become leaders.</p>
+          </div>
+          <span id="setupStockCount" class="eyebrow">0 setups</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Stock</th>
+              <th>Sector</th>
+              <th>Leader Score</th>
+              <th>Alpha</th>
+              <th>Beta</th>
+              <th>Gamma</th>
+              <th>120D Return</th>
+            </tr>
+          </thead>
+          <tbody id="setupStockRows"></tbody>
+        </table>
+        <div id="setupStockRowsPager" class="pagination-bar"></div>
+      </article>
+    </section>
+  </section>
+
+  <section id="sector-overview" class="section-shell">
+    <div class="section-header">
+      <div>
+        <p class="section-kicker">Sector Overview</p>
+        <h2>Sector Leaders At A Glance</h2>
+        <p class="panel-caption">상위 섹터별 주도주를 한눈에 확인합니다. 종목 클릭 시 기업개요를 볼 수 있습니다.</p>
+      </div>
+      <div class="section-chip-row">
+        <span class="note-pill">Sector-grouped</span>
+        <span class="note-pill">Sparkline charts</span>
+        <span class="note-pill">Company profile</span>
+      </div>
+    </div>
+    <div id="sectorGroupedView" class="sector-grouped-grid"></div>
+  </section>
+
+  <dialog id="companyProfileDialog" class="company-profile-dialog">
+    <div class="company-profile-dialog__inner">
+      <header class="company-profile-dialog__header">
+        <h2 id="profileName">-</h2>
+        <button id="profileClose" class="company-profile-dialog__close" aria-label="Close">&times;</button>
+      </header>
+      <div id="profileContent" class="company-profile-dialog__body">Loading...</div>
+    </div>
+  </dialog>
+
+  <section id="sector-lab" class="section-shell" hidden>
+    <div class="section-header">
+      <div>
+        <p class="section-kicker">Stage 2</p>
+        <h2>Sector Lab</h2>
+        <p class="panel-caption">Once leadership is visible, move into sector-level proof and formula context.</p>
+      </div>
+      <div class="section-chip-row">
+        <span class="note-pill">Persistence</span>
+        <span class="note-pill">Member ranking</span>
+        <span class="note-pill">Formula audit</span>
+      </div>
+    </div>
+
+    <section class="board-grid two-col">
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Sector Drill-Down</h2>
+            <p class="panel-caption">Click a sector to inspect members, rank evidence, and same-date persistence.</p>
+          </div>
+        </div>
+        <p id="sectorFocusMeta" class="panel-caption">Pick a sector to inspect members and ranking evidence.</p>
+        <div id="sectorPersistenceCards" class="mini-stat-grid"></div>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Stock</th>
+              <th>Leader Score</th>
+              <th>Alpha</th>
+              <th>Beta</th>
+              <th>Gamma</th>
+              <th>Reco</th>
+            </tr>
+          </thead>
+          <tbody id="sectorMembersRows"></tbody>
+        </table>
+        <div id="sectorMembersRowsPager" class="pagination-bar"></div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Logic and Formula</h2>
+            <p class="panel-caption">Scoring formulas, worked examples, Minervini linkage, and historical usage notes.</p>
+          </div>
+        </div>
+        <div id="logicExplain" class="logic-grid"></div>
+      </article>
+    </section>
+  </section>
+
+  <section id="analysis-desk" class="section-shell">
+    <div class="section-header">
+      <div>
+        <p class="section-kicker">Stage 3</p>
+        <h2>Chart Desk</h2>
+        <p class="panel-caption">Validate individual names on the full technical and earnings desk before moving to execution.</p>
+      </div>
+      <div class="section-chip-row">
+        <span class="note-pill">Price and volume</span>
+        <span class="note-pill">Relative strength</span>
+        <span class="note-pill">Quarterly EPS</span>
+      </div>
+    </div>
+
+    <section class="panel analysis-panel">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Selected Chart Desk</p>
+          <h2 id="analysisName">Select a stock</h2>
+          <p class="panel-caption">Daily price, daily volume, relative strength, MACD, and quarterly EPS recalculated for the chosen date.</p>
+        </div>
+        <div class="selection-meta">
+          <strong id="pickedSymbol">Code -</strong>
+          <span id="analysisSector">Sector -</span>
+          <span id="analysisDate">Date -</span>
+        </div>
+      </div>
+
+      <div id="analysisSummary" class="analysis-summary"></div>
+      <div id="stockPersistenceCards" class="mini-stat-grid"></div>
+
+      <div class="chart-stack chart-stack--terminal">
+        <article class="chart-card chart-card--terminal chart-card--wide">
+          <div class="chart-head chart-head--terminal">
+            <div>
+              <h3>Main Trading Chart</h3>
+              <p>Price, volume, RS, and MACD share one aligned timeline.</p>
+            </div>
+            <div class="legend legend--terminal">
+              <span><i class="legend-dot close"></i>Close</span>
+              <span><i class="legend-dot sma20"></i>SMA20</span>
+              <span><i class="legend-dot sma50"></i>SMA50</span>
+              <span><i class="legend-dot sma150"></i>SMA150</span>
+              <span><i class="legend-dot sma200"></i>SMA200</span>
+              <span><i class="legend-dot resistance"></i>Resistance</span>
+              <span><i class="legend-dot volume"></i>Volume / MA20</span>
+              <span><i class="legend-dot rs"></i>R/S</span>
+              <span><i class="legend-dot sector"></i>Sector R/S</span>
+              <span><i class="legend-dot macd"></i>MACD / Signal</span>
+            </div>
+          </div>
+          <div class="chart-shell-note">
+            <span class="chart-note-pill">Daily structure</span>
+            <span class="chart-note-pill">Right price rail</span>
+            <span class="chart-note-pill">Unified time axis</span>
+            <span class="chart-note-pill">Broker style layout</span>
+            <span class="chart-note-pill">Wheel zoom / Shift+wheel pan / Drag scroll</span>
+            <span id="chartRangeLabel" class="chart-note-pill">120D visible</span>
+          </div>
+          <div class="chart-range-controls">
+            <button class="chart-range-button" data-range-days="30">1M</button>
+            <button class="chart-range-button" data-range-days="60">3M</button>
+            <button class="chart-range-button is-active" data-range-days="120">6M</button>
+            <button class="chart-range-button" data-range-days="240">1Y</button>
+            <button class="chart-range-button" data-range-days="0">ALL</button>
+          </div>
+          <div id="mainChart" class="svg-chart svg-chart--terminal svg-chart--interactive" data-height="1180"></div>
+        </article>
+
+        <div class="chart-bottom-stack">
+          <article class="chart-card chart-card--eps">
+            <div class="chart-head">
+              <div>
+                <h3>Quarterly EPS Chart</h3>
+                <p>Quarterly EPS bars with YoY and actual EPS labels.</p>
+              </div>
+            </div>
+            <div id="epsChart" class="svg-chart" data-height="400"></div>
+            <div class="eps-range-shell">
+              <div class="eps-range-meta">
+                <span id="epsRangeWindow" class="eps-range-window">Latest 16 quarters</span>
+                <span id="epsRangeBounds" class="eps-range-bounds">-</span>
+              </div>
+              <input
+                id="epsRangeBar"
+                class="eps-range-bar"
+                type="range"
+                min="0"
+                max="0"
+                value="0"
+                step="1"
+                aria-label="Quarterly EPS history range"
+              />
+            </div>
+          </article>
+
+          <article class="chart-card chart-card--table">
+            <div class="chart-head">
+              <div>
+                <h3>Sector Peers</h3>
+                <p>Compare the selected stock against peers in the same sector.</p>
+              </div>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Stock</th>
+                  <th>Leader Score</th>
+                  <th>Beta</th>
+                  <th>120D Return</th>
+                </tr>
+              </thead>
+              <tbody id="sectorPeerRows"></tbody>
+            </table>
+          </article>
+        </div>
+      </div>
+
+      <div id="analysisMeta" class="analysis-meta">Pick a leader stock or a stock from a backtest bucket to load the chart desk.</div>
+    </section>
+  </section>
+
+  <section id="execution-hub" class="section-shell">
+    <div class="section-header">
+      <div>
+        <p class="section-kicker">Stage 4</p>
+        <h2>Validation And Execution</h2>
+        <p class="panel-caption">Close the loop with bucket validation, recommendation gates, and recent execution history.</p>
+      </div>
+      <div class="section-chip-row">
+        <span class="note-pill">Backtest buckets</span>
+        <span class="note-pill">Recommendation gates</span>
+        <span class="note-pill">Omega plan</span>
+      </div>
+    </div>
+
+    <section class="panel backtest-panel">
+      <div class="panel-head">
+        <div>
+          <h2>Backtest Explorer</h2>
+          <p class="panel-caption">View top sectors and top stocks by daily or weekly bucket.</p>
+        </div>
+        <div class="toolbar compact">
+          <select id="backtestPeriod" aria-label="Backtest period">
+            <option value="weekly">Weekly</option>
+            <option value="daily">Daily</option>
+          </select>
+          <select id="backtestBucketCount" aria-label="Backtest bucket count">
+            <option value="6">Last 6</option>
+            <option value="8" selected>Last 8</option>
+            <option value="12">Last 12</option>
+          </select>
+          <button id="btnBacktest">Load Buckets</button>
+        </div>
+      </div>
+      <div id="backtestBuckets" class="bucket-grid"></div>
+    </section>
+
+    <section class="board-grid two-col bottom-grid">
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Recommendations</h2>
+            <p class="panel-caption">Recommendation score, gates, risk/reward, and the Omega execution plan side by side.</p>
+          </div>
+        </div>
+        <table>
+          <colgroup>
+            <col style="width:4%"><col style="width:14%"><col style="width:12%">
+            <col style="width:8%"><col style="width:9%"><col style="width:11%">
+            <col style="width:12%"><col style="width:6%"><col style="width:24%">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Stock</th>
+              <th>Sector</th>
+              <th>Conviction</th>
+              <th>Reco Score</th>
+              <th>EPS Status</th>
+              <th>Least Resistance</th>
+              <th>R/R</th>
+              <th>Omega Plan</th>
+            </tr>
+          </thead>
+          <tbody id="recRows"></tbody>
+        </table>
+        <div id="recRowsPager" class="pagination-bar"></div>
+
+        <div class="subsection">
+          <div class="panel-head small">
+            <div>
+              <h3>Omega Execution Plan</h3>
+              <p>Entry, stop, target, size, and risk/reward with explicit units.</p>
+            </div>
+          </div>
+          <p id="omegaMeta" class="panel-caption">Entry and target are shown in KRW. Quantity is shares and risk/reward is in R.</p>
+          <table>
+            <colgroup>
+              <col style="width:22%"><col style="width:18%"><col style="width:18%">
+              <col style="width:18%"><col style="width:14%"><col style="width:10%">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>Stock</th>
+                <th>Entry (KRW)</th>
+                <th>Stop (KRW)</th>
+                <th>Target (KRW)</th>
+                <th>Qty (shares)</th>
+                <th>R/R</th>
+              </tr>
+            </thead>
+            <tbody id="omegaRows"></tbody>
+          </table>
+          <div id="omegaRowsPager" class="pagination-bar"></div>
+        </div>
+      </article>
+
+      <article class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Recommendation History</h2>
+            <p class="panel-caption">Recent recommendation snapshots with the top three names by day.</p>
+          </div>
+        </div>
+        <table>
+          <colgroup>
+            <col style="width:16%"><col style="width:12%">
+            <col style="width:56%"><col style="width:16%">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Reco Count</th>
+              <th>Top 3 Names</th>
+              <th>Top Score</th>
+            </tr>
+          </thead>
+          <tbody id="historyRows"></tbody>
+        </table>
+        <div id="historyRowsPager" class="pagination-bar"></div>
+      </article>
+    </section>
+  </section>
+
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">&uarr;</button>
+
+  <footer class="page-footer">
+    <div class="page-footer__brand">
+      <strong>SEPA Command Center</strong>
+    </div>
+    <p class="page-footer__copy">Leader Scan To Execution Review &mdash; Built on Minervini SEPA Methodology</p>
+    <div class="page-footer__links">
+      <a href="#leader-pipeline">Leader Pipeline</a>
+      <a href="#sector-lab">Sector Lab</a>
+      <a href="#analysis-desk">Chart Desk</a>
+      <a href="#execution-hub">Execution</a>
+    </div>
+  </footer>
+
+  <script type="module" src="./app.js"></script>
+  <script>
+    (function(){
+      var btn=document.getElementById('backToTop');
+      if(!btn)return;
+      window.addEventListener('scroll',function(){
+        btn.classList.toggle('is-visible',window.scrollY>600);
+      },{passive:true});
+      btn.addEventListener('click',function(){
+        window.scrollTo({top:0,behavior:'smooth'});
+      });
+    })();
+  </script>
+</body>
+</html>

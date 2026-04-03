@@ -1,0 +1,19 @@
+{
+  "weights": {
+    "alpha": 0.45,
+    "beta": 0.20,
+    "gamma": 0.20,
+    "rs120": 0.10,
+    "least_resistance": 0.05
+  },
+  "gates": {
+    "eps_status_allowed": ["strong_growth", "positive_growth"],
+    "least_resistance_allowed": ["up_least_resistance", "pullback_in_uptrend"],
+    "min_recommendation_score": 40
+  },
+  "risk": {
+    "stop_loss_pct": 0.075,
+    "target_r_multiple": 2.0,
+    "risk_budget_krw": 200000
+  }
+}

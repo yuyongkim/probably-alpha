@@ -1,0 +1,63 @@
+/* === Utilities === */
+/* ── Term Tooltip (?) — see Phase 3 §41 for enhanced version ── */
+
+/* ── Scrollbar (Dark Glass) ── */
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{
+  background:rgba(92,133,171,.22);
+  border-radius:999px;
+}
+::-webkit-scrollbar-thumb:hover{
+  background:rgba(92,133,171,.35);
+}
+
+/* ── Focus Visible (Accessibility) ── */
+:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+
+/* ── Selection ── */
+::selection{
+  background:rgba(77,184,255,.30);
+  color:#fff;
+}
+
+/* ── Smooth Scroll ── */
+html{
+  scroll-behavior:smooth;
+}
+
+/* ── Loading Pulse Animation ── */
+@keyframes pulse-glow{
+  0%,100%{opacity:.6}
+  50%{opacity:1}
+}
+.is-loading{
+  animation:pulse-glow 1.5s ease-in-out infinite;
+}
+
+/* ── Status Dot (live indicator) ── */
+.status-dot{
+  display:inline-block;
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:var(--good);
+  box-shadow:0 0 8px var(--good-glow);
+  animation:pulse-glow 2s ease-in-out infinite;
+}
+
+/* ── Glassmorphism Utility ── */
+.glass{
+  background:var(--panel-glass);
+  backdrop-filter:blur(var(--glass-blur));
+  -webkit-backdrop-filter:blur(var(--glass-blur));
+  border:1px solid var(--glass-border);
+}
+
+/* ── Glow Text Utility ── */
+.text-glow-accent{text-shadow:0 0 20px var(--accent-glow)}
+.text-glow-good{text-shadow:0 0 20px var(--good-glow)}
+.text-glow-warm{text-shadow:0 0 20px var(--warm-glow)}

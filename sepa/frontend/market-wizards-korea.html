@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#060e18" />
+  <meta name="color-scheme" content="dark" />
+  <title>SEPA Korea Presets</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="page-header subpage-hero">
+    <div class="hero-copy">
+      <p class="eyebrow">SEPA / KOREA PRESETS</p>
+      <h1>Korea Presets</h1>
+      <p class="lead">
+        Re-rank the current leader sectors and leader stocks through a chosen trader
+        philosophy, then inspect the resulting top ideas for the Korean market.
+      </p>
+    </div>
+    <div class="toolbar">
+      <div class="lang-switch" aria-label="Language switch">
+        <button type="button" class="lang-chip" data-lang="ko">KO</button>
+        <button type="button" class="lang-chip" data-lang="en">EN</button>
+      </div>
+      <a class="nav-link nav-link--button" href="./index.html">Command Center</a>
+      <a class="nav-link nav-link--button" href="./market-wizards.html">Strategy Frames</a>
+    </div>
+  </header>
+
+  <nav class="page-nav scroll-hint">
+    <a class="nav-link" href="./index.html">Command Center</a>
+    <a class="nav-link" href="./glossary.html">Playbook Terms</a>
+    <a class="nav-link" href="./market-wizards-people.html">Wizard Index</a>
+    <a class="nav-link" href="./market-wizards.html">Strategy Frames</a>
+    <a class="nav-link is-active" href="./market-wizards-korea.html">Korea Presets</a>
+    <a class="nav-link" href="./wizard-screener.html">Wizard Screener</a>
+    <a class="nav-link" href="./trader-debate.html">Trader Debate</a>
+  </nav>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Select A Trader</h2>
+        <p class="panel-caption">
+          Pick a profile to see how its rules re-rank the current sector and stock universe.
+        </p>
+      </div>
+    </div>
+    <div id="wizardSelector" class="selector-row"></div>
+    <div id="wizardMeta" class="chip-row"></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Preset Ranking Output</h2>
+        <p id="presetDateMeta" class="panel-caption">Loading preset candidates...</p>
+      </div>
+      <div class="toolbar compact">
+        <input id="presetDatePicker" type="date" aria-label="Query date" />
+        <button id="btnPresetLoadDate">Load Date</button>
+        <button id="btnPresetLatest">Latest</button>
+      </div>
+    </div>
+    <div id="presetExplain" class="definition-stack"></div>
+    <div id="presetFormula" class="logic-formula">Preparing preset formula...</div>
+    <div class="strategy-grid">
+      <article class="panel strategy-card">
+        <h3>Top Sectors</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Sector</th>
+              <th id="thPresetSectorScore">Preset Score</th>
+              <th id="thBaseSectorScore">Base Leader Score</th>
+              <th>Main Reasons</th>
+            </tr>
+          </thead>
+          <tbody id="presetSectorRows"></tbody>
+        </table>
+      </article>
+      <article class="panel strategy-card">
+        <h3>Top Stocks <span id="presetStockSectorLabel" style="font-size:14px;color:var(--accent);margin-left:8px"></span></h3>
+        <p class="panel-caption" style="margin:-4px 0 8px;font-size:12px;color:var(--muted)">Click a sector above to view its top stocks</p>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Stock</th>
+              <th>Sector</th>
+              <th id="thPresetStockScore">Preset Score</th>
+              <th id="thBaseStockScore">Base Leader Score</th>
+              <th>Main Reasons</th>
+            </tr>
+          </thead>
+          <tbody id="presetStockRows"></tbody>
+        </table>
+      </article>
+    </div>
+  </section>
+
+  <section class="panel" id="sectorOverviewPanel">
+    <div class="panel-head">
+      <div>
+        <h2>Sector Leaders At A Glance</h2>
+        <p class="panel-caption">상위 섹터별 주도주를 한눈에 확인합니다. 용어 옆 <strong style="color:var(--accent)">&nbsp;?&nbsp;</strong> 를 누르면 설명이 나옵니다.</p>
+      </div>
+      <span id="sectorOverviewMeta" class="eyebrow">Loading...</span>
+    </div>
+    <div id="koreaGroupedView" class="sector-grouped-grid"></div>
+  </section>
+
+  <dialog id="companyProfileDialog" class="company-profile-dialog">
+    <div class="company-profile-dialog__inner">
+      <header class="company-profile-dialog__header">
+        <h2 id="profileName">-</h2>
+        <button id="profileClose" class="company-profile-dialog__close" aria-label="Close">&times;</button>
+      </header>
+      <div id="profileContent" class="company-profile-dialog__body">Loading...</div>
+    </div>
+  </dialog>
+
+  <section class="panel" id="weeklyPerformancePanel">
+    <div class="panel-head">
+      <div>
+        <h2>Weekly Preset Performance</h2>
+        <p class="panel-caption">최근 12주간 선택한 트레이더 프리셋으로 재랭킹한 주간 성과 추이입니다.</p>
+      </div>
+      <span id="weeklyMeta" class="eyebrow">Loading...</span>
+    </div>
+    <div id="weeklyChart" class="weekly-chart"></div>
+    <table>
+      <colgroup>
+        <col style="width:12%"><col style="width:10%"><col style="width:38%"><col style="width:40%">
+      </colgroup>
+      <thead>
+        <tr>
+          <th>Week</th>
+          <th>Snapshots</th>
+          <th>Top Sectors</th>
+          <th>Top Stocks</th>
+        </tr>
+      </thead>
+      <tbody id="weeklyRows"></tbody>
+    </table>
+  </section>
+
+  <main id="wizardDetail" class="wizard-detail"></main>
+
+  <script>
+    window.addEventListener('error', function(e) {
+      document.body.insertAdjacentHTML('afterbegin',
+        '<pre style="color:red;padding:16px;background:#fff3f3;border:2px solid red;margin:8px">JS Error: ' + e.message + '\n' + (e.filename || '') + ':' + (e.lineno || '') + '</pre>');
+    });
+  </script>
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">&uarr;</button>
+
+  <footer class="page-footer">
+    <div class="page-footer__brand">
+      <strong>SEPA Korea Presets</strong>
+    </div>
+    <p class="page-footer__copy">Trader philosophy re-ranking for the Korean market</p>
+    <div class="page-footer__links">
+      <a href="./index.html">Command Center</a>
+      <a href="./market-wizards.html">Strategy Frames</a>
+      <a href="./wizard-screener.html">Wizard Screener</a>
+    </div>
+  </footer>
+
+  <script type="module" src="./js/market-wizards-korea.js"></script>
+  <script>
+    (function(){
+      var btn=document.getElementById('backToTop');
+      if(!btn)return;
+      window.addEventListener('scroll',function(){
+        btn.classList.toggle('is-visible',window.scrollY>400);
+      },{passive:true});
+      btn.addEventListener('click',function(){
+        window.scrollTo({top:0,behavior:'smooth'});
+      });
+    })();
+  </script>
+</body>
+</html>

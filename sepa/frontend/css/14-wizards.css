@@ -1,0 +1,243 @@
+/* === Wizards & Strategy === */
+  color:white;
+  box-shadow:0 10px 24px rgba(87,180,255,.18);
+}
+.note-strip{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-content:flex-start;
+  padding:14px;
+  border-radius:20px;
+  border:1px solid rgba(92,133,171,.14);
+  background:linear-gradient(180deg, rgba(8,18,31,.84), rgba(7,16,27,.76));
+}
+.note-pill{
+  display:inline-flex;
+  align-items:center;
+  min-height:34px;
+  padding:0 12px;
+  border-radius:999px;
+  border:1px solid rgba(87,180,255,.14);
+  background:rgba(15,35,58,.64);
+  color:#d8e7f7;
+  font-size:12px;
+  font-weight:600;
+}
+
+.wizard-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.wizard-card{
+  padding:18px;
+  border-radius:22px;
+  border:1px solid rgba(92,133,171,.16);
+  background:linear-gradient(180deg, rgba(11,23,37,.88), rgba(8,17,29,.88));
+}
+.wizard-card__top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:14px;
+}
+.wizard-card__section + .wizard-card__section{margin-top:14px}
+.wizard-card__actions{
+  margin-top:16px;
+  display:flex;
+  justify-content:flex-start;
+}
+.wizard-list{
+  margin:0;
+  padding-left:18px;
+  color:#d9e4f1;
+}
+.wizard-list li + li{margin-top:7px}
+.wizard-list--ordered{padding-left:22px}
+.compare-table{
+  width:100%;
+  border-collapse:collapse;
+}
+.compare-table th,
+.compare-table td{
+  padding:12px 10px;
+  border-bottom:1px solid rgba(92,133,171,.16);
+  text-align:left;
+  vertical-align:top;
+}
+
+.selector-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-bottom:12px;
+}
+.selector-chip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:40px;
+  padding:10px 14px;
+  border-radius:999px;
+  border:1px solid rgba(92,133,171,.18);
+  background:rgba(10,21,35,.78);
+  color:#d8e6f7;
+  text-decoration:none;
+}
+.selector-chip.is-active{
+  background:rgba(25,56,88,.94);
+  border-color:rgba(87,180,255,.48);
+  color:#fff;
+}
+.selector-chip:hover:not(.is-active){
+  background:rgba(25,56,88,.45);
+  border-color:rgba(87,180,255,.28);
+}
+.trader-tab-section{
+  margin:0 0 14px;
+  padding:18px 24px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:16px;
+}
+.trader-tab-section .panel-head{
+  margin-bottom:12px;
+}
+.trader-tab-section .logic-formula{
+  margin-top:10px;
+  padding:10px 14px;
+  font:12px/1.45 "IBM Plex Mono", monospace;
+  background:rgba(8,19,35,.72);
+  border-radius:8px;
+  color:var(--muted);
+}
+.trader-tabs-row{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px;
+}
+.trader-tabs-all{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  /* Override parent .selector-row nowrap on mobile */
+  flex-wrap:wrap !important;
+  overflow:visible !important;
+  width:100%;
+}
+.trader-tabs-all .selector-chip--default{
+  align-self:flex-start;
+  margin-bottom:2px;
+  min-height:36px;
+  padding:8px 16px;
+  font-size:13px;
+  font-weight:600;
+}
+.trader-series-group{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:5px 6px;
+  padding:6px 0;
+  border-top:1px solid rgba(92,133,171,.10);
+}
+.trader-series-group:first-of-type{
+  border-top:none;
+}
+.trader-series-label{
+  font:10px/1.2 "IBM Plex Mono", monospace;
+  color:rgba(159,180,207,.7);
+  width:72px;
+  flex-shrink:0;
+  padding:2px 0;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+.trader-series-group .selector-chip{
+  min-height:26px;
+  padding:3px 8px;
+  font-size:11px;
+  white-space:nowrap;
+}
+.selector-chip--anchor{
+  border-color:rgba(87,180,255,.36);
+  font-weight:600;
+  background:rgba(18,40,65,.85);
+}
+.trader-dropdown-wrap{
+  position:relative;
+  flex-shrink:0;
+}
+.trader-dropdown{
+  appearance:none;
+  padding:7px 32px 7px 12px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:var(--panel-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239fb4cf'/%3E%3C/svg%3E") no-repeat right 12px center;
+  color:var(--text);
+  font:13px/1.3 "IBM Plex Sans KR", sans-serif;
+  cursor:pointer;
+  min-width:180px;
+  max-width:260px;
+}
+.trader-dropdown:focus{
+  outline:none;
+  border-color:rgba(87,180,255,.48);
+}
+.trader-dropdown option,
+.trader-dropdown optgroup{
+  background:#122238;
+  color:var(--text);
+}
+.wizard-detail{
+  display:grid;
+  gap:14px;
+  margin-top:14px;
+}
+.people-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+.person-card{
+  padding:18px;
+  border-radius:22px;
+  border:1px solid rgba(92,133,171,.16);
+  background:linear-gradient(180deg, rgba(11,23,37,.88), rgba(8,17,29,.88));
+}
+.person-card__head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+}
+.person-card__brief{
+  margin-top:14px;
+  color:#dce7f5;
+  line-height:1.7;
+}
+.person-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+.person-card__actions{
+  margin-top:14px;
+}
+.people-section .people-grid{
+  margin-top:4px;
+}
+.strategy-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.strategy-card h3{margin-bottom:12px}
+.strategy-hero .logic-copy{
+  display:grid;
+  gap:10px;
+}

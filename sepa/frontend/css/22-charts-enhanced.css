@@ -1,0 +1,112 @@
+/* === Chart Enhancements === */
+/* ══════════════════════════════════════════════════════════
+   CHART VISUAL ENHANCEMENTS (UI/UX Pro Max - Financial)
+   ══════════════════════════════════════════════════════════ */
+
+.chart-card--terminal{
+  padding:20px;
+  border-radius:var(--radius-lg);
+  background:
+    radial-gradient(ellipse 40% 30% at 5% 0%, rgba(77,184,255,.05), transparent),
+    linear-gradient(180deg, rgba(8,18,30,.96), rgba(4,10,18,.98));
+  border:1px solid rgba(92,133,171,.14);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03), var(--shadow-lg);
+  position:relative;
+  overflow:hidden;
+}
+.chart-card--terminal::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg, transparent, rgba(77,184,255,.12) 30%, rgba(77,184,255,.06) 70%, transparent);
+}
+
+.svg-chart--terminal{
+  border-radius:var(--radius-md);
+  border:1px solid rgba(92,133,171,.12);
+  background:
+    radial-gradient(ellipse 30% 25% at 5% 0%, rgba(77,184,255,.04), transparent),
+    linear-gradient(180deg, rgba(4,10,18,.99), rgba(2,6,12,.99));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.02), 0 0 40px rgba(0,0,0,.25);
+}
+
+.legend-dot{
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  display:inline-block;
+  box-shadow:0 0 6px currentColor;
+}
+.legend-dot.close{background:#80d0ff;box-shadow:0 0 8px rgba(128,208,255,.4)}
+.legend-dot.sma50{background:#98f1b7;box-shadow:0 0 8px rgba(152,241,183,.3)}
+.legend-dot.sma150{background:#ffbf63;box-shadow:0 0 8px rgba(255,191,99,.3)}
+.legend-dot.sma200{background:#ff9b92;box-shadow:0 0 8px rgba(255,155,146,.3)}
+.legend-dot.rs{background:#57b4ff;box-shadow:0 0 8px rgba(87,180,255,.4)}
+.legend-dot.macd{box-shadow:0 0 8px rgba(87,180,255,.3)}
+
+.price-line{
+  fill:none;
+  stroke:#80d0ff;
+  stroke-width:2.4;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+  filter:drop-shadow(0 0 4px rgba(128,208,255,.25));
+}
+
+.chart-note-pill{
+  display:inline-flex;
+  align-items:center;
+  min-height:28px;
+  padding:4px 10px;
+  border-radius:999px;
+  border:1px solid rgba(92,133,171,.12);
+  background:rgba(7,18,30,.85);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  color:#a8bed8;
+  font:11px/1.2 "IBM Plex Mono", monospace;
+  letter-spacing:.02em;
+  transition:border-color var(--transition-fast);
+}
+.chart-note-pill:hover{
+  border-color:rgba(77,184,255,.25);
+}
+
+.chart-range-button{
+  min-height:34px;
+  padding:7px 14px;
+  border-radius:999px;
+  border:1px solid rgba(92,133,171,.14);
+  background:rgba(7,18,30,.85);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  color:#a8bed8;
+  font:12px/1 "IBM Plex Mono", monospace;
+  cursor:pointer;
+  transition:all var(--transition-fast);
+}
+.chart-range-button.is-active{
+  border-color:rgba(77,184,255,.40);
+  color:#fff;
+  background:rgba(25,56,88,.85);
+  box-shadow:0 0 16px var(--accent-glow);
+}
+.chart-range-button:hover:not(.is-active){
+  border-color:rgba(77,184,255,.25);
+  color:#eef6ff;
+  background:rgba(12,28,45,.90);
+}
+
+.eps-up{fill:rgba(110,231,168,.75);filter:drop-shadow(0 0 3px rgba(110,231,168,.2))}
+.eps-down{fill:rgba(255,143,143,.68);filter:drop-shadow(0 0 3px rgba(255,143,143,.2))}
+
+.chart-surface{
+  min-height:300px;
+  border-radius:var(--radius-md);
+  border:1px solid rgba(92,133,171,.10);
+  background:rgba(4,10,18,.90);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  overflow:hidden;
+}

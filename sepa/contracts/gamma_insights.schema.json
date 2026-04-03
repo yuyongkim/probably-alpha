@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GammaInsights",
+  "description": "Gamma Researcher output: fundamental overlay with EPS + macro context.",
+  "type": "object",
+  "required": ["as_of", "macro_snapshot", "general"],
+  "properties": {
+    "as_of": { "type": "string" },
+    "macro_snapshot": {
+      "type": "object",
+      "properties": {
+        "as_of": { "type": "string" },
+        "source": { "type": "string" },
+        "wti": { "type": ["number", "null"] },
+        "fred_pmi_proxy": { "type": ["number", "null"] },
+        "ecos_rate": { "type": ["number", "null"] }
+      }
+    },
+    "general": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["symbol", "gamma_score"],
+        "properties": {
+          "symbol": { "type": "string" },
+          "name": { "type": "string" },
+          "vcp_confidence": { "type": "number", "minimum": 0, "maximum": 10 },
+          "fundamental_score": { "type": "number", "minimum": 0, "maximum": 10 },
+          "chem_bonus": { "type": "number", "minimum": 0 },
+          "growth_hint": { "type": "number" },
+          "eps_status": { "type": "string" },
+          "eps_yoy": { "type": "number" },
+          "eps_acceleration": { "type": "number" },
+          "gamma_score": { "type": "number", "minimum": 0, "maximum": 10 }
+        }
+      }
+    },
+    "chem": {
+      "type": "array",
+      "items": { "$ref": "#/properties/general/items" }
+    }
+  }
+}

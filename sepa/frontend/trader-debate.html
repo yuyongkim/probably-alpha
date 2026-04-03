@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#060e18" />
+  <meta name="color-scheme" content="dark" />
+  <title>SEPA Trader Debate</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="./styles.css" />
+  <style>
+    .debate-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin: 16px 0;
+    }
+    @media (max-width: 900px) {
+      .debate-grid { grid-template-columns: 1fr; }
+    }
+    .debate-card {
+      background: var(--surface, #0d1926);
+      border: 1px solid var(--border, #1a2a3a);
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .debate-card__header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .debate-card__name {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--fg, #e8ecf0);
+      margin: 0;
+    }
+    .debate-card__style {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--accent, #3b82f6);
+      color: #fff;
+      white-space: nowrap;
+    }
+    .debate-card__section {
+      margin: 0;
+    }
+    .debate-card__section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted, #6b7b8d);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0 0 4px;
+    }
+    .debate-card__body {
+      font-size: 14px;
+      color: var(--fg, #e8ecf0);
+      line-height: 1.5;
+      margin: 0;
+    }
+    .debate-pick {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      padding: 4px 0;
+    }
+    .debate-pick__score {
+      font-size: 12px;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+    .debate-pick__score.good { background: #16a34a22; color: #4ade80; }
+    .debate-pick__score.mid { background: #eab30822; color: #fbbf24; }
+    .debate-pick__score.bad { background: #ef444422; color: #f87171; }
+    .debate-risk {
+      font-size: 13px;
+      color: #f87171;
+      padding: 4px 8px;
+      background: #ef444410;
+      border-radius: 4px;
+      border-left: 3px solid #ef4444;
+    }
+    .consensus-section, .disagreement-section, .conclusion-section {
+      margin-top: 8px;
+    }
+    .consensus-item, .disagreement-item {
+      padding: 8px 12px;
+      margin: 6px 0;
+      border-radius: 6px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .consensus-item {
+      background: #16a34a10;
+      border-left: 3px solid #4ade80;
+      color: #d1fae5;
+    }
+    .disagreement-item {
+      background: #eab30810;
+      border-left: 3px solid #fbbf24;
+      color: #fef3c7;
+    }
+    .allocation-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+    .allocation-table th, .allocation-table td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border, #1a2a3a);
+      font-size: 14px;
+    }
+    .allocation-table th {
+      color: var(--muted, #6b7b8d);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    .allocation-bar {
+      height: 6px;
+      background: var(--accent, #3b82f6);
+      border-radius: 3px;
+      min-width: 4px;
+    }
+    .debate-loading {
+      text-align: center;
+      padding: 48px 16px;
+      color: var(--muted, #6b7b8d);
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header subpage-hero">
+    <div class="hero-copy">
+      <p class="eyebrow">SEPA / TRADER DEBATE</p>
+      <h1>트레이더 토론회</h1>
+      <p class="lead">
+        6명의 전설적 트레이더가 현재 한국 시장 데이터를 각자의 철학으로 분석하고, 합의와 분쟁 포인트를 도출합니다.
+      </p>
+    </div>
+    <div class="toolbar">
+      <div class="lang-switch" aria-label="Language switch">
+        <button type="button" class="lang-chip" data-lang="ko">KO</button>
+        <button type="button" class="lang-chip" data-lang="en">EN</button>
+      </div>
+      <a class="nav-link nav-link--button" href="./index.html">Command Center</a>
+      <a class="nav-link nav-link--button" href="./market-wizards-korea.html">Korea Presets</a>
+    </div>
+  </header>
+
+  <nav class="page-nav scroll-hint">
+    <a class="nav-link" href="./index.html">Command Center</a>
+    <a class="nav-link" href="./glossary.html">Playbook Terms</a>
+    <a class="nav-link" href="./market-wizards-people.html">Wizard Index</a>
+    <a class="nav-link" href="./market-wizards.html">Strategy Frames</a>
+    <a class="nav-link" href="./market-wizards-korea.html">Korea Presets</a>
+    <a class="nav-link" href="./wizard-screener.html">Wizard Screener</a>
+    <a class="nav-link is-active" href="./trader-debate.html">Trader Debate</a>
+  </nav>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2 id="debateTitle">트레이더 토론회</h2>
+        <p id="debateMeta" class="panel-caption">데이터를 불러오는 중...</p>
+      </div>
+      <span id="debateDate" class="eyebrow"></span>
+    </div>
+    <div id="debateGrid" class="debate-grid">
+      <div class="debate-loading">Loading trader analyses...</div>
+    </div>
+  </section>
+
+  <section class="panel consensus-section">
+    <div class="panel-head">
+      <div>
+        <h2 id="consensusTitle">합의 사항</h2>
+        <p class="panel-caption" id="consensusCaption">다수의 트레이더가 동의하는 종목과 섹터</p>
+      </div>
+    </div>
+    <div id="consensusBody"></div>
+  </section>
+
+  <section class="panel disagreement-section">
+    <div class="panel-head">
+      <div>
+        <h2 id="disagreementTitle">분쟁 포인트</h2>
+        <p class="panel-caption" id="disagreementCaption">트레이더 간 의견이 갈리는 종목</p>
+      </div>
+    </div>
+    <div id="disagreementBody"></div>
+  </section>
+
+  <section class="panel conclusion-section">
+    <div class="panel-head">
+      <div>
+        <h2 id="conclusionTitle">최종 포트폴리오 배분</h2>
+        <p class="panel-caption" id="conclusionCaption">트레이더 합의에 기반한 가중 배분</p>
+      </div>
+    </div>
+    <div id="conclusionBody"></div>
+  </section>
+
+  <script>
+    window.addEventListener('error', function(e) {
+      document.body.insertAdjacentHTML('afterbegin',
+        '<pre style="color:red;padding:16px;background:#fff3f3;border:2px solid red;margin:8px">JS Error: ' + e.message + '\n' + (e.filename || '') + ':' + (e.lineno || '') + '</pre>');
+    });
+  </script>
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">&uarr;</button>
+
+  <footer class="page-footer">
+    <div class="page-footer__brand">
+      <strong>SEPA Trader Debate</strong>
+    </div>
+    <p class="page-footer__copy">6 legendary traders debate the Korean market</p>
+    <div class="page-footer__links">
+      <a href="./index.html">Command Center</a>
+      <a href="./market-wizards-korea.html">Korea Presets</a>
+      <a href="./wizard-screener.html">Wizard Screener</a>
+    </div>
+  </footer>
+
+  <script type="module" src="./js/trader-debate.js"></script>
+  <script>
+    (function(){
+      var btn=document.getElementById('backToTop');
+      if(!btn)return;
+      window.addEventListener('scroll',function(){
+        btn.classList.toggle('is-visible',window.scrollY>400);
+      },{passive:true});
+      btn.addEventListener('click',function(){
+        window.scrollTo({top:0,behavior:'smooth'});
+      });
+    })();
+  </script>
+</body>
+</html>

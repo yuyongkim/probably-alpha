@@ -1,0 +1,357 @@
+/* === UI/UX Phase 3 - Fintech Polish === */
+
+/* ── 36. REFINED DATA TABLE EXPERIENCE ── */
+/* Numeric columns right-align for scanning */
+td[data-align="right"],
+th[data-align="right"]{text-align:right}
+td[data-align="center"],
+th[data-align="center"]{text-align:center}
+
+/* Table header background */
+thead th{
+  background:rgba(8,18,31,.92);
+}
+
+/* Row selection indicator */
+tbody tr.is-selected{
+  background:rgba(77,184,255,.10);
+  box-shadow:inset 3px 0 0 var(--accent);
+}
+tbody tr.is-selected td{
+  color:var(--text);
+}
+
+/* ── 37. ENHANCED PANEL DEPTH SYSTEM ── */
+.panel--elevated{
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 0%, rgba(77,184,255,.06), transparent),
+    var(--panel-glass);
+  box-shadow:var(--shadow-lg);
+  border-color:rgba(92,133,171,.16);
+}
+
+/* Panel focus ring when interacting */
+.panel:focus-within{
+  border-color:rgba(77,184,255,.18);
+  box-shadow:var(--shadow), 0 0 0 1px rgba(77,184,255,.08);
+}
+
+/* ── 38. IMPROVED DATA VISUALIZATION CUES ── */
+/* Positive/negative value coloring */
+.val-positive{color:var(--good)}
+.val-negative{color:var(--bad)}
+.val-neutral{color:var(--muted)}
+
+/* Percentage change pill */
+.change-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  padding:2px 8px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:700;
+  font-family:"IBM Plex Mono",monospace;
+}
+.change-pill.up{
+  background:rgba(110,231,168,.12);
+  color:var(--good);
+}
+.change-pill.down{
+  background:rgba(255,143,143,.10);
+  color:var(--bad);
+}
+.change-pill.flat{
+  background:rgba(142,168,199,.10);
+  color:var(--muted);
+}
+
+/* ── 39. IMPROVED ACCESSIBILITY ── */
+/* Higher contrast focus ring */
+:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:3px;
+  border-radius:4px;
+}
+
+/* Skip link for keyboard navigation */
+.skip-link{
+  position:absolute;
+  top:-100%;
+  left:50%;
+  transform:translateX(-50%);
+  padding:10px 20px;
+  background:var(--accent);
+  color:#fff;
+  border-radius:0 0 var(--radius-sm) var(--radius-sm);
+  font-weight:700;
+  z-index:1000;
+  transition:top var(--transition-fast);
+}
+.skip-link:focus{
+  top:0;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:0.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.01ms !important;
+  }
+  html{scroll-behavior:auto}
+}
+
+/* ── 40. REFINED SCROLLBAR ── */
+
+/* ── 41. ENHANCED TOOLTIP SYSTEM ── */
+.term-tip{
+  cursor:help;
+  border-bottom:1px dotted rgba(77,184,255,.35);
+  transition:border-color var(--transition-fast), color var(--transition-fast);
+  text-decoration:none;
+}
+.term-tip:hover{
+  border-color:var(--accent);
+  color:var(--accent-soft);
+}
+
+/* ── 42. DATA DENSITY TOGGLE ── */
+.compact-view th,
+.compact-view td{
+  padding:6px 10px;
+  font-size:12px;
+}
+.compact-view .kpi-card{
+  padding:10px 12px;
+}
+.compact-view .kpi-card strong{
+  font-size:18px;
+}
+
+/* ── 43. PANEL HEADER REFINEMENT ── */
+.panel-head h2{
+  position:relative;
+}
+.panel-head .eyebrow{
+  padding:4px 10px;
+  background:rgba(77,184,255,.08);
+  border:1px solid rgba(77,184,255,.12);
+  border-radius:999px;
+  font-size:10px;
+}
+
+/* ── 44. WORKFLOW CARD PROGRESS INDICATOR ── */
+.workflow-card__step{
+  position:relative;
+  overflow:hidden;
+}
+.workflow-card__step::after{
+  content:"";
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:2px;
+  background:linear-gradient(90deg, var(--accent), transparent);
+  opacity:0;
+  transition:opacity var(--transition-med);
+}
+.workflow-card:hover .workflow-card__step::after{
+  opacity:1;
+}
+
+/* ── 45. IMPROVED HUB LINK CARD ICONS ── */
+.hub-link-card{
+  border-left:3px solid transparent;
+  transition:all var(--transition-med);
+}
+.hub-link-card:hover{
+  border-left-color:var(--accent);
+}
+
+/* ── 46. SECTOR TILE SPARKLINE AREA ── */
+.sector-tile__sparkline{
+  width:100%;
+  height:32px;
+  margin-top:4px;
+}
+
+/* ── 47. DIALOG REFINEMENT ── */
+.company-profile-dialog{
+  --dialog-accent:var(--accent);
+}
+.company-profile-dialog__header{
+  padding-bottom:14px;
+  border-bottom:1px solid rgba(77,184,255,.10);
+}
+.company-profile-dialog__header h2{
+  font-size:20px;
+  font-weight:700;
+  letter-spacing:-.02em;
+}
+
+/* ── 48. ENHANCED BRIEFING SECTION ── */
+.briefing-copy{
+  font-size:14px;
+  line-height:1.85;
+  color:var(--text-secondary);
+}
+.briefing-copy strong{
+  color:var(--text);
+  font-weight:600;
+}
+
+/* ── 49. PAGE FOOTER UPGRADE ── */
+.page-footer{
+  position:relative;
+  overflow:hidden;
+}
+.page-footer::before{
+  content:"";
+  position:absolute;
+  top:0;left:20%;right:20%;
+  height:1px;
+  background:linear-gradient(90deg, transparent, rgba(77,184,255,.12), transparent);
+}
+.page-footer__brand strong{
+  font-size:13px;
+  letter-spacing:.08em;
+}
+
+/* ── 50. EMPTY STATE ENHANCEMENT ── */
+.empty-state{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:120px;
+  padding:24px;
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+  border:1px dashed rgba(92,133,171,.16);
+  border-radius:var(--radius-md);
+  background:rgba(8,18,31,.30);
+}
+
+/* ── 51. SMOOTH NUMBER TRANSITIONS ── */
+.kpi-card strong,
+.mini-stat-card strong,
+.summary-card strong,
+.bucket-entry__metric strong{
+  font-variant-numeric:tabular-nums;
+  font-feature-settings:"tnum";
+}
+
+/* ── 52. CONTEXTUAL GLOW FOR STATUS CARDS ── */
+.kpi-card[data-status="positive"]{
+  border-color:rgba(110,231,168,.20);
+}
+.kpi-card[data-status="positive"]::before{
+  background:linear-gradient(90deg, rgba(110,231,168,.30), transparent);
+}
+.kpi-card[data-status="negative"]{
+  border-color:rgba(255,143,143,.18);
+}
+.kpi-card[data-status="negative"]::before{
+  background:linear-gradient(90deg, rgba(255,143,143,.25), transparent);
+}
+
+/* ── 53. CLICKABLE ROW ENHANCEMENT ── */
+/* Arrow indicator moved to last <td> via CSS to avoid position:relative on <tr>
+   which causes layout thrash / flicker in some browsers with table-layout:fixed. */
+.clickable-row > td:last-child{
+  position:relative;
+}
+.clickable-row > td:last-child::after{
+  content:"";
+  position:absolute;
+  right:8px;
+  top:50%;
+  transform:translateY(-50%);
+  width:0;height:0;
+  border-left:5px solid rgba(77,184,255,.3);
+  border-top:4px solid transparent;
+  border-bottom:4px solid transparent;
+  opacity:0;
+  transition:opacity .15s ease;
+  pointer-events:none;
+}
+.clickable-row:hover > td:last-child::after{
+  opacity:1;
+}
+
+/* ── 54. STICKY TABLE HEADER — disabled, causes layout issues ── */
+
+/* ── 55. ENHANCED SECTOR HEATMAP ── */
+
+/* ── 56. IMPROVED PAGINATION ── */
+.table-pager{
+  padding:10px 4px;
+  border-top:1px solid rgba(77,113,150,.08);
+}
+.table-pager__button{
+  min-width:36px;
+  min-height:32px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:600;
+}
+
+/* ── 57. LOADING INDICATOR ON BUTTONS ── */
+button.is-loading{
+  position:relative;
+  color:transparent;
+}
+button.is-loading::after{
+  content:"";
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:16px;height:16px;
+  border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;
+  border-radius:50%;
+  animation:buttonSpin .6s linear infinite;
+}
+@keyframes buttonSpin{
+  to{transform:translate(-50%,-50%) rotate(360deg)}
+}
+
+/* ── 58. GRAIN TEXTURE — disabled for performance ── */
+
+/* ── 59. IMPROVED LANG SWITCH ── */
+.lang-switch{
+  gap:2px;
+  padding:3px;
+  border-radius:999px;
+  background:rgba(7,18,30,.90);
+}
+.lang-chip{
+  min-width:40px;
+  min-height:30px;
+  font-size:11px;
+  font-weight:600;
+  border-radius:999px;
+}
+.lang-chip.is-active{
+  background:rgba(77,184,255,.22);
+  color:#fff;
+  box-shadow:inset 0 0 0 1px rgba(128,208,255,.24), 0 0 10px var(--accent-glow);
+}
+
+/* ── 60. HOVER LINK UNDERLINE ANIMATION ── */
+.page-footer__links a{
+  position:relative;
+}
+.page-footer__links a::after{
+  content:"";
+  position:absolute;
+  bottom:-2px;left:0;
+  width:0;height:1px;
+  background:var(--accent);
+  transition:width var(--transition-med);
+}
+.page-footer__links a:hover::after{
+  width:100%;
+}

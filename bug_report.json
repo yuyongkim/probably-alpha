@@ -1,0 +1,96 @@
+{
+  "generated_at": "2026-03-27T22:31:36.889250",
+  "summary": {
+    "total_pages": 12,
+    "pages_with_errors": 0,
+    "total_console_errors": 0,
+    "total_network_errors": 0,
+    "total_render_issues": 0
+  },
+  "results": [
+    {
+      "page": "Dashboard",
+      "url": "http://127.0.0.1:8080/index.html",
+      "console_errors": [],
+      "network_errors": [],
+      "render_issues": []
+    },
+    {
+      "page": "Market Wizards Korea",
+      "url": "http://127.0.0.1:8080/market-wizards-korea.html",
+      "console_errors": [],
+      "network_errors": [],
+      "render_issues": []
+    },
+    {
+      "page": "Market Wizards",
+      "url": "http://127.0.0.1:8080/market-wizards.html",
+      "console_errors": [],
+      "network_errors": [],
+      "render_issues": []
+    },
+    {
+      "page": "Market Wizards People",
+      "url": "http://127.0.0.1:8080/market-wizards-people.html",
+      "console_errors": [],
+      "network_errors": [],
+      "render_issues": []
+    },
+    {
+      "page": "Wizard Screener",
+      "url": "http://127.0.0.1:8080/wizard-screener.html",
+      "console_errors": [],
+      "network_errors": [],
+      "render_issues": []
+    },
+    {
+      "page": "Glossary",
+      "url": "http://127.0.0.1:8080/glossary.html",
+      "console_errors": [],
+      "network_errors": [],
+      "render_issues": []
+    },
+    {
+      "page": "MW Korea #ed-seykota",
+      "url": "http://127.0.0.1:8080/market-wizards-korea.html#ed-seykota",
+      "console_errors": [],
+      "network_errors": [],
+      "render_issues": []
+    },
+    {
+      "page": "MW Korea #stan-druckenmiller",
+      "url": "http://127.0.0.1:8080/market-wizards-korea.html#stan-druckenmiller",
+      "console_errors": [],
+      "network_errors": [],
+      "render_issues": []
+    },
+    {
+      "page": "MW Korea #paul-tudor-jones",
+      "url": "http://127.0.0.1:8080/market-wizards-korea.html#paul-tudor-jones",
+      "console_errors": [],
+      "network_errors": [],
+      "render_issues": []
+    },
+    {
+      "page": "MW Korea #william-oneil",
+      "url": "http://127.0.0.1:8080/market-wizards-korea.html#william-oneil",
+      "console_errors": [],
+      "network_errors": [],
+      "render_issues": []
+    },
+    {
+      "page": "MW Korea #nicolas-darvas",
+      "url": "http://127.0.0.1:8080/market-wizards-korea.html#nicolas-darvas",
+      "console_errors": [],
+      "network_errors": [],
+      "render_issues": []
+    },
+    {
+      "page": "MW Korea #jesse-livermore",
+      "url": "http://127.0.0.1:8080/market-wizards-korea.html#jesse-livermore",
+      "console_errors": [],
+      "network_errors": [],
+      "render_issues": []
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "pid": 456,
+  "started_at": "2026-03-08T22:00:57.225Z",
+  "cwd": "/mnt/c/Users/USER/Desktop/Company_Credit",
+  "notify_script": "/mnt/c/Users/USER/Desktop/Super Calculator/oh-my-codex/scripts/notify-hook.js",
+  "poll_ms": 700,
+  "tracked_files": 1,
+  "seen_turns": 0
+}

@@ -1,0 +1,137 @@
+/* === KPI & Briefing === */
+  font-size:14px;
+  line-height:1.85;
+  color:var(--text-secondary);
+}
+
+.kpi-wrap{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:10px;
+  margin-top:16px;
+}
+.kpi{
+  padding:14px;
+  border-radius:var(--radius-md);
+  border:1px solid rgba(92,133,171,.14);
+  background:var(--panel-glass);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  transition:transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.kpi:hover{
+  transform:translateY(-2px);
+  border-color:var(--accent-ring);
+  box-shadow:0 12px 32px rgba(0,0,0,.20), 0 0 0 1px var(--line-glow);
+}
+.kpi label{
+  display:block;
+  margin-bottom:8px;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.kpi strong{
+  display:block;
+  font-size:26px;
+  line-height:1.05;
+  font-weight:700;
+  letter-spacing:-.02em;
+}
+.kpi small{
+  display:block;
+  margin-top:8px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
+}
+.kpi-strip{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+  gap:10px;
+  margin-top:14px;
+}
+.kpi-card{
+  padding:14px 16px;
+  border-radius:var(--radius-sm);
+  border:1px solid rgba(92,133,171,.12);
+  background:var(--panel-glass);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  transition:transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  position:relative;
+}
+.kpi-card:hover{
+  transform:translateY(-2px);
+  border-color:rgba(77,184,255,.22);
+  box-shadow:0 12px 28px rgba(0,0,0,.20);
+}
+.kpi-card label{
+  display:block;
+  margin-bottom:8px;
+  font-size:10px;
+  color:#8da5c0;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  font-weight:600;
+}
+.kpi-card strong{
+  display:block;
+  font-size:22px;
+  line-height:1;
+  font-weight:700;
+  letter-spacing:-.02em;
+}
+.kpi-card p{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.45;
+  opacity:.8;
+}
+.query-panel{
+  margin-top:0;
+  padding:14px 16px;
+  border-radius:20px;
+  background:linear-gradient(180deg, rgba(10,22,36,.92), rgba(8,18,30,.88));
+  box-shadow:none;
+}
+.mini-stat-grid{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:10px;
+  margin:12px 0 14px;
+}
+.mini-stat-card{
+  padding:12px;
+  border-radius:16px;
+  border:1px solid rgba(92,133,171,.16);
+  background:rgba(8,18,31,.72);
+}
+.mini-stat-card label{
+  display:block;
+  margin-bottom:7px;
+  color:var(--muted);
+  font-size:12px;
+}
+.mini-stat-card strong{
+  display:block;
+  font-size:18px;
+  line-height:1.15;
+}
+.mini-stat-card small{
+  display:block;
+  margin-top:6px;
+  color:#8fa4c1;
+  font-size:11px;
+}
+.mini-stat-note{
+  grid-column:1 / -1;
+  padding:12px 14px;
+  border-radius:16px;
+  border:1px solid rgba(92,133,171,.12);
+  background:rgba(10,21,35,.7);
+  color:var(--muted);
+  line-height:1.6;

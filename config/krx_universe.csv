@@ -1,0 +1,29 @@
+symbol,name,sector,sample_profile,eps_profile
+005930.KS,삼성전자,Semiconductors,strong_trend,strong_growth
+000660.KS,SK하이닉스,Semiconductors,vcp_leader,strong_growth
+373220.KS,LG에너지솔루션,Batteries,vcp_leader,strong_growth
+006400.KS,삼성SDI,Batteries,strong_trend,positive_growth
+247540.KQ,에코프로비엠,Battery Materials,vcp_leader,strong_growth
+066970.KS,엘앤에프,Battery Materials,recovery,positive_growth
+003670.KS,포스코퓨처엠,Materials,recovery,positive_growth
+051910.KS,LG화학,Chemicals,recovery,positive_growth
+011170.KS,롯데케미칼,Chemicals,steady,positive_growth
+207940.KS,삼성바이오로직스,Biotech,strong_trend,strong_growth
+068270.KS,셀트리온,Biotech,recovery,positive_growth
+196170.KQ,알테오젠,Biotech,vcp_leader,strong_growth
+302440.KS,SK바이오사이언스,Biotech,steady,positive_growth
+035420.KS,NAVER,Internet,strong_trend,positive_growth
+035720.KS,카카오,Internet,recovery,weak_or_negative
+251270.KS,넷마블,Internet,steady,positive_growth
+005380.KS,현대차,Autos,strong_trend,positive_growth
+000270.KS,기아,Autos,vcp_leader,positive_growth
+012330.KS,현대모비스,Autos,steady,positive_growth
+012450.KS,한화에어로스페이스,Defense,strong_trend,strong_growth
+042660.KS,한화오션,Shipbuilding,vcp_leader,positive_growth
+329180.KS,HD현대중공업,Shipbuilding,strong_trend,positive_growth
+034020.KS,두산에너빌리티,Industrials,recovery,positive_growth
+028260.KS,삼성물산,Industrials,steady,positive_growth
+105560.KS,KB금융,Financials,steady,positive_growth
+055550.KS,신한지주,Financials,steady,positive_growth
+086790.KS,하나금융지주,Financials,recovery,positive_growth
+066570.KS,LG전자,Consumer Electronics,strong_trend,positive_growth

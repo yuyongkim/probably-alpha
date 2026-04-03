@@ -1,0 +1,36 @@
+# Environment secrets
+.env
+.env.local
+.env.*.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project artifacts
+.omx/artifacts/
+*.db
+tmp_*.json
+tmp2*
+
+# Dependencies
+node_modules/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/

@@ -1,0 +1,6 @@
+{"timestamp":"2026-03-08T02:40:56.972Z","type":"watcher_start","cwd":"/mnt/c/Users/USER/Desktop/Company_Credit","notify_script":"/mnt/c/Users/USER/Desktop/Super Calculator/oh-my-codex/scripts/notify-hook.js","poll_ms":700,"once":false}
+{"timestamp":"2026-03-08T02:42:46.761Z","type":"watcher_start","cwd":"/mnt/c/Users/USER/Desktop/Company_Credit","notify_script":"/mnt/c/Users/USER/Desktop/Super Calculator/oh-my-codex/scripts/notify-hook.js","poll_ms":700,"once":true}
+{"timestamp":"2026-03-08T02:42:46.782Z","type":"watcher_once_complete","seen_turns":0}
+{"timestamp":"2026-03-08T02:42:46.793Z","type":"watcher_stop","signal":"SIGTERM"}
+{"timestamp":"2026-03-08T02:42:52.015Z","type":"watcher_start","cwd":"/mnt/c/Users/USER/Desktop/Company_Credit","notify_script":"/mnt/c/Users/USER/Desktop/Super Calculator/oh-my-codex/scripts/notify-hook.js","poll_ms":700,"once":false}
+{"timestamp":"2026-03-08T22:00:57.231Z","type":"watcher_start","cwd":"/mnt/c/Users/USER/Desktop/Company_Credit","notify_script":"/mnt/c/Users/USER/Desktop/Super Calculator/oh-my-codex/scripts/notify-hook.js","poll_ms":700,"once":false}

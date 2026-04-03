@@ -1,0 +1,121 @@
+/* === Sector Grouped View === */
+/* ── Sector Grouped View ── */
+.sector-grouped-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:20px;
+}
+@media(max-width:1100px){
+  .sector-grouped-grid{grid-template-columns:1fr}
+}
+.sector-grouped-card{
+  padding:22px;
+  border-radius:18px;
+  background:var(--panel);
+  border:1px solid var(--line);
+}
+.sector-grouped-card.tone-border-good{border-left:3px solid var(--good)}
+.sector-grouped-card.tone-border-mid{border-left:3px solid var(--mid)}
+.sector-grouped-card.tone-border-bad{border-left:3px solid var(--bad)}
+.sector-grouped-card__head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:14px;
+}
+.sector-grouped-card__head h3{
+  font-size:17px;
+  margin:0 0 8px;
+  color:var(--text);
+}
+.sector-grouped-card__badges{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.sector-grouped-card__stats{
+  display:flex;
+  gap:14px;
+  text-align:center;
+  flex-shrink:0;
+}
+.sector-grouped-card__stats span{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.sector-grouped-card__stats strong{
+  font-size:14px;
+  color:var(--text);
+}
+.sector-grouped-card__stats small{
+  font-size:10px;
+  color:var(--muted);
+  text-transform:uppercase;
+}
+.sector-grouped-card__table{width:100%;margin:0}
+.sector-grouped-card__table th{
+  font-size:11px;
+  color:var(--muted);
+  padding:6px 8px;
+  border-bottom:1px solid rgba(77,113,150,.2);
+  white-space:nowrap;
+}
+.sector-grouped-card__table td{
+  padding:7px 8px;
+  font-size:13px;
+  vertical-align:middle;
+}
+.sector-grouped-card__table .clickable-row{
+  cursor:pointer;
+  transition:background .12s;
+}
+.sector-grouped-card__table .clickable-row:hover{
+  background:rgba(87,180,255,.08);
+}
+.sector-grouped-card__table .company-cell strong{
+  display:block;
+  font-size:13px;
+}
+.sector-grouped-card__table .company-cell small{
+  display:block;
+  font-size:10px;
+  color:var(--muted);
+}
+.sparkline-cell{
+  padding:4px 6px;
+  width:250px;
+}
+.sparkline-svg{display:block}
+.price-cell{
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+  font-size:12px;
+  color:var(--text);
+}
+.ma-cell{
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+  font-size:11px;
+  line-height:1.5;
+  text-align:right;
+}
+.profile-btn{
+  background:none;
+  border:1px solid rgba(92,133,171,.25);
+  border-radius:8px;
+  color:var(--accent);
+  cursor:pointer;
+  padding:8px 12px;
+  min-width:36px;
+  min-height:36px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  transition:background .15s;
+}
+.profile-btn:hover{
+  background:rgba(87,180,255,.12);
+  border-color:var(--accent);
+}

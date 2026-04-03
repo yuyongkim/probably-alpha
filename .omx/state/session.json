@@ -1,0 +1,9 @@
+{
+  "session_id": "omx-1773007254795-9yp0q8",
+  "started_at": "2026-03-08T22:00:57.124Z",
+  "cwd": "/mnt/c/Users/USER/Desktop/Company_Credit",
+  "pid": 442,
+  "platform": "linux",
+  "pid_start_ticks": 818,
+  "pid_cmdline": "node /usr/bin/omx"
+}

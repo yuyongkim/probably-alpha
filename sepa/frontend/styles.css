@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+/* === SEPA Design System — Modular CSS Hub === */
+/* Each @import loads one domain. Order matters for cascade. */
+
+@import url('./css/00-tokens.css');
+@import url('./css/01-reset.css');
+@import url('./css/02-layout.css');
+@import url('./css/03-forms.css');
+@import url('./css/04-panels.css');
+@import url('./css/05-grid.css');
+@import url('./css/06-kpi.css');
+@import url('./css/07-glossary.css');
+@import url('./css/08-tables.css');
+@import url('./css/09-scores.css');
+@import url('./css/10-buckets.css');
+@import url('./css/11-charts.css');
+@import url('./css/12-logic.css');
+@import url('./css/13-navigation.css');
+@import url('./css/14-wizards.css');
+@import url('./css/15-sectors.css');
+@import url('./css/16-pagination.css');
+@import url('./css/17-workflow.css');
+@import url('./css/18-responsive-base.css');
+@import url('./css/19-sector-grouped.css');
+@import url('./css/20-company-dialog.css');
+@import url('./css/21-utilities.css');
+@import url('./css/22-charts-enhanced.css');
+@import url('./css/23-responsive-enhanced.css');
+@import url('./css/24-phase2.css');
+@import url('./css/25-print.css');
+@import url('./css/26-phase3.css');
+@import url('./css/27-perf-fix.css');

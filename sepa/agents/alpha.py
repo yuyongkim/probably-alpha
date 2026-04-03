@@ -1,0 +1,158 @@
+from __future__ import annotations
+
+import csv
+import json
+import logging
+from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
+from statistics import mean
+from typing import Iterable
+
+from sepa.data.price_history import format_date_token, read_price_series_from_path
+from sepa.data.universe import get_symbol_name
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class SymbolMetrics:
+    symbol: str
+    close: float
+    sma50: float
+    sma150: float
+    sma200: float
+    sma200_prev20: float
+    high52: float
+    low52: float
+    ret120: float
+    valid: bool
+    reason: str = ""
+
+
+class AlphaScreener:
+    """Minervini Trend Template 기반 Alpha 스크리너 (CSV 입력)."""
+
+    def __init__(
+        self,
+        data_dir: Path = Path(".omx/artifacts/market-data/ohlcv"),
+        audit_dir: Path = Path(".omx/artifacts/audit-logs"),
+        top_n: int = 0,
+        rs_threshold: float = 70.0,
+    ) -> None:
+        self.data_dir = data_dir
+        self.audit_dir = audit_dir
+        self.top_n = top_n
+        self.rs_threshold = rs_threshold
+
+    def run(self, as_of_date: str | None = None) -> list[dict]:
+        metrics = [self._collect_metrics(path, as_of_date=as_of_date) for path in self._iter_csv_files()]
+        valid = [m for m in metrics if m.valid]
+
+        if not valid:
+            self._audit("alpha", "no valid symbols after preprocessing")
+            return []
+
+        rs_map = self._percentile_map({m.symbol: m.ret120 for m in valid})
+        today = format_date_token(as_of_date) if as_of_date else datetime.now().strftime("%Y-%m-%d")
+
+        results: list[dict] = []
+        for m in valid:
+            rs = rs_map.get(m.symbol, 0.0)
+            checks = {
+                "c1_sma50_gt_sma150_gt_sma200": m.sma50 > m.sma150 > m.sma200,
+                "c2_close_gt_sma50": m.close > m.sma50,
+                "c3_sma50_gt_sma200": m.sma50 > m.sma200,
+                "c4_sma200_up_1m": m.sma200 > m.sma200_prev20,
+                "c5_close_25pct_above_52w_low": m.close >= (1.25 * m.low52 if m.low52 > 0 else m.close),
+                "c6_close_within_25pct_of_52w_high": m.close >= (0.75 * m.high52 if m.high52 > 0 else m.close),
+                "c7_rs_ge_threshold": rs >= self.rs_threshold,
+                "c8_close_positive": m.close > 0,
+            }
+
+            if not all(checks.values()):
+                continue
+
+            score = round((sum(1 for v in checks.values() if v) * 10.0) + (rs * 0.2), 2)
+            results.append(
+                {
+                    "date": today,
+                    "symbol": m.symbol,
+                    "name": get_symbol_name(m.symbol),
+                    "score": score,
+                    "rs_percentile": round(rs, 2),
+                    "checks": checks,
+                    "reason": "trend_template_pass",
+                }
+            )
+
+        results.sort(key=lambda x: (x["score"], x["rs_percentile"]), reverse=True)
+        if self.top_n > 0:
+            return results[: self.top_n]
+        return results
+
+    def _iter_csv_files(self) -> Iterable[Path]:
+        if not self.data_dir.exists():
+            self._audit("alpha", f"data dir not found: {self.data_dir}")
+            return []
+        return sorted(self.data_dir.glob("*.csv"))
+
+    def _collect_metrics(self, path: Path, as_of_date: str | None = None) -> SymbolMetrics:
+        symbol = path.stem
+        try:
+            rows = self._read_ohlcv(path, as_of_date=as_of_date)
+            closes = [r["close"] for r in rows if r["close"] > 0]
+            if len(closes) < 200:
+                return SymbolMetrics(symbol, 0, 0, 0, 0, 0, 0, 0, 0, False, "insufficient_history")
+
+            close = closes[-1]
+            sma50 = mean(closes[-50:])
+            sma150 = mean(closes[-150:])
+            sma200 = mean(closes[-200:])
+            sma200_prev20 = mean(closes[-220:-20]) if len(closes) >= 220 else sma200
+
+            w = closes[-252:] if len(closes) >= 252 else closes
+            high52 = max(w)
+            low52 = min(w)
+
+            base_idx = -121 if len(closes) >= 121 else 0
+            base = closes[base_idx]
+            ret120 = (close / base - 1.0) if base > 0 else 0.0
+
+            return SymbolMetrics(
+                symbol=symbol,
+                close=close,
+                sma50=sma50,
+                sma150=sma150,
+                sma200=sma200,
+                sma200_prev20=sma200_prev20,
+                high52=high52,
+                low52=low52,
+                ret120=ret120,
+                valid=True,
+            )
+        except (ValueError, TypeError, KeyError, IndexError, OSError) as e:
+            logger.warning('alpha parse error for %s: %s', symbol, e)
+            self._audit("alpha", f"{symbol} parse error: {e}")
+            return SymbolMetrics(symbol, 0, 0, 0, 0, 0, 0, 0, 0, False, "parse_error")
+
+    @staticmethod
+    def _read_ohlcv(path: Path, as_of_date: str | None = None) -> list[dict[str, float]]:
+        return [{'close': row.get('close', 0.0)} for row in read_price_series_from_path(path, as_of_date=as_of_date)]
+
+    @staticmethod
+    def _percentile_map(ret_by_symbol: dict[str, float]) -> dict[str, float]:
+        items = sorted(ret_by_symbol.items(), key=lambda x: x[1])
+        n = len(items)
+        if n == 1:
+            return {items[0][0]: 100.0}
+        out: dict[str, float] = {}
+        for i, (s, _) in enumerate(items):
+            out[s] = (i / (n - 1)) * 100.0
+        return out
+
+    def _audit(self, component: str, message: str) -> None:
+        self.audit_dir.mkdir(parents=True, exist_ok=True)
+        ts = datetime.now().strftime("%Y%m%d-%H%M%S")
+        p = self.audit_dir / f"{component}-{ts}.log"
+        p.write_text(json.dumps({"timestamp": ts, "message": message}, ensure_ascii=False), encoding="utf-8")

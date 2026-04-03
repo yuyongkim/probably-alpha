@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OmegaFinalPicks",
+  "description": "Omega PM output: final top picks with execution plans.",
+  "type": "object",
+  "required": ["as_of", "final_picks"],
+  "properties": {
+    "as_of": { "type": "string" },
+    "final_picks": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["symbol", "entry", "stop", "target", "rr_ratio"],
+        "properties": {
+          "symbol": { "type": "string" },
+          "name": { "type": "string" },
+          "entry": { "type": "number", "exclusiveMinimum": 0 },
+          "stop": { "type": "number", "exclusiveMinimum": 0 },
+          "target": { "type": "number", "exclusiveMinimum": 0 },
+          "qty": { "type": "integer", "minimum": 0 },
+          "rr_ratio": { "type": "number", "minimum": 1.5 },
+          "gamma_score": { "type": "number" }
+        }
+      }
+    }
+  }
+}

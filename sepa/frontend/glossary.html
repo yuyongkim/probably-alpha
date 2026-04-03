@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#060e18" />
+  <meta name="color-scheme" content="dark" />
+  <title>SEPA Playbook Terms</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header class="page-header subpage-hero">
+    <div class="hero-copy">
+      <p class="eyebrow">SEPA / PLAYBOOK TERMS</p>
+      <h1>Playbook Terms</h1>
+      <p class="lead">
+        A separate reference page for the terms used across the dashboard, sector ranking,
+        stock ranking, and Minervini-style screening workflow.
+      </p>
+    </div>
+    <div class="toolbar">
+      <div class="lang-switch" aria-label="Language switch">
+        <button type="button" class="lang-chip" data-lang="ko">KO</button>
+        <button type="button" class="lang-chip" data-lang="en">EN</button>
+      </div>
+      <a class="nav-link nav-link--button" href="./index.html">Command Center</a>
+      <a class="nav-link nav-link--button" href="./market-wizards.html">Strategy Frames</a>
+    </div>
+  </header>
+
+  <nav class="page-nav scroll-hint">
+    <a class="nav-link" href="./index.html">Command Center</a>
+    <a class="nav-link is-active" href="./glossary.html">Playbook Terms</a>
+    <a class="nav-link" href="./market-wizards-people.html">Wizard Index</a>
+    <a class="nav-link" href="./market-wizards.html">Strategy Frames</a>
+    <a class="nav-link" href="./market-wizards-korea.html">Korea Presets</a>
+    <a class="nav-link" href="./wizard-screener.html">Wizard Screener</a>
+  </nav>
+
+  <section class="note-strip">
+    <div class="note-pill">Alpha / Beta / Gamma definitions</div>
+    <div class="note-pill">RS, MACD, EPS, least resistance</div>
+    <div class="note-pill">Reference-only page, moved out of the dashboard</div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div>
+        <h2>Core Terms</h2>
+        <p class="panel-caption">
+          This page loads the glossary from the API and keeps the main dashboard lighter.
+        </p>
+      </div>
+      <strong id="glossaryCount">0 terms</strong>
+    </div>
+    <div id="glossaryGrid" class="glossary-grid"></div>
+  </section>
+
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">&uarr;</button>
+
+  <footer class="page-footer">
+    <div class="page-footer__brand">
+      <strong>SEPA Playbook Terms</strong>
+    </div>
+    <p class="page-footer__copy">Definitions for the SEPA screening workflow</p>
+    <div class="page-footer__links">
+      <a href="./index.html">Command Center</a>
+      <a href="./market-wizards.html">Strategy Frames</a>
+    </div>
+  </footer>
+
+  <script type="module" src="./js/glossary-page.js"></script>
+  <script>
+    (function(){
+      var btn=document.getElementById('backToTop');
+      if(!btn)return;
+      window.addEventListener('scroll',function(){
+        btn.classList.toggle('is-visible',window.scrollY>400);
+      },{passive:true});
+      btn.addEventListener('click',function(){
+        window.scrollTo({top:0,behavior:'smooth'});
+      });
+    })();
+  </script>
+</body>
+</html>

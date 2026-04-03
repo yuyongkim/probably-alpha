@@ -1,0 +1,28 @@
+/* === Reset & Typography === */
+*{box-sizing:border-box;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{
+  margin:0;
+  min-height:100vh;
+  padding:20px;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 0%, rgba(77,184,255,.08), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 5%, rgba(255,184,77,.05), transparent),
+    radial-gradient(ellipse 50% 50% at 50% 100%, rgba(77,184,255,.03), transparent),
+    linear-gradient(180deg, #050d17 0%, #081220 50%, #060e18 100%);
+  color:var(--text);
+  font:14px/1.65 "IBM Plex Sans KR", "Segoe UI", system-ui, sans-serif;
+  text-rendering:optimizeLegibility;
+}
+h1,h2,h3,h4,p{margin:0}
+h1{font-size:clamp(28px, 3.2vw, 42px);line-height:1.08;letter-spacing:-.04em;font-weight:700}
+h2{font-size:clamp(17px, 1.6vw, 20px);font-weight:600;letter-spacing:-.01em}
+h3{font-size:clamp(14px, 1.2vw, 16px);font-weight:600}
+h4{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#b9cbdf;font-weight:600}
+code{
+  font:12px/1.4 "IBM Plex Mono", monospace;
+  padding:2px 8px;
+  border-radius:999px;
+  background:rgba(8,19,35,.72);
+  color:#dce9fa;
+  font-feature-settings:"liga" 0;
+}

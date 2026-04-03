@@ -1,0 +1,250 @@
+/* === Company Profile Dialog === */
+/* ── Company Profile Dialog ── */
+.company-profile-dialog{
+  border:none;
+  border-radius:var(--radius-lg);
+  background:rgba(12,25,38,.92);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  color:var(--text);
+  max-width:1060px;
+  width:96vw;
+  padding:0;
+  box-shadow:0 40px 100px rgba(0,0,0,.55), 0 0 0 1px var(--glass-border);
+  max-height:90vh;
+  animation:dialogFadeIn .25s cubic-bezier(.4,0,.2,1);
+}
+@keyframes dialogFadeIn{
+  from{opacity:0;transform:translateY(12px) scale(.98)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.company-profile-dialog::backdrop{background:rgba(0,0,0,.65);backdrop-filter:blur(4px)}
+.company-profile-dialog__inner{padding:24px;overflow-y:auto;max-height:calc(90vh - 4px)}
+.company-profile-dialog__header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+.company-profile-dialog__header h2{
+  font-size:18px;
+  margin:0;
+}
+.company-profile-dialog__close{
+  background:none;
+  border:none;
+  font-size:24px;
+  color:var(--muted);
+  cursor:pointer;
+  padding:4px 8px;
+  line-height:1;
+}
+.company-profile-dialog__close:hover{color:var(--text)}
+.company-profile-dialog__body{min-height:120px}
+.profile-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+  margin-bottom:18px;
+}
+.profile-chart{
+  text-align:center;
+}
+.profile-chart h4,.profile-eps h4,.profile-section h4{
+  font-size:13px;
+  color:var(--muted);
+  margin:0 0 10px;
+  text-transform:uppercase;
+}
+.profile-price{
+  font-size:20px;
+  font-weight:700;
+  color:var(--text);
+  margin:8px 0 0;
+}
+.profile-session{
+  font-size:13px;
+  margin:2px 0 0;
+}
+.profile-dl{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:0;
+  margin:0;
+}
+.profile-dl div{
+  display:flex;
+  justify-content:space-between;
+  padding:6px 0;
+  border-bottom:1px solid rgba(77,113,150,.12);
+  font-size:13px;
+}
+.profile-dl dt{color:var(--muted)}
+.profile-dl dd{margin:0;color:var(--text);font-weight:600}
+.profile-eps{margin-top:12px}
+.profile-eps table{width:100%}
+.profile-eps th{
+  font-size:11px;
+  color:var(--muted);
+  text-align:left;
+  padding:6px 8px;
+  border-bottom:1px solid rgba(77,113,150,.2);
+}
+.profile-eps td{
+  padding:6px 8px;
+  font-size:13px;
+}
+.profile-eps td.good{color:var(--good)}
+.profile-eps td.bad{color:var(--bad)}
+/* Overview sections */
+.profile-sections{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-top:16px;
+}
+.profile-section{
+  background:rgba(77,113,150,.06);
+  border-radius:12px;
+  padding:14px;
+}
+.profile-section--full{grid-column:1/-1}
+.profile-badge{
+  display:inline-block;
+  padding:2px 8px;
+  border-radius:6px;
+  font-size:11px;
+  font-weight:600;
+}
+.profile-badge.pass{background:rgba(138,240,184,.15);color:var(--good)}
+.profile-badge.fail{background:rgba(255,158,158,.12);color:var(--bad)}
+.profile-badge.neutral{background:rgba(77,113,150,.12);color:var(--muted)}
+.profile-badge.conviction-a-plus{background:rgba(138,240,184,.25);color:#4fdc8f}
+.profile-badge.conviction-a{background:rgba(138,240,184,.15);color:var(--good)}
+.profile-badge.conviction-b{background:rgba(240,192,64,.15);color:#f0c040}
+.profile-badge.conviction-c{background:rgba(255,158,158,.12);color:var(--bad)}
+.profile-kv{
+  display:flex;
+  justify-content:space-between;
+  padding:3px 0;
+  font-size:12px;
+}
+.profile-kv dt{color:var(--muted)}
+.profile-kv dd{margin:0;font-weight:600;color:var(--text)}
+.profile-checks{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.profile-check{
+  font-size:10px;
+  padding:2px 6px;
+  border-radius:4px;
+  background:rgba(138,240,184,.12);
+  color:var(--good);
+}
+.profile-check.off{
+  background:rgba(255,158,158,.08);
+  color:var(--bad);
+  text-decoration:line-through;
+  opacity:.6;
+}
+.profile-exec-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+  text-align:center;
+}
+.profile-exec-grid .exec-item{font-size:12px}
+.profile-exec-grid .exec-item .label{color:var(--muted);font-size:10px}
+.profile-exec-grid .exec-item .value{font-size:15px;font-weight:700}
+/* Naver-style financial grid */
+.profile-fin-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2px;
+  margin:8px 0 4px;
+  background:rgba(77,113,150,.08);
+  border-radius:8px;
+  padding:6px;
+}
+.fin-cell{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:4px 2px;
+}
+.fin-label{font-size:10px;color:var(--muted);text-transform:uppercase}
+.fin-value{font-size:13px;font-weight:600;color:var(--text)}
+
+/* ── Financial Performance Table (Naver-style) ── */
+.profile-fin-table-wrap{
+  margin-top:14px;
+}
+.profile-fin-table-wrap h4{
+  font-size:13px;
+  color:var(--muted);
+  margin:0 0 8px;
+  text-transform:uppercase;
+}
+.profile-fin-table-scroll{
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  border:1px solid rgba(77,113,150,.16);
+  border-radius:10px;
+  background:rgba(8,18,31,.60);
+}
+.profile-fin-table{
+  width:100%;
+  border-collapse:collapse;
+  font:11px/1.4 "IBM Plex Mono", monospace;
+  white-space:nowrap;
+}
+.profile-fin-table thead{
+  position:sticky;
+  top:0;
+  z-index:1;
+}
+.fin-th{
+  padding:6px 8px;
+  font-size:10px;
+  font-weight:600;
+  color:var(--muted);
+  text-align:right;
+  border-bottom:1px solid rgba(77,113,150,.2);
+  background:rgba(8,18,31,.92);
+}
+.fin-th--label{
+  text-align:left;
+  position:sticky;
+  left:0;
+  z-index:2;
+  background:rgba(8,18,31,.96);
+  min-width:72px;
+}
+.fin-th--q{
+  color:rgba(87,180,255,.7);
+}
+.fin-td{
+  padding:5px 8px;
+  text-align:right;
+  color:var(--text);
+  font-variant-numeric:tabular-nums;
+  border-bottom:1px solid rgba(77,113,150,.08);
+}
+.fin-td--label{
+  text-align:left;
+  color:var(--muted);
+  font-weight:600;
+  font-size:11px;
+  position:sticky;
+  left:0;
+  z-index:1;
+  background:rgba(8,18,31,.92);
+  min-width:72px;
+}
+.fin-neg{
+  color:var(--bad);
+}
+.profile-fin-table tbody tr:hover .fin-td{
+  background:rgba(87,180,255,.04);
+}
+.profile-fin-table tbody tr:hover .fin-td--label{
+  background:rgba(12,28,48,.96);
+}

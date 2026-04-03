@@ -1,0 +1,29 @@
+/* === Print Styles === */
+/* ── 35. PRINT STYLES ── */
+@media print{
+  body{
+    background:#fff;
+    color:#1a1a2e;
+    padding:0;
+  }
+  .page-nav,
+  .back-to-top,
+  .page-footer,
+  .chart-range-controls,
+  .toolbar,
+  button{display:none !important}
+  .panel,.control-band,.section-shell{
+    border:1px solid #ddd;
+    background:#fff;
+    box-shadow:none;
+    backdrop-filter:none;
+    break-inside:avoid;
+  }
+  .subpage-hero h1{
+    -webkit-text-fill-color:#1a1a2e;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   UI/UX PRO MAX PHASE 3 — FINTECH DATA INTELLIGENCE POLISH
+   ══════════════════════════════════════════════════════════ */

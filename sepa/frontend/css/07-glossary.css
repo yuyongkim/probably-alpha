@@ -1,0 +1,46 @@
+/* === Glossary & Hub Links === */
+
+.glossary-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.hub-links{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.hub-link-card{
+  display:block;
+  padding:14px;
+  border-radius:18px;
+  border:1px solid rgba(92,133,171,.16);
+  background:rgba(8,18,31,.72);
+  color:#e8f2ff;
+  text-decoration:none;
+}
+.hub-link-card strong{
+  display:block;
+  margin-bottom:6px;
+}
+.hub-link-card p{
+  color:var(--muted);
+  font-size:13px;
+}
+.glossary-card{
+  padding:12px;
+  border-radius:18px;
+  border:1px solid rgba(92,133,171,.18);
+  background:rgba(9,18,31,.72);
+}
+.glossary-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:8px;
+}
+.glossary-card p{
+  color:var(--muted);
+  font-size:13px;
+}

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#060e18" />
+  <meta name="color-scheme" content="dark" />
+  <title>Wizard Screener — SEPA</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <section class="control-band">
+    <header class="page-header">
+      <div class="hero-copy">
+        <p class="eyebrow">MARKET WIZARDS / SCREENER</p>
+        <h1>Multi-Strategy Screener</h1>
+        <p class="lead">
+          26 strategies from Market Wizards applied to your universe.
+          Each stock is scored against every trader's methodology.
+        </p>
+      </div>
+      <div class="toolbar">
+        <div class="lang-switch" aria-label="Language switch">
+          <button type="button" class="lang-chip" data-lang="ko">KO</button>
+          <button type="button" class="lang-chip" data-lang="en">EN</button>
+        </div>
+        <input id="apiBase" value="http://127.0.0.1:8000" aria-label="API Base URL" />
+        <button id="btnRefresh">Refresh</button>
+      </div>
+    </header>
+
+    <nav class="page-nav">
+      <a class="nav-link" href="./index.html">Command Center</a>
+      <a class="nav-link" href="./market-wizards-people.html">Wizard Index</a>
+      <a class="nav-link" href="./market-wizards.html">Strategy Frames</a>
+      <a class="nav-link" href="./market-wizards-korea.html">Korea Presets</a>
+      <a class="nav-link is-active" href="./wizard-screener.html">Wizard Screener</a>
+    </nav>
+  </section>
+
+  <!-- Category Filter -->
+  <section class="trader-tab-section">
+    <div class="panel-head">
+      <div>
+        <h2 id="filterTitle">Strategy Filter</h2>
+        <p class="panel-caption" id="filterCaption">Select categories to filter strategies. Click a strategy card to see matching stocks.</p>
+      </div>
+      <span id="strategyCountBadge" class="eyebrow">26 strategies</span>
+    </div>
+    <div id="categoryFilters" class="selector-row"></div>
+  </section>
+
+  <!-- KPI Strip -->
+  <section class="kpi-strip">
+    <article class="kpi-card">
+      <label>Date</label>
+      <strong id="wsDate">-</strong>
+      <p>Screening date</p>
+    </article>
+    <article class="kpi-card">
+      <label>Stocks Screened</label>
+      <strong id="wsStocksTotal">0</strong>
+      <p>Total universe</p>
+    </article>
+    <article class="kpi-card">
+      <label>Stocks Passing</label>
+      <strong id="wsStocksPassing">0</strong>
+      <p>Any strategy match</p>
+    </article>
+    <article class="kpi-card">
+      <label>Strategies</label>
+      <strong id="wsStrategies">26</strong>
+      <p>Active strategies</p>
+    </article>
+    <article class="kpi-card">
+      <label>Top Hit Rate</label>
+      <strong id="wsTopHitRate">-</strong>
+      <p>Most matched strategy</p>
+    </article>
+  </section>
+
+  <!-- Strategy Cards Grid -->
+  <section class="section-shell">
+    <div class="section-header">
+      <div>
+        <p class="section-kicker">All Strategies</p>
+        <h2 id="stratGridTitle">Strategy Overview</h2>
+        <p class="panel-caption" id="stratGridCaption">Each card represents one trader's methodology. Hit count shows stocks matching today.</p>
+      </div>
+    </div>
+    <div id="strategyGrid" class="wizard-grid"></div>
+  </section>
+
+  <!-- Top Stocks Table -->
+  <section class="section-shell">
+    <div class="section-header">
+      <div>
+        <p class="section-kicker">Screener Results</p>
+        <h2 id="topStocksTitle">Top Multi-Strategy Matches</h2>
+        <p class="panel-caption" id="topStocksCaption">Stocks ranked by number of strategies passed. More matches = stronger multi-factor signal.</p>
+      </div>
+      <div class="section-chip-row">
+        <span class="note-pill" id="multiMatchPill">Multi-strategy convergence</span>
+      </div>
+    </div>
+    <article class="panel">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:4%">#</th>
+            <th style="width:14%">Stock</th>
+            <th style="width:10%">Strategies Passed</th>
+            <th style="width:10%">Best Score</th>
+            <th style="width:10%">Avg Score</th>
+            <th style="width:52%">Matched Strategies</th>
+          </tr>
+        </thead>
+        <tbody id="topStockRows"></tbody>
+      </table>
+      <div id="topStockRowsPager" class="pagination-bar"></div>
+    </article>
+  </section>
+
+  <!-- Strategy Detail Modal -->
+  <section class="section-shell" id="strategyDetail" style="display:none">
+    <div class="section-header">
+      <div>
+        <p class="section-kicker" id="detailKicker">Strategy Detail</p>
+        <h2 id="detailTitle">-</h2>
+        <p class="panel-caption" id="detailDesc">-</p>
+      </div>
+      <button id="btnCloseDetail" class="nav-link">Close</button>
+    </div>
+    <article class="panel">
+      <div class="panel-head">
+        <div>
+          <h3 id="detailCondTitle">Kiwoom Conditions</h3>
+        </div>
+        <span id="detailCondCount" class="eyebrow">-</span>
+      </div>
+      <div id="detailConditions" class="definition-stack"></div>
+    </article>
+    <article class="panel" style="margin-top:12px">
+      <div class="panel-head">
+        <div>
+          <h3 id="detailMatchTitle">Matching Stocks</h3>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:5%">#</th>
+            <th style="width:18%">Stock</th>
+            <th style="width:10%">Score</th>
+            <th style="width:12%">Conditions Met</th>
+            <th style="width:55%">Condition Details</th>
+          </tr>
+        </thead>
+        <tbody id="detailStockRows"></tbody>
+      </table>
+    </article>
+  </section>
+
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">&uarr;</button>
+
+  <footer class="page-footer">
+    <div class="page-footer__brand">
+      <strong>Wizard Screener</strong>
+    </div>
+    <p class="page-footer__copy">26 strategies from Market Wizards applied to your universe</p>
+    <div class="page-footer__links">
+      <a href="./index.html">Command Center</a>
+      <a href="./market-wizards.html">Strategy Frames</a>
+      <a href="./market-wizards-korea.html">Korea Presets</a>
+    </div>
+  </footer>
+
+  <script type="module" src="./js/wizard-screener.js"></script>
+  <script>
+    (function(){
+      var btn=document.getElementById('backToTop');
+      if(!btn)return;
+      window.addEventListener('scroll',function(){
+        btn.classList.toggle('is-visible',window.scrollY>400);
+      },{passive:true});
+      btn.addEventListener('click',function(){
+        window.scrollTo({top:0,behavior:'smooth'});
+      });
+    })();
+  </script>
+</body>
+</html>

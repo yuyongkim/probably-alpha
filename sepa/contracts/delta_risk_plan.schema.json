@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DeltaRiskPlan",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["symbol", "entry", "stop", "target", "qty", "rr_ratio"],
+    "properties": {
+      "symbol": {"type": "string"},
+      "entry": {"type": "number"},
+      "stop": {"type": "number"},
+      "target": {"type": "number"},
+      "qty": {"type": "integer", "minimum": 0},
+      "rr_ratio": {"type": "number", "minimum": 1.5}
+    }
+  }
+}

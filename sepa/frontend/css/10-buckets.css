@@ -1,0 +1,231 @@
+/* === Backtest Buckets === */
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:grid;
+  gap:10px;
+}
+.bucket-card{
+  position:relative;
+  padding:22px;
+  border-radius:var(--radius-xl);
+  border:1px solid rgba(92,133,171,.12);
+  background:
+    radial-gradient(ellipse 50% 40% at 90% 0%, rgba(255,184,77,.08), transparent),
+    radial-gradient(ellipse 50% 40% at 10% 100%, rgba(77,184,255,.08), transparent),
+    var(--panel-glass);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:var(--shadow-lg);
+  transition:border-color var(--transition-med);
+}
+.bucket-card:hover{
+  border-color:rgba(255,255,255,.08);
+}
+.bucket-card::before{
+  content:"";
+  position:absolute;
+  inset:0 auto auto 0;
+  width:140px;
+  height:1px;
+  background:linear-gradient(90deg, rgba(255,255,255,.42), transparent);
+}
+.bucket-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:18px;
+}
+.bucket-head h3{
+  margin-top:6px;
+  font-size:26px;
+  line-height:1;
+}
+.bucket-head p{margin-top:6px;color:var(--muted)}
+.bucket-kicker{
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  padding:0 10px;
+  border-radius:999px;
+  border:1px solid rgba(92,133,171,.22);
+  background:rgba(7,17,28,.9);
+  color:#9ecbff;
+  font:11px/1 "IBM Plex Mono", monospace;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.bucket-head__meta{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:8px;
+}
+.bucket-meta-pill{
+  display:inline-flex;
+  align-items:center;
+  min-height:30px;
+  padding:0 12px;
+  border-radius:999px;
+  border:1px solid rgba(92,133,171,.18);
+  background:rgba(7,18,30,.86);
+  color:#cddcf0;
+  font-size:12px;
+}
+.bucket-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(520px,1fr));
+  gap:16px;
+}
+.bucket-columns{
+  display:grid;
+  grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
+  gap:16px;
+}
+.bucket-column{
+  padding:16px;
+  border-radius:22px;
+  border:1px solid rgba(92,133,171,.14);
+  background:rgba(6,15,26,.54);
+}
+.bucket-column__head{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-bottom:12px;
+}
+.bucket-column__head small{
+  color:var(--muted);
+  font-size:12px;
+}
+.mini-list{
+  list-style:none;
+  margin:10px 0 0;
+  padding:0;
+  display:grid;
+  gap:8px;
+}
+.mini-list li{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:10px 12px;
+  border-radius:16px;
+  border:1px solid rgba(92,133,171,.16);
+  background:rgba(11,22,36,.82);
+}
+.link-button{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:4px;
+  padding:0;
+  border:none;
+  background:transparent;
+  color:var(--text);
+  cursor:pointer;
+  font:inherit;
+  text-align:left;
+}
+.link-button small{color:var(--muted)}
+.link-button.bucket-entry{
+  width:100%;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:14px;
+  padding:16px 18px;
+  border:1px solid rgba(92,133,171,.12);
+  border-radius:var(--radius-md);
+  background:var(--panel-glass);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  transition:all var(--transition-fast);
+}
+.link-button.bucket-entry:hover{
+  transform:translateY(-2px);
+  border-color:rgba(128,208,255,.28);
+  background:rgba(14,28,45,.80);
+  box-shadow:0 20px 40px rgba(0,0,0,.22), 0 0 24px var(--accent-glow);
+}
+.bucket-rank{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:42px;
+  min-height:42px;
+  padding:0 10px;
+  border-radius:14px;
+  border:1px solid rgba(92,133,171,.18);
+  background:rgba(7,17,29,.92);
+  color:#f2f7ff;
+  font:12px/1 "IBM Plex Mono", monospace;
+}
+.bucket-entry__body{
+  min-width:0;
+  display:grid;
+  gap:6px;
+}
+.bucket-entry__body strong{
+  font-size:17px;
+  line-height:1.2;
+}
+.bucket-entry__body small{
+  color:#9cb2cc;
+  font-size:12px;
+}
+.bucket-entry__metric{
+  min-width:96px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:5px;
+}
+.bucket-entry__metric label{
+  color:#8fa4c1;
+  font:11px/1 "IBM Plex Mono", monospace;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+.bucket-entry__metric strong{
+  font-size:24px;
+  line-height:1;
+}
+.bucket-session{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:6px 10px;
+}
+.bucket-session strong{
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  padding:0 10px;
+  border-radius:999px;
+  font-size:13px;
+  line-height:1;
+}
+.bucket-session span,
+.bucket-session small{
+  color:#b3c6dd;
+  font-size:12px;
+}
+.bucket-session--up strong{
+  background:rgba(138,240,184,.14);
+  color:#8af0b8;
+}
+.bucket-session--down strong{
+  background:rgba(255,158,158,.14);
+  color:#ffb0b0;
+}
+.bucket-session--flat strong{
+  background:rgba(255,210,116,.14);
+  color:#ffd274;
+}
+.bucket-session--muted{
+  color:var(--muted);
+  font-size:12px;
+}

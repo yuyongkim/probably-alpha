@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AlphaPassed",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["date", "symbol", "score", "rs_percentile", "checks"],
+    "properties": {
+      "date": {"type": "string"},
+      "symbol": {"type": "string"},
+      "score": {"type": "number"},
+      "rs_percentile": {"type": "number", "minimum": 0, "maximum": 100},
+      "checks": {
+        "type": "object",
+        "additionalProperties": {"type": "boolean"}
+      },
+      "reason": {"type": "string"}
+    }
+  }
+}
