@@ -92,14 +92,143 @@ def _offset_quarter(y: int, q: int, offset: int) -> tuple[int, int]:
     return (total // 4, total % 4 + 1)
 
 
+def _read_from_unified_db(symbol: str) -> dict | None:
+    """Read financials from ohlcv.db unified financials table."""
+    from sepa.data.ohlcv_db import DB_PATH
+    if not DB_PATH.exists():
+        return None
+
+    conn = _connect(DB_PATH)
+    if conn is None:
+        return None
+
+    # Try with raw code (without exchange suffix)
+    code = to_kiwoom_symbol(symbol)  # e.g. '005930'
+
+    try:
+        # Check if table exists
+        if not _table_exists(conn, 'financials'):
+            conn.close()
+            return None
+
+        rows = conn.execute(
+            'SELECT period, period_type, metric, value FROM financials WHERE symbol = ? ORDER BY period',
+            (code,),
+        ).fetchall()
+    except sqlite3.Error:
+        conn.close()
+        return None
+    finally:
+        conn.close()
+
+    if not rows:
+        return None
+
+    # Pivot into annual/quarterly buckets
+    annual_data: dict[str, dict[str, float | None]] = {}
+    quarter_data: dict[str, dict[str, float | None]] = {}
+
+    for row in rows:
+        period = str(row['period'])
+        ptype = str(row['period_type'])
+        metric_raw = str(row['metric'])
+        val = float(row['value']) if row['value'] is not None else None
+
+        key = _match_metric(metric_raw)
+        if not key:
+            continue
+
+        if ptype == 'quarterly' or 'Q' in period:
+            quarter_data.setdefault(period, {})[key] = val
+        else:
+            annual_data.setdefault(period, {})[key] = val
+
+    if not annual_data and not quarter_data:
+        return None
+
+    # Compute derived metrics
+    from sepa.data.price_history import read_price_series as _read_price
+    from sepa.data.quantdb import read_company_snapshot
+    snap = read_company_snapshot(symbol)
+    snap_mkt_cap = float(snap.get('mkt_cap') or 0) if snap else 0
+    _ohlcv = _read_price(symbol)
+    real_price = float(_ohlcv[-1].get('close', 0)) if _ohlcv else 0
+    if real_price <= 0 and snap:
+        real_price = float(snap.get('price') or 0)
+    snap_shares = (snap_mkt_cap * 100_000_000 / real_price) if real_price > 0 and snap_mkt_cap > 0 else 0
+
+    for bucket in (annual_data, quarter_data):
+        for period, m in bucket.items():
+            rev = m.get('revenue')
+            ni = m.get('net_income')
+            op = m.get('op_profit')
+            equity = m.get('equity')
+            debt = m.get('total_debt')
+            if rev and ni and rev != 0 and 'npm' not in m:
+                m['npm'] = round((ni / rev) * 100, 1)
+            if rev and op and rev != 0 and 'opm' not in m:
+                m['opm'] = round((op / rev) * 100, 1)
+            if ni is not None and equity and equity > 0 and m.get('roe') is None:
+                m['roe'] = round((ni / equity) * 100, 1)
+            if debt is not None and equity and equity > 0 and m.get('debt_ratio') is None:
+                m['debt_ratio'] = round((debt / equity) * 100, 1)
+            if ni is not None and snap_shares > 0 and m.get('eps') is None:
+                m['eps'] = int(round((ni * 100_000_000) / snap_shares))
+            if equity is not None and snap_shares > 0 and m.get('bps') is None:
+                m['bps'] = int(round((equity * 100_000_000) / snap_shares))
+            eps_val = m.get('eps')
+            if real_price > 0 and eps_val and eps_val > 0 and m.get('per') is None:
+                m['per'] = round(real_price / eps_val, 1)
+            bps_val = m.get('bps')
+            if real_price > 0 and bps_val and bps_val > 0 and m.get('pbr') is None:
+                m['pbr'] = round(real_price / bps_val, 1)
+
+    # Sort and trim
+    from datetime import datetime
+    current_year = str(datetime.now().year)
+    min_year = str(int(current_year) - 4)
+    sorted_years = sorted(y for y in annual_data.keys() if y >= min_year)[-4:]
+    if not sorted_years:
+        sorted_years = sorted(annual_data.keys())[-4:]
+    min_quarter = f'{min_year}Q1'
+    sorted_quarters = sorted(q for q in quarter_data.keys() if q >= min_quarter)[-8:]
+    if not sorted_quarters:
+        sorted_quarters = sorted(quarter_data.keys())[-8:]
+
+    int_metrics = {'revenue', 'op_profit', 'net_income', 'equity', 'total_debt', 'eps', 'bps', 'dps'}
+
+    def _build_row(period: str, metrics: dict) -> dict:
+        row_out: dict = {'period': period}
+        for mk in OUTPUT_METRICS:
+            v = metrics.get(mk)
+            if v is None:
+                row_out[mk] = None
+            elif mk in int_metrics:
+                row_out[mk] = int(round(v))
+            else:
+                row_out[mk] = round(v, 1)
+        return row_out
+
+    return {
+        'annual': [_build_row(y, annual_data[y]) for y in sorted_years],
+        'quarterly': [_build_row(q, quarter_data[q]) for q in sorted_quarters],
+        'metrics': OUTPUT_METRICS,
+    }
+
+
 def read_financial_summary(symbol: str) -> dict:
     """Return last 4 years of annual data and last 6 quarters for key financial metrics.
 
-    Connects to the ``layout.snapshot`` DB (``financials_quarterly`` table) and
-    pivots the long-form (code, metric, fiscal_year, fiscal_quarter, value) rows
-    into a compact structure suitable for a Naver-Finance-style performance table.
+    Priority: ohlcv.db financials table (unified) -> QuantDB snapshot + live (legacy).
     """
     empty: dict = {'annual': [], 'quarterly': [], 'metrics': []}
+
+    # Fast path: ohlcv.db unified financials table
+    result = _read_from_unified_db(symbol)
+    if result and (result.get('annual') or result.get('quarterly')):
+        return result
+
+    # Legacy path: QuantDB snapshot + live
     layout = resolve_quantdb_layout()
     if not layout or not layout.snapshot:
         return empty
