@@ -218,25 +218,35 @@ def stock_overview_payload(symbol: str, date_dir: str | None = None, as_of_date:
 
     sector_name = get_sector(symbol, load_sector_map())
     business_summary = read_business_summary(symbol)
+
+    # Enrich from ohlcv.db symbol_meta (Naver-sourced, most complete)
+    try:
+        from sepa.data.ohlcv_db import get_symbol_meta
+        db_meta = get_symbol_meta(symbol) or {}
+    except Exception:
+        db_meta = {}
+
     profile = {
         'symbol': symbol,
-        'name': snapshot.get('name') or get_symbol_name(symbol),
+        'name': db_meta.get('name') or snapshot.get('name') or get_symbol_name(symbol),
         'market': snapshot.get('market', ''),
-        'sector_large': snapshot.get('sector_large', ''),
-        'sector_small': snapshot.get('sector_small', ''),
+        'sector_large': db_meta.get('sector') or snapshot.get('sector_large', ''),
+        'sector_small': db_meta.get('industry') or snapshot.get('sector_small', ''),
         'sector': sector_name,
         'price': latest_price,
         'mkt_cap': mkt_cap,
+        'market_cap_display': db_meta.get('market_cap', ''),
+        'foreign_ratio': db_meta.get('foreign_ratio', ''),
         'shares_outstanding': shares,
         'major_holder_ratio': snapshot.get('major_holder_ratio'),
         'business_summary': business_summary,
         'financials': {
-            'per': snapshot.get('per'),
-            'pbr': snapshot.get('pbr'),
-            'roe': snapshot.get('roe'),
+            'per': db_meta.get('per') or snapshot.get('per'),
+            'pbr': db_meta.get('pbr') or snapshot.get('pbr'),
+            'roe': db_meta.get('roe') or snapshot.get('roe'),
             'roa': snapshot.get('roa'),
             'opm': snapshot.get('opm'),
-            'dividend_yield': snapshot.get('dividend_yield'),
+            'dividend_yield': db_meta.get('dividend_yield') or snapshot.get('dividend_yield'),
             'debt_ratio': snapshot.get('debt_ratio'),
             'ev_ebitda': snapshot.get('ev_ebitda'),
             'foreign_1m': snapshot.get('foreign_1m'),

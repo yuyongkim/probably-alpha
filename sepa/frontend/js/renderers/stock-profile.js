@@ -220,7 +220,11 @@ export function financialAnalysisTable(data) {
 
 export function businessSummaryMarkup(summary) {
   if (!summary) return '';
-  return `<p class="profile-biz-summary" style="font-size:12px;color:var(--muted);margin:6px 0 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;line-height:1.5">${escapeHtml(summary)}</p>`;
+  return `
+    <div style="margin:12px 0 0;padding:10px;background:rgba(255,255,255,.03);border-radius:6px;border-left:3px solid var(--accent)">
+      <h4 style="font-size:12px;color:var(--accent);margin:0 0 6px">${txt({ ko: '기업 개요', en: 'Business Summary' })}</h4>
+      <p style="font-size:13px;color:var(--muted);margin:0;line-height:1.7">${escapeHtml(summary)}</p>
+    </div>`;
 }
 
 /* ── Financial Summary DL with grid ── */
@@ -232,7 +236,7 @@ export function financialTableMarkup(data) {
   const infoRows = [
     [txt({ ko: '시장', en: 'Market' }), escapeHtml(p.market || '-')],
     [txt({ ko: '업종', en: 'Sector' }), escapeHtml(p.sector_small || p.sector_large || '-')],
-    [txt({ ko: '시가총액', en: 'Mkt Cap' }), escapeHtml(fmtKrwCompact(p.mkt_cap))],
+    [txt({ ko: '시가총액', en: 'Mkt Cap' }), escapeHtml(p.market_cap_display || fmtKrwCompact(p.mkt_cap))],
   ];
   const finRows = [
     ['PER', f.per != null ? fmtNum(f.per, 2) : '-'],
@@ -243,7 +247,7 @@ export function financialTableMarkup(data) {
     [txt({ ko: '배당률', en: 'Div' }), f.dividend_yield != null ? `${fmtNum(f.dividend_yield, 1)}%` : '-'],
     [txt({ ko: '부채비율', en: 'Debt' }), f.debt_ratio != null ? `${fmtNum(f.debt_ratio, 0)}%` : '-'],
     ['EV/EBITDA', f.ev_ebitda != null ? fmtNum(f.ev_ebitda, 2) : '-'],
-    [txt({ ko: '외인 1M', en: 'For. 1M' }), f.foreign_1m != null ? `<span class="${f.foreign_1m >= 0 ? 'good' : 'bad'}">${f.foreign_1m >= 0 ? '+' : ''}${fmtNum(f.foreign_1m, 1)}%</span>` : '-'],
+    [txt({ ko: '외인비율', en: 'Foreign' }), p.foreign_ratio ? escapeHtml(p.foreign_ratio) : (f.foreign_1m != null ? `${f.foreign_1m >= 0 ? '+' : ''}${fmtNum(f.foreign_1m, 1)}%` : '-')],
   ];
   const infoDl = `<dl class="profile-dl">${infoRows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>`;
   const finGrid = `<div class="profile-fin-grid">${finRows.map(([k, v]) => `<div class="fin-cell"><span class="fin-label">${k}</span><span class="fin-value">${v}</span></div>`).join('')}</div>`;

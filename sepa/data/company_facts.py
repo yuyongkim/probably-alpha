@@ -143,11 +143,16 @@ def read_company_facts(symbol: str) -> dict:
 
 
 def read_business_summary(symbol: str) -> str:
-    """Return cached business summary, fetching from yfinance if needed.
+    """Return business summary. Priority: ohlcv.db description > cache > yfinance."""
+    # Fast path: ohlcv.db description (from Naver)
+    try:
+        from sepa.data.ohlcv_db import get_symbol_meta
+        meta = get_symbol_meta(symbol)
+        if meta and meta.get('description'):
+            return str(meta['description'])
+    except Exception:
+        pass
 
-    For Korean stocks where yfinance rarely provides longBusinessSummary,
-    falls back to a generated snippet from QuantDB sector info.
-    """
     cached = _read_cache(symbol)
     if cached is not None and cached.get('business_summary'):
         return str(cached['business_summary'])
