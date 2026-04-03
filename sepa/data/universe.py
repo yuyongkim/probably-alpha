@@ -179,18 +179,26 @@ def load_symbol_name_map(path: Path | None = None) -> dict[str, str]:
 def get_symbol_name(symbol: str, path: Path | None = None) -> str:
     if not symbol:
         return ''
+    # Fast path: ohlcv.db symbol_meta (2874 symbols with names)
+    try:
+        from sepa.data.ohlcv_db import get_symbol_name_from_db
+        db_name = get_symbol_name_from_db(symbol)
+        if db_name and db_name != symbol:
+            return db_name
+    except Exception:
+        pass
+    # Fallback: universe CSV / QuantDB
     mapping = load_symbol_meta_map(path=path)
     payload = mapping.get(symbol) or mapping.get(normalize_symbol(symbol))
     name = payload.get('name', '') if payload else ''
     if name and name != symbol:
         return name
-    # Fallback: try QuantDB snapshot for unmapped symbols
     try:
         from sepa.data.quantdb import read_company_snapshot
         snap = read_company_snapshot(symbol)
         if snap and snap.get('name'):
             return snap['name']
-    except Exception:  # noqa: BLE001
+    except Exception:
         pass
     return symbol
 

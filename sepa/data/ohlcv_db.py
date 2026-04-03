@@ -188,6 +188,60 @@ def get_all_symbols(*, db_path: Path | None = None) -> list[str]:
     return [row['symbol'] for row in rows]
 
 
+def get_symbol_name_from_db(symbol: str, *, db_path: Path | None = None) -> str:
+    """Get stock name from symbol_meta table."""
+    p = db_path or DB_PATH
+    if not p.exists():
+        return ''
+    conn = _connect(p)
+    try:
+        row = conn.execute('SELECT name FROM symbol_meta WHERE symbol = ?', (symbol,)).fetchone()
+    except Exception:
+        return ''
+    finally:
+        conn.close()
+    return row['name'] if row else ''
+
+
+def get_symbol_meta(symbol: str, *, db_path: Path | None = None) -> dict:
+    """Get full metadata (name, sector, industry) for a symbol."""
+    p = db_path or DB_PATH
+    if not p.exists():
+        return {}
+    conn = _connect(p)
+    try:
+        row = conn.execute('SELECT * FROM symbol_meta WHERE symbol = ?', (symbol,)).fetchone()
+    except Exception:
+        return {}
+    finally:
+        conn.close()
+    return dict(row) if row else {}
+
+
+def get_active_universe(*, min_date: str = '20260301', min_rows: int = 200, db_path: Path | None = None) -> list[dict]:
+    """Get actively traded symbols with metadata.
+
+    Returns symbols that have recent trading data + sufficient history.
+    """
+    p = db_path or DB_PATH
+    if not p.exists():
+        return []
+    conn = _connect(p)
+    try:
+        rows = conn.execute('''
+            SELECT o.symbol, m.name, m.sector, m.industry,
+                   COUNT(*) as row_count, MAX(o.trade_date) as last_date
+            FROM ohlcv o
+            LEFT JOIN symbol_meta m ON o.symbol = m.symbol
+            GROUP BY o.symbol
+            HAVING MAX(o.trade_date) >= ? AND COUNT(*) >= ?
+            ORDER BY o.symbol
+        ''', (min_date, min_rows)).fetchall()
+    finally:
+        conn.close()
+    return [dict(r) for r in rows]
+
+
 def sync_from_csv_dir(csv_dir: Path, *, db_path: Path | None = None) -> int:
     """Sync DB from CSV directory — only imports symbols not yet in DB or with newer data."""
     ensure_db(db_path)
