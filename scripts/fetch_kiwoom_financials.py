@@ -182,8 +182,8 @@ def main() -> None:
                 f'elapsed={elapsed:.0f}s remaining~{remaining:.0f}s'
             )
 
-        # Rate limit: ~2 calls/sec (conservative to avoid IP ban)
-        time.sleep(0.5)
+        # Rate limit: 1 call/sec (safe for Kiwoom API)
+        time.sleep(1.0)
 
     conn.commit()
     conn.close()
