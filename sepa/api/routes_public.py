@@ -209,6 +209,13 @@ def sector_members(sector: str, date_dir: str | None = None) -> dict:
     return sector_members_payload(sector=sector, date_dir=date_dir)
 
 
+@router.get('/api/stock/{symbol}/quant')
+def stock_quant(symbol: str) -> dict:
+    """Quantitative metrics computed from Naver financial data."""
+    from sepa.scoring.quant_metrics import compute_stock_quant
+    return compute_stock_quant(symbol)
+
+
 @router.get('/api/backtest/presets')
 def backtest_presets() -> dict:
     from sepa.backtest.presets import list_presets
