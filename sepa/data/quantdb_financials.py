@@ -144,7 +144,33 @@ def _read_from_unified_db(symbol: str) -> dict | None:
             annual_data.setdefault(period, {})[key] = val
 
     if not annual_data and not quarter_data:
-        return None
+        # Fallback: check symbol_meta for snapshot valuation data (from ka10001)
+        meta_conn = _connect(DB_PATH)
+        if meta_conn is not None:
+            try:
+                meta_row = meta_conn.execute(
+                    'SELECT per, eps, roe, pbr, bps, revenue, op_profit, net_income '
+                    'FROM symbol_meta WHERE symbol = ?',
+                    (symbol,),
+                ).fetchone()
+            except sqlite3.Error:
+                meta_row = None
+            finally:
+                meta_conn.close()
+
+            if meta_row:
+                from datetime import datetime as _dt
+                snap_year = str(_dt.now().year)
+                snap_metrics: dict[str, float | None] = {}
+                for mk in ('per', 'eps', 'roe', 'pbr', 'bps', 'revenue', 'op_profit', 'net_income'):
+                    v = meta_row[mk] if mk in meta_row.keys() else None
+                    if v is not None:
+                        snap_metrics[mk] = float(v)
+                if snap_metrics:
+                    annual_data[snap_year] = snap_metrics
+
+        if not annual_data and not quarter_data:
+            return None
 
     # Compute derived metrics
     from sepa.data.price_history import read_price_series as _read_price

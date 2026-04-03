@@ -19,6 +19,8 @@ KIWOOM_BASE_URL = 'https://api.kiwoom.com'
 DEFAULT_TOKEN_PATH = '/oauth2/token'
 DEFAULT_OHLCV_PATH = '/api/dostk/mrkcond'
 DEFAULT_OHLCV_API_ID = 'ka10086'
+DEFAULT_STKINFO_PATH = '/api/dostk/stkinfo'
+DEFAULT_STKINFO_API_ID = 'ka10001'
 
 
 @dataclass
@@ -108,6 +110,77 @@ class KiwoomProvider:
         merged = self._merge_rows(cached, rows)
         self._write_cache(symbol, merged)
         return self._limit_rows(merged, limit)
+
+    def fetch_stock_info(self, symbol: str) -> dict:
+        """Fetch fundamental data (PER, EPS, ROE, etc.) for a single stock via ka10001.
+
+        Returns dict with normalized keys:
+            {per, eps, roe, pbr, bps, revenue, op_profit, net_income, name}
+        Returns empty dict on failure or empty response.
+        """
+        token = self._issue_token()
+        if not token:
+            self._audit('kiwoom_stkinfo', f'token issue failed: {symbol}')
+            return {}
+
+        code = to_kiwoom_symbol(symbol)
+        payload = {'stk_cd': code}
+        headers = {
+            'Content-Type': 'application/json;charset=UTF-8',
+            'Authorization': f'Bearer {token}',
+            'api-id': DEFAULT_STKINFO_API_ID,
+        }
+        url = f'{self.cfg.base_url}{DEFAULT_STKINFO_PATH}'
+        data = self._post_json(url, payload, headers, retries=2, component='kiwoom_stkinfo')
+
+        if not isinstance(data, dict):
+            return {}
+
+        # The response may be nested under an envelope key
+        inner = data
+        for key in self.ENVELOPE_KEYS:
+            if isinstance(data.get(key), dict):
+                inner = data[key]
+                break
+
+        def _safe_float(val) -> float | None:
+            if val is None or str(val).strip() in ('', '-', 'N/A'):
+                return None
+            try:
+                return float(str(val).replace(',', '').replace('+', '').strip())
+            except (TypeError, ValueError):
+                return None
+
+        result: dict = {}
+        per = _safe_float(inner.get('per'))
+        if per is not None:
+            result['per'] = round(per, 2)
+        eps = _safe_float(inner.get('eps'))
+        if eps is not None:
+            result['eps'] = int(round(eps))
+        roe = _safe_float(inner.get('roe'))
+        if roe is not None:
+            result['roe'] = round(roe, 2)
+        pbr = _safe_float(inner.get('pbr'))
+        if pbr is not None:
+            result['pbr'] = round(pbr, 2)
+        bps = _safe_float(inner.get('bps'))
+        if bps is not None:
+            result['bps'] = int(round(bps))
+        revenue = _safe_float(inner.get('sale_amt'))
+        if revenue is not None:
+            result['revenue'] = revenue
+        op_profit = _safe_float(inner.get('bus_pro'))
+        if op_profit is not None:
+            result['op_profit'] = op_profit
+        net_income = _safe_float(inner.get('cup_nga'))
+        if net_income is not None:
+            result['net_income'] = net_income
+        name = str(inner.get('stk_nm') or '').strip()
+        if name:
+            result['name'] = name
+
+        return result
 
     def _issue_token(self) -> str:
         if not (self.cfg.app_key and self.cfg.secret_key and self._token_endpoint()):
