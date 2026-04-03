@@ -63,7 +63,11 @@ class BacktestEngine:
         rebalance_dates = self._get_rebalance_dates(dates)
 
         for i, date_str in enumerate(dates):
-            day_prices = {sym: self._get_price(price_cache, sym, date_str) for sym in price_cache}
+            day_prices = {sym: p for sym in price_cache if (p := self._get_price(price_cache, sym, date_str)) > 0}
+
+            # Skip non-trading days (no price data)
+            if not day_prices:
+                continue
 
             # Check stops first
             portfolio.check_stops(date_str, day_prices)
@@ -166,7 +170,18 @@ class BacktestEngine:
             d.name for d in signal_root.iterdir()
             if d.is_dir() and len(d.name) == 8 and d.name.isdigit()
         )
-        return [d for d in all_dates if start <= d <= end]
+        # Filter to weekdays only (Mon=0 ~ Fri=4)
+        filtered = []
+        for d in all_dates:
+            if d < start or d > end:
+                continue
+            try:
+                dt = datetime.strptime(d, '%Y%m%d')
+                if dt.weekday() < 5:
+                    filtered.append(d)
+            except ValueError:
+                continue
+        return filtered
 
     def _get_rebalance_dates(self, dates: list[str]) -> set[str]:
         if self.rebalance == 'daily':
@@ -232,6 +247,7 @@ class BacktestEngine:
 
     def _build_trade_pairs(self, trades: list) -> list[dict]:
         """Match buy/sell trades into pairs for reporting."""
+        from sepa.data.universe import get_symbol_name
         buy_map: dict[str, dict] = {}
         pairs: list[dict] = []
         for t in trades:
@@ -243,6 +259,7 @@ class BacktestEngine:
                 pnl_pct = round((t.price / entry['entry_price'] - 1.0) * 100, 2) if entry['entry_price'] > 0 else 0.0
                 pairs.append({
                     'symbol': t.symbol,
+                    'name': get_symbol_name(t.symbol),
                     'entry_date': entry['entry_date'],
                     'exit_date': t.date,
                     'entry_price': entry['entry_price'],

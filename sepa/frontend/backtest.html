@@ -215,10 +215,12 @@
 
     <!-- KPI -->
     <div class="kpi-strip">
+      <article class="kpi-card"><label>초기 자금</label><strong id="kStartCash">-</strong><p>시작 금액</p></article>
+      <article class="kpi-card"><label>최종 자산</label><strong id="kEndEquity">-</strong><p>종료 시점</p></article>
       <article class="kpi-card"><label>CAGR</label><strong id="kCagr">-</strong><p>연환산 수익률</p></article>
       <article class="kpi-card"><label>총 수익률</label><strong id="kTotal">-</strong><p>전체 기간</p></article>
-      <article class="kpi-card"><label>샤프</label><strong id="kSharpe">-</strong><p>위험 대비 수익</p></article>
       <article class="kpi-card"><label>최대 낙폭</label><strong id="kMDD">-</strong><p>MDD</p></article>
+      <article class="kpi-card"><label>샤프</label><strong id="kSharpe">-</strong><p>위험 대비 수익</p></article>
       <article class="kpi-card"><label>승률</label><strong id="kWinRate">-</strong><p>수익 거래 비율</p></article>
       <article class="kpi-card"><label>총 거래</label><strong id="kTrades">-</strong><p>매수+매도</p></article>
     </div>
@@ -365,10 +367,15 @@
       $('resultSection').style.display = '';
       $('resultTitle').textContent = `${r.strategy || '?'} — ${period.start || '?'} ~ ${period.end || '?'}`;
 
+      const curve = r.equity_curve || [];
+      const startCash = p.initial_cash || (curve[0]?.equity) || 0;
+      const endEquity = curve.length ? curve[curve.length - 1].equity : startCash;
+      $('kStartCash').textContent = num(startCash) + '원';
+      $('kEndEquity').textContent = num(endEquity) + '원';
       $('kCagr').textContent = pct(m.cagr);
       $('kTotal').textContent = pct(m.total_return);
-      $('kSharpe').textContent = fixed(m.sharpe);
       $('kMDD').textContent = pct(m.max_drawdown);
+      $('kSharpe').textContent = fixed(m.sharpe);
       $('kWinRate').textContent = pct(m.trade_win_rate ?? m.win_rate);
       $('kTrades').textContent = num(m.total_trades);
 
@@ -508,7 +515,7 @@
         const pnlClass = t.pnl > 0 ? 'color:#6ee7a8' : t.pnl < 0 ? 'color:#ff6b6b' : '';
         return `<tr>
           <td>${i + 1}</td>
-          <td>${t.symbol}</td>
+          <td>${t.name || t.symbol}<br><small style="color:var(--muted)">${t.symbol}</small></td>
           <td>${t.entry_date}</td>
           <td>${t.exit_date}</td>
           <td style="text-align:right">${num(t.entry_price)}</td>

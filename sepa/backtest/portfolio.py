@@ -120,6 +120,9 @@ class Portfolio:
             for pos in self.positions.values()
         )
         equity = int(self.cash + positions_value)
+        # Skip if no valid prices (non-trading day)
+        if self.positions and positions_value == 0:
+            return self.equity_curve[-1]['equity'] if self.equity_curve else equity
         self.equity_curve.append({
             'date': date_str,
             'equity': equity,
