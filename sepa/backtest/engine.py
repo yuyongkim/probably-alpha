@@ -17,7 +17,7 @@ from pathlib import Path
 from sepa.backtest.metrics import compute_metrics
 from sepa.backtest.portfolio import Portfolio
 from sepa.data.market_index import market_index_path
-from sepa.data.price_history import available_dates, read_price_series_from_path
+from sepa.data.price_history import read_price_series_from_path
 from sepa.data.sector_map import get_sector, load_sector_map
 
 logger = logging.getLogger(__name__)
@@ -161,7 +161,11 @@ class BacktestEngine:
         return result
 
     def _get_trading_dates(self, signal_root: Path, start: str, end: str) -> list[str]:
-        all_dates = sorted(available_dates(signal_root))
+        # Read dates from subdirectory names (YYYYMMDD folders), not CSV files
+        all_dates = sorted(
+            d.name for d in signal_root.iterdir()
+            if d.is_dir() and len(d.name) == 8 and d.name.isdigit()
+        )
         return [d for d in all_dates if start <= d <= end]
 
     def _get_rebalance_dates(self, dates: list[str]) -> set[str]:
