@@ -421,7 +421,10 @@ def _read_json_safe(path: Path, default):
     if not path.exists():
         return default
     try:
-        return json.loads(path.read_text(encoding='utf-8'))
+        data = json.loads(path.read_text(encoding='utf-8'))
+        if isinstance(data, dict) and 'schema_version' in data and 'items' in data:
+            return data['items']
+        return data
     except (json.JSONDecodeError, OSError):
         return default
 

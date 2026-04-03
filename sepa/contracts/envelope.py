@@ -54,3 +54,14 @@ def wrap_output(
         envelope["data"] = data
 
     return envelope
+
+
+def unwrap_output(data):
+    """Unwrap an envelope-wrapped JSON output back to original data.
+
+    If *data* is a dict with ``schema_version`` and ``items``, returns ``items``.
+    Otherwise returns data as-is.
+    """
+    if isinstance(data, dict) and 'schema_version' in data and 'items' in data:
+        return data['items']
+    return data

@@ -17,7 +17,10 @@ def _load_alpha_passed(date_dir: str) -> list[dict]:
     path = Path(f'.omx/artifacts/daily-signals/{date_dir}/alpha-passed.json')
     if not path.exists():
         return []
-    return json.loads(path.read_text(encoding='utf-8'))
+    data = json.loads(path.read_text(encoding='utf-8'))
+    if isinstance(data, dict) and 'schema_version' in data and 'items' in data:
+        return data['items']
+    return data if isinstance(data, list) else []
 
 
 def _load_price_csv(symbol: str) -> dict:

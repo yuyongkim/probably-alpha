@@ -14,7 +14,11 @@ def _read_json(path: Path, default):
     if not path.exists():
         return default
     try:
-        return json.loads(path.read_text(encoding='utf-8'))
+        data = json.loads(path.read_text(encoding='utf-8'))
+        # Unwrap envelope
+        if isinstance(data, dict) and 'schema_version' in data and 'items' in data:
+            return data['items']
+        return data
     except json.JSONDecodeError:
         return default
 

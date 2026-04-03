@@ -6,7 +6,10 @@ from pathlib import Path
 
 
 def _load(p: Path):
-    return json.loads(p.read_text(encoding='utf-8'))
+    data = json.loads(p.read_text(encoding='utf-8'))
+    if isinstance(data, dict) and 'schema_version' in data and 'items' in data:
+        return data['items']
+    return data
 
 
 def main() -> None:
