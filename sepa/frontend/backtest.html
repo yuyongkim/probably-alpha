@@ -8,6 +8,16 @@
   <title>백테스트 — SEPA</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
   <link rel="stylesheet" href="./styles.css" />
+  <style>
+    .rule-label { display:block; font-size:12px; color:var(--muted); margin-bottom:4px; }
+    .rule-input { width:100%; padding:8px; background:var(--surface); border:1px solid var(--border); border-radius:6px; color:var(--text); font-size:14px; }
+    .rule-grid { display:flex; flex-direction:column; gap:10px; }
+    .rule-toggle { display:flex; align-items:flex-start; gap:8px; cursor:pointer; padding:6px 0; }
+    .rule-toggle input[type="checkbox"] { margin-top:3px; accent-color:var(--accent); width:16px; height:16px; }
+    .rule-toggle span { font-size:14px; font-weight:500; }
+    .rule-toggle small { display:block; font-size:12px; color:var(--muted); margin-top:2px; }
+    .rule-toggle input:not(:checked) ~ span { opacity:0.5; text-decoration:line-through; }
+  </style>
 </head>
 <body>
   <section class="control-band">
@@ -73,43 +83,123 @@
     </article>
   </section>
 
-  <!-- Parameters -->
+  <!-- Rule Configuration -->
   <section class="section-shell">
     <div class="section-header">
       <div>
-        <p class="section-kicker">설정</p>
-        <h2>백테스트 파라미터</h2>
+        <p class="section-kicker">규칙 설정</p>
+        <h2>백테스트 조건 선택</h2>
+        <p class="panel-caption">각 규칙을 켜고 끄거나 파라미터를 조정할 수 있습니다.</p>
       </div>
     </div>
-    <article class="panel" style="padding:20px">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;align-items:end">
+
+    <!-- Period & Portfolio -->
+    <article class="panel" style="padding:20px;margin-bottom:12px">
+      <h3 style="margin-bottom:12px;color:var(--accent)">기간 및 포트폴리오</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
         <div>
-          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:4px">시작일</label>
-          <input id="btStart" type="text" value="20251112" style="width:100%;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text)" />
+          <label class="rule-label">시작일</label>
+          <input id="btStart" type="text" value="20251112" class="rule-input" />
         </div>
         <div>
-          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:4px">종료일</label>
-          <input id="btEnd" type="text" value="20260402" style="width:100%;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text)" />
+          <label class="rule-label">종료일</label>
+          <input id="btEnd" type="text" value="20260402" class="rule-input" />
         </div>
         <div>
-          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:4px">최대 종목 수</label>
-          <input id="btMaxPos" type="number" value="10" min="1" max="30" style="width:100%;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text)" />
+          <label class="rule-label">초기 자금 (원)</label>
+          <input id="btCash" type="text" value="100000000" class="rule-input" />
         </div>
         <div>
-          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:4px">섹터당 최대</label>
-          <input id="btSectorLimit" type="number" value="3" min="1" max="10" style="width:100%;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text)" />
+          <label class="rule-label">최대 종목 수</label>
+          <input id="btMaxPos" type="number" value="10" min="1" max="30" class="rule-input" />
         </div>
         <div>
-          <label style="display:block;font-size:12px;color:var(--muted);margin-bottom:4px">리밸런싱</label>
-          <select id="btRebalance" style="width:100%;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text)">
+          <label class="rule-label">리밸런싱</label>
+          <select id="btRebalance" class="rule-input">
             <option value="weekly">주간 (금요일)</option>
             <option value="daily">일간</option>
           </select>
         </div>
-        <div>
-          <button id="btnRunBacktest" style="width:100%;padding:10px 20px;background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600">백테스트 실행</button>
+      </div>
+    </article>
+
+    <!-- Alpha Rules -->
+    <article class="panel" style="padding:20px;margin-bottom:12px">
+      <h3 style="margin-bottom:12px;color:var(--accent)">Alpha — 추세 템플릿 (진입 필터)</h3>
+      <div class="rule-grid">
+        <label class="rule-toggle"><input type="checkbox" id="rAlphaTT" checked /><span>Trend Template 게이트</span><small>최소 N/8 조건 통과 필수</small></label>
+        <div style="display:flex;align-items:center;gap:8px;margin-left:28px">
+          <label class="rule-label" style="margin:0;white-space:nowrap">최소 통과</label>
+          <input id="rAlphaMinTT" type="number" value="5" min="1" max="8" class="rule-input" style="width:60px" /><span style="color:var(--muted)">/ 8</span>
+        </div>
+        <label class="rule-toggle"><input type="checkbox" id="rAlphaRS" checked /><span>RS 백분위 게이트</span><small>120일 상대강도 상위만 진입</small></label>
+        <div style="display:flex;align-items:center;gap:8px;margin-left:28px">
+          <label class="rule-label" style="margin:0;white-space:nowrap">RS 임계값</label>
+          <input id="rAlphaRSVal" type="number" value="70" min="0" max="100" class="rule-input" style="width:60px" /><span style="color:var(--muted)">%</span>
+        </div>
+        <label class="rule-toggle"><input type="checkbox" id="rAlphaMA50" checked /><span>close > MA50 필수</span><small>50일 이동평균 위에서만 진입</small></label>
+      </div>
+    </article>
+
+    <!-- Sector Rules -->
+    <article class="panel" style="padding:20px;margin-bottom:12px">
+      <h3 style="margin-bottom:12px;color:var(--accent)">섹터 — 주도섹터 필터</h3>
+      <div class="rule-grid">
+        <label class="rule-toggle"><input type="checkbox" id="rSectorFilter" checked /><span>주도섹터 제한</span><small>상위 N개 섹터 내 종목만 매수</small></label>
+        <div style="display:flex;align-items:center;gap:8px;margin-left:28px">
+          <label class="rule-label" style="margin:0;white-space:nowrap">상위 섹터 수</label>
+          <input id="rSectorTopN" type="number" value="5" min="1" max="20" class="rule-input" style="width:60px" />
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-left:28px">
+          <label class="rule-label" style="margin:0;white-space:nowrap">섹터당 최대</label>
+          <input id="btSectorLimit" type="number" value="3" min="1" max="10" class="rule-input" style="width:60px" /><span style="color:var(--muted)">종목</span>
         </div>
       </div>
+    </article>
+
+    <!-- Risk Rules -->
+    <article class="panel" style="padding:20px;margin-bottom:12px">
+      <h3 style="margin-bottom:12px;color:var(--accent)">Delta — 리스크 관리</h3>
+      <div class="rule-grid">
+        <label class="rule-toggle"><input type="checkbox" id="rStopLoss" checked /><span>손절 규칙</span><small>진입가 대비 일정% 하락 시 자동 청산</small></label>
+        <div style="display:flex;align-items:center;gap:8px;margin-left:28px">
+          <label class="rule-label" style="margin:0;white-space:nowrap">손절 비율</label>
+          <input id="rStopPct" type="number" value="7.5" min="1" max="20" step="0.5" class="rule-input" style="width:70px" /><span style="color:var(--muted)">%</span>
+        </div>
+        <label class="rule-toggle"><input type="checkbox" id="rSectorExit" checked /><span>섹터 이탈 청산</span><small>섹터가 Top N에서 빠지면 해당 종목 청산</small></label>
+        <label class="rule-toggle"><input type="checkbox" id="rLeaderExit" checked /><span>리더 이탈 청산</span><small>종목이 리더 목록에서 빠지면 청산</small></label>
+      </div>
+    </article>
+
+    <!-- Cost Rules -->
+    <article class="panel" style="padding:20px;margin-bottom:12px">
+      <h3 style="margin-bottom:12px;color:var(--accent)">비용 모델</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+        <div>
+          <label class="rule-label">수수료 (매수/매도)</label>
+          <input id="rCommission" type="number" value="0.015" min="0" max="1" step="0.001" class="rule-input" /><span style="color:var(--muted);font-size:11px">%</span>
+        </div>
+        <div>
+          <label class="rule-label">슬리피지</label>
+          <input id="rSlippage" type="number" value="0.1" min="0" max="2" step="0.01" class="rule-input" /><span style="color:var(--muted);font-size:11px">%</span>
+        </div>
+        <div>
+          <label class="rule-label">거래세 (매도)</label>
+          <input id="rTax" type="number" value="0.18" min="0" max="1" step="0.01" class="rule-input" /><span style="color:var(--muted);font-size:11px">%</span>
+        </div>
+        <div>
+          <label class="rule-label">체결 방식</label>
+          <select id="rExecution" class="rule-input">
+            <option value="next-open">익일 시가 (next-open)</option>
+            <option value="next-close">익일 종가 (next-close)</option>
+          </select>
+        </div>
+      </div>
+    </article>
+
+    <!-- Run Button -->
+    <article class="panel" style="padding:20px;text-align:center">
+      <button id="btnRunBacktest" style="padding:14px 40px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:16px">백테스트 실행</button>
       <p id="btStatus" style="margin-top:12px;color:var(--muted);font-size:13px"></p>
     </article>
   </section>
@@ -179,9 +269,22 @@
         const params = new URLSearchParams({
           start: $('btStart').value,
           end: $('btEnd').value,
+          initial_cash: $('btCash').value,
           max_positions: $('btMaxPos').value,
           sector_limit: $('btSectorLimit').value,
+          top_sectors: $('rSectorTopN').value,
           rebalance: $('btRebalance').value,
+          stop_loss_pct: ($('rStopLoss').checked ? parseFloat($('rStopPct').value) / 100 : 0).toString(),
+          execution: $('rExecution').value,
+          commission: (parseFloat($('rCommission').value) / 100).toString(),
+          slippage: (parseFloat($('rSlippage').value) / 100).toString(),
+          tax: (parseFloat($('rTax').value) / 100).toString(),
+          alpha_min_tt: $('rAlphaTT').checked ? $('rAlphaMinTT').value : '0',
+          alpha_rs_threshold: $('rAlphaRS').checked ? $('rAlphaRSVal').value : '0',
+          require_ma50: $('rAlphaMA50').checked ? '1' : '0',
+          sector_filter: $('rSectorFilter').checked ? '1' : '0',
+          sector_exit: $('rSectorExit').checked ? '1' : '0',
+          leader_exit: $('rLeaderExit').checked ? '1' : '0',
         });
         const resp = await fetch(`${api()}/api/backtest/run?${params}`);
         const result = await resp.json();
@@ -244,20 +347,32 @@
         `<tr><td>${k}</td><td><strong>${v}</strong></td><td style="color:var(--muted)">${d}</td></tr>`
       ).join('');
 
+      const rules = r.rules || {};
       const paramsList = [
         ['초기 자금', num(p.initial_cash) + '원'],
         ['최대 종목 수', num(p.max_positions)],
         ['섹터당 최대', num(p.sector_limit)],
         ['리밸런싱', p.rebalance === 'weekly' ? '주간 (금요일)' : '일간'],
         ['체결 방식', p.execution],
-        ['손절 비율', pct(p.stop_loss_pct)],
         ['수수료', pct(p.commission)],
         ['슬리피지', pct(p.slippage)],
         ['거래세', pct(p.tax)],
       ];
-      $('paramsRows').innerHTML = paramsList.map(([k, v]) =>
-        `<tr><td>${k}</td><td>${v}</td></tr>`
-      ).join('');
+      const rulesList = [
+        ['Alpha TT 최소 통과', rules.alpha_min_tt != null ? `${rules.alpha_min_tt}/8` : '-'],
+        ['Alpha RS 임계값', rules.alpha_rs_threshold != null ? `${rules.alpha_rs_threshold}%` : '-'],
+        ['close > MA50 필수', rules.require_ma50 ? 'ON' : 'OFF'],
+        ['주도섹터 필터', rules.sector_filter ? `ON (상위 ${rules.top_sectors}개)` : 'OFF'],
+        ['손절 규칙', rules.stop_loss_pct ? `ON (${(rules.stop_loss_pct * 100).toFixed(1)}%)` : 'OFF'],
+        ['섹터 이탈 청산', rules.sector_exit ? 'ON' : 'OFF'],
+        ['리더 이탈 청산', rules.leader_exit ? 'ON' : 'OFF'],
+      ];
+      $('paramsRows').innerHTML = [
+        '<tr><td colspan="2" style="font-weight:700;color:var(--accent);padding-top:12px">포트폴리오 설정</td></tr>',
+        ...paramsList.map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`),
+        '<tr><td colspan="2" style="font-weight:700;color:var(--accent);padding-top:12px">적용된 규칙</td></tr>',
+        ...rulesList.map(([k, v]) => `<tr><td>${k}</td><td><strong>${v}</strong></td></tr>`),
+      ].join('');
 
       $('resultSection').scrollIntoView({ behavior: 'smooth' });
     }
