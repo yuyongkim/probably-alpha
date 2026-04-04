@@ -16,8 +16,17 @@ CACHE_DIR = Path('.omx/artifacts/market-data/company-facts')
 CACHE_TTL = timedelta(hours=24)
 
 
+def _bare(symbol: str) -> str:
+    """Strip .KS/.KQ suffix for consistent cache keys."""
+    s = str(symbol or '').strip()
+    for suffix in ('.KS', '.KQ', '.KN'):
+        if s.upper().endswith(suffix):
+            return s[:-len(suffix)]
+    return s
+
+
 def _cache_path(symbol: str) -> Path:
-    return CACHE_DIR / f'{symbol}.json'
+    return CACHE_DIR / f'{_bare(symbol)}.json'
 
 
 def _read_cache(symbol: str) -> dict | None:
@@ -64,24 +73,18 @@ def _fast_info_value(fast_info, key: str):
 
 
 def _estimate_shares_outstanding(mkt_cap, price) -> float | None:
+    """Estimate shares from market cap and price.
+
+    QuantDB stores mkt_cap in 억원 (100M KRW), so the correct scale is
+    always 1e8.  The previous multi-scale loop could pick a different
+    scale when the price changed by even a tiny amount, causing
+    shares_outstanding (and therefore EPS/PER/market_cap) to jump by 10×.
+    """
     if not isinstance(mkt_cap, (int, float)) or not isinstance(price, (int, float)) or mkt_cap <= 0 or price <= 0:
         return None
-    for scale in (
-        100_000_000.0,
-        10_000_000.0,
-        1_000_000.0,
-        100_000.0,
-        10_000.0,
-        1_000.0,
-        100.0,
-        10.0,
-        1.0,
-    ):
-        shares = (float(mkt_cap) * scale) / float(price)
-        if 1_000_000.0 <= shares <= 30_000_000_000.0:
-            return float(shares)
-    fallback = (float(mkt_cap) * 100_000_000.0) / float(price)
-    return float(fallback) if fallback > 0 else None
+    # Fixed scale: mkt_cap is in 억원 → multiply by 1억 to get KRW
+    shares = (float(mkt_cap) * 100_000_000.0) / float(price)
+    return float(shares) if shares > 0 else None
 
 
 def read_company_facts(symbol: str) -> dict:
@@ -142,14 +145,30 @@ def read_company_facts(symbol: str) -> dict:
     return _write_cache(symbol, payload)
 
 
+def _snippet_from_meta(meta: dict, symbol: str) -> str:
+    """Build a minimal business snippet from ohlcv.db symbol_meta fields."""
+    name = meta.get('name') or symbol
+    sector = meta.get('sector') or ''
+    industry = meta.get('industry') or ''
+    parts = [name]
+    if industry and sector and industry != sector:
+        parts.append(f'{sector} > {industry} 업종')
+    elif sector:
+        parts.append(f'{sector} 업종')
+    elif industry:
+        parts.append(f'{industry} 업종')
+    return ' | '.join(parts)
+
+
 def read_business_summary(symbol: str) -> str:
-    """Return business summary. Priority: ohlcv.db description > cache > yfinance."""
+    """Return business summary. Priority: ohlcv.db description > cache > ohlcv.db meta > yfinance."""
     # Fast path: ohlcv.db description (from Naver)
+    db_meta: dict = {}
     try:
         from sepa.data.ohlcv_db import get_symbol_meta
-        meta = get_symbol_meta(symbol)
-        if meta and meta.get('description'):
-            return str(meta['description'])
+        db_meta = get_symbol_meta(symbol) or {}
+        if db_meta.get('description'):
+            return str(db_meta['description'])
     except Exception:
         pass
 
@@ -169,25 +188,12 @@ def read_business_summary(symbol: str) -> str:
                 return summary
         except (ValueError, TypeError, KeyError, OSError) as exc:
             logger.debug('yfinance summary fetch failed for %s: %s', symbol, exc)
-        # Fallback: generate from QuantDB sector info
-        snapshot = read_company_snapshot(symbol)
-        if snapshot:
-            name = snapshot.get('name', symbol)
-            sector_l = snapshot.get('sector_large', '')
-            sector_s = snapshot.get('sector_small', '')
-            market = snapshot.get('market', '')
-            parts = [f'{name}']
-            if market:
-                parts.append(f'{market} 상장')
-            if sector_s and sector_l and sector_s != sector_l:
-                parts.append(f'{sector_l} > {sector_s} 업종')
-            elif sector_l:
-                parts.append(f'{sector_l} 업종')
-            return ' | '.join(parts)
-        return ''
 
-    # No cache – generate a fast snippet from QuantDB and cache the facts
-    # without blocking on yfinance (which can take 20+ seconds).
+    # Fast fallback: build snippet from ohlcv.db name/sector/industry
+    if db_meta and (db_meta.get('name') or db_meta.get('sector')):
+        return _snippet_from_meta(db_meta, symbol)
+
+    # Fallback: generate from QuantDB sector info
     snapshot = read_company_snapshot(symbol)
     if snapshot:
         name = snapshot.get('name', symbol)
@@ -202,9 +208,9 @@ def read_business_summary(symbol: str) -> str:
         elif sector_l:
             parts.append(f'{sector_l} 업종')
         snippet = ' | '.join(parts)
-        # Populate the cache so subsequent calls are fast
         read_company_facts(symbol)
         return snippet
+
     # Last resort: trigger full yfinance fetch
     facts = read_company_facts(symbol)
     return str(facts.get('business_summary') or '')

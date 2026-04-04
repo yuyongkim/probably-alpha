@@ -192,6 +192,12 @@ def stock_overview_payload(symbol: str, date_dir: str | None = None, as_of_date:
     detail=False (기본): 프로필 + JSON 기반 파이프라인 스코어 + 실행계획 + 추천 (<1초)
     detail=True: 위 + 기술분석(RS/볼륨/최소저항선) + persistence (수십 초, 캐시 없을 때)
     """
+    # Guard: only serve listed stocks (present in symbol_meta)
+    from sepa.data.ohlcv_db import get_symbol_meta
+    bare = symbol.replace('.KS', '').replace('.KQ', '')
+    if not get_symbol_meta(bare):
+        return {'error': 'not_listed', 'symbol': symbol}
+
     resolved = resolve_dir(date_dir)
     date_key = resolved.name
     token = normalize_date_token(as_of_date) or date_key
@@ -205,7 +211,7 @@ def stock_overview_payload(symbol: str, date_dir: str | None = None, as_of_date:
     sparkline: list[float] = []
     latest_price: float | None = snapshot.get('price')
     if series:
-        sparkline = [round(float(row.get('close', 0.0)), 2) for row in series[-120:] if row.get('close', 0.0) > 0]
+        sparkline = [int(round(float(row.get('close', 0.0)))) for row in series[-120:] if row.get('close', 0.0) > 0]
         if sparkline:
             latest_price = sparkline[-1]
 
@@ -226,12 +232,36 @@ def stock_overview_payload(symbol: str, date_dir: str | None = None, as_of_date:
     except Exception:
         db_meta = {}
 
+    def _pick(key: str, *sources, numeric: bool = False):
+        """Pick first non-None value from sources. When numeric=True, skip
+        falsy-but-valid values like 0/0.0 correctly and coerce strings."""
+        for src in sources:
+            v = src.get(key) if isinstance(src, dict) else None
+            if v is None:
+                continue
+            if numeric:
+                # Skip empty strings / 'N/A' that snuck into REAL columns
+                if isinstance(v, str):
+                    v = v.strip().rstrip('%')
+                    if not v or v in ('N/A', '-'):
+                        continue
+                    try:
+                        v = float(v)
+                    except ValueError:
+                        continue
+                return v  # 0 and 0.0 are valid numerics — do not skip
+            else:
+                if isinstance(v, str) and not v.strip():
+                    continue
+                return v
+        return None
+
     profile = {
         'symbol': symbol,
-        'name': db_meta.get('name') or snapshot.get('name') or get_symbol_name(symbol),
+        'name': _pick('name', db_meta, snapshot) or get_symbol_name(symbol),
         'market': snapshot.get('market', ''),
-        'sector_large': db_meta.get('sector') or snapshot.get('sector_large', ''),
-        'sector_small': db_meta.get('industry') or snapshot.get('sector_small', ''),
+        'sector_large': _pick('sector', db_meta) or _pick('sector_large', snapshot) or '',
+        'sector_small': _pick('industry', db_meta) or _pick('sector_small', snapshot) or '',
         'sector': sector_name,
         'price': latest_price,
         'mkt_cap': mkt_cap,
@@ -241,18 +271,18 @@ def stock_overview_payload(symbol: str, date_dir: str | None = None, as_of_date:
         'major_holder_ratio': snapshot.get('major_holder_ratio'),
         'business_summary': business_summary,
         'financials': {
-            'per': db_meta.get('per') or snapshot.get('per'),
-            'pbr': db_meta.get('pbr') or snapshot.get('pbr'),
-            'roe': db_meta.get('roe') or snapshot.get('roe'),
-            'roa': snapshot.get('roa'),
-            'opm': snapshot.get('opm'),
-            'dividend_yield': db_meta.get('dividend_yield') or snapshot.get('dividend_yield'),
-            'debt_ratio': snapshot.get('debt_ratio'),
-            'ev_ebitda': snapshot.get('ev_ebitda'),
-            'foreign_1m': snapshot.get('foreign_1m'),
-            'return_1m': snapshot.get('return_1m'),
-            'return_3m': snapshot.get('return_3m'),
-            'f_score': snapshot.get('f_score'),
+            'per': _pick('per', db_meta, snapshot, numeric=True),
+            'pbr': _pick('pbr', db_meta, snapshot, numeric=True),
+            'roe': _pick('roe', db_meta, snapshot, numeric=True),
+            'roa': _pick('roa', snapshot, numeric=True),
+            'opm': _pick('opm', snapshot, numeric=True),
+            'dividend_yield': _pick('dividend_yield', db_meta, snapshot, numeric=True),
+            'debt_ratio': _pick('debt_ratio', snapshot, numeric=True),
+            'ev_ebitda': _pick('ev_ebitda', snapshot, numeric=True),
+            'foreign_1m': _pick('foreign_1m', snapshot, numeric=True),
+            'return_1m': _pick('return_1m', snapshot, numeric=True),
+            'return_3m': _pick('return_3m', snapshot, numeric=True),
+            'f_score': _pick('f_score', snapshot, numeric=True),
         },
     }
 
@@ -367,7 +397,9 @@ def stock_overview_payload(symbol: str, date_dir: str | None = None, as_of_date:
         'recommendation': recommendation,
         'eps_recent': recent_eps,
         'sparkline': sparkline,
-        'financial_summary': read_financial_summary(symbol),
+        'financial_summary': read_financial_summary(
+            symbol, price_hint=latest_price, shares_hint=shares,
+        ),
         'technical_summary': None,
         'persistence': None,
     }

@@ -38,31 +38,25 @@ def _latest_run_id(conn: sqlite3.Connection, table: str) -> str | None:
 
 # Metric name -> output key mapping.
 # Korean metric names are stored as-is in the DB.
+# DB stores Naver's original Korean metric names.
+# Map them to output keys for the frontend.
 METRIC_MAP: dict[str, str] = {
-    '매출': 'revenue',
     '매출액': 'revenue',
-    '연간매출': 'revenue',
-    '영익': 'op_profit',
     '영업이익': 'op_profit',
-    '연간영익': 'op_profit',
-    '순익': 'net_income',
-    '순이익': 'net_income',
-    '연간순익': 'net_income',
-    '지배순익': 'net_income',
-    '자본총계': 'equity',
-    '부채총계': 'total_debt',
-    'EPS': 'eps',
-    'BPS': 'bps',
-    'PER': 'per',
-    'PBR': 'pbr',
+    '당기순이익': 'net_income',
+    '지배주주순이익': 'net_income',
+    '비지배주주순이익': 'minority_income',
+    '영업이익률': 'opm',
+    '순이익률': 'npm',
     'ROE': 'roe',
-    'ROA': 'roa',
     '부채비율': 'debt_ratio',
-    'DPS': 'dps',
-    '시가배당율': 'dividend_yield',
-    'OPM(연결)': 'opm',
-    'OPM(누적)': 'opm',
-    '순익율(연결)': 'npm',
+    '당좌비율': 'quick_ratio',
+    '유보율': 'retention_ratio',
+    'EPS': 'eps',
+    'PER': 'per',
+    'BPS': 'bps',
+    'PBR': 'pbr',
+    '주당배당금': 'dps',
 }
 
 OUTPUT_METRICS = [
@@ -92,7 +86,80 @@ def _offset_quarter(y: int, q: int, offset: int) -> tuple[int, int]:
     return (total // 4, total % 4 + 1)
 
 
-def _read_from_unified_db(symbol: str) -> dict | None:
+def _resolve_price_shares(symbol: str, price_hint: float | None = None, shares_hint: float | None = None) -> tuple[float, float]:
+    """Centralised price / shares resolution used by both unified and legacy paths.
+
+    When *price_hint* or *shares_hint* are provided (from the caller who already
+    looked them up), they are used as-is. Otherwise we derive them from OHLCV +
+    QuantDB snapshot — **once**, so every metric in the same call sees the same
+    numbers.
+    """
+    from sepa.data.price_history import read_price_series as _read_price
+    from sepa.data.quantdb import read_company_snapshot
+
+    real_price = float(price_hint) if price_hint and price_hint > 0 else 0.0
+    snap_shares = float(shares_hint) if shares_hint and shares_hint > 0 else 0.0
+
+    if real_price <= 0 or snap_shares <= 0:
+        snap = read_company_snapshot(symbol)
+        snap_mkt_cap = float(snap.get('mkt_cap') or 0) if snap else 0
+
+        if real_price <= 0:
+            _ohlcv = _read_price(symbol)
+            real_price = float(_ohlcv[-1].get('close', 0)) if _ohlcv else 0
+            if real_price <= 0 and snap:
+                real_price = float(snap.get('price') or 0)
+
+        if snap_shares <= 0:
+            # Prefer actual shares from snapshot; fall back to mkt_cap / price
+            raw_shares = float(snap.get('shares_outstanding') or 0) if snap else 0
+            if raw_shares > 0:
+                snap_shares = raw_shares
+            elif real_price > 0 and snap_mkt_cap > 0:
+                snap_shares = (snap_mkt_cap * 100_000_000) / real_price
+
+    return real_price, snap_shares
+
+
+def _derive_metrics(
+    annual_data: dict[str, dict],
+    quarter_data: dict[str, dict],
+    real_price: float,
+    snap_shares: float,
+) -> None:
+    """Compute NPM, OPM, ROE, debt_ratio, EPS, BPS, PER, PBR in-place.
+
+    Shared by both the unified-DB and legacy-QuantDB paths so the same
+    formulas and the same price/shares are always used.
+    """
+    for bucket in (annual_data, quarter_data):
+        for _period, m in bucket.items():
+            rev = m.get('revenue')
+            ni = m.get('net_income')
+            op = m.get('op_profit')
+            equity = m.get('equity')
+            debt = m.get('total_debt')
+            if rev and ni and rev != 0 and 'npm' not in m:
+                m['npm'] = round((ni / rev) * 100, 1)
+            if rev and op and rev != 0 and 'opm' not in m:
+                m['opm'] = round((op / rev) * 100, 1)
+            if ni is not None and equity and equity > 0 and m.get('roe') is None:
+                m['roe'] = round((ni / equity) * 100, 1)
+            if debt is not None and equity and equity > 0 and m.get('debt_ratio') is None:
+                m['debt_ratio'] = round((debt / equity) * 100, 1)
+            if ni is not None and snap_shares > 0 and m.get('eps') is None:
+                m['eps'] = int(round((ni * 100_000_000) / snap_shares))
+            if equity is not None and snap_shares > 0 and m.get('bps') is None:
+                m['bps'] = int(round((equity * 100_000_000) / snap_shares))
+            eps_val = m.get('eps')
+            if real_price > 0 and eps_val and eps_val > 0 and m.get('per') is None:
+                m['per'] = round(real_price / eps_val, 1)
+            bps_val = m.get('bps')
+            if real_price > 0 and bps_val and bps_val > 0 and m.get('pbr') is None:
+                m['pbr'] = round(real_price / bps_val, 1)
+
+
+def _read_from_unified_db(symbol: str, *, price_hint: float | None = None, shares_hint: float | None = None) -> dict | None:
     """Read financials from ohlcv.db unified financials table."""
     from sepa.data.ohlcv_db import DB_PATH
     if not DB_PATH.exists():
@@ -102,11 +169,9 @@ def _read_from_unified_db(symbol: str) -> dict | None:
     if conn is None:
         return None
 
-    # Try with raw code (without exchange suffix)
-    code = to_kiwoom_symbol(symbol)  # e.g. '005930'
+    code = to_kiwoom_symbol(symbol)  # bare code e.g. '005930'
 
     try:
-        # Check if table exists
         if not _table_exists(conn, 'financials'):
             conn.close()
             return None
@@ -172,42 +237,10 @@ def _read_from_unified_db(symbol: str) -> dict | None:
         if not annual_data and not quarter_data:
             return None
 
-    # Compute derived metrics
-    from sepa.data.price_history import read_price_series as _read_price
-    from sepa.data.quantdb import read_company_snapshot
-    snap = read_company_snapshot(symbol)
-    snap_mkt_cap = float(snap.get('mkt_cap') or 0) if snap else 0
-    _ohlcv = _read_price(symbol)
-    real_price = float(_ohlcv[-1].get('close', 0)) if _ohlcv else 0
-    if real_price <= 0 and snap:
-        real_price = float(snap.get('price') or 0)
-    snap_shares = (snap_mkt_cap * 100_000_000 / real_price) if real_price > 0 and snap_mkt_cap > 0 else 0
+    # Compute derived metrics — use centralised price/shares resolver
+    real_price, snap_shares = _resolve_price_shares(symbol, price_hint=price_hint, shares_hint=shares_hint)
 
-    for bucket in (annual_data, quarter_data):
-        for period, m in bucket.items():
-            rev = m.get('revenue')
-            ni = m.get('net_income')
-            op = m.get('op_profit')
-            equity = m.get('equity')
-            debt = m.get('total_debt')
-            if rev and ni and rev != 0 and 'npm' not in m:
-                m['npm'] = round((ni / rev) * 100, 1)
-            if rev and op and rev != 0 and 'opm' not in m:
-                m['opm'] = round((op / rev) * 100, 1)
-            if ni is not None and equity and equity > 0 and m.get('roe') is None:
-                m['roe'] = round((ni / equity) * 100, 1)
-            if debt is not None and equity and equity > 0 and m.get('debt_ratio') is None:
-                m['debt_ratio'] = round((debt / equity) * 100, 1)
-            if ni is not None and snap_shares > 0 and m.get('eps') is None:
-                m['eps'] = int(round((ni * 100_000_000) / snap_shares))
-            if equity is not None and snap_shares > 0 and m.get('bps') is None:
-                m['bps'] = int(round((equity * 100_000_000) / snap_shares))
-            eps_val = m.get('eps')
-            if real_price > 0 and eps_val and eps_val > 0 and m.get('per') is None:
-                m['per'] = round(real_price / eps_val, 1)
-            bps_val = m.get('bps')
-            if real_price > 0 and bps_val and bps_val > 0 and m.get('pbr') is None:
-                m['pbr'] = round(real_price / bps_val, 1)
+    _derive_metrics(annual_data, quarter_data, real_price, snap_shares)
 
     # Sort and trim
     from datetime import datetime
@@ -242,15 +275,25 @@ def _read_from_unified_db(symbol: str) -> dict | None:
     }
 
 
-def read_financial_summary(symbol: str) -> dict:
+def read_financial_summary(
+    symbol: str,
+    *,
+    price_hint: float | None = None,
+    shares_hint: float | None = None,
+) -> dict:
     """Return last 4 years of annual data and last 6 quarters for key financial metrics.
+
+    *price_hint* / *shares_hint* allow the caller (``stock_overview_payload``)
+    to pass the same price / shares it already resolved, preventing the
+    financial-summary path from using a different price and producing
+    inconsistent PER / EPS / PBR values.
 
     Priority: ohlcv.db financials table (unified) -> QuantDB snapshot + live (legacy).
     """
     empty: dict = {'annual': [], 'quarterly': [], 'metrics': []}
 
     # Fast path: ohlcv.db unified financials table
-    result = _read_from_unified_db(symbol)
+    result = _read_from_unified_db(symbol, price_hint=price_hint, shares_hint=shares_hint)
     if result and (result.get('annual') or result.get('quarterly')):
         return result
 
@@ -394,62 +437,9 @@ def read_financial_summary(symbol: str) -> dict:
             if y not in annual_data:
                 annual_data[y] = agg
 
-    # Compute NPM (net profit margin) from net_income / revenue if not present
-    for bucket in (annual_data, quarter_data):
-        for period, metrics in bucket.items():
-            rev = metrics.get('revenue')
-            ni = metrics.get('net_income')
-            if rev and ni and rev != 0 and 'npm' not in metrics:
-                metrics['npm'] = round((ni / rev) * 100, 2)
-            # Compute OPM from op_profit / revenue if not present
-            op = metrics.get('op_profit')
-            if rev and op and rev != 0 and 'opm' not in metrics:
-                metrics['opm'] = round((op / rev) * 100, 2)
-
-    # --- Derive valuation metrics from fundamentals ---
-    # Use real OHLCV price (not stale snapshot price which may be pre-split).
-    # Shares estimated from mkt_cap(억원) and real price.
-    from sepa.data.price_history import read_price_series as _read_price
-
-    # Import read_company_snapshot locally to avoid circular imports
-    from sepa.data.quantdb import read_company_snapshot
-
-    snap = read_company_snapshot(symbol)
-    snap_mkt_cap = float(snap.get('mkt_cap') or 0) if snap else 0  # 억원
-    _ohlcv = _read_price(symbol)
-    real_price = float(_ohlcv[-1].get('close', 0)) if _ohlcv else 0
-    if real_price <= 0 and snap:
-        real_price = float(snap.get('price') or 0)
-    # shares = mkt_cap(억원) * 1억 / real_price
-    snap_shares = (snap_mkt_cap * 100_000_000 / real_price) if real_price > 0 and snap_mkt_cap > 0 else 0
-
-    for bucket in (annual_data, quarter_data):
-        for period, m in bucket.items():
-            equity = m.get('equity')
-            debt = m.get('total_debt')
-            ni = m.get('net_income')
-            # ROE = net_income / equity * 100 (both in 억원)
-            if ni is not None and equity and equity > 0 and m.get('roe') is None:
-                m['roe'] = round((ni / equity) * 100, 2)
-            # 부채비율 = total_debt / equity * 100
-            if debt is not None and equity and equity > 0 and m.get('debt_ratio') is None:
-                m['debt_ratio'] = round((debt / equity) * 100, 2)
-            # EPS = net_income(억원) * 1억 / shares
-            if ni is not None and snap_shares > 0 and m.get('eps') is None:
-                m['eps'] = round((ni * 100_000_000) / snap_shares, 0)
-            # BPS = equity(억원) * 1억 / shares
-            if equity is not None and snap_shares > 0 and m.get('bps') is None:
-                m['bps'] = round((equity * 100_000_000) / snap_shares, 0)
-            # PER = real_price / EPS
-            eps_val = m.get('eps')
-            if real_price > 0 and eps_val and eps_val > 0 and m.get('per') is None:
-                m['per'] = round(real_price / eps_val, 2)
-            # PBR = real_price / BPS
-            bps_val = m.get('bps')
-            if real_price > 0 and bps_val and bps_val > 0 and m.get('pbr') is None:
-                m['pbr'] = round(real_price / bps_val, 2)
-            # DPS placeholder (would need dividend data)
-            # dividend_yield placeholder (would need DPS)
+    # --- Derive valuation metrics using shared resolver ---
+    real_price, snap_shares = _resolve_price_shares(symbol, price_hint=price_hint, shares_hint=shares_hint)
+    _derive_metrics(annual_data, quarter_data, real_price, snap_shares)
 
     # Sort and trim: most recent 4 years, most recent 8 quarters
     # Prefer 2022+ but fall back to whatever is available
