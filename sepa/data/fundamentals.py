@@ -275,6 +275,60 @@ def _get_shares(symbol: str) -> float | None:
     return None
 
 
+def _read_financial_summary_eps(symbol: str, cutoff: str) -> list[dict]:
+    """Extract EPS from read_financial_summary() + snapshot PER fallback.
+
+    Covers ~2800 stocks because financial_summary computes EPS from
+    net_income/shares. For the remaining ~400 that have no financials
+    but DO have snapshot PER+price, we reverse-compute EPS = price / PER.
+    """
+    out: list[dict] = []
+
+    # 1) Full financial_summary (gives time series with computed EPS)
+    try:
+        from sepa.data.quantdb import read_financial_summary
+        fs = read_financial_summary(symbol)
+    except Exception:
+        fs = {'annual': [], 'quarterly': []}
+
+    for ptype, key in [('annual', 'annual'), ('quarterly', 'quarterly')]:
+        for row in fs.get(key, []):
+            eps = row.get('eps')
+            if eps is None:
+                continue
+            period = str(row.get('period', ''))
+            available_token = _period_available_token(period)
+            if cutoff and available_token and available_token > cutoff:
+                continue
+            out.append({
+                'period': period,
+                'period_type': ptype,
+                'available_date': available_token,
+                'eps': float(eps),
+            })
+
+    # 2) If no time-series EPS, reverse-calc from snapshot PER (fast, ~2400 stocks)
+    if not out:
+        try:
+            from sepa.data.quantdb import read_company_snapshot
+            snap = read_company_snapshot(symbol)
+            if snap:
+                per = float(snap.get('per') or 0)
+                price = float(snap.get('price') or 0)
+                if per != 0 and price > 0:
+                    from datetime import datetime
+                    out.append({
+                        'period': str(datetime.now().year),
+                        'period_type': 'annual',
+                        'available_date': '',
+                        'eps': round(price / per, 2),
+                    })
+        except Exception:
+            pass
+
+    return out
+
+
 # ---------------------------------------------------------------------------
 # YoY computation
 # ---------------------------------------------------------------------------
@@ -360,14 +414,19 @@ def _read_eps_series_cached(
     # Priority 3: QuantDB EPS + live 당기순이익 → EPS
     quantdb_rows = _read_quantdb_eps(symbol, cutoff)
 
-    # Merge: deduplicate by period, prefer Naver > Naver NI > QuantDB
+    # Priority 4: financial_summary fallback (covers ~2800 stocks via QuantDB)
+    fs_rows = _read_financial_summary_eps(symbol, cutoff)
+
+    # Merge: deduplicate by period, prefer Naver > Naver NI > QuantDB > fin_summary
     by_period: dict[str, dict] = {}
+    for row in fs_rows:
+        by_period[row['period']] = row
     for row in quantdb_rows:
         by_period[row['period']] = row
     for row in naver_ni_rows:
-        by_period[row['period']] = row  # overrides QuantDB
+        by_period[row['period']] = row
     for row in naver_rows:
-        by_period[row['period']] = row  # overrides NI-derived
+        by_period[row['period']] = row
 
     sorted_rows = sorted(by_period.values(), key=lambda r: r['period'])
     sorted_rows = _compute_yoy(sorted_rows)
