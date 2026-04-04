@@ -25,8 +25,12 @@ from sepa.analysis.stock_analysis import (
 )
 from sepa.data.company_facts import estimated_market_cap, read_business_summary
 from sepa.data.fundamentals import read_eps_series
+from sepa.data.naver_financials import (
+    read_snapshot as _naver_snapshot,
+    read_financial_series as _naver_financial_series,
+    read_supplementary as _naver_supplementary,
+)
 from sepa.data.price_history import normalize_date_token, read_price_series
-from sepa.data.quantdb import read_company_snapshot, read_financial_summary
 from sepa.data.sector_map import get_sector, load_sector_map
 from sepa.data.universe import get_symbol_name
 
@@ -218,87 +222,57 @@ def stock_overview_payload(symbol: str, date_dir: str | None = None, as_of_date:
     date_key = resolved.name
     token = normalize_date_token(as_of_date) or date_key
 
-    # --- 회사 프로필 (빠름: 캐시/파일) ---
-    snapshot = read_company_snapshot(symbol) or {}
+    # --- 회사 프로필 (Naver = single source) ---
+    naver = _naver_snapshot(symbol) or {}
+    supplementary = _naver_supplementary(symbol)  # QuantDB: ROA, EV/EBITDA 등 보조 지표만
+
     eps_rows = read_eps_series(symbol, as_of_date=token)
     recent_eps = eps_rows[-24:] if eps_rows else []
 
     series = read_price_series(symbol, as_of_date=token)
     sparkline: list[float] = []
-    latest_price: float | None = snapshot.get('price')
+    latest_price: float | None = None
     if series:
         sparkline = [int(round(float(row.get('close', 0.0)))) for row in series[-120:] if row.get('close', 0.0) > 0]
         if sparkline:
             latest_price = sparkline[-1]
 
-    shares = snapshot.get('shares_outstanding')
-    mkt_cap_raw = snapshot.get('mkt_cap')
-    # QuantDB stores mkt_cap in 억원 (100M KRW). Convert to KRW.
-    mkt_cap = mkt_cap_raw * 100_000_000 if mkt_cap_raw else None
+    shares = naver.get('shares_outstanding')
+    mkt_cap = naver.get('market_cap_krw')
     if latest_price and shares and latest_price > 0 and shares > 0:
         mkt_cap = latest_price * shares
 
     sector_name = get_sector(symbol, load_sector_map())
-    business_summary = read_business_summary(symbol)
-
-    # Enrich from ohlcv.db symbol_meta (Naver-sourced, most complete)
-    try:
-        from sepa.data.ohlcv_db import get_symbol_meta
-        db_meta = get_symbol_meta(symbol) or {}
-    except Exception:
-        db_meta = {}
-
-    def _pick(key: str, *sources, numeric: bool = False):
-        """Pick first non-None value from sources. When numeric=True, skip
-        falsy-but-valid values like 0/0.0 correctly and coerce strings."""
-        for src in sources:
-            v = src.get(key) if isinstance(src, dict) else None
-            if v is None:
-                continue
-            if numeric:
-                # Skip empty strings / 'N/A' that snuck into REAL columns
-                if isinstance(v, str):
-                    v = v.strip().rstrip('%')
-                    if not v or v in ('N/A', '-'):
-                        continue
-                    try:
-                        v = float(v)
-                    except ValueError:
-                        continue
-                return v  # 0 and 0.0 are valid numerics — do not skip
-            else:
-                if isinstance(v, str) and not v.strip():
-                    continue
-                return v
-        return None
 
     profile = {
         'symbol': symbol,
-        'name': _pick('name', db_meta, snapshot) or get_symbol_name(symbol),
-        'market': snapshot.get('market', ''),
-        'sector_large': _pick('sector', db_meta) or _pick('sector_large', snapshot) or '',
-        'sector_small': _pick('industry', db_meta) or _pick('sector_small', snapshot) or '',
+        'name': naver.get('name') or get_symbol_name(symbol),
+        'market': '',
+        'sector_large': naver.get('sector') or '',
+        'sector_small': naver.get('industry') or '',
         'sector': sector_name,
         'price': latest_price,
         'mkt_cap': mkt_cap,
-        'market_cap_display': db_meta.get('market_cap', ''),
-        'foreign_ratio': db_meta.get('foreign_ratio', ''),
+        'market_cap_display': naver.get('market_cap_display') or '',
+        'foreign_ratio': naver.get('foreign_ratio') or '',
         'shares_outstanding': shares,
-        'major_holder_ratio': snapshot.get('major_holder_ratio'),
-        'business_summary': business_summary,
+        'major_holder_ratio': supplementary.get('major_holder_ratio'),
+        'business_summary': naver.get('description') or '',
         'financials': {
-            'per': _pick('per', db_meta, snapshot, numeric=True),
-            'pbr': _pick('pbr', db_meta, snapshot, numeric=True),
-            'roe': _pick('roe', db_meta, snapshot, numeric=True),
-            'roa': _pick('roa', snapshot, numeric=True),
-            'opm': _pick('opm', snapshot, numeric=True),
-            'dividend_yield': _pick('dividend_yield', db_meta, snapshot, numeric=True),
-            'debt_ratio': _pick('debt_ratio', snapshot, numeric=True),
-            'ev_ebitda': _pick('ev_ebitda', snapshot, numeric=True),
-            'foreign_1m': _pick('foreign_1m', snapshot, numeric=True),
-            'return_1m': _pick('return_1m', snapshot, numeric=True),
-            'return_3m': _pick('return_3m', snapshot, numeric=True),
-            'f_score': _pick('f_score', snapshot, numeric=True),
+            # Naver (primary)
+            'per': naver.get('per'),
+            'pbr': naver.get('pbr'),
+            'roe': naver.get('roe'),
+            'opm': None,  # Naver snapshot에 없음, financial_summary에서 확인
+            'dividend_yield': naver.get('dividend_yield'),
+            'debt_ratio': None,  # financial_summary에서 확인
+            # QuantDB (supplementary only)
+            'roa': supplementary.get('roa'),
+            'ev_ebitda': supplementary.get('ev_ebitda'),
+            'foreign_1m': supplementary.get('foreign_1m'),
+            'return_1m': supplementary.get('return_1m'),
+            'return_3m': supplementary.get('return_3m'),
+            'f_score': supplementary.get('f_score'),
         },
     }
 
@@ -413,7 +387,7 @@ def stock_overview_payload(symbol: str, date_dir: str | None = None, as_of_date:
         'recommendation': recommendation,
         'eps_recent': recent_eps,
         'sparkline': sparkline,
-        'financial_summary': read_financial_summary(
+        'financial_summary': _naver_financial_series(
             symbol, price_hint=latest_price, shares_hint=shares,
         ),
         'technical_summary': None,
