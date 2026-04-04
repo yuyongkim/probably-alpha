@@ -205,7 +205,7 @@ def stock_overview_payload(symbol: str, date_dir: str | None = None, as_of_date:
     # --- 회사 프로필 (빠름: 캐시/파일) ---
     snapshot = read_company_snapshot(symbol) or {}
     eps_rows = read_eps_series(symbol, as_of_date=token)
-    recent_eps = eps_rows[-8:] if eps_rows else []
+    recent_eps = eps_rows[-24:] if eps_rows else []
 
     series = read_price_series(symbol, as_of_date=token)
     sparkline: list[float] = []
