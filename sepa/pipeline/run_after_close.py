@@ -19,7 +19,7 @@ from sepa.storage.recommendation_store import upsert_daily
 logger = logging.getLogger(__name__)
 
 
-LATEST_PATH = Path('.omx/artifacts/daily-signals/latest.json')
+LATEST_PATH = Path('data/daily-signals/latest.json')
 
 
 def write_json(path: Path, data) -> None:
@@ -131,7 +131,7 @@ def build_after_close(as_of_date: str | None = None, refresh_live: bool = True) 
     else:
         run_pipeline(as_of_date=date_dir, refresh_live=False)
 
-    out = Path(f'.omx/artifacts/daily-signals/{date_dir}')
+    out = Path(f'data/daily-signals/{date_dir}')
     leaders = MinerviniLeaders()
     sectors, stocks = leaders.run(date_dir, as_of_date=date_dir)
 

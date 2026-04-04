@@ -31,8 +31,8 @@ class MinerviniLeaders:
 
     def __init__(
         self,
-        data_dir: Path = Path('.omx/artifacts/market-data/ohlcv'),
-        signal_root: Path = Path('.omx/artifacts/daily-signals'),
+        data_dir: Path = Path('data/market-data/ohlcv'),
+        signal_root: Path = Path('data/daily-signals'),
         sector_top_n: int = 10,
         stock_top_n: int = 10,
     ) -> None:
@@ -435,12 +435,21 @@ class MinerviniLeaders:
     # ------------------------------------------------------------------
 
     def _sparkline(self, symbol: str, n: int = 60, as_of_date: str | None = None) -> list[float]:
+        # DB first (bare code), then CSV fallback
+        try:
+            from sepa.data.ohlcv_db import read_ohlcv, DB_PATH
+            if DB_PATH.exists():
+                rows = read_ohlcv(symbol, as_of_date=as_of_date)
+                if rows:
+                    return [int(round(r['close'])) for r in rows[-n:] if r.get('close', 0) > 0]
+        except Exception:
+            pass
         path = self.data_dir / f'{symbol}.csv'
         if not path.exists():
             return []
         try:
             closes = [row.get('close', 0.0) for row in read_price_series_from_path(path, as_of_date=as_of_date)]
-            return [round(c, 2) for c in closes[-n:] if c > 0]
+            return [int(round(c)) for c in closes[-n:] if c > 0]
         except (ValueError, TypeError, KeyError, OSError) as exc:
             logger.warning('sparkline failed for %s: %s', symbol, exc)
             return []

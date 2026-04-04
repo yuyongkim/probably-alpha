@@ -16,7 +16,7 @@ DART_TIMEOUT_SEC = 10
 
 
 class DartProvider:
-    def __init__(self, cache_dir: Path = Path('.omx/artifacts/cache/dart')) -> None:
+    def __init__(self, cache_dir: Path = Path('data/cache/dart')) -> None:
         self.cache_dir = cache_dir
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.api_key = os.getenv('DART_API_KEY', '').strip()

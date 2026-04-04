@@ -14,7 +14,7 @@ def _load(p: Path):
 
 def main() -> None:
     d = datetime.now().strftime('%Y%m%d')
-    base = Path(f'.omx/artifacts/daily-signals/{d}')
+    base = Path(f'data/daily-signals/{d}')
     errs: list[str] = []
 
     alpha = _load(base / 'alpha-passed.json') if (base / 'alpha-passed.json').exists() else []
@@ -36,7 +36,7 @@ def main() -> None:
 
     status = 'PASS' if not errs else 'FAIL'
     report = {'date': d, 'status': status, 'errors': errs}
-    out = Path('.omx/artifacts/audit-logs/verification-report.json')
+    out = Path('data/audit-logs/verification-report.json')
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
     print(f"[{status}] validation report: {out}")

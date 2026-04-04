@@ -12,7 +12,7 @@ DEFAULT_MAP = {
 }
 
 
-def load_sector_map(path: Path = Path('.omx/artifacts/market-data/sector-map.csv')) -> dict[str, str]:
+def load_sector_map(path: Path = Path('data/market-data/sector-map.csv')) -> dict[str, str]:
     out = dict(DEFAULT_MAP)
     out.update(load_sector_map_from_universe())
     if not path.exists():

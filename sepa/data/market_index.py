@@ -10,7 +10,7 @@ INDEX_SPECS = {
     'KOSPI': {'ticker': '^KS11', 'label': 'KOSPI'},
     'KOSDAQ': {'ticker': '^KQ11', 'label': 'KOSDAQ'},
 }
-INDEX_DIR = Path('.omx/artifacts/market-data/index')
+INDEX_DIR = Path('data/market-data/index')
 
 
 def _market_key(market: str | None) -> str:

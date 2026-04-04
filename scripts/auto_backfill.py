@@ -57,7 +57,7 @@ def main() -> None:
     try:
         from scripts.generate_debate import collect_market_data, build_rule_based_debate
         import json
-        debate_path = ROOT / f'.omx/artifacts/daily-signals/{today}/trader-debate.json'
+        debate_path = ROOT / f'data/daily-signals/{today}/trader-debate.json'
         if not debate_path.exists():
             data = collect_market_data(today)
             debate = build_rule_based_debate(data)

@@ -23,8 +23,8 @@ class BetaChartist:
 
     def __init__(
         self,
-        data_dir: Path = Path('.omx/artifacts/market-data/ohlcv'),
-        audit_dir: Path = Path('.omx/artifacts/audit-logs'),
+        data_dir: Path = Path('data/market-data/ohlcv'),
+        audit_dir: Path = Path('data/audit-logs'),
         min_confidence: float | None = None,
         max_consistency: float | None = None,
     ) -> None:

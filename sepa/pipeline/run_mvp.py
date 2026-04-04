@@ -39,7 +39,7 @@ def run_pipeline(as_of_date: str | None = None, refresh_live: bool = True) -> st
     reset_run_id()
     _maybe_refresh_live_data(enabled=refresh_live and not as_of_date)
 
-    out = Path(f'.omx/artifacts/daily-signals/{date_dir}')
+    out = Path(f'data/daily-signals/{date_dir}')
 
     alpha = AlphaScreener().run(as_of_date=date_dir)
     write_json(out / 'alpha-passed.json', wrap_output(alpha, date_dir=date_dir))

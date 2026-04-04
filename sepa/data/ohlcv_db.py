@@ -1,6 +1,6 @@
 """OHLCV SQLite database — replaces 2700+ CSV file reads with indexed queries.
 
-DB path: .omx/artifacts/ohlcv.db
+DB path: data/sepa.db
 Schema: ohlcv(symbol, trade_date, close, volume) with composite PK.
 """
 from __future__ import annotations
@@ -9,7 +9,7 @@ import csv
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path('.omx/artifacts/ohlcv.db')
+DB_PATH = Path('data/sepa.db')
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS ohlcv (
@@ -73,18 +73,19 @@ def read_ohlcv(symbol: str, *, as_of_date: str | None = None, db_path: Path | No
     p = db_path or DB_PATH
     if not p.exists():
         return []
+    sym = _bare(symbol)
     conn = _connect(p)
     try:
         if as_of_date:
             cutoff = as_of_date.replace('-', '')
             rows = conn.execute(
                 'SELECT trade_date, close, volume FROM ohlcv WHERE symbol = ? AND trade_date <= ? ORDER BY trade_date',
-                (symbol, cutoff),
+                (sym, cutoff),
             ).fetchall()
         else:
             rows = conn.execute(
                 'SELECT trade_date, close, volume FROM ohlcv WHERE symbol = ? ORDER BY trade_date',
-                (symbol,),
+                (sym,),
             ).fetchall()
     finally:
         conn.close()
@@ -188,6 +189,11 @@ def get_all_symbols(*, db_path: Path | None = None) -> list[str]:
     return [row['symbol'] for row in rows]
 
 
+def _bare(symbol: str) -> str:
+    """Strip .KS/.KQ suffix — DB stores bare codes only."""
+    return symbol.replace('.KS', '').replace('.KQ', '')
+
+
 def get_symbol_name_from_db(symbol: str, *, db_path: Path | None = None) -> str:
     """Get stock name from symbol_meta table."""
     p = db_path or DB_PATH
@@ -195,7 +201,7 @@ def get_symbol_name_from_db(symbol: str, *, db_path: Path | None = None) -> str:
         return ''
     conn = _connect(p)
     try:
-        row = conn.execute('SELECT name FROM symbol_meta WHERE symbol = ?', (symbol,)).fetchone()
+        row = conn.execute('SELECT name FROM symbol_meta WHERE symbol = ?', (_bare(symbol),)).fetchone()
     except Exception:
         return ''
     finally:
@@ -210,7 +216,7 @@ def get_symbol_meta(symbol: str, *, db_path: Path | None = None) -> dict:
         return {}
     conn = _connect(p)
     try:
-        row = conn.execute('SELECT * FROM symbol_meta WHERE symbol = ?', (symbol,)).fetchone()
+        row = conn.execute('SELECT * FROM symbol_meta WHERE symbol = ?', (_bare(symbol),)).fetchone()
     except Exception:
         return {}
     finally:
@@ -233,6 +239,7 @@ def get_active_universe(*, min_date: str = '20260301', min_rows: int = 200, db_p
                    COUNT(*) as row_count, MAX(o.trade_date) as last_date
             FROM ohlcv o
             LEFT JOIN symbol_meta m ON o.symbol = m.symbol
+            WHERE o.symbol NOT LIKE '9%'
             GROUP BY o.symbol
             HAVING MAX(o.trade_date) >= ? AND COUNT(*) >= ?
             ORDER BY o.symbol

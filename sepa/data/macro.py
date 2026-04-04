@@ -9,7 +9,7 @@ from urllib.request import urlopen
 
 
 class MacroDataProvider:
-    def __init__(self, cache_dir: Path = Path('.omx/artifacts/cache/macro')) -> None:
+    def __init__(self, cache_dir: Path = Path('data/cache/macro')) -> None:
         self.cache_dir = cache_dir
         self.cache_dir.mkdir(parents=True, exist_ok=True)
 

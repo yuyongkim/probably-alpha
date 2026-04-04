@@ -33,7 +33,7 @@ with col2:
         r = subprocess.run(["python3", "sepa/pipeline/run_mvp.py"], capture_output=True, text=True)
         st.code((r.stdout or "") + (r.stderr or ""))
 
-signals_root = Path(".omx/artifacts/daily-signals")
+signals_root = Path("data/daily-signals")
 latest = sorted(signals_root.glob("*/alpha-passed.json"))
 
 st.divider()

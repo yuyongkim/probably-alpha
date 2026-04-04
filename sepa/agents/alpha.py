@@ -42,8 +42,8 @@ class AlphaScreener:
 
     def __init__(
         self,
-        data_dir: Path = Path(".omx/artifacts/market-data/ohlcv"),
-        audit_dir: Path = Path(".omx/artifacts/audit-logs"),
+        data_dir: Path = Path("data/market-data/ohlcv"),
+        audit_dir: Path = Path("data/audit-logs"),
         top_n: int = 0,
         rs_threshold: float | None = None,
     ) -> None:
@@ -121,7 +121,7 @@ class AlphaScreener:
         """Load all symbols and compute metrics. Uses DB batch when available."""
         csv_files = list(self._iter_csv_files())
         # Only use DB batch when scanning the real data dir (not test dirs)
-        if csv_files and str(self.data_dir) == str(Path('.omx/artifacts/market-data/ohlcv')):
+        if csv_files and str(self.data_dir) == str(Path('data/market-data/ohlcv')):
             try:
                 from sepa.data.ohlcv_db import read_ohlcv_batch, DB_PATH
                 if DB_PATH.exists():

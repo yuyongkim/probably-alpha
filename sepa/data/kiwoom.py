@@ -46,7 +46,7 @@ class KiwoomProvider:
 
     ENVELOPE_KEYS = ['daly_stkpc', 'data', 'output', 'items', 'result', 'list']
 
-    def __init__(self, cache_dir: Path = Path('.omx/artifacts/cache/kiwoom')) -> None:
+    def __init__(self, cache_dir: Path = Path('data/cache/kiwoom')) -> None:
         self.cfg = KiwoomConfig(
             app_key=os.getenv('KIWOOM_APP_KEY', '').strip(),
             secret_key=os.getenv('KIWOOM_SECRET_KEY', '').strip(),
@@ -59,7 +59,7 @@ class KiwoomProvider:
         )
         self.cache_dir = cache_dir
         self.cache_dir.mkdir(parents=True, exist_ok=True)
-        self.audit_dir = Path('.omx/artifacts/audit-logs')
+        self.audit_dir = Path('data/audit-logs')
         self.audit_dir.mkdir(parents=True, exist_ok=True)
 
     def health(self) -> dict:

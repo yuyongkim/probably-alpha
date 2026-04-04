@@ -65,9 +65,11 @@ class Settings:
     cors_origins: tuple[str, ...] = field(default_factory=lambda: _csv_env("SEPA_CORS_ORIGINS", _default_cors_origins()))
     cors_allow_credentials: bool = _bool_env("SEPA_CORS_ALLOW_CREDENTIALS", False)
 
-    data_root: Path = Path(os.getenv("SEPA_DATA_ROOT", ".omx/artifacts/market-data"))
-    signal_root: Path = Path(os.getenv("SEPA_SIGNAL_ROOT", ".omx/artifacts/daily-signals"))
-    audit_root: Path = Path(os.getenv("SEPA_AUDIT_ROOT", ".omx/artifacts/audit-logs"))
+    data_root: Path = Path(os.getenv("SEPA_DATA_ROOT", "data/market-data"))
+    signal_root: Path = Path(os.getenv("SEPA_SIGNAL_ROOT", "data/daily-signals"))
+    audit_root: Path = Path(os.getenv("SEPA_AUDIT_ROOT", "data/audit-logs"))
+    db_path: Path = Path(os.getenv("SEPA_DB_PATH", "data/sepa.db"))
+    cache_root: Path = Path(os.getenv("SEPA_CACHE_ROOT", "data/cache"))
 
 
 settings = Settings()

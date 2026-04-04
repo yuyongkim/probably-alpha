@@ -104,10 +104,8 @@ export function fmtNum(value, digits = 2) {
 export function fmtPrice(value) {
   const num = Number(value);
   if (!Number.isFinite(num)) return '-';
-  const formatted = num.toLocaleString('ko-KR', {
-    minimumFractionDigits: Math.abs(num % 1) > 0 ? 2 : 0,
-    maximumFractionDigits: 2,
-  });
+  const rounded = Math.round(num);
+  const formatted = rounded.toLocaleString('ko-KR');
   return txt({ ko: `${formatted}원`, en: `KRW ${formatted}` });
 }
 

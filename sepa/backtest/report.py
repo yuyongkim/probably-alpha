@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 
 
-def save_result(result: dict, output_dir: Path = Path('.omx/artifacts/backtest')) -> Path:
+def save_result(result: dict, output_dir: Path = Path('data/backtest')) -> Path:
     """Save backtest result to JSON file. Returns the file path."""
     output_dir.mkdir(parents=True, exist_ok=True)
     run_id = result.get('run_id', 'bt_unknown')

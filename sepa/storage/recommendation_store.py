@@ -8,7 +8,7 @@ from pathlib import Path
 
 from sepa.data.price_history import is_business_date_token
 
-DB_PATH = Path('.omx/artifacts/recommendations.db')
+DB_PATH = Path('data/recommendations.db')
 _SCHEMA_READY = False
 _SCHEMA_LOCK = threading.Lock()
 

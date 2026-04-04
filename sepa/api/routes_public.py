@@ -384,7 +384,7 @@ def backtest_run(
 def backtest_results() -> dict:
     import json
     from pathlib import Path
-    out_dir = Path('.omx/artifacts/backtest')
+    out_dir = Path('data/backtest')
     if not out_dir.exists():
         return {'items': []}
     results = []

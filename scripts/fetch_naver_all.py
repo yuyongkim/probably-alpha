@@ -29,7 +29,7 @@ from urllib.request import Request, urlopen
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-DB_PATH = PROJECT_ROOT / '.omx' / 'artifacts' / 'ohlcv.db'
+DB_PATH = PROJECT_ROOT / 'data' / 'sepa.db'
 NAVER_API = 'https://m.stock.naver.com/api/stock'
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
 

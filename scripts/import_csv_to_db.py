@@ -15,7 +15,7 @@ if str(ROOT) not in sys.path:
 
 from sepa.data.ohlcv_db import ensure_db, import_csv_dir, get_all_symbols, DB_PATH
 
-CSV_DIR = ROOT / '.omx' / 'artifacts' / 'market-data' / 'ohlcv'
+CSV_DIR = ROOT / 'data' / 'market-data' / 'ohlcv'
 
 
 def main() -> None:

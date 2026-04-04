@@ -11,7 +11,7 @@ import {
 import { txt } from './i18n.js';
 
 const MAIN_CHART_PAD = { top: 24, right: 128, bottom: 56, left: 60 };
-const EPS_CHART_PAD = { top: 20, right: 24, bottom: 70, left: 60 };
+const EPS_CHART_PAD = { top: 48, right: 24, bottom: 70, left: 60 };
 
 function numericSeries(values = []) {
   return values.map((value) => {
@@ -260,7 +260,8 @@ function quarterToken(value) {
 }
 
 export function getEpsViewport(analysis) {
-  const allRows = analysis?.eps_series || [];
+  // Only show quarterly EPS (period like "2024Q1"), exclude annual (period like "2024")
+  const allRows = (analysis?.eps_series || []).filter((r) => /Q\d$/.test(r.period || ''));
   const total = allRows.length;
   const requested = Math.max(8, Math.round(Number(state.epsWindowQuarters || 16)));
   if (!total) {
@@ -665,16 +666,24 @@ function renderEpsChart(analysis) {
     if (!Number.isFinite(value)) return '';
     const xCenter = pointX(index, box, count);
     const y = box.plotTop + ((max - value) / span) * box.plotHeight;
+    const barTop = Math.min(y, zeroY);
+    const barBot = Math.max(y, zeroY);
     const barX = xCenter - barWidth / 2;
     const isUp = value >= 0;
     const isLatest = index === epsSeries.length - 1;
-    const fill = isUp ? 'rgba(87, 180, 255, 0.86)' : 'rgba(255, 158, 158, 0.76)';
+    const yoyVal = Number(row.eps_yoy) || 0;
+    const yoyGrow = yoyVal > 0;
+    const yoyShrink = yoyVal < 0;
+    // Bar color by YoY growth direction (consistent with mini-chart)
+    const fill = yoyGrow ? 'rgba(138, 240, 184, 0.82)' : yoyShrink ? 'rgba(255, 158, 158, 0.76)' : 'rgba(122, 143, 166, 0.7)';
     const stroke = isLatest ? 'rgba(255,255,255,0.82)' : 'rgba(255,255,255,0.08)';
-    const yoyY = isUp ? y - 22 : y + 18;
-    const valueY = isUp ? y - 8 : y + 32;
+    // YoY label above bar top; EPS value just above bar top (below YoY)
+    const yoyY = barTop - 16;
+    const valueY = barTop - 3;
+    const yoyColor = yoyGrow ? '#8af0b8' : yoyShrink ? '#ff9e9e' : '#7a8fa6';
     return `
-      <rect x="${barX.toFixed(2)}" y="${Math.min(y, zeroY).toFixed(2)}" width="${barWidth.toFixed(2)}" height="${Math.max(1, Math.abs(zeroY - y)).toFixed(2)}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="${isLatest ? 1.5 : 1}" />
-      <text x="${xCenter.toFixed(2)}" y="${yoyY.toFixed(2)}" text-anchor="middle" fill="#d8e6f8" font-size="10">${escapeHtml(formatSigned(row.eps_yoy, 1))}</text>
+      <rect x="${barX.toFixed(2)}" y="${barTop.toFixed(2)}" width="${barWidth.toFixed(2)}" height="${Math.max(1, barBot - barTop).toFixed(2)}" rx="5" fill="${fill}" stroke="${stroke}" stroke-width="${isLatest ? 1.5 : 1}" />
+      <text x="${xCenter.toFixed(2)}" y="${yoyY.toFixed(2)}" text-anchor="middle" fill="${yoyColor}" font-size="10" font-weight="600">${escapeHtml(formatSigned(row.eps_yoy, 1))}</text>
       <text x="${xCenter.toFixed(2)}" y="${valueY.toFixed(2)}" text-anchor="middle" fill="#9ec5ea" font-size="10">${escapeHtml(fmtWhole(value))}</text>
       <text x="${xCenter.toFixed(2)}" y="${(box.plotTop + box.plotHeight + 20).toFixed(2)}" text-anchor="middle" fill="#9ec5ea" font-size="10">${escapeHtml(quarterToken(row.period) || fmtQuarter(row.period))}</text>
     `;

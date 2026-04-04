@@ -8,7 +8,7 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path('.omx/artifacts/ohlcv.db')
+DB_PATH = Path('data/sepa.db')
 
 
 def _connect() -> sqlite3.Connection | None:
@@ -32,10 +32,10 @@ def compute_stock_quant(symbol: str) -> dict:
 
     Returns dict with growth rates, margins, valuation ratios.
     """
-    code = symbol.replace('.KS', '').replace('.KQ', '')
     conn = _connect()
     if conn is None:
         return {}
+    code = symbol.replace('.KS', '').replace('.KQ', '')
 
     try:
         # Get available periods

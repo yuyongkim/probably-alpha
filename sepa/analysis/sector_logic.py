@@ -39,7 +39,7 @@ def build_sector_members(
     sector: str,
     date_dir: str,
     as_of_date: str | None = None,
-    signal_root: Path = Path('.omx/artifacts/daily-signals'),
+    signal_root: Path = Path('data/daily-signals'),
 ) -> dict:
     day_dir = signal_root / date_dir
     alpha = _read_json(day_dir / 'alpha-passed.json', [])
@@ -117,7 +117,7 @@ def build_sector_members(
 
 @lru_cache(maxsize=128)
 def build_logic_payload(date_dir: str, as_of_date: str | None = None) -> dict:
-    day_dir = Path('.omx/artifacts/daily-signals') / date_dir
+    day_dir = Path('data/daily-signals') / date_dir
     sectors = _read_json(day_dir / 'leader-sectors.json', [])
     stocks = _read_json(day_dir / 'leader-stocks.json', [])
     recommendations = _read_json(day_dir / 'recommendations.json', [])

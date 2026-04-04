@@ -14,7 +14,7 @@ from sepa.wizards.kiwoom_export import KiwoomExporter
 
 
 def _load_alpha_passed(date_dir: str) -> list[dict]:
-    path = Path(f'.omx/artifacts/daily-signals/{date_dir}/alpha-passed.json')
+    path = Path(f'data/daily-signals/{date_dir}/alpha-passed.json')
     if not path.exists():
         return []
     data = json.loads(path.read_text(encoding='utf-8'))
@@ -27,8 +27,8 @@ def _load_price_csv(symbol: str) -> dict:
     """Load OHLCV from market-data CSV files."""
     safe = symbol.replace('/', '_').replace('.', '_')
     candidates = [
-        Path(f'.omx/artifacts/market-data/{safe}.csv'),
-        Path(f'.omx/artifacts/cache/kiwoom/{safe}.json'),
+        Path(f'data/market-data/{safe}.csv'),
+        Path(f'data/cache/kiwoom/{safe}.json'),
     ]
 
     for path in candidates:
@@ -83,7 +83,7 @@ def _parse_json_cache(path: Path) -> dict:
 
 def _load_gamma_insights(date_dir: str) -> dict[str, dict]:
     """Load gamma insights for fundamental data."""
-    path = Path(f'.omx/artifacts/daily-signals/{date_dir}/gamma-insights.json')
+    path = Path(f'data/daily-signals/{date_dir}/gamma-insights.json')
     if not path.exists():
         return {}
     try:

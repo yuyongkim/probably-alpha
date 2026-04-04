@@ -44,7 +44,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from sepa.data.kiwoom import KiwoomProvider  # noqa: E402
 from sepa.data.symbols import to_kiwoom_symbol  # noqa: E402
 
-DB_PATH = PROJECT_ROOT / '.omx' / 'artifacts' / 'ohlcv.db'
+DB_PATH = PROJECT_ROOT / 'data' / 'sepa.db'
 
 # Financial columns to add to symbol_meta (if they don't exist yet)
 FINANCIAL_COLS = ['per', 'eps', 'roe', 'pbr', 'bps', 'revenue', 'op_profit', 'net_income']

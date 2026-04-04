@@ -21,8 +21,9 @@ build/
 .DS_Store
 Thumbs.db
 
-# Project artifacts
-.omx/artifacts/
+# Project data (DB + pipeline outputs)
+data/
+.omx/
 *.db
 tmp_*.json
 tmp2*
@@ -34,3 +35,4 @@ node_modules/
 .pytest_cache/
 .coverage
 htmlcov/
+*.xlsx

@@ -97,7 +97,7 @@ def main() -> None:
     print('[KIWOOM HEALTH]', h)
     print('[QUANTDB HEALTH]', quantdb_health())
 
-    outdir = Path('.omx/artifacts/market-data/ohlcv')
+    outdir = Path('data/market-data/ohlcv')
     symbols = _symbols()
     min_live_rows = max(252, int(os.getenv('SEPA_MIN_REAL_HISTORY_DAYS', str(MIN_HISTORY_DAYS)) or MIN_HISTORY_DAYS))
     updated = 0
@@ -132,41 +132,29 @@ def main() -> None:
             continue
 
         kiwoom_rows = provider.fetch_ohlcv(sym, limit=min_live_rows)
-        yfinance_rows: list[dict] = []
-        if len(quantdb_rows) + len(kiwoom_rows) < min_live_rows:
-            yfinance_rows = _fetch_yfinance_rows(sym)
 
-        live_rows = _merge_rows(quantdb_rows, yfinance_rows, kiwoom_rows)
+        # Merge: QuantDB + Kiwoom only (no Yahoo Finance)
+        live_rows = _merge_rows(quantdb_rows, [], kiwoom_rows)
         if live_rows:
             generate_for_symbols([sym], source_rows={sym: live_rows}, overwrite=True)
             if quantdb_rows:
                 quantdb_updated += 1
             if kiwoom_rows:
                 updated += 1
-            if yfinance_rows:
-                yf_updated += 1
             source_bits = []
             if quantdb_rows:
                 source_bits.append(f'quantdb={len(quantdb_rows)}')
             if kiwoom_rows:
                 source_bits.append(f'kiwoom={len(kiwoom_rows)}')
-            if yfinance_rows:
-                source_bits.append(f'yfinance={len(yfinance_rows)}')
             source_label = ', '.join(source_bits) if source_bits else 'live'
             print(f'[LIVE] {sym}: {len(live_rows)} merged rows ({source_label})')
             continue
 
         if not live_rows:
-            yfinance_rows = _fetch_yfinance_rows(sym) if not yfinance_rows else yfinance_rows
-            if yfinance_rows:
-                generate_for_symbols([sym], source_rows={sym: yfinance_rows}, overwrite=True)
-                print(f'[YF] {sym}: {len(yfinance_rows)} rows updated')
-                yf_updated += 1
-                continue
             if (outdir / f'{sym}.csv').exists():
                 print(f'[KEEP] using local csv for {sym}')
                 continue
-            print(f'[MISS] no live rows, no yfinance rows, and no local csv for {sym}')
+            print(f'[MISS] no live data for {sym}')
             missing.append(sym)
             continue
 

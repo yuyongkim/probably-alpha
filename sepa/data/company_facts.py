@@ -12,7 +12,7 @@ from sepa.data.quantdb import read_company_snapshot
 logger = logging.getLogger(__name__)
 
 
-CACHE_DIR = Path('.omx/artifacts/market-data/company-facts')
+CACHE_DIR = Path('data/market-data/company-facts')
 CACHE_TTL = timedelta(hours=24)
 
 

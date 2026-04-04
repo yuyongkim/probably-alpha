@@ -9,7 +9,7 @@ from sepa.data.quantdb import health as quantdb_health
 from sepa.data.quantdb import read_universe as read_quantdb_universe
 
 DEFAULT_UNIVERSE_FILE = Path('config/krx_universe.csv')
-DEFAULT_SYMBOLS = ['005930.KS', '000660.KS', '051910.KS']
+DEFAULT_SYMBOLS = ['005930', '000660', '051910']
 DEFAULT_QUANTDB_UNIVERSE_LIMIT = 2500
 
 SECTOR_GROUP_MAP = {

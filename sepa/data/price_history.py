@@ -40,7 +40,7 @@ def is_business_date_token(value: str | None) -> bool:
 
 def read_price_series(
     symbol: str,
-    data_dir: Path = Path('.omx/artifacts/market-data/ohlcv'),
+    data_dir: Path = Path('data/market-data/ohlcv'),
     as_of_date: str | None = None,
 ) -> list[dict]:
     path = data_dir / f'{symbol}.csv'
@@ -71,11 +71,11 @@ def read_price_series_from_path(path: Path, as_of_date: str | None = None) -> li
     ]
 
 
-def available_dates(data_dir: Path = Path('.omx/artifacts/market-data/ohlcv')) -> list[str]:
+def available_dates(data_dir: Path = Path('data/market-data/ohlcv')) -> list[str]:
     return list(_available_dates_fast(str(data_dir), _data_dir_file_count(data_dir)))
 
 
-def nearest_available_date(value: str | None, data_dir: Path = Path('.omx/artifacts/market-data/ohlcv')) -> str:
+def nearest_available_date(value: str | None, data_dir: Path = Path('data/market-data/ohlcv')) -> str:
     dates = available_dates(data_dir)
     if not dates:
         return ''
@@ -91,7 +91,7 @@ def nearest_available_date(value: str | None, data_dir: Path = Path('.omx/artifa
 def trailing_available_dates(
     end_token: str | None = None,
     length: int = 126,
-    data_dir: Path = Path('.omx/artifacts/market-data/ohlcv'),
+    data_dir: Path = Path('data/market-data/ohlcv'),
 ) -> list[str]:
     dates = available_dates(data_dir)
     if not dates or length <= 0:
@@ -107,7 +107,7 @@ def trailing_available_dates(
 def leading_available_dates(
     start_token: str | None,
     length: int = 126,
-    data_dir: Path = Path('.omx/artifacts/market-data/ohlcv'),
+    data_dir: Path = Path('data/market-data/ohlcv'),
 ) -> list[str]:
     dates = available_dates(data_dir)
     if not dates or length <= 0:

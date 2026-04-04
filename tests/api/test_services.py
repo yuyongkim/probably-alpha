@@ -12,7 +12,7 @@ from sepa.api import services
 class ApiServicesTest(unittest.TestCase):
     def test_resolve_dir_missing_bundle_is_read_only(self) -> None:
         with (
-            patch.object(services, 'SIGNALS_ROOT', Path('.omx/nonexistent-test-signals')),
+            patch.object(services, 'SIGNALS_ROOT', Path('data/nonexistent-test-signals')),
             patch.object(services, 'available_dates', return_value=['20250103']),
             patch.object(services, 'nearest_available_date', return_value='20250103'),
             patch.object(services, 'build_after_close') as build_after_close,

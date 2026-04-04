@@ -7,8 +7,8 @@ from pathlib import Path
 
 from sepa.data.universe import load_universe
 
-OHLCV_DIR = Path('.omx/artifacts/market-data/ohlcv')
-EPS_PATH = Path('.omx/artifacts/market-data/fundamentals/eps.csv')
+OHLCV_DIR = Path('data/market-data/ohlcv')
+EPS_PATH = Path('data/market-data/fundamentals/eps.csv')
 MIN_HISTORY_DAYS = 1600
 MIN_EPS_QUARTERS = 20
 

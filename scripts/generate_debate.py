@@ -302,7 +302,7 @@ def main():
     debate = build_rule_based_debate(data)
 
     # Save to daily signals folder
-    out_dir = ROOT / f".omx/artifacts/daily-signals/{resolved_date}"
+    out_dir = ROOT / f"data/daily-signals/{resolved_date}"
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / "trader-debate.json"
     out_path.write_text(json.dumps(debate, ensure_ascii=False, indent=2), encoding="utf-8")

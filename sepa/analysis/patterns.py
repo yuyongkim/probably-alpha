@@ -1,13 +1,65 @@
 """Chart pattern detection (Cup-with-Handle, etc.)."""
 from __future__ import annotations
 
+import math
 
-def detect_cup_with_handle(price_series: list[dict], min_cup_days: int = 20, max_cup_days: int = 200) -> dict:
+
+def _smooth(prices: list[float], window: int = 5) -> list[float]:
+    """Simple moving average smoothing to reduce noise."""
+    if window < 2 or len(prices) < window:
+        return list(prices)
+    out: list[float] = []
+    s = sum(prices[:window])
+    for i in range(len(prices)):
+        if i >= window:
+            s += prices[i] - prices[i - window]
+        w = min(i + 1, window)
+        out.append(s / w if i >= window - 1 else sum(prices[:i + 1]) / (i + 1))
+    return out
+
+
+def _find_local_highs(closes: list[float], order: int = 10) -> list[int]:
+    """Find local maxima indices with given look-left/look-right order."""
+    highs = []
+    for i in range(order, len(closes) - order):
+        if all(closes[i] >= closes[i - j] for j in range(1, order + 1)) and \
+           all(closes[i] >= closes[i + j] for j in range(1, order + 1)):
+            highs.append(i)
+    return highs
+
+
+def _find_local_lows(closes: list[float], order: int = 10) -> list[int]:
+    """Find local minima indices."""
+    lows = []
+    for i in range(order, len(closes) - order):
+        if all(closes[i] <= closes[i - j] for j in range(1, order + 1)) and \
+           all(closes[i] <= closes[i + j] for j in range(1, order + 1)):
+            lows.append(i)
+    return lows
+
+
+def _cup_symmetry(closes: list[float], left_idx: int, bottom_idx: int, right_idx: int) -> float:
+    """Score cup symmetry (0-1). Higher = more symmetric U-shape."""
+    left_len = bottom_idx - left_idx
+    right_len = right_idx - bottom_idx
+    if left_len <= 0 or right_len <= 0:
+        return 0.0
+    ratio = min(left_len, right_len) / max(left_len, right_len)
+    return ratio
+
+
+def detect_cup_with_handle(
+    price_series: list[dict],
+    min_cup_days: int = 20,
+    max_cup_days: int = 200,
+) -> dict:
     """Detect a Cup-with-Handle (CWH) chart pattern.
 
-    Looks for a U-shaped cup formation followed by a small handle pullback.
-    Cup depth: 12-45% from the left rim (relaxed for KRX volatility).
-    Handle depth: 3-20% from the right rim (relaxed).
+    Multi-candidate approach: scans multiple potential left rims (local highs)
+    and picks the best-scoring cup formation.
+
+    Cup depth: 10-50% from the left rim (relaxed for KRX volatility).
+    Handle depth: 2-15% from the right rim.
     """
     default = {
         'detected': False,
@@ -19,6 +71,7 @@ def detect_cup_with_handle(price_series: list[dict], min_cup_days: int = 20, max
         'cup_start_date': '',
         'handle_start_date': '',
         'stage': 'none',
+        'score': 0.0,
     }
 
     closes = [float(row.get('close', 0.0)) for row in price_series if row.get('close', 0.0) > 0]
@@ -27,172 +80,227 @@ def detect_cup_with_handle(price_series: list[dict], min_cup_days: int = 20, max
     if len(closes) < min_cup_days + 10:
         return default
 
-    # Use a lookback window of max_cup_days + 30 (handle room)
-    lookback = min(len(closes), max_cup_days + 30)
-    window_closes = closes[-lookback:]
-    window_dates = dates[-lookback:]
+    # Lookback window
+    lookback = min(len(closes), max_cup_days + 50)
+    wc = closes[-lookback:]
+    wd = dates[-lookback:]
+    n = len(wc)
 
-    # Step 1: Find the left rim — highest point in the lookback window
-    left_rim_idx = 0
-    left_rim_price = window_closes[0]
-    for i in range(len(window_closes)):
-        if window_closes[i] > left_rim_price:
-            left_rim_price = window_closes[i]
-            left_rim_idx = i
+    # Smooth prices for peak/trough detection (raw prices for depth calc)
+    smoothed = _smooth(wc, window=5)
 
-    if left_rim_price <= 0:
+    # Find candidate left rims: local highs on smoothed data
+    local_highs = _find_local_highs(smoothed, order=8)
+    # Also consider the absolute high as a candidate
+    abs_high_idx = max(range(n), key=lambda i: wc[i])
+    if abs_high_idx not in local_highs:
+        local_highs.append(abs_high_idx)
+    # Sort and keep only those with enough room for a cup after them
+    local_highs = sorted(h for h in local_highs if h < n - min_cup_days)
+
+    if not local_highs:
         return default
 
-    # Step 2: Find the cup bottom — lowest point after left rim
-    search_end = min(len(window_closes), left_rim_idx + max_cup_days + 1)
-    if left_rim_idx + 5 >= search_end:
-        return default
+    best: dict | None = None
+    best_score = -1.0
 
-    cup_bottom_idx = left_rim_idx + 1
-    cup_bottom_price = window_closes[left_rim_idx + 1]
-    for i in range(left_rim_idx + 1, search_end):
-        if window_closes[i] < cup_bottom_price:
-            cup_bottom_price = window_closes[i]
-            cup_bottom_idx = i
+    for left_rim_idx in local_highs:
+        left_rim_price = wc[left_rim_idx]
+        if left_rim_price <= 0:
+            continue
 
-    # Cup depth check: 12-45% (relaxed for KRX)
-    cup_depth_pct = ((left_rim_price - cup_bottom_price) / left_rim_price) * 100.0
-    if cup_depth_pct < 12.0 or cup_depth_pct > 45.0:
-        # Cup depth outside acceptable range — check if still forming
-        if cup_depth_pct >= 8.0 and cup_depth_pct < 12.0:
-            # Shallow cup still forming
-            return {
+        # Find cup bottom: lowest point after left rim within max_cup_days
+        search_end = min(n, left_rim_idx + max_cup_days + 1)
+        if left_rim_idx + 5 >= search_end:
+            continue
+
+        cup_bottom_idx = left_rim_idx + 1
+        cup_bottom_price = wc[left_rim_idx + 1]
+        for i in range(left_rim_idx + 2, search_end):
+            if wc[i] < cup_bottom_price:
+                cup_bottom_price = wc[i]
+                cup_bottom_idx = i
+
+        cup_depth_pct = ((left_rim_price - cup_bottom_price) / left_rim_price) * 100.0
+
+        # Cup depth: 10-50% (relaxed for KRX)
+        if cup_depth_pct < 10.0 or cup_depth_pct > 50.0:
+            if 7.0 <= cup_depth_pct < 10.0:
+                # Shallow cup still forming — track as candidate
+                cand = {
+                    **default,
+                    'cup_depth_pct': round(cup_depth_pct, 2),
+                    'cup_days': cup_bottom_idx - left_rim_idx,
+                    'cup_start_date': wd[left_rim_idx] if left_rim_idx < len(wd) else '',
+                    'stage': 'cup_forming',
+                    'score': 0.1,
+                }
+                if cand['score'] > best_score:
+                    best_score = cand['score']
+                    best = cand
+            continue
+
+        # Find right rim: price recovery after bottom
+        # Relaxed: require recovery to 80% of left rim (was 85%)
+        right_rim_idx = None
+        right_rim_price = 0.0
+        for i in range(cup_bottom_idx + 1, n):
+            if wc[i] >= left_rim_price * 0.80:
+                right_rim_idx = i
+                right_rim_price = wc[i]
+                break
+
+        cup_days = (right_rim_idx - left_rim_idx) if right_rim_idx is not None else (cup_bottom_idx - left_rim_idx)
+
+        if right_rim_idx is None:
+            # Cup bottom found but no recovery yet
+            recent = wc[max(cup_bottom_idx, n - 10):]
+            rising = len(recent) >= 3 and recent[-1] > recent[0]
+            # Also check how close we are to recovery
+            current = wc[-1]
+            recovery_pct = ((current - cup_bottom_price) / (left_rim_price - cup_bottom_price)) * 100.0 if left_rim_price > cup_bottom_price else 0.0
+            if rising or recovery_pct > 60:
+                cand = {
+                    **default,
+                    'cup_depth_pct': round(cup_depth_pct, 2),
+                    'cup_days': cup_bottom_idx - left_rim_idx,
+                    'cup_start_date': wd[left_rim_idx] if left_rim_idx < len(wd) else '',
+                    'stage': 'cup_forming',
+                    'score': 0.2 + recovery_pct / 500.0,
+                }
+                if cand['score'] > best_score:
+                    best_score = cand['score']
+                    best = cand
+            continue
+
+        # Validate cup duration
+        if cup_days < min_cup_days or cup_days > max_cup_days:
+            continue
+
+        # Cup symmetry score
+        symmetry = _cup_symmetry(wc, left_rim_idx, cup_bottom_idx, right_rim_idx)
+
+        # Step 4: Handle detection
+        remaining = n - right_rim_idx - 1
+
+        if remaining < 2:
+            # Right rim just formed
+            score = 0.3 + symmetry * 0.2
+            cand = {
                 **default,
                 'cup_depth_pct': round(cup_depth_pct, 2),
-                'cup_days': cup_bottom_idx - left_rim_idx,
-                'cup_start_date': window_dates[left_rim_idx] if left_rim_idx < len(window_dates) else '',
+                'cup_days': cup_days,
+                'cup_start_date': wd[left_rim_idx] if left_rim_idx < len(wd) else '',
                 'stage': 'cup_forming',
+                'score': round(score, 3),
             }
-        return default
+            if score > best_score:
+                best_score = score
+                best = cand
+            continue
 
-    # Step 3: Find the right rim — price recovery after cup bottom
-    # Look for the point where price recovers to within 10% of the left rim
-    right_rim_idx = None
-    right_rim_price = 0.0
-    for i in range(cup_bottom_idx + 1, len(window_closes)):
-        if window_closes[i] >= left_rim_price * 0.85:
-            right_rim_idx = i
-            right_rim_price = window_closes[i]
-            break
+        # Find handle high (start of pullback) and handle low
+        handle_start_idx = right_rim_idx
+        handle_high = right_rim_price
+        handle_search_end = min(n, right_rim_idx + 30)
+        for i in range(right_rim_idx, handle_search_end):
+            if wc[i] > handle_high:
+                handle_high = wc[i]
+                handle_start_idx = i
 
-    cup_days = (right_rim_idx - left_rim_idx) if right_rim_idx is not None else (cup_bottom_idx - left_rim_idx)
+        # Find handle low after handle start
+        handle_low = handle_high
+        handle_low_idx = handle_start_idx
+        for i in range(handle_start_idx, n):
+            if wc[i] < handle_low:
+                handle_low = wc[i]
+                handle_low_idx = i
 
-    if right_rim_idx is None:
-        # Cup bottom found but price hasn't recovered — cup still forming
-        # Check if price is rising from the bottom (trending up in last 10 bars)
-        recent_slice = window_closes[max(cup_bottom_idx, len(window_closes) - 10):]
-        if len(recent_slice) >= 3 and recent_slice[-1] > recent_slice[0]:
-            stage = 'cup_forming'
+        handle_depth_pct = ((handle_high - handle_low) / handle_high) * 100.0 if handle_high > 0 else 0.0
+        handle_days = n - 1 - handle_start_idx
+
+        # Pivot (buy point)
+        pivot_price = round(handle_high * 1.005, 2)
+
+        # Score the candidate
+        # Prefer: moderate cup depth (15-33%), good symmetry, valid handle
+        depth_score = 1.0 - abs(cup_depth_pct - 25.0) / 25.0
+        depth_score = max(0.0, depth_score)
+
+        if 2.0 <= handle_depth_pct <= 15.0 and 3 <= handle_days <= 40:
+            # Valid handle
+            current_price = wc[-1]
+            if current_price >= handle_high * 0.995:
+                stage = 'breakout_ready'
+                stage_bonus = 0.3
+            elif current_price >= handle_low + (handle_high - handle_low) * 0.5:
+                stage = 'handle_forming'
+                stage_bonus = 0.15
+            else:
+                stage = 'handle_forming'
+                stage_bonus = 0.1
+
+            # Handle depth sweet spot: 5-12%
+            handle_score = 1.0 - abs(handle_depth_pct - 8.0) / 12.0
+            handle_score = max(0.0, handle_score)
+
+            score = 0.4 + depth_score * 0.15 + symmetry * 0.15 + handle_score * 0.15 + stage_bonus
+            cand = {
+                'detected': True,
+                'cup_depth_pct': round(cup_depth_pct, 2),
+                'handle_depth_pct': round(handle_depth_pct, 2),
+                'pivot_price': pivot_price,
+                'cup_days': cup_days,
+                'handle_days': handle_days,
+                'cup_start_date': wd[left_rim_idx] if left_rim_idx < len(wd) else '',
+                'handle_start_date': wd[handle_start_idx] if handle_start_idx < len(wd) else '',
+                'stage': stage,
+                'score': round(min(1.0, score), 3),
+            }
+            if score > best_score:
+                best_score = score
+                best = cand
+
+        elif handle_depth_pct < 5.0 and handle_days < 5:
+            # Handle hasn't formed yet
+            score = 0.35 + depth_score * 0.1 + symmetry * 0.1
+            cand = {
+                **default,
+                'cup_depth_pct': round(cup_depth_pct, 2),
+                'handle_depth_pct': round(handle_depth_pct, 2),
+                'pivot_price': pivot_price,
+                'cup_days': cup_days,
+                'handle_days': handle_days,
+                'cup_start_date': wd[left_rim_idx] if left_rim_idx < len(wd) else '',
+                'handle_start_date': wd[handle_start_idx] if handle_start_idx < len(wd) else '',
+                'stage': 'handle_forming',
+                'score': round(score, 3),
+            }
+            if score > best_score:
+                best_score = score
+                best = cand
+
+        elif handle_depth_pct > 15.0:
+            # Handle too deep
+            continue
+
         else:
-            stage = 'none'
-        return {
-            **default,
-            'cup_depth_pct': round(cup_depth_pct, 2),
-            'cup_days': cup_bottom_idx - left_rim_idx,
-            'cup_start_date': window_dates[left_rim_idx] if left_rim_idx < len(window_dates) else '',
-            'stage': stage,
-        }
+            # Handle forming but outside valid day range
+            score = 0.3 + depth_score * 0.1 + symmetry * 0.1
+            cand = {
+                **default,
+                'cup_depth_pct': round(cup_depth_pct, 2),
+                'handle_depth_pct': round(handle_depth_pct, 2),
+                'pivot_price': pivot_price,
+                'cup_days': cup_days,
+                'handle_days': handle_days,
+                'cup_start_date': wd[left_rim_idx] if left_rim_idx < len(wd) else '',
+                'handle_start_date': wd[handle_start_idx] if handle_start_idx < len(wd) else '',
+                'stage': 'handle_forming',
+                'score': round(score, 3),
+            }
+            if score > best_score:
+                best_score = score
+                best = cand
 
-    # Validate cup duration
-    if cup_days < min_cup_days or cup_days > max_cup_days:
-        return default
-
-    # Step 4: After the right rim, look for the handle (small pullback)
-    remaining = len(window_closes) - right_rim_idx - 1
-
-    if remaining < 2:
-        # Right rim just formed, handle hasn't started
-        return {
-            **default,
-            'cup_depth_pct': round(cup_depth_pct, 2),
-            'cup_days': cup_days,
-            'cup_start_date': window_dates[left_rim_idx] if left_rim_idx < len(window_dates) else '',
-            'stage': 'cup_forming',
-        }
-
-    # Find handle high (start of handle pullback) and handle low
-    handle_start_idx = right_rim_idx
-    handle_high = right_rim_price
-
-    # Look for the highest point around the right rim area as handle start
-    handle_search_end = min(len(window_closes), right_rim_idx + 26)
-    for i in range(right_rim_idx, handle_search_end):
-        if window_closes[i] > handle_high:
-            handle_high = window_closes[i]
-            handle_start_idx = i
-
-    # Find the handle low after handle start
-    handle_low = handle_high
-    handle_low_idx = handle_start_idx
-    for i in range(handle_start_idx, len(window_closes)):
-        if window_closes[i] < handle_low:
-            handle_low = window_closes[i]
-            handle_low_idx = i
-
-    handle_depth_pct = ((handle_high - handle_low) / handle_high) * 100.0 if handle_high > 0 else 0.0
-    handle_days = len(window_closes) - 1 - handle_start_idx
-
-    # The pivot (buy point) is just above the handle high
-    pivot_price = round(handle_high * 1.005, 2)
-
-    # Determine stage
-    if 3.0 <= handle_depth_pct <= 20.0 and 3 <= handle_days <= 35:
-        # Valid handle exists
-        current_price = window_closes[-1]
-        if current_price >= handle_high * 0.995:
-            stage = 'breakout_ready'
-        else:
-            stage = 'handle_forming'
-        return {
-            'detected': True,
-            'cup_depth_pct': round(cup_depth_pct, 2),
-            'handle_depth_pct': round(handle_depth_pct, 2),
-            'pivot_price': pivot_price,
-            'cup_days': cup_days,
-            'handle_days': handle_days,
-            'cup_start_date': window_dates[left_rim_idx] if left_rim_idx < len(window_dates) else '',
-            'handle_start_date': window_dates[handle_start_idx] if handle_start_idx < len(window_dates) else '',
-            'stage': stage,
-        }
-    elif handle_depth_pct < 5.0 and handle_days < 5:
-        # Handle hasn't formed yet or too shallow
-        return {
-            **default,
-            'cup_depth_pct': round(cup_depth_pct, 2),
-            'handle_depth_pct': round(handle_depth_pct, 2),
-            'pivot_price': pivot_price,
-            'cup_days': cup_days,
-            'handle_days': handle_days,
-            'cup_start_date': window_dates[left_rim_idx] if left_rim_idx < len(window_dates) else '',
-            'handle_start_date': window_dates[handle_start_idx] if handle_start_idx < len(window_dates) else '',
-            'stage': 'handle_forming',
-        }
-    elif handle_depth_pct > 15.0:
-        # Handle too deep — not a valid CWH
-        return {
-            **default,
-            'cup_depth_pct': round(cup_depth_pct, 2),
-            'handle_depth_pct': round(handle_depth_pct, 2),
-            'cup_days': cup_days,
-            'handle_days': handle_days,
-            'cup_start_date': window_dates[left_rim_idx] if left_rim_idx < len(window_dates) else '',
-            'stage': 'none',
-        }
-    else:
-        # Handle forming but not yet within valid day range
-        return {
-            **default,
-            'cup_depth_pct': round(cup_depth_pct, 2),
-            'handle_depth_pct': round(handle_depth_pct, 2),
-            'pivot_price': pivot_price,
-            'cup_days': cup_days,
-            'handle_days': handle_days,
-            'cup_start_date': window_dates[left_rim_idx] if left_rim_idx < len(window_dates) else '',
-            'handle_start_date': window_dates[handle_start_idx] if handle_start_idx < len(window_dates) else '',
-            'stage': 'handle_forming',
-        }
+    return best if best is not None else default
