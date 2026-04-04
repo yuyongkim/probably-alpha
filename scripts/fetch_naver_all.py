@@ -33,15 +33,25 @@ DB_PATH = PROJECT_ROOT / '.omx' / 'artifacts' / 'ohlcv.db'
 NAVER_API = 'https://m.stock.naver.com/api/stock'
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
 
+# Naver finance API returns exactly these 16 titles.
+# Map to DB metric names (stored as-is).
 METRIC_MAP = {
-    '매출액': '매출액', '영업이익': '영업이익', '당기순이익': '당기순이익',
-    '지배주주순이익': '당기순이익', '자산총계': '자산총계', '부채총계': '부채총계',
-    '자본총계': '자본총계', '영업이익률': '영업이익률', '순이익률': '순이익률',
-    'ROE(%)': 'ROE', 'ROE': 'ROE', 'ROA(%)': 'ROA', 'ROA': 'ROA',
-    '부채비율': '부채비율', 'EPS(원)': 'EPS', 'EPS': 'EPS',
-    'PER(배)': 'PER', 'PER': 'PER', 'BPS(원)': 'BPS', 'BPS': 'BPS',
-    'PBR(배)': 'PBR', 'PBR': 'PBR', '주당배당금(원)': '주당배당금',
-    '시가배당률(%)': '배당수익률',
+    '매출액': '매출액',
+    '영업이익': '영업이익',
+    '당기순이익': '당기순이익',
+    '지배주주순이익': '지배주주순이익',
+    '비지배주주순이익': '비지배주주순이익',
+    '영업이익률': '영업이익률',
+    '순이익률': '순이익률',
+    'ROE': 'ROE',
+    '부채비율': '부채비율',
+    '당좌비율': '당좌비율',
+    '유보율': '유보율',
+    'EPS': 'EPS',
+    'PER': 'PER',
+    'BPS': 'BPS',
+    'PBR': 'PBR',
+    '주당배당금': '주당배당금',
 }
 
 
@@ -74,9 +84,9 @@ def _ensure_columns(conn: sqlite3.Connection) -> None:
 def _fetch(url: str) -> dict | None:
     try:
         req = Request(url, headers=HEADERS)
-        resp = urlopen(req, timeout=10)
+        resp = urlopen(req, timeout=20)
         return json.loads(resp.read())
-    except (HTTPError, URLError, json.JSONDecodeError):
+    except (HTTPError, URLError, json.JSONDecodeError, OSError, TimeoutError):
         return None
 
 
@@ -165,19 +175,19 @@ def _fetch_and_save(conn: sqlite3.Connection, code: str, symbol: str) -> dict:
                              (' '.join(desc_parts)[:2000], symbol))
 
         # Save annual financials
-        stats['annual'] = _save_financials(conn, code, annual_data, 'annual')
+        stats['annual'] = _save_financials(conn, code, annual_data, 'annual', symbol=symbol)
 
     time.sleep(0.3)
 
     # 3. Quarterly
     quarter_data = _fetch(f'{NAVER_API}/{code}/finance/quarter')
     if quarter_data:
-        stats['quarterly'] = _save_financials(conn, code, quarter_data, 'quarterly')
+        stats['quarterly'] = _save_financials(conn, code, quarter_data, 'quarterly', symbol=symbol)
 
     return stats
 
 
-def _save_financials(conn: sqlite3.Connection, code: str, data: dict, period_type: str) -> int:
+def _save_financials(conn: sqlite3.Connection, code: str, data: dict, period_type: str, *, symbol: str = '') -> int:
     info = data.get('financeInfo', {})
     periods = info.get('trTitleList', [])
     rows = info.get('rowList', [])
@@ -207,7 +217,7 @@ def _save_financials(conn: sqlite3.Connection, code: str, data: dict, period_typ
                 period_str = f'{year}Q{q}'
             conn.execute(
                 'INSERT OR REPLACE INTO financials (symbol, period, period_type, metric, value) VALUES (?, ?, ?, ?, ?)',
-                (code, period_str, period_type, metric, val),
+                (symbol or code, period_str, period_type, metric, val),
             )
             saved += 1
     return saved
@@ -242,21 +252,24 @@ def main():
     start = time.time()
 
     for i, (symbol,) in enumerate(symbols):
-        code = symbol.replace('.KS', '').replace('.KQ', '')
+        code = symbol.replace('.KS', '').replace('.KQ', '')  # bare code for Naver API
         try:
-            stats = _fetch_and_save(conn, code, symbol)
+            stats = _fetch_and_save(conn, code, symbol=code)
             if stats['annual'] > 0 or stats['integration']:
                 ok += 1
                 consec_err = 0
             else:
                 empty += 1
+                consec_err = 0  # empty is not an error — reset
         except Exception as e:
             errors += 1
             consec_err += 1
             if consec_err >= args.max_errors:
                 print(f'\nSTOPPED at {args.skip + i}. Resume: --skip {args.skip + i}')
                 break
-            time.sleep(args.delay * 2)
+            # Back off progressively on consecutive errors
+            backoff = min(args.delay * (2 + consec_err), 30.0)
+            time.sleep(backoff)
             continue
 
         if (i + 1) % 50 == 0:
@@ -264,7 +277,7 @@ def main():
             el = time.time() - start
             rate = (i + 1) / el if el > 0 else 0
             rem = (total - i - 1) / rate if rate > 0 else 0
-            print(f'  [{args.skip + i + 1}/{len(all_symbols)}] ok={ok} empty={empty} err={errors} {el:.0f}s ~{rem:.0f}s')
+            print(f'  [{args.skip + i + 1}/{len(all_symbols)}] ok={ok} empty={empty} err={errors} {el:.0f}s ~{rem:.0f}s', flush=True)
 
         time.sleep(args.delay)
 

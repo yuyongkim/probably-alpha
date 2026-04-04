@@ -186,14 +186,11 @@ def _read_from_unified_db(symbol: str, *, price_hint: float | None = None, share
     finally:
         conn.close()
 
-    if not rows:
-        return None
-
     # Pivot into annual/quarterly buckets
     annual_data: dict[str, dict[str, float | None]] = {}
     quarter_data: dict[str, dict[str, float | None]] = {}
 
-    for row in rows:
+    for row in (rows or []):
         period = str(row['period'])
         ptype = str(row['period_type'])
         metric_raw = str(row['metric'])
@@ -216,7 +213,7 @@ def _read_from_unified_db(symbol: str, *, price_hint: float | None = None, share
                 meta_row = meta_conn.execute(
                     'SELECT per, eps, roe, pbr, bps, revenue, op_profit, net_income '
                     'FROM symbol_meta WHERE symbol = ?',
-                    (symbol,),
+                    (code,),  # use bare code, not suffixed symbol
                 ).fetchone()
             except sqlite3.Error:
                 meta_row = None
@@ -228,7 +225,10 @@ def _read_from_unified_db(symbol: str, *, price_hint: float | None = None, share
                 snap_year = str(_dt.now().year)
                 snap_metrics: dict[str, float | None] = {}
                 for mk in ('per', 'eps', 'roe', 'pbr', 'bps', 'revenue', 'op_profit', 'net_income'):
-                    v = meta_row[mk] if mk in meta_row.keys() else None
+                    try:
+                        v = meta_row[mk]
+                    except (IndexError, KeyError):
+                        v = None
                     if v is not None:
                         snap_metrics[mk] = float(v)
                 if snap_metrics:
