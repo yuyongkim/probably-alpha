@@ -106,58 +106,95 @@ export function sparklineSvg(closes, width = 240, height = 80) {
   </svg>`;
 }
 
-/* ── EPS Trend Table (annual + quarterly split) ── */
+/* ── EPS Trend — SVG bar chart (annual + quarterly) ── */
 
 export function epsBarChart(epsData) {
   if (!epsData || epsData.length < 1) return '';
-  const fmtEps = (v) => {
-    if (v == null) return '-';
-    const n = Number(v);
-    if (!Number.isFinite(n)) return '-';
-    return n >= 10000 || n <= -10000 ? `${(n / 1000).toFixed(0)}K` : n.toLocaleString('ko-KR', { maximumFractionDigits: 0 });
-  };
-  const fmtYoy = (v) => {
-    const n = Number(v);
-    if (!Number.isFinite(n) || n === 0) return '-';
-    return `${n >= 0 ? '+' : ''}${n.toFixed(1)}%`;
-  };
-  const yoyClass = (v) => {
-    const n = Number(v);
-    if (!Number.isFinite(n) || n === 0) return '';
-    return n > 0 ? 'good' : 'bad';
-  };
-  const label = (p) => (p || '').replace(/^20/, '');
 
   const annual = epsData.filter((e) => e.period_type === 'annual' || (!e.period_type && /^\d{4}$/.test(e.period)));
   const quarterly = epsData.filter((e) => e.period_type === 'quarterly' || (!e.period_type && /Q/.test(e.period)));
 
-  const buildTable = (rows, title) => {
-    if (!rows.length) return '';
-    const last = rows.slice(-10);
-    const ths = last.map((e) => `<th>${escapeHtml(label(e.period))}</th>`).join('');
-    const epsTds = last.map((e) => `<td style="text-align:right">${fmtEps(e.eps)}</td>`).join('');
-    const yoyTds = last.map((e) => `<td class="${yoyClass(e.eps_yoy)}" style="text-align:right">${fmtYoy(e.eps_yoy)}</td>`).join('');
-    return `<div style="margin-bottom:8px"><strong style="font-size:11px;color:var(--muted)">${title}</strong>
-      <table><thead><tr><th></th>${ths}</tr></thead><tbody>
-      <tr><td>EPS</td>${epsTds}</tr>
-      <tr><td>YoY</td>${yoyTds}</tr>
-    </tbody></table></div>`;
+  // If no split available, treat all as quarterly
+  const sections = [];
+  if (annual.length) sections.push({ rows: annual.slice(-8), title: txt({ ko: '연간 EPS', en: 'Annual EPS' }) });
+  if (quarterly.length) sections.push({ rows: quarterly.slice(-12), title: txt({ ko: '분기 EPS', en: 'Quarterly EPS' }) });
+  if (!sections.length) sections.push({ rows: epsData.slice(-12), title: 'EPS' });
+
+  return sections.map(({ rows, title }) => _epsBarSvg(rows, title)).join('');
+}
+
+function _epsBarSvg(rows, title) {
+  if (!rows.length) return '';
+
+  const fmtK = (v) => {
+    if (Math.abs(v) >= 10000) return `${(v / 1000).toFixed(0)}K`;
+    return v.toLocaleString('ko-KR', { maximumFractionDigits: 0 });
   };
+  const fmtYoy = (v) => {
+    const n = Number(v);
+    if (!Number.isFinite(n) || n === 0) return '';
+    return `${n >= 0 ? '+' : ''}${n.toFixed(0)}%`;
+  };
+  const label = (p) => (p || '').replace(/^20/, "'").replace(/Q/, 'Q');
 
-  // If no period_type info, show as single table (legacy)
-  if (!annual.length && !quarterly.length) {
-    const last = epsData.slice(-10);
-    const ths = last.map((e) => `<th>${escapeHtml(label(e.period))}</th>`).join('');
-    const epsTds = last.map((e) => `<td style="text-align:right">${fmtEps(e.eps)}</td>`).join('');
-    const yoyTds = last.map((e) => `<td class="${yoyClass(e.eps_yoy)}" style="text-align:right">${fmtYoy(e.eps_yoy)}</td>`).join('');
-    return `<table><thead><tr><th></th>${ths}</tr></thead><tbody>
-      <tr><td>EPS</td>${epsTds}</tr>
-      <tr><td>YoY</td>${yoyTds}</tr>
-    </tbody></table>`;
-  }
+  const vals = rows.map((e) => Number(e.eps) || 0);
+  const maxAbs = Math.max(...vals.map(Math.abs), 1);
 
-  return buildTable(annual, txt({ ko: '연간 EPS', en: 'Annual EPS' }))
-       + buildTable(quarterly, txt({ ko: '분기 EPS', en: 'Quarterly EPS' }));
+  const W = Math.max(rows.length * 48, 280);
+  const H = 140;
+  const padL = 4;
+  const padR = 4;
+  const padTop = 16;
+  const padBot = 36;
+  const chartH = H - padTop - padBot;
+  const chartW = W - padL - padR;
+  const barW = Math.min(28, (chartW / rows.length) * 0.65);
+  const gap = chartW / rows.length;
+
+  // zero line
+  const zeroY = padTop + (maxAbs / (maxAbs * 2)) * chartH;
+  const scale = (v) => (v / maxAbs) * (chartH / 2);
+
+  let bars = '';
+  let labels = '';
+  let yoyLabels = '';
+
+  rows.forEach((e, i) => {
+    const v = Number(e.eps) || 0;
+    const x = padL + i * gap + (gap - barW) / 2;
+    const h = Math.abs(scale(v));
+    const y = v >= 0 ? zeroY - h : zeroY;
+    const color = v >= 0 ? 'var(--good, #4caf50)' : 'var(--bad, #f44336)';
+
+    bars += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(h, 1).toFixed(1)}" fill="${color}" opacity="0.8" rx="2"/>`;
+
+    // Value on top of bar
+    const valY = v >= 0 ? y - 3 : y + h + 11;
+    bars += `<text x="${(x + barW / 2).toFixed(1)}" y="${valY.toFixed(1)}" text-anchor="middle" fill="var(--text, #ccc)" font-size="9" font-weight="600">${fmtK(v)}</text>`;
+
+    // Period label at bottom
+    labels += `<text x="${(x + barW / 2).toFixed(1)}" y="${(H - padBot + 13).toFixed(1)}" text-anchor="middle" fill="var(--muted, #888)" font-size="9">${escapeHtml(label(e.period))}</text>`;
+
+    // YoY below period
+    const yoy = fmtYoy(e.eps_yoy);
+    if (yoy) {
+      const yoyColor = Number(e.eps_yoy) > 0 ? 'var(--good, #4caf50)' : 'var(--bad, #f44336)';
+      yoyLabels += `<text x="${(x + barW / 2).toFixed(1)}" y="${(H - padBot + 25).toFixed(1)}" text-anchor="middle" fill="${yoyColor}" font-size="8">${yoy}</text>`;
+    }
+  });
+
+  // Zero line
+  const zeroLine = `<line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${(W - padR)}" y2="${zeroY.toFixed(1)}" stroke="var(--muted, #555)" stroke-width="0.5" stroke-dasharray="3,3"/>`;
+
+  return `
+    <div style="margin:8px 0">
+      <strong style="font-size:11px;color:var(--muted)">${escapeHtml(title)}</strong>
+      <div style="overflow-x:auto;margin-top:4px">
+        <svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="display:block">
+          ${zeroLine}${bars}${labels}${yoyLabels}
+        </svg>
+      </div>
+    </div>`;
 }
 
 /* ── Naver-style Financial Performance Table ── */

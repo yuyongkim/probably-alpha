@@ -66,6 +66,12 @@ def _warmup_caches() -> None:
                     sector_breakout_payload(sector, as_of_date=d)
 
         logger.info('cache warmup: done (%d sectors cached)', len(sectors_seen))
+
+        # Pre-warm stock overview for pipeline-selected symbols
+        logger.info('cache warmup: stock overviews ...')
+        from sepa.api.services_stock_overview import warmup_overview_cache
+        n = warmup_overview_cache()
+        logger.info('cache warmup: %d stock overviews cached', n)
     except Exception:
         logger.exception('cache warmup failed (non-fatal)')
 

@@ -1,8 +1,17 @@
 from __future__ import annotations
 
 import json
+import logging
+import threading
 from pathlib import Path
 from statistics import mean as _mean
+
+logger = logging.getLogger(__name__)
+
+# ── In-memory overview cache ──────────────────────────────────────────────
+# Keyed by (symbol, detail). Populated at startup for pipeline-selected stocks.
+_overview_cache: dict[tuple[str, bool], dict] = {}
+_cache_lock = threading.Lock()
 
 from sepa.analysis.stock_analysis import (
     detect_cup_with_handle as _detect_cwh_fn,
@@ -192,9 +201,16 @@ def stock_overview_payload(symbol: str, date_dir: str | None = None, as_of_date:
     detail=False (기본): 프로필 + JSON 기반 파이프라인 스코어 + 실행계획 + 추천 (<1초)
     detail=True: 위 + 기술분석(RS/볼륨/최소저항선) + persistence (수십 초, 캐시 없을 때)
     """
+    # ── Cache hit (pre-warmed at startup) ──
+    bare = symbol.replace('.KS', '').replace('.KQ', '')
+    cache_key = (bare, detail)
+    with _cache_lock:
+        cached = _overview_cache.get(cache_key)
+    if cached is not None:
+        return cached
+
     # Guard: only serve listed stocks (present in symbol_meta)
     from sepa.data.ohlcv_db import get_symbol_meta
-    bare = symbol.replace('.KS', '').replace('.KQ', '')
     if not get_symbol_meta(bare):
         return {'error': 'not_listed', 'symbol': symbol}
 
@@ -448,3 +464,73 @@ def _compute_execution_plan_light(series: list[dict], symbol: str) -> dict | Non
     qty = max(1, int(risk_budget // risk))
 
     return {'entry': entry, 'stop': stop, 'target': target, 'qty': qty, 'rr_ratio': rr, 'source': 'light'}
+
+
+# ── Pre-warm cache for pipeline-selected stocks ──────────────────────────
+
+def _collect_pipeline_symbols() -> list[str]:
+    """Gather all symbols that appear in the latest pipeline JSON outputs."""
+    try:
+        resolved = resolve_dir(None)
+    except Exception:
+        return []
+
+    symbols: set[str] = set()
+    for fname in (
+        'alpha-passed.json',
+        'beta-vcp-candidates.json',
+        'recommendations.json',
+        'leader-stocks.json',
+    ):
+        data = _read_json_safe(resolved / fname, [])
+        if isinstance(data, list):
+            for row in data:
+                s = row.get('symbol', '')
+                if s:
+                    symbols.add(s.replace('.KS', '').replace('.KQ', ''))
+    # Also add gamma insights
+    gamma = _read_json_safe(resolved / 'gamma-insights.json', {})
+    if isinstance(gamma, dict):
+        for row in gamma.get('general', []):
+            s = row.get('symbol', '')
+            if s:
+                symbols.add(s.replace('.KS', '').replace('.KQ', ''))
+    return sorted(symbols)
+
+
+def warmup_overview_cache() -> int:
+    """Pre-compute overview (detail=false + detail=true) for all pipeline stocks.
+
+    Called at server startup in a background thread so the first click is instant.
+    Returns the number of symbols cached.
+    """
+    symbols = _collect_pipeline_symbols()
+    if not symbols:
+        logger.info('warmup: no pipeline symbols found')
+        return 0
+
+    logger.info('warmup: pre-caching %d pipeline stocks...', len(symbols))
+    count = 0
+    for sym in symbols:
+        for detail in (False, True):
+            try:
+                result = stock_overview_payload(sym, detail=detail)
+                if not result.get('error'):
+                    with _cache_lock:
+                        _overview_cache[(sym, detail)] = result
+                    count += 1
+            except Exception as exc:
+                logger.debug('warmup: %s detail=%s failed: %s', sym, detail, exc)
+    logger.info('warmup: cached %d payloads for %d symbols', count, len(symbols))
+    return count
+
+
+def invalidate_overview_cache(symbol: str | None = None) -> None:
+    """Clear cached overviews. Call after data refresh."""
+    with _cache_lock:
+        if symbol:
+            bare = symbol.replace('.KS', '').replace('.KQ', '')
+            _overview_cache.pop((bare, False), None)
+            _overview_cache.pop((bare, True), None)
+        else:
+            _overview_cache.clear()
