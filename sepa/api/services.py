@@ -256,41 +256,39 @@ def trader_debate_payload(date_dir: str | None = None) -> dict:
 
 
 def company_profile_payload(symbol: str, as_of_date: str | None = None) -> dict:
+    from sepa.data.naver_financials import read_snapshot as _naver_snap, read_supplementary as _naver_supp
+
     token = normalize_date_token(as_of_date) or None
-    snapshot = read_company_snapshot(symbol) or {}
+    naver = _naver_snap(symbol) or {}
+    supp = _naver_supp(symbol)
 
-    # EPS: use fundamentals.read_eps_series (auto-merges CSV + QuantDB)
     eps_rows = read_eps_series(symbol, as_of_date=token)
-    recent_eps = eps_rows[-8:] if eps_rows else []
+    recent_eps = eps_rows[-24:] if eps_rows else []
 
-    # Price & sparkline: from OHLCV CSV (always fresh)
     series = read_price_series(symbol, as_of_date=token)
     sparkline: list[float] = []
-    latest_price: float | None = snapshot.get('price')
+    latest_price: float | None = None
     if series:
-        sparkline = [round(float(row.get('close', 0.0)), 2) for row in series[-120:] if row.get('close', 0.0) > 0]
+        sparkline = [int(round(float(row.get('close', 0.0)))) for row in series[-120:] if row.get('close', 0.0) > 0]
         if sparkline:
             latest_price = sparkline[-1]
 
-    # Market cap: recalculate from latest price if shares are known
-    shares = snapshot.get('shares_outstanding')
-    mkt_cap_raw = snapshot.get('mkt_cap')
-    # QuantDB stores mkt_cap in 억원 (100M KRW). Convert to KRW.
-    mkt_cap = mkt_cap_raw * 100_000_000 if mkt_cap_raw else None
+    shares = naver.get('shares_outstanding')
+    mkt_cap = naver.get('market_cap_krw')
     if latest_price and shares and latest_price > 0 and shares > 0:
         mkt_cap = latest_price * shares
 
     return {
         'symbol': symbol,
-        'name': snapshot.get('name') or get_symbol_name(symbol),
-        'market': snapshot.get('market', ''),
-        'sector_large': snapshot.get('sector_large', ''),
-        'sector_small': snapshot.get('sector_small', ''),
+        'name': naver.get('name') or get_symbol_name(symbol),
+        'market': '',
+        'sector_large': naver.get('sector') or '',
+        'sector_small': naver.get('industry') or '',
         'price': latest_price,
         'mkt_cap': mkt_cap,
         'shares_outstanding': shares,
-        'major_holder_ratio': snapshot.get('major_holder_ratio'),
-        'business_summary': read_business_summary(symbol),
+        'major_holder_ratio': supp.get('major_holder_ratio'),
+        'business_summary': naver.get('description') or '',
         'eps_recent': recent_eps,
         'sparkline': sparkline,
     }
