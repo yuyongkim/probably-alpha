@@ -66,10 +66,16 @@ class BacktestEngine:
         rebalance_count = 0
 
         for i, date_str in enumerate(dates):
-            # Get today's prices
+            # Get today's close prices (for signal generation + mark-to-market)
             day_prices = {sym: price_index[sym][date_str][0]
                           for sym in price_index
                           if date_str in price_index[sym] and price_index[sym][date_str][0] > 0}
+
+            # Get today's open prices (for execution — "next-open" from previous day's signal)
+            day_open_prices = {sym: price_index[sym][date_str][2]
+                               for sym in price_index
+                               if date_str in price_index[sym] and len(price_index[sym][date_str]) > 2
+                               and price_index[sym][date_str][2] > 0}
 
             if not day_prices:
                 continue
@@ -84,12 +90,14 @@ class BacktestEngine:
                 signals = screen_universe(config, sliced_data)
                 signal_symbols = {s['symbol'] for s in signals[:config.max_positions]}
                 next_date = dates[i + 1]
-                next_prices = {sym: price_index[sym][next_date][0]
-                               for sym in price_index
-                               if next_date in price_index[sym] and price_index[sym][next_date][0] > 0}
+                # Execute at next-day OPEN price (not close)
+                next_exec_prices = {sym: price_index[sym][next_date][2]
+                                    for sym in price_index
+                                    if next_date in price_index[sym] and len(price_index[sym][next_date]) > 2
+                                    and price_index[sym][next_date][2] > 0}
                 for symbol in list(portfolio.positions):
                     if symbol not in signal_symbols:
-                        price = next_prices.get(symbol, 0.0)
+                        price = next_exec_prices.get(symbol, 0.0)
                         if price > 0:
                             portfolio.sell(symbol, next_date, price, reason='rebalance_exit')
 
@@ -100,11 +108,13 @@ class BacktestEngine:
                     signals = screen_universe(config, sliced_data)
 
                 next_date = dates[i + 1]
-                next_prices = {sym: price_index[sym][next_date][0]
-                               for sym in price_index
-                               if next_date in price_index[sym] and price_index[sym][next_date][0] > 0}
+                # Execute at next-day OPEN price (not close)
+                next_exec_prices = {sym: price_index[sym][next_date][2]
+                                    for sym in price_index
+                                    if next_date in price_index[sym] and len(price_index[sym][next_date]) > 2
+                                    and price_index[sym][next_date][2] > 0}
 
-                self._fill_positions(portfolio, next_date, next_prices, signals, sector_map)
+                self._fill_positions(portfolio, next_date, next_exec_prices, signals, sector_map)
                 rebalance_count += 1
 
             # 4) Mark to market
@@ -224,10 +234,10 @@ class BacktestEngine:
         return sliced
 
     def _build_date_index(self, full_data: dict[str, dict]) -> dict[str, dict[str, tuple]]:
-        """Build {symbol: {date: (close, volume)}} from ohlcv_db batch data.
+        """Build {symbol: {date: (close, volume, open)}} from ohlcv DB.
 
-        Note: ohlcv_db returns closes/volumes as parallel lists without dates.
-        We need to read dates from DB directly for indexing.
+        The open price is used for next-open execution.
+        If open is NULL (legacy data), falls back to close.
         """
         from sepa.data.ohlcv_db import _connect, DB_PATH
         index: dict[str, dict[str, tuple]] = {}
@@ -235,7 +245,7 @@ class BacktestEngine:
         conn = _connect(DB_PATH)
         try:
             rows = conn.execute(
-                'SELECT symbol, trade_date, close, volume FROM ohlcv ORDER BY symbol, trade_date'
+                'SELECT symbol, trade_date, close, volume, open FROM ohlcv ORDER BY symbol, trade_date'
             ).fetchall()
         finally:
             conn.close()
@@ -244,12 +254,13 @@ class BacktestEngine:
             sym = row['symbol']
             close = float(row['close'])
             vol = int(row['volume'])
+            open_price = float(row['open'] or close)  # fallback to close if NULL
             date = row['trade_date'].replace('-', '')
             if close <= 0:
                 continue
             if sym not in index:
                 index[sym] = {}
-            index[sym][date] = (close, vol)
+            index[sym][date] = (close, vol, open_price)
 
         return index
 
