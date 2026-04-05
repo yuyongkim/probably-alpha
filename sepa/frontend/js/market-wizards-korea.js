@@ -114,10 +114,14 @@ function normalizedSectorMetrics(item) {
 function normalizedStockMetrics(item, sectorScore, rec) {
   const retPct = item?.ret120_pct != null ? item.ret120_pct : (item?.ret120 != null ? Number(item.ret120) * 100 : 0);
   const leaderScore = item?.leader_stock_score ?? item?.avg_leader_stock_score ?? 0;
+  // Map actual JSON field names to metric keys
+  const ttScore = Number(item?.trend_template_score ?? item?.alpha_score ?? 0);
+  const betaConf = Number(item?.beta_confidence ?? item?.vcp_confidence ?? 0);
+  const gammaVal = Number(item?.gamma_score ?? 0);
   return {
-    alpha: clamp(item?.alpha_score),
-    beta: clamp(Number(item?.beta_confidence || 0) * 10),
-    gamma: clamp(Number(item?.gamma_score || 0) * 10),
+    alpha: clamp(ttScore * 100),
+    beta: clamp(betaConf * 100),
+    gamma: clamp(gammaVal * 100),
     ret: clamp(retPct),
     leader: clamp((Number(leaderScore) / 120) * 100),
     recommendation: clamp(rec?.recommendation_score),
