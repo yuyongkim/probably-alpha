@@ -13,6 +13,31 @@ from sepa.wizards import StockData, WizardScreener
 from sepa.wizards.kiwoom_export import KiwoomExporter
 
 
+def _load_from_db(symbol: str) -> dict:
+    """Load OHLCV from ohlcv.db with open/high/low."""
+    import sqlite3
+    db_path = Path('data/ohlcv.db')
+    if not db_path.exists():
+        return {}
+    try:
+        conn = sqlite3.connect(str(db_path), timeout=10)
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(
+            'SELECT close, volume, open, high, low FROM ohlcv WHERE symbol=? ORDER BY trade_date',
+            (symbol.replace('.KS', '').replace('.KQ', ''),),
+        ).fetchall()
+        conn.close()
+    except Exception:
+        return {}
+    if not rows:
+        return {}
+    closes = [float(r['close']) for r in rows if r['close'] and float(r['close']) > 0]
+    volumes = [int(r['volume'] or 0) for r in rows if r['close'] and float(r['close']) > 0]
+    highs = [float(r['high'] or r['close']) for r in rows if r['close'] and float(r['close']) > 0]
+    lows = [float(r['low'] or r['close']) for r in rows if r['close'] and float(r['close']) > 0]
+    return {'closes': closes, 'highs': highs, 'lows': lows, 'volumes': volumes}
+
+
 def _load_alpha_passed(date_dir: str) -> list[dict]:
     path = Path(f'data/daily-signals/{date_dir}/alpha-passed.json')
     if not path.exists():
@@ -97,8 +122,11 @@ def _load_gamma_insights(date_dir: str) -> dict[str, dict]:
 
 
 def build_stock_data(symbol: str, gamma_data: dict | None = None) -> StockData | None:
-    """Build StockData for a symbol from available data sources."""
-    price = _load_price_csv(symbol)
+    """Build StockData for a symbol from OHLCV DB (primary) or CSV fallback."""
+    # Primary: read from ohlcv.db (has open/high/low/close/volume)
+    price = _load_from_db(symbol)
+    if not price or not price.get('closes'):
+        price = _load_price_csv(symbol)
     if not price or not price.get('closes'):
         return None
 
