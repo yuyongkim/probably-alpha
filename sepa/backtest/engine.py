@@ -29,24 +29,39 @@ logger = logging.getLogger(__name__)
 
 
 class BacktestEngine:
-    """On-the-fly signal generation backtest engine."""
+    """On-the-fly signal generation backtest engine.
+
+    Data is loaded once and reused across multiple run() calls.
+    """
+
+    _cached_full_data: dict | None = None
+    _cached_price_index: dict | None = None
 
     def __init__(self, strategy: StrategyConfig | None = None) -> None:
         self.strategy = strategy or StrategyConfig()
+
+    @classmethod
+    def _ensure_data(cls):
+        """Load data once, cache for all instances."""
+        if cls._cached_full_data is not None:
+            return
+        print('[BT] Loading price data from DB (one-time)...')
+        cls._cached_full_data = read_ohlcv_batch(min_rows=200)
+        if cls._cached_full_data:
+            # Build index in a temporary instance
+            tmp = cls.__new__(cls)
+            cls._cached_price_index = tmp._build_date_index(cls._cached_full_data)
+            print(f'[BT] Cached {len(cls._cached_full_data)} symbols')
 
     def run(self, start_date: str, end_date: str) -> dict:
         """Run backtest over date range with on-the-fly screening."""
         config = self.strategy
 
-        # Load full price history once (performance: 1 SQL query)
-        print(f'[BT] Loading price data from DB...')
-        full_data = read_ohlcv_batch(min_rows=200)
+        self._ensure_data()
+        full_data = self._cached_full_data
+        price_index = self._cached_price_index
         if not full_data:
-            return {'error': 'No price data in ohlcv.db. Run: python scripts/import_csv_to_db.py'}
-
-        # Build date-indexed price cache: {symbol: {date: (close, volume)}}
-        print(f'[BT] Building price index for {len(full_data)} symbols...')
-        price_index = self._build_date_index(full_data)
+            return {'error': 'No price data in ohlcv.db.'}
 
         # Get trading dates from price data
         all_dates = sorted(set(d for sym_dates in price_index.values() for d in sym_dates))
@@ -64,6 +79,11 @@ class BacktestEngine:
         benchmark_prices = self._load_benchmark_prices()
         rebalance_dates = self._get_rebalance_dates(dates, config.rebalance)
         rebalance_count = 0
+
+        # Load fundamentals for value/earnings screens
+        fundamentals = self._load_fundamentals() if (
+            config.signal_type == 'value_screen' or config.use_earnings_filter
+        ) else None
 
         for i, date_str in enumerate(dates):
             # Get today's close prices (for signal generation + mark-to-market)
@@ -111,7 +131,7 @@ class BacktestEngine:
             if is_rebalance and config.leader_exit and i + 1 < len(dates):
                 sliced_data = self._slice_to_date(full_data, price_index, date_str)
                 signals = screen_universe(
-                    config, sliced_data,
+                    config, sliced_data, fundamentals=fundamentals,
                     market_close=market_close_val, market_ma200=market_ma200_val,
                 )
                 signal_symbols = {s['symbol'] for s in signals[:config.max_positions]}
@@ -272,6 +292,36 @@ class BacktestEngine:
                     'volumes': volumes[:cutoff],
                 }
         return sliced
+
+    def _load_fundamentals(self) -> dict[str, dict]:
+        """Load fundamentals from financial_snapshot for value/earnings screening."""
+        import sqlite3
+        from pathlib import Path
+        db_path = Path('data/financial.db')
+        if not db_path.exists():
+            return {}
+        conn = sqlite3.connect(str(db_path), timeout=10)
+        conn.row_factory = sqlite3.Row
+        try:
+            rows = conn.execute(
+                'SELECT symbol, per, eps, pbr, bps, roe, dividend_yield FROM financial_snapshot'
+            ).fetchall()
+        except Exception:
+            conn.close()
+            return {}
+        conn.close()
+        result = {}
+        for r in rows:
+            sym = r['symbol']
+            result[sym] = {
+                'per': r['per'],
+                'pbr': r['pbr'],
+                'roe': r['roe'],
+                'eps_yoy': 0,  # TODO: compute from financials table
+                'revenue_yoy': 0,
+                'debt_ratio': None,
+            }
+        return result
 
     def _build_date_index(self, full_data: dict[str, dict]) -> dict[str, dict[str, tuple]]:
         """Build {symbol: {date: (close, volume, open)}} from ohlcv DB.

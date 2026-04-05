@@ -81,18 +81,19 @@ PRESETS: dict[str, StrategyConfig] = {
 
     'dennis': StrategyConfig(
         name='Dennis 터틀',
-        description='20일 채널 돌파 + ATR 손절/사이징',
+        description='55일 채널 돌파 + ATR 손절/사이징 + 주간 리밸런스',
         family='trend_following',
         signal_type='channel_breakout',
-        channel_entry_period=20,
-        channel_exit_period=10,
+        channel_entry_period=55,  # 55-day breakout (System 2)
+        channel_exit_period=20,   # 20-day low exit
         require_channel_volume=True,
         sizing_method='atr_risk',
-        risk_per_trade_pct=0.01,  # 1% risk per trade
+        risk_per_trade_pct=0.01,
         atr_period=20,
         stop_type='atr_trailing', atr_stop_multiplier=2.0,
         sector_filter=False,
-        max_positions=10, rebalance='daily',
+        max_positions=6, rebalance='weekly',  # weekly, not daily
+        partial_rebalance=True,  # keep winners
     ),
 
     'seykota': StrategyConfig(
