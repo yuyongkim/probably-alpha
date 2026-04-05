@@ -69,40 +69,10 @@
     </div>
     <div id="presetExplain" class="definition-stack"></div>
     <div id="presetFormula" class="logic-formula">Preparing preset formula...</div>
-    <div class="strategy-grid">
-      <article class="panel strategy-card">
-        <h3>Top Sectors</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Sector</th>
-              <th id="thPresetSectorScore">Preset Score</th>
-              <th id="thBaseSectorScore">Base Leader Score</th>
-              <th>Main Reasons</th>
-            </tr>
-          </thead>
-          <tbody id="presetSectorRows"></tbody>
-        </table>
-      </article>
-      <article class="panel strategy-card">
-        <h3>Top Stocks <span id="presetStockSectorLabel" style="font-size:14px;color:var(--accent);margin-left:8px"></span></h3>
-        <p class="panel-caption" style="margin:-4px 0 8px;font-size:12px;color:var(--muted)">Click a sector above to view its top stocks</p>
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Stock</th>
-              <th>Sector</th>
-              <th id="thPresetStockScore">Preset Score</th>
-              <th id="thBaseStockScore">Base Leader Score</th>
-              <th>Main Reasons</th>
-            </tr>
-          </thead>
-          <tbody id="presetStockRows"></tbody>
-        </table>
-      </article>
-    </div>
+    <!-- Rich sector cards (same style as bottom sector view) -->
+    <div id="presetSectorCards"></div>
+    <!-- Hidden legacy tables for backward compat -->
+    <div style="display:none"><table><tbody id="presetSectorRows"></tbody></table><table><tbody id="presetStockRows"></tbody></table></div>
   </section>
 
   <section class="panel" id="sectorOverviewPanel">

@@ -26,6 +26,7 @@ import {
   renderOverviewFull,
   renderProfileSkeleton,
   setupProfileDialogClose,
+  openStockProfile,
 } from './renderers/stock-profile.js';
 
 const DEFAULT_API_BASE = `${window.location.protocol}//${window.location.hostname || '127.0.0.1'}:8000`;
@@ -270,48 +271,70 @@ function renderPreset(profile) {
   const thBSt = $('thBaseStockScore');
   if (thBSt) thBSt.innerHTML = termTip('leader', 'Base Leader Score');
 
-  function renderStockTable(stocks, sectorName) {
-    const label = sectorName
-      ? txt({ ko: `${sectorName} - Top 5`, en: `${sectorName} - Top 5` })
-      : '';
-    const header = $('presetStockSectorLabel');
-    if (header) header.textContent = label;
+  // Render preset results as rich sector cards (same style as bottom view)
+  const presetCardsEl = $('presetSectorCards');
+  if (presetCardsEl) {
+    presetCardsEl.innerHTML = ranking.sectors.map((sector) => {
+      const stocks = ranking.stocksBySector.get(sector.sector) || [];
+      const stockRows = stocks.map((item, i) => {
+        const closes = item.sparkline || [];
+        const price = item.price || (closes.length ? closes[closes.length - 1] : null);
+        const ret = item.ret120_pct != null ? fmtPlainPct(item.ret120_pct) : (item.ret120 != null ? fmtPlainPct(item.ret120 * 100) : '-');
+        return `
+          <tr class="clickable-row" data-symbol="${escapeHtml(item.symbol)}">
+            <td>${i + 1}</td>
+            <td>${companyCell(item)}</td>
+            <td class="sparkline-cell">${sparklineSvg(closes)}</td>
+            <td class="price-cell">${escapeHtml(fmtPrice(price))}</td>
+            <td><span class="score ${item.leader_stock_score >= 70 ? 'good' : item.leader_stock_score >= 40 ? 'mid' : 'bad'}">${fmtNum(item.leader_stock_score, 1)}</span></td>
+            <td>${escapeHtml(ret)}</td>
+            <td>${fmtNum(item.preset_score, 2)}</td>
+            <td><small style="color:var(--muted)">${escapeHtml(item.reason_labels.slice(0,2).join(', '))}</small></td>
+          </tr>`;
+      }).join('');
 
-    presetStockRows.innerHTML = stocks.map((item, index) => `
-      <tr>
-        <td>${index + 1}</td>
-        <td>${companyCell(item)}</td>
-        <td>${escapeHtml(item.sector || '-')}</td>
-        <td>${item.preset_score.toFixed(2)}</td>
-        <td>${Number(item.leader_stock_score || 0).toFixed(2)}</td>
-        <td>${escapeHtml(item.reason_labels.join(' | '))}</td>
-      </tr>
-    `).join('') || `<tr><td colspan="6">${escapeHtml(txt({ ko: '해당 섹터에 통과 종목이 없습니다.', en: 'No stocks passed in this sector.' }))}</td></tr>`;
+      return `
+        <article class="panel sector-grouped-card" style="margin-bottom:12px">
+          <div class="sector-grouped-card__head">
+            <div>
+              <h3>${escapeHtml(sector.sector)}</h3>
+              <div class="sector-grouped-card__badges">
+                <span class="flag ${sector.leadership_ready ? 'good' : 'mid'}">${sector.leadership_ready ? 'Confirmed' : 'Watchlist'}</span>
+              </div>
+            </div>
+            <div class="sector-grouped-card__stats">
+              <span><strong>${fmtNum(sector.preset_score, 1)}</strong><small>Preset</small></span>
+              <span><strong>${fmtNum(sector.leader_score, 1)}</strong><small>Leader</small></span>
+              <span><strong>${sector.alpha_count || '-'}/${sector.universe_count || '-'}</strong><small>Alpha</small></span>
+            </div>
+          </div>
+          <table class="sector-grouped-card__table">
+            <thead><tr>
+              <th>#</th><th>${txt({ ko: '종목', en: 'Stock' })}</th><th>${txt({ ko: '차트', en: 'Chart' })}</th>
+              <th>${txt({ ko: '현재가', en: 'Price' })}</th><th>${txt({ ko: '점수', en: 'Score' })}</th>
+              <th>120D</th><th>Preset</th><th>${txt({ ko: '핵심', en: 'Reason' })}</th>
+            </tr></thead>
+            <tbody>${stockRows || `<tr><td colspan="8">${escapeHtml(txt({ ko: '통과 종목 없음', en: 'No stocks passed' }))}</td></tr>`}</tbody>
+          </table>
+        </article>`;
+    }).join('') || `<p style="color:var(--muted);padding:20px">${escapeHtml(txt({ ko: '프리셋 로직을 통과한 섹터가 없습니다.', en: 'No sectors passed.' }))}</p>`;
+
+    // Click handler for stock profile
+    presetCardsEl.querySelectorAll('.clickable-row[data-symbol]').forEach((row) => {
+      row.addEventListener('click', () => openStockProfile(row.dataset.symbol));
+    });
   }
 
-  presetSectorRows.innerHTML = ranking.sectors.map((item, index) => `
-    <tr class="clickable-row${index === 0 ? ' is-active' : ''}" data-sector="${escapeHtml(item.sector)}">
-      <td>${index + 1}</td>
-      <td>${escapeHtml(item.sector)}</td>
-      <td>${item.preset_score.toFixed(2)}</td>
-      <td>${Number(item.leader_score || 0).toFixed(2)}</td>
-      <td>${escapeHtml(item.reason_labels.join(' | '))}</td>
-    </tr>
-  `).join('') || `<tr><td colspan="5">${escapeHtml(txt({ ko: '프리셋 로직을 통과한 섹터가 없습니다.', en: 'No sectors passed the preset logic.' }))}</td></tr>`;
-
-  // Bind sector row clicks → update stock table
-  presetSectorRows.querySelectorAll('.clickable-row[data-sector]').forEach((row) => {
-    row.addEventListener('click', () => {
-      presetSectorRows.querySelectorAll('.clickable-row').forEach((r) => r.classList.remove('is-active'));
-      row.classList.add('is-active');
-      const sector = row.dataset.sector;
-      renderStockTable(ranking.stocksBySector.get(sector) || [], sector);
-    });
-  });
-
-  // Show first sector's stocks by default
-  const firstSector = ranking.sectors[0];
-  renderStockTable(ranking.stocks, firstSector?.sector || '');
+  // Legacy table fallback (hidden if cards exist)
+  if (presetSectorRows && !presetCardsEl) {
+    presetSectorRows.innerHTML = ranking.sectors.map((item, index) => `
+      <tr class="clickable-row${index === 0 ? ' is-active' : ''}" data-sector="${escapeHtml(item.sector)}">
+        <td>${index + 1}</td><td>${escapeHtml(item.sector)}</td>
+        <td>${item.preset_score.toFixed(2)}</td><td>${Number(item.leader_score || 0).toFixed(2)}</td>
+        <td>${escapeHtml(item.reason_labels.join(' | '))}</td>
+      </tr>
+    `).join('');
+  }
 }
 
 function renderDetail(profile) {
