@@ -248,6 +248,9 @@ class MinerviniLeaders:
         gamma_list = gamma.get('general', []) if isinstance(gamma, dict) else []
         gamma_map = {r.get('symbol'): r for r in gamma_list}
 
+        # Compute beta/gamma inline for stocks not in pre-computed maps
+        from sepa.data.fundamentals import eps_growth_snapshot
+
         # Collect RS raw values for percentile
         rs_raw: dict[str, float] = {}
         for row in alpha:
@@ -287,7 +290,34 @@ class MinerviniLeaders:
             n52 = near_52w_high(closes)
             vol_exp = volume_expansion(volumes)
             vol_cont = volatility_contraction(closes)
+            # Beta: use pre-computed or calculate inline VCP proxy
+            if symbol not in beta_map and len(closes) >= 50:
+                try:
+                    # Simple VCP proxy: volatility contraction + volume dryup
+                    atr10 = mean([abs(closes[i] - closes[i-1]) for i in range(-9, 0)])
+                    atr50 = mean([abs(closes[i] - closes[i-1]) for i in range(-49, 0)])
+                    vol5 = mean(volumes[-5:]) if len(volumes) >= 5 else 0
+                    vol50 = mean(volumes[-50:]) if len(volumes) >= 50 else 1
+                    contraction = (1.0 - atr10 / atr50) if atr50 > 0 else 0
+                    dryup = (1.0 - vol5 / vol50) if vol50 > 0 else 0
+                    if contraction > 0 and dryup > 0:
+                        beta_map[symbol] = round(min(contraction + dryup, 1.0), 2)
+                except Exception:
+                    pass
+
+            # Gamma: use pre-computed or calculate inline from EPS
             g_row = gamma_map.get(symbol, {})
+            if not g_row:
+                try:
+                    eps_snap = eps_growth_snapshot(symbol)
+                    g_row = {
+                        'eps_yoy': eps_snap.get('latest_yoy', 0),
+                        'gamma_score': eps_snap.get('growth_hint', 0.5) / 2.0,
+                    }
+                    gamma_map[symbol] = g_row
+                except Exception:
+                    pass
+
             ep = earnings_proxy(
                 eps_yoy=g_row.get('eps_yoy'),
                 roe=g_row.get('roe'),
