@@ -22,7 +22,7 @@ from urllib.request import urlopen
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 ENV_PATH = PROJECT_ROOT / '.env'
-DB_PATH = PROJECT_ROOT / 'data' / 'sepa.db'
+DB_PATH = PROJECT_ROOT / 'data' / 'meta.db'
 DART_BASE = 'https://opendart.fss.or.kr/api'
 
 

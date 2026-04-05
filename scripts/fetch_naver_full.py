@@ -5,7 +5,7 @@ Collects ALL available financial data from Naver:
   Thread 2 (NaverComp):      cF3002 (244-item statements) + cF4002 (metrics) + cF9001 (sector)
   Thread 3 (fchart):         1000-day OHLCV (backup, optional)
 
-Saves to data/sepa.db:
+Saves to data/financial.db:
   financial_snapshot, financial_statements, financial_metrics,
   sector_comparison, investor_trend, fetch_log
 
@@ -34,7 +34,7 @@ import requests
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-DB_PATH = PROJECT_ROOT / 'data' / 'sepa.db'
+DB_PATH = PROJECT_ROOT / 'data' / 'financial.db'
 MOBILE_API = 'https://m.stock.naver.com/api/stock'
 COMP_BASE = 'https://navercomp.wisereport.co.kr/v2/company'
 HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}

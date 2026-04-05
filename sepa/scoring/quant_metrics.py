@@ -8,7 +8,7 @@ from __future__ import annotations
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path('data/sepa.db')
+DB_PATH = Path('data/financial.db')
 
 
 def _connect() -> sqlite3.Connection | None:

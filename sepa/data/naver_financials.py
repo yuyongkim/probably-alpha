@@ -1,6 +1,6 @@
 """Naver-sourced financial data reader — single source of truth.
 
-All financial metrics (PER/EPS/ROE/revenue/etc.) come from data/sepa.db:
+All financial metrics (PER/EPS/ROE/revenue/etc.) come from data/financial.db + data/meta.db:
   - symbol_meta: current snapshot (from Naver integration API)
   - financials: annual + quarterly time series (from Naver finance API)
 
@@ -16,7 +16,9 @@ from pathlib import Path
 
 from sepa.data.symbols import to_kiwoom_symbol
 
-DB_PATH = Path('data/sepa.db')
+FINANCIAL_DB = Path('data/financial.db')
+META_DB = Path('data/meta.db')
+OHLCV_DB = Path('data/ohlcv.db')
 
 # Naver metric names → standard output keys
 METRIC_MAP: dict[str, str] = {
@@ -45,10 +47,10 @@ OUTPUT_METRICS = [
 ]
 
 
-def _connect() -> sqlite3.Connection | None:
-    if not DB_PATH.exists():
+def _connect(db_path: Path = FINANCIAL_DB) -> sqlite3.Connection | None:
+    if not db_path.exists():
         return None
-    conn = sqlite3.connect(str(DB_PATH), timeout=10)
+    conn = sqlite3.connect(str(db_path), timeout=10)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -66,8 +68,8 @@ def _bare(symbol: str) -> str:
 # ---------------------------------------------------------------------------
 
 def read_snapshot(symbol: str) -> dict | None:
-    """Read current financial snapshot from symbol_meta (Naver-sourced)."""
-    conn = _connect()
+    """Read current financial snapshot from symbol_meta (meta.db)."""
+    conn = _connect(META_DB)
     if conn is None:
         return None
     code = _bare(symbol)
@@ -150,26 +152,32 @@ def resolve_price_shares(
     real_price = float(price_hint) if price_hint and price_hint > 0 else 0.0
     shares = float(shares_hint) if shares_hint and shares_hint > 0 else 0.0
 
-    if real_price <= 0 or shares <= 0:
-        conn = _connect()
+    code = _bare(symbol)
+    if real_price <= 0:
+        conn = _connect(OHLCV_DB)
         if conn:
-            code = _bare(symbol)
             try:
-                if real_price <= 0:
-                    row = conn.execute(
-                        'SELECT close FROM ohlcv WHERE symbol=? ORDER BY trade_date DESC LIMIT 1',
-                        (code,),
-                    ).fetchone()
-                    if row:
-                        real_price = float(row['close'])
+                row = conn.execute(
+                    'SELECT close FROM ohlcv WHERE symbol=? ORDER BY trade_date DESC LIMIT 1',
+                    (code,),
+                ).fetchone()
+                if row:
+                    real_price = float(row['close'])
+            except sqlite3.Error:
+                pass
+            finally:
+                conn.close()
 
-                if shares <= 0:
-                    row = conn.execute(
-                        'SELECT shares_outstanding_calc FROM symbol_meta WHERE symbol=?',
-                        (code,),
-                    ).fetchone()
-                    if row and row['shares_outstanding_calc']:
-                        shares = float(row['shares_outstanding_calc'])
+    if shares <= 0:
+        conn = _connect(META_DB)
+        if conn:
+            try:
+                row = conn.execute(
+                    'SELECT shares_outstanding_calc FROM symbol_meta WHERE symbol=?',
+                    (code,),
+                ).fetchone()
+                if row and row['shares_outstanding_calc']:
+                    shares = float(row['shares_outstanding_calc'])
             except sqlite3.Error:
                 pass
             finally:

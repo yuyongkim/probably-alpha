@@ -1,6 +1,6 @@
 """OHLCV SQLite database — replaces 2700+ CSV file reads with indexed queries.
 
-DB path: data/sepa.db
+DB path: data/ohlcv.db
 Schema: ohlcv(symbol, trade_date, close, volume) with composite PK.
 """
 from __future__ import annotations
@@ -9,7 +9,8 @@ import csv
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path('data/sepa.db')
+DB_PATH = Path('data/ohlcv.db')
+META_DB_PATH = Path('data/meta.db')
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS ohlcv (
@@ -195,8 +196,8 @@ def _bare(symbol: str) -> str:
 
 
 def get_symbol_name_from_db(symbol: str, *, db_path: Path | None = None) -> str:
-    """Get stock name from symbol_meta table."""
-    p = db_path or DB_PATH
+    """Get stock name from symbol_meta table (meta.db)."""
+    p = db_path or META_DB_PATH
     if not p.exists():
         return ''
     conn = _connect(p)
@@ -210,8 +211,8 @@ def get_symbol_name_from_db(symbol: str, *, db_path: Path | None = None) -> str:
 
 
 def get_symbol_meta(symbol: str, *, db_path: Path | None = None) -> dict:
-    """Get full metadata (name, sector, industry) for a symbol."""
-    p = db_path or DB_PATH
+    """Get full metadata (name, sector, industry) from meta.db."""
+    p = db_path or META_DB_PATH
     if not p.exists():
         return {}
     conn = _connect(p)
@@ -227,18 +228,19 @@ def get_symbol_meta(symbol: str, *, db_path: Path | None = None) -> dict:
 def get_active_universe(*, min_date: str = '20260301', min_rows: int = 200, db_path: Path | None = None) -> list[dict]:
     """Get actively traded symbols with metadata.
 
-    Returns symbols that have recent trading data + sufficient history.
+    Uses ATTACH to join ohlcv.db and meta.db.
     """
     p = db_path or DB_PATH
     if not p.exists():
         return []
     conn = _connect(p)
     try:
+        conn.execute(f"ATTACH DATABASE '{META_DB_PATH}' AS meta_db")
         rows = conn.execute('''
             SELECT o.symbol, m.name, m.sector, m.industry,
                    COUNT(*) as row_count, MAX(o.trade_date) as last_date
             FROM ohlcv o
-            LEFT JOIN symbol_meta m ON o.symbol = m.symbol
+            LEFT JOIN meta_db.symbol_meta m ON o.symbol = m.symbol
             WHERE o.symbol NOT LIKE '9%'
             GROUP BY o.symbol
             HAVING MAX(o.trade_date) >= ? AND COUNT(*) >= ?

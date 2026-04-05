@@ -12,7 +12,7 @@ from sepa.data.quantdb import health as quantdb_health
 from sepa.data.quantdb import read_eps_rows as read_quantdb_eps_rows
 
 EPS_PATH = Path('data/market-data/fundamentals/eps.csv')
-_DB_PATH = Path('data/sepa.db')
+_DB_PATH = Path('data/financial.db')
 
 
 def _to_num(value) -> float:

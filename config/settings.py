@@ -68,7 +68,7 @@ class Settings:
     data_root: Path = Path(os.getenv("SEPA_DATA_ROOT", "data/market-data"))
     signal_root: Path = Path(os.getenv("SEPA_SIGNAL_ROOT", "data/daily-signals"))
     audit_root: Path = Path(os.getenv("SEPA_AUDIT_ROOT", "data/audit-logs"))
-    db_path: Path = Path(os.getenv("SEPA_DB_PATH", "data/sepa.db"))
+    db_path: Path = Path(os.getenv("SEPA_DB_PATH", "data/ohlcv.db"))
     cache_root: Path = Path(os.getenv("SEPA_CACHE_ROOT", "data/cache"))
 
 
