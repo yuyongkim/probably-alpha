@@ -223,7 +223,15 @@ export function renderTraderTabs(containerId, activeId) {
       const displayName = p.name.split(' ').pop();
       return `<button type="button" class="selector-chip${anchor ? ' selector-chip--anchor' : ''} ${active}" data-trader-id="${escapeHtml(p.id)}" title="${escapeHtml(p.name)} — ${escapeHtml(p.bucket)}">${escapeHtml(displayName)}</button>`;
     }).join('');
-    return `<div class="trader-series-group"><span class="trader-series-label">${escapeHtml(series.label.replace('Market Wizards', 'MW').replace('The New ', 'New ').replace('Hedge Fund ', 'HF ').replace('Unknown ', ''))}</span>${chips}</div>`;
+    const labelMap = {
+      'Market Wizards': '마법사 1편',
+      'The New Market Wizards': '마법사 2편',
+      'Stock Market Wizards': '주식 마법사',
+      'Hedge Fund Market Wizards': '헤지펀드 마법사',
+      'Unknown Market Wizards': '마법사 최신편',
+    };
+    const displayLabel = labelMap[series.label] || series.label;
+    return `<div class="trader-series-group"><span class="trader-series-label">${escapeHtml(displayLabel)}</span>${chips}</div>`;
   }).join('');
 
   container.innerHTML = `
