@@ -1,5 +1,10 @@
 import { marketWizardPeople, peopleSeries } from './market-wizards-people-data.js';
+import { traderProfiles } from './market-wizards-data.js';
 import { setupPageI18n, txt } from './i18n.js';
+
+function _getProfile(personId) {
+  return traderProfiles.find((p) => p.id === personId) || null;
+}
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -72,28 +77,61 @@ const PERSON_PRESET = {
 function personCard(person) {
   const presetId = PERSON_PRESET[person.id] || '';
   const hasPreset = !!presetId;
+  // Try to get detailed profile from market-wizards-data
+  const profile = _getProfile(person.id);
+  const hasProfile = profile && profile.philosophy && profile.philosophy.length > 0;
+
   return `
-    <article class="person-card" data-person-id="${escapeHtml(person.id)}">
+    <article class="person-card" data-person-id="${escapeHtml(person.id)}" style="cursor:pointer">
       <div class="person-card__head">
         <div>
           <p class="eyebrow">${escapeHtml(person.bucket)}</p>
           <h3>${escapeHtml(person.name)}</h3>
         </div>
-        ${hasPreset ? `<span style="font-size:10px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:10px">전략 프리셋</span>` : ''}
+        <div style="display:flex;gap:4px">
+          ${hasPreset ? '<span style="font-size:10px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:10px">전략</span>' : ''}
+          ${hasProfile ? '<span style="font-size:10px;background:#7c3aed;color:#fff;padding:2px 8px;border-radius:10px">프로필</span>' : ''}
+        </div>
       </div>
       <p class="person-card__brief">${escapeHtml(person.brief)}</p>
       <div class="person-meta">
         ${person.keywords.map((keyword) => `<span class="wizard-chip">${escapeHtml(keyword)}</span>`).join('')}
       </div>
-      <div class="person-card__actions" style="display:flex;gap:8px;flex-wrap:wrap">
-        ${person.relatedProfileId
-          ? `<a class="ghost-link" href="./market-wizards-korea.html#${escapeHtml(person.relatedProfileId)}">${escapeHtml(txt({ ko: '프리셋 매핑', en: 'Preset mapping' }))}</a>`
+
+      <!-- Expandable detail section -->
+      <div class="person-card__detail" id="detail-${escapeHtml(person.id)}" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+        ${hasProfile ? `
+          <div style="margin-bottom:10px">
+            ${profile.fit ? `
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+                <span style="font-size:11px;padding:3px 8px;border-radius:4px;background:#2563eb;color:#fff">${escapeHtml(profile.style || '')}</span>
+                <span style="font-size:11px;padding:3px 8px;border-radius:4px;background:#7c3aed;color:#fff">${escapeHtml(profile.fit.focus || '')}</span>
+                <span style="font-size:11px;padding:3px 8px;border-radius:4px;background:#0d9488;color:#fff">${escapeHtml(profile.fit.timeframe || '')}</span>
+                <span style="font-size:11px;padding:3px 8px;border-radius:4px;background:#d97706;color:#fff">${escapeHtml(profile.fit.trigger || '')}</span>
+              </div>` : ''}
+            <h4 style="color:var(--accent);font-size:13px;margin:8px 0 4px">${txt({ ko: '투자 철학', en: 'Philosophy' })}</h4>
+            ${profile.philosophy.map((p) => `<p style="font-size:13px;color:var(--muted);margin:2px 0;line-height:1.6">${escapeHtml(p)}</p>`).join('')}
+          </div>
+          ${profile.checkpoints && profile.checkpoints.length ? `
+            <h4 style="color:var(--accent);font-size:13px;margin:10px 0 4px">${txt({ ko: '체크포인트', en: 'Checkpoints' })}</h4>
+            <ul style="font-size:13px;color:var(--muted);padding-left:18px;line-height:1.8;margin:0">
+              ${profile.checkpoints.map((c) => `<li>${escapeHtml(c)}</li>`).join('')}
+            </ul>` : ''}
+          ${profile.koreaPlaybook && profile.koreaPlaybook.length ? `
+            <h4 style="color:var(--accent);font-size:13px;margin:10px 0 4px">${txt({ ko: '한국 시장 적용', en: 'Korea Playbook' })}</h4>
+            <ul style="font-size:13px;color:var(--muted);padding-left:18px;line-height:1.8;margin:0">
+              ${profile.koreaPlaybook.map((c) => `<li>${escapeHtml(c)}</li>`).join('')}
+            </ul>` : ''}
+        ` : `<p style="font-size:13px;color:var(--muted)">${escapeHtml(person.brief)}</p>`}
+      </div>
+
+      <div class="person-card__actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <button class="ghost-link btn-toggle-detail" data-person="${escapeHtml(person.id)}" style="cursor:pointer;border:1px solid var(--border);background:none;color:var(--muted);padding:4px 10px;border-radius:4px;font-size:12px">${txt({ ko: '상세보기', en: 'Details' })}</button>
+        ${hasPreset
+          ? `<button class="ghost-link btn-screen-trader" data-preset="${escapeHtml(presetId)}" style="cursor:pointer;border:1px solid var(--accent);background:none;color:var(--accent);padding:4px 10px;border-radius:4px;font-size:12px">${escapeHtml(txt({ ko: '매수 후보', en: 'Picks' }))}</button>`
           : ''}
         ${hasPreset
-          ? `<button class="ghost-link btn-screen-trader" data-preset="${escapeHtml(presetId)}" style="cursor:pointer;border:1px solid var(--accent);background:none;color:var(--accent);padding:4px 10px;border-radius:4px;font-size:12px">${escapeHtml(txt({ ko: '오늘의 매수 후보', en: "Today's picks" }))}</button>`
-          : ''}
-        ${hasPreset
-          ? `<a class="ghost-link" href="./backtest.html" style="font-size:12px">${escapeHtml(txt({ ko: '백테스트', en: 'Backtest' }))}</a>`
+          ? `<a class="ghost-link" href="./strategy-follow.html" style="font-size:12px;padding:4px 10px">${escapeHtml(txt({ ko: '전략 따라하기', en: 'Follow' }))}</a>`
           : ''}
       </div>
       <div class="person-card__screen-result" id="screen-${escapeHtml(person.id)}" style="display:none;margin-top:10px;padding:10px;background:rgba(255,255,255,.03);border-radius:6px;font-size:13px"></div>
@@ -176,11 +214,27 @@ function bindScreenButtons() {
   });
 }
 
+function bindDetailToggle() {
+  document.querySelectorAll('.btn-toggle-detail').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const personId = btn.dataset.person;
+      const detail = document.getElementById(`detail-${personId}`);
+      if (!detail) return;
+      const showing = detail.style.display !== 'none';
+      detail.style.display = showing ? 'none' : '';
+      btn.textContent = showing ? txt({ ko: '상세보기', en: 'Details' }) : txt({ ko: '접기', en: 'Collapse' });
+    });
+  });
+}
+
 setupPageI18n('market-wizards-people', () => {
   renderSummary();
   renderSections();
   bindScreenButtons();
+  bindDetailToggle();
 });
 renderSummary();
 renderSections();
 bindScreenButtons();
+bindDetailToggle();
