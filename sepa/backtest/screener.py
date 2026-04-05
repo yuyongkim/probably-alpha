@@ -86,7 +86,64 @@ def screen_universe(
         candidates = limited
 
     candidates.sort(key=lambda x: x.get('score', 0), reverse=True)
-    return candidates[:config.max_positions * 2]
+    result = candidates[:config.max_positions * 2]
+
+    # Enrich with execution plan (stop/target/sizing)
+    for c in result:
+        _enrich_execution_plan(c, config)
+
+    return result
+
+
+def _enrich_execution_plan(candidate: dict, config) -> None:
+    """Add stop_price, target_price, rr_ratio, position sizing to each candidate."""
+    close = candidate.get('close', 0)
+    atr = candidate.get('atr', 0)
+    if close <= 0:
+        return
+
+    # Stop price
+    if config.stop_type == 'atr_trailing' and atr > 0:
+        stop = close - atr * config.atr_stop_multiplier
+    elif config.stop_type == 'ma_trailing':
+        stop = candidate.get('sma50', close * 0.9) if config.ma_exit_period <= 50 else candidate.get('sma200', close * 0.85)
+    elif config.stop_type == 'channel_exit' and 'channel_low' in candidate:
+        stop = candidate['channel_low']
+    else:
+        stop = close * (1.0 - config.stop_loss_pct)
+
+    risk_per_share = max(close - stop, close * 0.01)
+
+    # Target price
+    if config.profit_target_pct > 0:
+        target = close * (1.0 + config.profit_target_pct)
+    else:
+        target = close + risk_per_share * 2.0  # default 2R
+
+    rr = (target - close) / risk_per_share if risk_per_share > 0 else 0
+
+    # Position sizing
+    equity = config.initial_cash
+    if config.sizing_method == 'atr_risk' and atr > 0:
+        stop_dist = atr * config.atr_stop_multiplier
+        shares = int((equity * config.risk_per_trade_pct) / stop_dist) if stop_dist > 0 else 0
+    else:
+        per_position = equity / max(1, config.max_positions)
+        shares = int(per_position / close) if close > 0 else 0
+
+    max_loss = shares * risk_per_share
+
+    candidate['execution'] = {
+        'entry_price': int(round(close)),
+        'stop_price': int(round(stop)),
+        'target_price': int(round(target)),
+        'rr_ratio': round(rr, 2),
+        'shares': shares,
+        'max_loss_krw': int(round(max_loss)),
+        'max_loss_pct': round(max_loss / equity * 100, 2) if equity > 0 else 0,
+        'stop_type': config.stop_type,
+        'sizing_method': config.sizing_method,
+    }
 
 
 # ── Trend Template (Minervini/O'Neil/Seykota) ────────────────────────────

@@ -405,6 +405,106 @@ def backtest_results() -> dict:
     return {'items': results}
 
 
+@router.get('/api/presets/summary')
+def presets_summary() -> dict:
+    """All 12 presets with latest backtest metrics + today's pick count."""
+    import json
+    from pathlib import Path
+    from sepa.backtest.presets import PRESETS, list_presets
+
+    presets = list_presets()
+    bt_dir = Path('data/backtest')
+
+    # Load latest backtest results keyed by strategy name
+    bt_cache: dict[str, dict] = {}
+    if bt_dir.exists():
+        for f in sorted(bt_dir.glob('bt_*.json'), reverse=True):
+            try:
+                data = json.loads(f.read_text(encoding='utf-8'))
+                name = data.get('strategy', '')
+                if name and name not in bt_cache:
+                    bt_cache[name] = {
+                        'run_id': data.get('run_id'),
+                        'period': data.get('period'),
+                        'metrics': data.get('metrics'),
+                        'equity_curve_length': len(data.get('equity_curve', [])),
+                    }
+            except Exception:
+                continue
+
+    FAMILY_KO = {
+        'growth_momentum': '성장 모멘텀',
+        'trend_following': '추세추종',
+        'swing': '단기 스윙',
+        'macro': '매크로 방어',
+        'value': '가치투자',
+    }
+
+    RISK_LEVEL = {
+        'growth_momentum': 'high',
+        'trend_following': 'medium',
+        'swing': 'high',
+        'macro': 'low',
+        'value': 'low',
+    }
+
+    result = []
+    for p in presets:
+        config = PRESETS.get(p['id'])
+        bt = bt_cache.get(p['name'], {})
+        metrics = bt.get('metrics', {})
+        result.append({
+            **p,
+            'family_ko': FAMILY_KO.get(p['family'], p['family']),
+            'risk_level': RISK_LEVEL.get(p['family'], 'medium'),
+            'backtest': {
+                'total_return': metrics.get('total_return'),
+                'cagr': metrics.get('cagr'),
+                'sharpe': metrics.get('sharpe'),
+                'max_drawdown': metrics.get('max_drawdown'),
+                'win_rate': metrics.get('trade_win_rate'),
+                'total_trades': metrics.get('total_trades'),
+                'period': bt.get('period'),
+            } if metrics else None,
+            'holding_period': '일' if (config and config.rebalance == 'daily') else '주~월',
+            'stop_desc': f'{config.stop_loss_pct*100:.0f}% 고정' if config and config.stop_type == 'fixed_pct'
+                else f'ATR×{config.atr_stop_multiplier:.0f}' if config and config.stop_type == 'atr_trailing'
+                else f'MA{config.ma_exit_period} 이탈' if config and config.stop_type == 'ma_trailing'
+                else '-',
+        })
+
+    return {'items': result}
+
+
+@router.get('/api/presets/{preset_id}/picks')
+def preset_picks(preset_id: str, limit: int = 10, initial_cash: float = 100_000_000) -> dict:
+    """Today's picks for a specific preset with execution plan."""
+    from sepa.backtest.presets import get_preset
+    from sepa.backtest.screener import screen_universe
+    from sepa.data.ohlcv_db import read_ohlcv_batch
+
+    config = get_preset(preset_id)
+    if not config:
+        return {'error': f'Unknown preset: {preset_id}'}
+
+    config.initial_cash = int(initial_cash)
+    price_data = read_ohlcv_batch(min_rows=200)
+    if not price_data:
+        return {'preset': preset_id, 'items': [], 'error': 'No price data'}
+
+    results = screen_universe(config, price_data)
+    return {
+        'preset': preset_id,
+        'strategy': config.name,
+        'description': config.description,
+        'family': config.family,
+        'initial_cash': int(initial_cash),
+        'screened': len(price_data),
+        'passed': len(results),
+        'items': results[:limit],
+    }
+
+
 @router.get('/api/wizards/strategies')
 def wizard_strategies() -> dict:
     from sepa.wizards import WizardScreener
