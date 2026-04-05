@@ -377,10 +377,18 @@ def stock_overview_payload(symbol: str, date_dir: str | None = None, as_of_date:
     # --- 세션 변동 ---
     session = session_change_snapshot(symbol, date_key)
 
+    # --- 컨센서스 + 투자지표 + 수급 (새 DB에서) ---
+    consensus = _read_consensus(bare)
+    investment_metrics = _read_investment_metrics(bare)
+    investor_trend = _read_investor_trend(bare)
+
     result: dict = {
         'date_dir': date_key,
         'profile': profile,
         'session': session,
+        'consensus': consensus,
+        'investment_metrics': investment_metrics,
+        'investor_trend': investor_trend,
         'pipeline_scores': pipeline_scores,
         'sector_context': sector_context,
         'execution_plan': execution_plan,
@@ -438,6 +446,80 @@ def _compute_execution_plan_light(series: list[dict], symbol: str) -> dict | Non
     qty = max(1, int(risk_budget // risk))
 
     return {'entry': entry, 'stop': stop, 'target': target, 'qty': qty, 'rr_ratio': rr, 'source': 'light'}
+
+
+# ── New DB readers (financial.db, market.db) ─────────────────────────────
+
+def _read_consensus(symbol: str) -> dict | None:
+    """컨센서스: 목표주가, 추정PER/EPS, 투자의견."""
+    import sqlite3
+    try:
+        conn = sqlite3.connect('data/financial.db', timeout=5)
+        conn.row_factory = sqlite3.Row
+        row = conn.execute(
+            'SELECT cns_per, cns_eps, target_price, recommend_score FROM financial_snapshot WHERE symbol=?',
+            (symbol,),
+        ).fetchone()
+        conn.close()
+    except Exception:
+        return None
+    if not row or (row['target_price'] is None and row['cns_eps'] is None):
+        return None
+    return {
+        'cns_per': row['cns_per'],
+        'cns_eps': row['cns_eps'],
+        'target_price': row['target_price'],
+        'recommend_score': row['recommend_score'],
+    }
+
+
+def _read_investment_metrics(symbol: str) -> dict | None:
+    """투자지표: ROA, ROIC, EBITDA마진 (최신 연도)."""
+    import sqlite3
+    try:
+        conn = sqlite3.connect('data/financial.db', timeout=5)
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(
+            'SELECT metric, value FROM financial_metrics WHERE symbol=? ORDER BY period DESC',
+            (symbol,),
+        ).fetchall()
+        conn.close()
+    except Exception:
+        return None
+    if not rows:
+        return None
+    # 최신 연도 기준 주요 지표만
+    metrics = {}
+    for r in rows:
+        key = r['metric']
+        if key not in metrics:
+            metrics[key] = r['value']
+    return {
+        'roa': metrics.get('ROA'),
+        'roe': metrics.get('ROE'),
+        'roic': metrics.get('ROIC'),
+        'ebitda_margin': metrics.get('EBITDA마진율') or metrics.get('EBITDA마진율'),
+        'gross_margin': metrics.get('매출총이익률(매출)제조업대상'),
+        'opm': metrics.get('영업이익률(매출)'),
+        'npm': metrics.get('순이익률(매출)'),
+    }
+
+
+def _read_investor_trend(symbol: str) -> list:
+    """수급: 최근 10일 외인/기관/개인 순매수."""
+    import sqlite3
+    try:
+        conn = sqlite3.connect('data/market.db', timeout=5)
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(
+            'SELECT trade_date, foreign_net, foreign_ratio, institution_net, individual_net, close_price, volume '
+            'FROM investor_trend WHERE symbol=? ORDER BY trade_date DESC LIMIT 10',
+            (symbol,),
+        ).fetchall()
+        conn.close()
+    except Exception:
+        return []
+    return [dict(r) for r in rows]
 
 
 # ── Pre-warm cache for pipeline-selected stocks ──────────────────────────

@@ -295,20 +295,45 @@ export function financialTableMarkup(data) {
     [txt({ ko: '업종', en: 'Sector' }), escapeHtml(p.sector_small || p.sector_large || '-')],
     [txt({ ko: '시가총액', en: 'Mkt Cap' }), escapeHtml(p.market_cap_display || fmtKrwCompact(p.mkt_cap))],
   ];
+  // Merge investment_metrics from new DB
+  const im = data.investment_metrics || {};
+  const roa = im.roa ?? f.roa;
+  const opm = im.opm ?? f.opm;
+  const ebitdaM = im.ebitda_margin ?? f.ev_ebitda;
+  const roic = im.roic;
+  const grossM = im.gross_margin;
+
   const finRows = [
     ['PER', f.per != null ? fmtNum(f.per, 2) : '-'],
     ['PBR', f.pbr != null ? fmtNum(f.pbr, 2) : '-'],
     ['ROE', f.roe != null ? `<span class="${f.roe >= 15 ? 'good' : f.roe >= 8 ? '' : 'bad'}">${fmtNum(f.roe, 1)}%</span>` : '-'],
-    ['ROA', f.roa != null ? `${fmtNum(f.roa, 1)}%` : '-'],
-    [txt({ ko: '영업이익률', en: 'OPM' }), f.opm != null ? `${fmtNum(f.opm, 1)}%` : '-'],
+    ['ROA', roa != null ? `${fmtNum(roa, 1)}%` : '-'],
+    ['ROIC', roic != null ? `${fmtNum(roic, 1)}%` : '-'],
+    [txt({ ko: '영업이익률', en: 'OPM' }), opm != null ? `${fmtNum(opm, 1)}%` : '-'],
+    [txt({ ko: 'EBITDA마진', en: 'EBITDA Margin' }), ebitdaM != null ? `${fmtNum(ebitdaM, 1)}%` : '-'],
+    [txt({ ko: '매출총이익률', en: 'Gross Margin' }), grossM != null ? `${fmtNum(grossM, 1)}%` : '-'],
     [txt({ ko: '배당률', en: 'Div' }), f.dividend_yield != null ? `${fmtNum(f.dividend_yield, 1)}%` : '-'],
     [txt({ ko: '부채비율', en: 'Debt' }), f.debt_ratio != null ? `${fmtNum(f.debt_ratio, 0)}%` : '-'],
     ['EV/EBITDA', f.ev_ebitda != null ? fmtNum(f.ev_ebitda, 2) : '-'],
-    [txt({ ko: '외인비율', en: 'Foreign' }), p.foreign_ratio ? escapeHtml(p.foreign_ratio) : (f.foreign_1m != null ? `${f.foreign_1m >= 0 ? '+' : ''}${fmtNum(f.foreign_1m, 1)}%` : '-')],
+    [txt({ ko: '외인비율', en: 'Foreign' }), p.foreign_ratio ? escapeHtml(p.foreign_ratio) : '-'],
   ];
   const infoDl = `<dl class="profile-dl">${infoRows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>`;
   const finGrid = `<div class="profile-fin-grid">${finRows.map(([k, v]) => `<div class="fin-cell"><span class="fin-label">${k}</span><span class="fin-value">${v}</span></div>`).join('')}</div>`;
-  return `${infoDl}${finGrid}${businessSummaryMarkup(p.business_summary)}`;
+
+  // Consensus section
+  const cns = data.consensus || {};
+  const cnsHtml = cns.target_price ? `
+    <div style="margin:10px 0;padding:8px 12px;background:rgba(96,160,255,.06);border-radius:6px;border-left:3px solid #60a0ff">
+      <strong style="font-size:11px;color:#60a0ff">${txt({ ko: '컨센서스', en: 'Consensus' })}</strong>
+      <div class="profile-fin-grid" style="margin-top:6px">
+        <div class="fin-cell"><span class="fin-label">${txt({ ko: '목표주가', en: 'Target' })}</span><span class="fin-value">${fmtPrice(cns.target_price)}</span></div>
+        <div class="fin-cell"><span class="fin-label">${txt({ ko: '추정EPS', en: 'Est EPS' })}</span><span class="fin-value">${cns.cns_eps != null ? fmtNum(cns.cns_eps, 0) : '-'}</span></div>
+        <div class="fin-cell"><span class="fin-label">${txt({ ko: '추정PER', en: 'Est PER' })}</span><span class="fin-value">${cns.cns_per != null ? fmtNum(cns.cns_per, 2) : '-'}</span></div>
+        <div class="fin-cell"><span class="fin-label">${txt({ ko: '투자의견', en: 'Opinion' })}</span><span class="fin-value">${cns.recommend_score != null ? fmtNum(cns.recommend_score, 1) + '/5' : '-'}</span></div>
+      </div>
+    </div>` : '';
+
+  return `${infoDl}${finGrid}${cnsHtml}${businessSummaryMarkup(p.business_summary)}`;
 }
 
 /* ── Session change display ── */
@@ -319,6 +344,45 @@ export function sessionMarkup(session) {
   const sign = up ? '+' : '';
   const color = up ? 'var(--good)' : 'var(--bad)';
   return `<span class="profile-session" style="color:${color}">${sign}${fmtNum(session.change_abs, 0)} (${sign}${fmtNum(session.change_pct, 2)}%)</span>`;
+}
+
+/* ── Investor Trend (수급 — 외인/기관/개인) ── */
+
+export function investorTrendMarkup(trend) {
+  if (!trend || !trend.length) return '';
+  const rows = trend.slice(0, 10).reverse(); // 오래된 순
+  const fmtQ = (v) => {
+    if (v == null) return '-';
+    const n = Number(v);
+    if (!Number.isFinite(n)) return '-';
+    const abs = Math.abs(n);
+    const display = abs >= 1000000 ? `${(n / 1000000).toFixed(1)}M` : abs >= 1000 ? `${(n / 1000).toFixed(0)}K` : `${n}`;
+    return display;
+  };
+  const cls = (v) => {
+    const n = Number(v);
+    if (!Number.isFinite(n) || n === 0) return '';
+    return n > 0 ? 'good' : 'bad';
+  };
+  const dateTds = rows.map((r) => `<th>${(r.trade_date || '').slice(4, 6)}/${(r.trade_date || '').slice(6)}</th>`).join('');
+  const foreignTds = rows.map((r) => `<td class="${cls(r.foreign_net)}">${fmtQ(r.foreign_net)}</td>`).join('');
+  const instTds = rows.map((r) => `<td class="${cls(r.institution_net)}">${fmtQ(r.institution_net)}</td>`).join('');
+  const indivTds = rows.map((r) => `<td class="${cls(r.individual_net)}">${fmtQ(r.individual_net)}</td>`).join('');
+
+  return `
+    <div style="margin-top:14px">
+      <h4>${txt({ ko: '수급 동향', en: 'Investor Flow' })}</h4>
+      <div class="profile-fin-table-scroll">
+        <table class="profile-fin-table">
+          <thead><tr><th></th>${dateTds}</tr></thead>
+          <tbody>
+            <tr><td class="fin-td fin-td--label">${txt({ ko: '외국인', en: 'Foreign' })}</td>${foreignTds}</tr>
+            <tr><td class="fin-td fin-td--label">${txt({ ko: '기관', en: 'Institution' })}</td>${instTds}</tr>
+            <tr><td class="fin-td fin-td--label">${txt({ ko: '개인', en: 'Individual' })}</td>${indivTds}</tr>
+          </tbody>
+        </table>
+      </div>
+    </div>`;
 }
 
 /* ── Trend template check badges ── */
@@ -378,6 +442,7 @@ export function renderCompanyProfile(data, targetEl) {
       ${epsBarChart(epsData)}
     </div>` : ''}
     ${financialAnalysisTable(data)}
+    ${investorTrendMarkup(data.investor_trend)}
     <div class="profile-sections">
 
       <div class="profile-section">
