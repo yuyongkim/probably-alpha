@@ -180,7 +180,7 @@ def main():
     for db_path, tables in SPLITS.items():
         print(f'\n=== {db_path} ===', flush=True)
         dst = sqlite3.connect(db_path)
-        dst.execute('PRAGMA journal_mode=WAL')
+        dst.execute('PRAGMA journal_mode=DELETE')
         dst.execute('PRAGMA synchronous=NORMAL')
 
         for table_name, create_sql in tables.items():

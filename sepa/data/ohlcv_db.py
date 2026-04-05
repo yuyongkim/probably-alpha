@@ -30,7 +30,7 @@ def _connect(path: Path | None = None) -> sqlite3.Connection:
     p.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(p))
     conn.row_factory = sqlite3.Row
-    conn.execute('PRAGMA journal_mode=WAL')
+    conn.execute('PRAGMA journal_mode=DELETE')
     conn.execute('PRAGMA synchronous=NORMAL')
     return conn
 
