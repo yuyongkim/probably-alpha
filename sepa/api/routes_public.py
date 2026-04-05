@@ -343,11 +343,14 @@ def backtest_run(
 
     # Build strategy config
     if preset:
-        config = get_preset(preset)
-        if not config:
+        from copy import copy
+        base = get_preset(preset)
+        if not base:
             return {'error': f'Unknown preset: {preset}'}
-        # Override cash/dates
+        config = copy(base)
         config.initial_cash = int(initial_cash)
+        config.max_positions = max_positions
+        config.rebalance = rebalance
     else:
         config = StrategyConfig(
             name='Custom',
