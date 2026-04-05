@@ -80,6 +80,9 @@ class BacktestEngine:
         rebalance_dates = self._get_rebalance_dates(dates, config.rebalance)
         rebalance_count = 0
 
+        # Pre-sort dates per symbol (used by _slice_to_date)
+        self._sorted_dates_by_sym = self._build_sorted_dates(full_data, price_index)
+
         # Load fundamentals for value/earnings screens
         fundamentals = self._load_fundamentals() if (
             config.signal_type == 'value_screen' or config.use_earnings_filter
@@ -126,34 +129,15 @@ class BacktestEngine:
                     ma_slice = [benchmark_prices[d] for d in bp_idx[-200:] if d in benchmark_prices]
                     market_ma200_val = sum(ma_slice) / len(ma_slice) if ma_slice else None
 
-            # 3) Exit check — 시그널 이탈 종목 청산 (리밸런싱 날에만)
+            # 3) Screening — ONLY on rebalance days (not every day)
             is_rebalance = date_str in rebalance_dates
-            if is_rebalance and config.leader_exit and i + 1 < len(dates):
+            if is_rebalance and i + 1 < len(dates):
                 sliced_data = self._slice_to_date(full_data, price_index, date_str)
                 signals = screen_universe(
                     config, sliced_data, fundamentals=fundamentals,
                     market_close=market_close_val, market_ma200=market_ma200_val,
                 )
                 signal_symbols = {s['symbol'] for s in signals[:config.max_positions]}
-                next_date = dates[i + 1]
-                next_exec_prices = {sym: price_index[sym][next_date][2]
-                                    for sym in price_index
-                                    if next_date in price_index[sym] and len(price_index[sym][next_date]) > 2
-                                    and price_index[sym][next_date][2] > 0}
-                for symbol in list(portfolio.positions):
-                    if symbol not in signal_symbols:
-                        price = next_exec_prices.get(symbol, 0.0)
-                        if price > 0:
-                            portfolio.sell(symbol, next_date, price, reason='rebalance_exit')
-
-            # 4) Daily entry — 빈 자리가 있으면 신규 매수
-            if i + 1 < len(dates) and len(portfolio.positions) < config.max_positions:
-                if not is_rebalance:
-                    sliced_data = self._slice_to_date(full_data, price_index, date_str)
-                    signals = screen_universe(
-                        config, sliced_data,
-                        market_close=market_close_val, market_ma200=market_ma200_val,
-                    )
 
                 next_date = dates[i + 1]
                 next_exec_prices = {sym: price_index[sym][next_date][2]
@@ -161,7 +145,18 @@ class BacktestEngine:
                                     if next_date in price_index[sym] and len(price_index[sym][next_date]) > 2
                                     and price_index[sym][next_date][2] > 0}
 
-                self._fill_positions(portfolio, next_date, next_exec_prices, signals, sector_map)
+                # Exit: sell positions no longer in signals
+                if config.leader_exit:
+                    for symbol in list(portfolio.positions):
+                        if symbol not in signal_symbols:
+                            price = next_exec_prices.get(symbol, 0.0)
+                            if price > 0:
+                                portfolio.sell(symbol, next_date, price, reason='rebalance_exit')
+
+                # Entry: fill empty slots
+                if len(portfolio.positions) < config.max_positions:
+                    self._fill_positions(portfolio, next_date, next_exec_prices, signals, sector_map)
+                rebalance_count += 1
                 rebalance_count += 1
 
             # 4) Mark to market
@@ -281,22 +276,24 @@ class BacktestEngine:
             if bought:
                 sector_count[sector] = sector_count.get(sector, 0) + 1
 
+    def _build_sorted_dates(self, full_data: dict, price_index: dict) -> dict[str, list[str]]:
+        """Pre-sort dates per symbol once. Called at run() start."""
+        return {sym: sorted(price_index.get(sym, {}).keys()) for sym in full_data}
+
     def _slice_to_date(
         self,
         full_data: dict[str, dict],
         price_index: dict[str, dict],
         as_of_date: str,
     ) -> dict[str, dict]:
-        """Slice full price data to only include data up to as_of_date."""
+        """Slice using pre-built sorted dates + bisect. O(log n) per symbol."""
+        from bisect import bisect_right
+        sorted_dates = self._sorted_dates_by_sym
         sliced: dict[str, dict] = {}
         for symbol, data in full_data.items():
             closes = data.get('closes', [])
             volumes = data.get('volumes', [])
-            dates_for_sym = sorted(price_index.get(symbol, {}).keys())
-            cutoff = 0
-            for i, d in enumerate(dates_for_sym):
-                if d <= as_of_date:
-                    cutoff = i + 1
+            cutoff = bisect_right(sorted_dates.get(symbol, []), as_of_date)
             if cutoff >= 200:
                 sliced[symbol] = {
                     'closes': closes[:cutoff],
