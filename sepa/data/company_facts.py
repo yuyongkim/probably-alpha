@@ -7,7 +7,7 @@ from pathlib import Path
 
 import yfinance as yf
 
-from sepa.data.quantdb import read_company_snapshot
+from sepa.data.naver_financials import read_snapshot as _naver_snapshot
 
 logger = logging.getLogger(__name__)
 
@@ -88,10 +88,18 @@ def _estimate_shares_outstanding(mkt_cap, price) -> float | None:
 
 
 def read_company_facts(symbol: str) -> dict:
-    snapshot = read_company_snapshot(symbol)
+    snapshot = _naver_snapshot(symbol)
     if snapshot:
-        shares = snapshot.get('shares_outstanding') or _estimate_shares_outstanding(snapshot.get('mkt_cap'), snapshot.get('price'))
-        latest_price = snapshot.get('price')
+        shares = snapshot.get('shares_outstanding')
+        latest_price = snapshot.get('per')  # snapshot doesn't have live price
+        # Get latest price from OHLCV
+        try:
+            from sepa.data.ohlcv_db import read_ohlcv
+            ohlcv = read_ohlcv(symbol)
+            if ohlcv:
+                latest_price = ohlcv[-1]['close']
+        except Exception:
+            pass
         estimated_cap = (float(shares) * float(latest_price)) if isinstance(shares, (int, float)) and isinstance(latest_price, (int, float)) and shares > 0 and latest_price > 0 else None
         # Preserve existing business_summary from cache if available
         cached = _read_cache(symbol)
@@ -193,13 +201,13 @@ def read_business_summary(symbol: str) -> str:
     if db_meta and (db_meta.get('name') or db_meta.get('sector')):
         return _snippet_from_meta(db_meta, symbol)
 
-    # Fallback: generate from QuantDB sector info
-    snapshot = read_company_snapshot(symbol)
+    # Fallback: generate from Naver snapshot
+    snapshot = _naver_snapshot(symbol)
     if snapshot:
         name = snapshot.get('name', symbol)
-        sector_l = snapshot.get('sector_large', '')
-        sector_s = snapshot.get('sector_small', '')
-        market = snapshot.get('market', '')
+        sector_l = snapshot.get('sector', '')
+        sector_s = snapshot.get('industry', '')
+        market = ''
         parts = [f'{name}']
         if market:
             parts.append(f'{market} 상장')

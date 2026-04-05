@@ -1,3 +1,11 @@
+"""QuantDB reader — used ONLY for:
+  - Universe listing (read_universe)
+  - Supplementary metrics not in Naver (ROA, EV/EBITDA, f_score, foreign_1m)
+  - Legacy price data (read_price_rows)
+
+All financial metrics (PER, EPS, ROE, revenue, etc.) come from
+sepa/data/naver_financials.py via data/financial.db.
+"""
 from __future__ import annotations
 
 import sqlite3
@@ -18,8 +26,12 @@ from sepa.data.quantdb_layout import (  # noqa: F401
     resolve_quantdb_path,
 )
 
-# ── Re-exports from quantdb_financials ──────────────────────────────────────
-from sepa.data.quantdb_financials import read_financial_summary  # noqa: F401
+# ── Re-export for backward compatibility ──────────────────────────────────
+# financial_summary now comes from naver_financials; this re-export
+# is kept only for callers that haven't been migrated yet.
+def read_financial_summary(symbol: str, **kwargs) -> dict:
+    from sepa.data.naver_financials import read_financial_series
+    return read_financial_series(symbol, **kwargs)
 
 
 # ── Local helpers ────────────────────────────────────────────────────────────
