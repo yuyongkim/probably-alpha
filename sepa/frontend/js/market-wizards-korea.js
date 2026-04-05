@@ -322,10 +322,10 @@ function renderDetail(profile) {
 
   selector.innerHTML = traderProfiles.map((profileItem) => buttonMarkup(profileItem, profile.id)).join('');
   meta.innerHTML = `
-    <span class="chip">${escapeHtml(profile.style)}</span>
-    <span class="chip">${escapeHtml(profile.fit.focus)}</span>
-    <span class="chip">${escapeHtml(profile.fit.timeframe)}</span>
-    <span class="chip">${escapeHtml(profile.fit.trigger)}</span>
+    <span class="chip" style="background:#2563eb;color:#fff;font-weight:600">${escapeHtml(profile.style)}</span>
+    <span class="chip" style="background:#7c3aed;color:#fff">${escapeHtml(profile.fit.focus)}</span>
+    <span class="chip" style="background:#0d9488;color:#fff">${escapeHtml(profile.fit.timeframe)}</span>
+    <span class="chip" style="background:#d97706;color:#fff">${escapeHtml(profile.fit.trigger)}</span>
   `;
 
   detail.innerHTML = `
