@@ -1,7 +1,10 @@
 """On-the-fly stock screener for backtests.
 
-Runs Alpha TT checks + extra conditions using StrategyConfig parameters.
-Uses pre-loaded price data (not file-based signals).
+Supports 4 signal types:
+  trend_template  — Minervini TT 8-check + RS percentile
+  channel_breakout — Donchian N-day high breakout (Dennis/Turtle)
+  value_screen    — PER/PBR/ROE screening (Greenblatt)
+  swing           — Short-term volatility contraction + breakout
 """
 from __future__ import annotations
 
@@ -10,7 +13,6 @@ from statistics import mean
 from sepa.backtest.strategy import StrategyConfig
 from sepa.data.sector_map import get_sector, load_sector_map
 from sepa.data.universe import get_symbol_name
-
 
 _SECTOR_MAP = None
 
@@ -25,51 +27,84 @@ def _get_sector_map():
 def screen_universe(
     config: StrategyConfig,
     price_data: dict[str, dict],
-    date_index: dict[str, int] | None = None,
-    as_of_date: str | None = None,
+    fundamentals: dict[str, dict] | None = None,
+    market_close: float | None = None,
+    market_ma200: float | None = None,
 ) -> list[dict]:
-    """Screen all symbols using Alpha TT + extra conditions.
+    """Screen all symbols using strategy-specific signal generation.
 
     Parameters
     ----------
     config : StrategyConfig
-    price_data : dict
-        {symbol: {closes: list[float], volumes: list[float], dates: list[str]}}
-        Pre-loaded from ohlcv_db, possibly sliced to as_of_date.
-    date_index : dict, optional
-        {date_str: index} for slicing if price_data contains full history.
-    as_of_date : str, optional
-        Used for slicing if date_index provided.
-
-    Returns
-    -------
-    list[dict] sorted by score descending.
+    price_data : {symbol: {closes, volumes}} — pre-loaded, possibly sliced
+    fundamentals : {symbol: {eps_yoy, revenue_yoy, roe, per, pbr, ...}}
+    market_close : KOSPI close price (for market filter)
+    market_ma200 : KOSPI 200-day MA (for market filter)
     """
-    sector_map = _get_sector_map()
+    # Market regime filter (Jones, Dalio)
+    if config.use_market_filter and market_close and market_ma200:
+        if market_close < market_ma200:
+            # Bear market — reduce or skip entirely
+            if config.cash_in_bear_pct >= 1.0:
+                return []  # 100% cash, no signals
 
-    # Compute metrics for all symbols
+    dispatch = {
+        'trend_template': _screen_trend_template,
+        'channel_breakout': _screen_channel_breakout,
+        'value_screen': _screen_value,
+        'swing': _screen_swing,
+    }
+    screener = dispatch.get(config.signal_type, _screen_trend_template)
+    candidates = screener(config, price_data, fundamentals)
+
+    if not candidates:
+        return []
+
+    # Sector filtering (shared across all types)
+    sector_map = _get_sector_map()
+    for c in candidates:
+        if 'sector' not in c:
+            c['sector'] = get_sector(c['symbol'], sector_map)
+
+    if config.sector_filter:
+        sector_scores: dict[str, float] = {}
+        for c in candidates:
+            sec = c.get('sector', 'Other')
+            sector_scores[sec] = sector_scores.get(sec, 0) + c.get('score', 0)
+        top_secs = sorted(sector_scores, key=sector_scores.get, reverse=True)[:config.top_sectors]
+        candidates = [c for c in candidates if c.get('sector', 'Other') in top_secs]
+
+    # Sector limit
+    if config.sector_limit > 0:
+        sector_count: dict[str, int] = {}
+        limited: list[dict] = []
+        for c in sorted(candidates, key=lambda x: x.get('score', 0), reverse=True):
+            sec = c.get('sector', 'Other')
+            if sector_count.get(sec, 0) < config.sector_limit:
+                limited.append(c)
+                sector_count[sec] = sector_count.get(sec, 0) + 1
+        candidates = limited
+
+    candidates.sort(key=lambda x: x.get('score', 0), reverse=True)
+    return candidates[:config.max_positions * 2]
+
+
+# ── Trend Template (Minervini/O'Neil/Seykota) ────────────────────────────
+
+def _screen_trend_template(
+    config: StrategyConfig,
+    price_data: dict[str, dict],
+    fundamentals: dict[str, dict] | None = None,
+) -> list[dict]:
     candidates: list[dict] = []
     rs_values: dict[str, float] = {}
 
     for symbol, data in price_data.items():
         closes = data.get('closes', [])
         volumes = data.get('volumes', [])
-
-        # Slice to as_of_date if needed
-        if as_of_date and date_index and 'dates' in data:
-            dates = data['dates']
-            cutoff_idx = None
-            for i, d in enumerate(dates):
-                if d.replace('-', '') <= as_of_date.replace('-', ''):
-                    cutoff_idx = i
-            if cutoff_idx is not None:
-                closes = closes[:cutoff_idx + 1]
-                volumes = volumes[:cutoff_idx + 1]
-
         if len(closes) < 200:
             continue
 
-        # Compute TT metrics
         close = closes[-1]
         sma50 = mean(closes[-50:])
         sma150 = mean(closes[-150:])
@@ -92,11 +127,10 @@ def screen_universe(
             'c4_sma200_rising': sma200 > sma200_prev20,
             'c5_above_52w_low': close >= (config.c5_multiplier * low52) if low52 > 0 else True,
             'c6_near_52w_high': close >= (config.c6_multiplier * high52) if high52 > 0 else True,
-            'c7_rs_placeholder': True,  # filled after percentile
+            'c7_rs_placeholder': True,
             'c8_close_gt_sma200': close > sma200,
         }
 
-        # Hard gates
         if config.require_ma50 and not checks['c2_close_gt_sma50']:
             continue
         if config.require_close_gt_sma200 and not checks['c8_close_gt_sma200']:
@@ -106,38 +140,61 @@ def screen_universe(
         if passed < config.min_tt_pass:
             continue
 
-        # Extra conditions
+        # Volume expansion
         if config.require_volume_expansion and len(volumes) >= 50:
             vol_short = mean(volumes[-5:]) if volumes[-5:] else 0
             vol_long = mean(volumes[-50:]) if volumes[-50:] else 1
             if vol_long > 0 and vol_short / vol_long < config.min_volume_ratio:
                 continue
 
+        # Near 52w high
         if config.require_near_52w_high:
             if high52 > 0 and close < config.near_52w_threshold * high52:
                 continue
 
+        # Volatility contraction
         if config.require_volatility_contraction and len(closes) >= 50:
             atr10 = mean([abs(closes[i] - closes[i - 1]) for i in range(-9, 0)])
             atr50 = mean([abs(closes[i] - closes[i - 1]) for i in range(-49, 0)])
-            if atr50 > 0 and atr10 / atr50 >= 1.0:  # not contracting
+            if atr50 > 0 and atr10 / atr50 >= 1.0:
                 continue
 
+        # 20d breakout
         if config.require_20d_breakout and len(closes) >= 20:
-            high20 = max(closes[-20:])
-            if close < high20:
+            if close < max(closes[-20:]):
                 continue
+
+        # Earnings filter
+        if config.use_earnings_filter and fundamentals:
+            fund = fundamentals.get(symbol, {})
+            eps_yoy = fund.get('eps_yoy', 0)
+            rev_yoy = fund.get('revenue_yoy', 0)
+            if eps_yoy < config.min_eps_growth_yoy:
+                continue
+            if config.min_revenue_growth_yoy > 0 and rev_yoy < config.min_revenue_growth_yoy:
+                continue
+            if config.require_eps_acceleration:
+                eps_accel = fund.get('eps_acceleration', 0)
+                if eps_accel <= 0:
+                    continue
+            if config.min_roe > 0:
+                roe = fund.get('roe', 0)
+                if roe < config.min_roe:
+                    continue
+
+        # ATR for sizing
+        atr = _compute_atr(closes, config.atr_period)
 
         candidates.append({
             'symbol': symbol,
             'name': get_symbol_name(symbol),
-            'sector': get_sector(symbol, sector_map),
             'close': close,
             'sma50': sma50,
             'sma200': sma200,
             'high52': high52,
             'ret120': ret120,
             'tt_passed': passed,
+            'atr': atr,
             'checks': checks,
         })
 
@@ -153,44 +210,195 @@ def screen_universe(
         rs_pct = (rank / n * 100) if n > 0 else 50
         c['rs_percentile'] = round(rs_pct, 2)
         c['checks']['c7_rs_placeholder'] = rs_pct >= config.rs_threshold
-
-        # Recheck TT with RS
         if rs_pct < config.rs_threshold:
-            c['tt_passed'] -= 1  # c7 fails
+            c['tt_passed'] -= 1
 
-    # Filter by RS threshold (recheck after percentile)
     candidates = [c for c in candidates if c['rs_percentile'] >= config.rs_threshold]
-
-    # Filter by min TT pass (recheck)
     candidates = [c for c in candidates if c['tt_passed'] >= config.min_tt_pass]
 
-    # Score (0~100 normalized)
     for c in candidates:
-        tt_score = c['tt_passed'] / 8.0 * 50  # max 50
-        rs_score = c['rs_percentile'] / 100.0 * 50  # max 50
-        c['score'] = round(tt_score + rs_score, 1)  # max 100
+        tt_score = c['tt_passed'] / 8.0 * 50
+        rs_score = c['rs_percentile'] / 100.0 * 50
+        c['score'] = round(tt_score + rs_score, 1)
 
-    # Sector filtering
-    if config.sector_filter:
-        sector_scores: dict[str, float] = {}
-        for c in candidates:
-            sec = c['sector']
-            sector_scores[sec] = sector_scores.get(sec, 0) + c['score']
-        top_secs = sorted(sector_scores, key=sector_scores.get, reverse=True)[:config.top_sectors]
-        candidates = [c for c in candidates if c['sector'] in top_secs]
+    return candidates
 
-    # Sort by score
-    candidates.sort(key=lambda x: x['score'], reverse=True)
 
-    # Sector limit
-    if config.sector_limit > 0:
-        sector_count: dict[str, int] = {}
-        limited: list[dict] = []
-        for c in candidates:
-            sec = c['sector']
-            if sector_count.get(sec, 0) < config.sector_limit:
-                limited.append(c)
-                sector_count[sec] = sector_count.get(sec, 0) + 1
-        candidates = limited
+# ── Channel Breakout (Dennis/Turtle) ─────────────────────────────────────
 
-    return candidates[:config.max_positions * 2]  # Return 2x for flexibility
+def _screen_channel_breakout(
+    config: StrategyConfig,
+    price_data: dict[str, dict],
+    fundamentals: dict[str, dict] | None = None,
+) -> list[dict]:
+    candidates: list[dict] = []
+    n = config.channel_entry_period
+
+    for symbol, data in price_data.items():
+        closes = data.get('closes', [])
+        volumes = data.get('volumes', [])
+        if len(closes) < max(n + 1, 50):
+            continue
+
+        close = closes[-1]
+        prev_close = closes[-2]
+        channel_high = max(closes[-n - 1:-1])  # N-day high BEFORE today
+
+        # Breakout: today's close > N-day high
+        if close <= channel_high:
+            continue
+
+        # Volume confirmation
+        if config.require_channel_volume and len(volumes) >= 20:
+            vol_today = volumes[-1]
+            vol_avg = mean(volumes[-20:])
+            if vol_avg > 0 and vol_today < vol_avg * 1.2:
+                continue
+
+        atr = _compute_atr(closes, config.atr_period)
+        ret120 = (close / closes[-121] - 1.0) if len(closes) >= 121 and closes[-121] > 0 else 0.0
+
+        # Score: breakout strength (how far above channel)
+        breakout_pct = (close / channel_high - 1.0) * 100 if channel_high > 0 else 0
+        score = min(breakout_pct * 10, 100)  # normalize
+
+        candidates.append({
+            'symbol': symbol,
+            'name': get_symbol_name(symbol),
+            'close': close,
+            'channel_high': channel_high,
+            'breakout_pct': round(breakout_pct, 2),
+            'atr': atr,
+            'ret120': ret120,
+            'score': round(score, 1),
+        })
+
+    return candidates
+
+
+# ── Value Screen (Greenblatt Magic Formula) ──────────────────────────────
+
+def _screen_value(
+    config: StrategyConfig,
+    price_data: dict[str, dict],
+    fundamentals: dict[str, dict] | None = None,
+) -> list[dict]:
+    if not fundamentals:
+        return []
+
+    candidates: list[dict] = []
+    for symbol, fund in fundamentals.items():
+        per = fund.get('per')
+        pbr = fund.get('pbr')
+        roe = fund.get('roe')
+        debt = fund.get('debt_ratio')
+
+        # Skip if no data
+        if per is None or pbr is None or roe is None:
+            continue
+
+        # Filters
+        if per <= 0 or per > config.max_per:
+            continue
+        if pbr > config.max_pbr:
+            continue
+        if roe < config.min_roe_value:
+            continue
+        if debt is not None and config.max_debt_ratio > 0 and debt > config.max_debt_ratio:
+            continue
+
+        # Need price data for the symbol
+        if symbol not in price_data:
+            continue
+        closes = price_data[symbol].get('closes', [])
+        if len(closes) < 50:
+            continue
+
+        close = closes[-1]
+        atr = _compute_atr(closes, config.atr_period)
+
+        # Magic formula score: rank by earnings yield (1/PER) + ROE
+        earnings_yield = 1.0 / per if per > 0 else 0
+        score = round((earnings_yield * 50 + roe / 100 * 50) * 100, 1)
+
+        candidates.append({
+            'symbol': symbol,
+            'name': get_symbol_name(symbol),
+            'close': close,
+            'per': per,
+            'pbr': pbr,
+            'roe': roe,
+            'atr': atr,
+            'score': score,
+        })
+
+    return candidates
+
+
+# ── Swing (Schwartz/Raschke) ─────────────────────────────────────────────
+
+def _screen_swing(
+    config: StrategyConfig,
+    price_data: dict[str, dict],
+    fundamentals: dict[str, dict] | None = None,
+) -> list[dict]:
+    candidates: list[dict] = []
+
+    for symbol, data in price_data.items():
+        closes = data.get('closes', [])
+        volumes = data.get('volumes', [])
+        if len(closes) < 50:
+            continue
+
+        close = closes[-1]
+        sma10 = mean(closes[-10:])
+        sma20 = mean(closes[-20:])
+        sma50 = mean(closes[-50:])
+
+        # Must be above short-term MA
+        if config.require_ma50 and close <= sma50:
+            continue
+        if close <= sma10:
+            continue
+
+        # Volatility contraction: NR7 (narrowest range in 7 days)
+        if config.require_volatility_contraction:
+            ranges = [abs(closes[i] - closes[i - 1]) for i in range(-6, 0)]
+            today_range = abs(close - closes[-2])
+            if today_range > min(ranges):
+                continue
+
+        # 20d breakout
+        if config.require_20d_breakout and len(closes) >= 20:
+            if close < max(closes[-20:]):
+                continue
+
+        atr = _compute_atr(closes, config.atr_period)
+        ret120 = (close / closes[-121] - 1.0) if len(closes) >= 121 and closes[-121] > 0 else 0.0
+
+        # Score: proximity to breakout + volume
+        dist_to_high20 = (close / max(closes[-20:]) - 1.0) * 100 if len(closes) >= 20 else 0
+        score = max(0, 50 + dist_to_high20 * 10)
+
+        candidates.append({
+            'symbol': symbol,
+            'name': get_symbol_name(symbol),
+            'close': close,
+            'sma10': sma10,
+            'sma20': sma20,
+            'atr': atr,
+            'ret120': ret120,
+            'score': round(score, 1),
+        })
+
+    return candidates
+
+
+# ── Helpers ──────────────────────────────────────────────────────────────
+
+def _compute_atr(closes: list[float], period: int = 14) -> float:
+    """Average True Range from close-only data (approximation)."""
+    if len(closes) < period + 1:
+        return 0.0
+    trs = [abs(closes[i] - closes[i - 1]) for i in range(-period, 0)]
+    return mean(trs) if trs else 0.0

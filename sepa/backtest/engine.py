@@ -80,17 +80,42 @@ class BacktestEngine:
             if not day_prices:
                 continue
 
-            # 1) Check stops — 손절 발동된 종목 즉시 청산
+            # 1) Check stops
             portfolio.check_stops(date_str, day_prices)
 
-            # 2) Exit check — 시그널 이탈 종목 청산 (리밸런싱 날에만)
+            # 1b) Trailing stops — raise stops for winners
+            if config.trailing_stop:
+                portfolio.update_trailing_stops(
+                    day_prices,
+                    trailing_start_pct=config.trailing_start_pct,
+                    trailing_distance_pct=config.trailing_distance_pct,
+                )
+
+            # 1c) Profit targets (swing strategies)
+            if config.profit_target_pct > 0:
+                portfolio.check_profit_targets(date_str, day_prices, config.profit_target_pct)
+
+            # 2) Market filter — compute market MA for signal generation
+            market_close_val = None
+            market_ma200_val = None
+            if config.use_market_filter and benchmark_prices:
+                bp_dates = sorted(benchmark_prices.keys())
+                bp_idx = [d for d in bp_dates if d <= date_str]
+                if len(bp_idx) >= 200:
+                    market_close_val = benchmark_prices.get(date_str)
+                    ma_slice = [benchmark_prices[d] for d in bp_idx[-200:] if d in benchmark_prices]
+                    market_ma200_val = sum(ma_slice) / len(ma_slice) if ma_slice else None
+
+            # 3) Exit check — 시그널 이탈 종목 청산 (리밸런싱 날에만)
             is_rebalance = date_str in rebalance_dates
             if is_rebalance and config.leader_exit and i + 1 < len(dates):
                 sliced_data = self._slice_to_date(full_data, price_index, date_str)
-                signals = screen_universe(config, sliced_data)
+                signals = screen_universe(
+                    config, sliced_data,
+                    market_close=market_close_val, market_ma200=market_ma200_val,
+                )
                 signal_symbols = {s['symbol'] for s in signals[:config.max_positions]}
                 next_date = dates[i + 1]
-                # Execute at next-day OPEN price (not close)
                 next_exec_prices = {sym: price_index[sym][next_date][2]
                                     for sym in price_index
                                     if next_date in price_index[sym] and len(price_index[sym][next_date]) > 2
@@ -101,14 +126,16 @@ class BacktestEngine:
                         if price > 0:
                             portfolio.sell(symbol, next_date, price, reason='rebalance_exit')
 
-            # 3) Daily entry — 빈 자리가 있으면 매일 신규 매수
+            # 4) Daily entry — 빈 자리가 있으면 신규 매수
             if i + 1 < len(dates) and len(portfolio.positions) < config.max_positions:
                 if not is_rebalance:
                     sliced_data = self._slice_to_date(full_data, price_index, date_str)
-                    signals = screen_universe(config, sliced_data)
+                    signals = screen_universe(
+                        config, sliced_data,
+                        market_close=market_close_val, market_ma200=market_ma200_val,
+                    )
 
                 next_date = dates[i + 1]
-                # Execute at next-day OPEN price (not close)
                 next_exec_prices = {sym: price_index[sym][next_date][2]
                                     for sym in price_index
                                     if next_date in price_index[sym] and len(price_index[sym][next_date]) > 2
@@ -206,8 +233,21 @@ class BacktestEngine:
             price = exec_prices.get(symbol, 0.0)
             if price <= 0:
                 continue
-            stop = int(price * (1.0 - config.stop_loss_pct))
-            if portfolio.buy(symbol, exec_date, price, sector=sector, stop=stop):
+            atr = stock.get('atr', 0.0)
+            if config.stop_type == 'atr_trailing' and atr > 0:
+                stop = int(price - atr * config.atr_stop_multiplier)
+            elif config.stop_type == 'fixed_pct':
+                stop = int(price * (1.0 - config.stop_loss_pct))
+            else:
+                stop = int(price * (1.0 - config.stop_loss_pct))
+
+            bought = portfolio.buy(
+                symbol, exec_date, price, sector=sector, stop=stop,
+                atr=atr, sizing=config.sizing_method,
+                risk_pct=config.risk_per_trade_pct,
+                atr_stop_mult=config.atr_stop_multiplier,
+            )
+            if bought:
                 sector_count[sector] = sector_count.get(sector, 0) + 1
 
     def _slice_to_date(
