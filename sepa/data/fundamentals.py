@@ -90,6 +90,41 @@ def _read_naver_eps(symbol: str, cutoff: str) -> list[dict]:
 # Source 2: EPS from net_income / shares
 # ---------------------------------------------------------------------------
 
+def _read_navercomp_eps(symbol: str, cutoff: str) -> list[dict]:
+    """Read EPS from financial_statements (NaverComp cF3002 주당순이익)."""
+    try:
+        conn = sqlite3.connect(str(_DB_PATH))
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(
+            "SELECT DISTINCT period, period_type, value FROM financial_statements "
+            "WHERE symbol = ? AND account_name LIKE '%주당%순이익%' AND is_estimate = 0 "
+            "ORDER BY period",
+            (_strip_suffix(symbol),),
+        ).fetchall()
+        conn.close()
+    except sqlite3.Error:
+        return []
+
+    seen: set[str] = set()
+    out: list[dict] = []
+    for r in rows:
+        period = str(r['period'] or '').strip()
+        ptype = str(r['period_type'] or '').strip()
+        if not period or period in seen:
+            continue
+        seen.add(period)
+        available_token = _period_available_token(period)
+        if cutoff and available_token and available_token > cutoff:
+            continue
+        out.append({
+            'period': period,
+            'period_type': 'annual' if ptype == 'annual' or (len(period) == 4 and 'Q' not in period) else 'quarterly',
+            'available_date': available_token,
+            'eps': float(r['value']) if r['value'] is not None else 0.0,
+        })
+    return out
+
+
 def _read_naver_ni_eps(symbol: str, cutoff: str) -> list[dict]:
     if not _DB_PATH.exists():
         return []
@@ -345,15 +380,20 @@ def _read_eps_series_cached(
     # Source 1 (long history): QuantDB EPS + Live NI → EPS
     quantdb_rows = _read_quantdb_long_eps(symbol, cutoff)
 
-    # Source 2: Naver direct EPS (most recent, highest priority)
+    # Source 2: NaverComp cF3002 주당순이익 (2021~2026, 244-item statements)
+    navercomp_rows = _read_navercomp_eps(symbol, cutoff)
+
+    # Source 3: Naver finance API direct EPS (most recent)
     naver_rows = _read_naver_eps(symbol, cutoff)
 
-    # Source 3: Naver net_income → EPS
+    # Source 4: Naver net_income → EPS (computed)
     naver_ni_rows = _read_naver_ni_eps(symbol, cutoff)
 
-    # Merge: QuantDB (oldest) < NI-derived < Naver direct (newest, highest priority)
+    # Merge: QuantDB < NaverComp < NI-derived < Naver direct (highest priority)
     by_period: dict[str, dict] = {}
     for row in quantdb_rows:
+        by_period[row['period']] = row
+    for row in navercomp_rows:
         by_period[row['period']] = row
     for row in naver_ni_rows:
         by_period[row['period']] = row
