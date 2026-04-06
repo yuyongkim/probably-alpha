@@ -45,7 +45,7 @@ function sectorCardMarkup(group, actions) {
         <td class="sparkline-cell">${sparkline}</td>
         <td class="price-cell">${escapeHtml(fmtPrice(stock.price || (stock.sparkline && stock.sparkline.length ? stock.sparkline[stock.sparkline.length - 1] : null)))}</td>
         <td class="ma-cell"><span style="color:#f0c040">${ma20val != null ? fmtPrice(ma20val) : '-'}</span><br><span style="color:#60a0ff">${ma60val != null ? fmtPrice(ma60val) : '-'}</span></td>
-        <td><span class="score ${stock.leader_stock_score >= 70 ? 'good' : stock.leader_stock_score >= 40 ? 'mid' : 'bad'}">${fmtNum(stock.leader_stock_score, 1)}</span></td>
+        <td><span class="score ${stock.leader_stock_score >= 70 ? 'good' : stock.leader_stock_score >= 40 ? 'mid' : 'bad'}">${fmtNum(Math.min(stock.leader_stock_score || 0, 100), 1)}</span></td>
         <td>${escapeHtml(fmtPlainPct(stock.ret120_pct))}</td>
         <td>${fmtNum(stock.beta_confidence, 2)}</td>
         <td>

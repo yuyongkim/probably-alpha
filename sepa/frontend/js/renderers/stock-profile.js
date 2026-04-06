@@ -846,6 +846,8 @@ export function renderProfileSkeleton(data) {
       </div>` : ''}
 
     </div>
+
+    ${_verificationPrompt(data)}
   `;
 }
 
