@@ -14,8 +14,8 @@ import {
   fmtSignedPct,
   scoreBadge,
   state,
-} from '../core.js?v=1775481741';
-import { txt } from '../i18n.js?v=1775481741';
+} from '../core.js?v=1775482261';
+import { txt } from '../i18n.js?v=1775482261';
 
 export function activeStockRecord(items = state.latestStocks) {
   return (items || []).find((item) => item?.symbol === state.activeSymbol) || null;

@@ -14,8 +14,8 @@ import {
   fmtPlainPct,
   fmtPct,
   $,
-} from '../core.js?v=1775481741';
-import { txt } from '../i18n.js?v=1775481741';
+} from '../core.js?v=1775482261';
+import { txt } from '../i18n.js?v=1775482261';
 
 /* ── Moving Average helper ── */
 
@@ -451,7 +451,7 @@ export function renderCompanyProfile(data, targetEl) {
   const lr = ts.least_resistance || {};
   const cwh = ts.cup_with_handle || {};
 
-  const sparkline = sparklineSvg(data.sparkline || p.sparkline || [], 340, 100, (data.session || {}).date || data.date_dir || '');
+  const sparkline = sparklineSvg(data.sparkline || p.sparkline || [], 480, 150, (data.session || {}).date || data.date_dir || '');
   const epsData = data.eps_recent || p.eps_recent || [];
 
   const price = p.price || tt.close;
@@ -483,6 +483,10 @@ export function renderCompanyProfile(data, targetEl) {
         ${sparkline}
         <p class="profile-price">${escapeHtml(fmtPrice(price))}</p>
         ${sessionMarkup(data.session)}
+        <div style="margin-top:6px;display:flex;gap:8px">
+          <a href="https://finance.naver.com/item/main.naver?code=${p.symbol || ''}" target="_blank" rel="noopener" style="font-size:11px;color:#60a0ff;text-decoration:none">네이버 증권 &rarr;</a>
+          <a href="https://navercomp.wisereport.co.kr/v2/company/c1010001.aspx?cmp_cd=${p.symbol || ''}" target="_blank" rel="noopener" style="font-size:11px;color:#60a0ff;text-decoration:none">상세 재무 &rarr;</a>
+        </div>
       </div>
       <div class="profile-facts">
         ${financialTableMarkup(data)}
@@ -858,7 +862,7 @@ export function renderProfileSkeleton(data) {
   const rec = data.recommendation;
   const tt = ts.trend_template || {};
 
-  const spark = sparklineSvg(data.sparkline || [], 340, 100, (data.session || {}).date || data.date_dir || '');
+  const spark = sparklineSvg(data.sparkline || [], 480, 150, (data.session || {}).date || data.date_dir || '');
   const price = p.price || tt.close;
   const epsData = data.eps_recent || [];
 
@@ -888,6 +892,10 @@ export function renderProfileSkeleton(data) {
         ${spark}
         <p class="profile-price">${escapeHtml(fmtPrice(price))}</p>
         ${sessionMarkup(data.session)}
+        <div style="margin-top:6px;display:flex;gap:8px">
+          <a href="https://finance.naver.com/item/main.naver?code=${p.symbol || ''}" target="_blank" rel="noopener" style="font-size:11px;color:#60a0ff;text-decoration:none">네이버 증권 &rarr;</a>
+          <a href="https://navercomp.wisereport.co.kr/v2/company/c1010001.aspx?cmp_cd=${p.symbol || ''}" target="_blank" rel="noopener" style="font-size:11px;color:#60a0ff;text-decoration:none">상세 재무 &rarr;</a>
+        </div>
       </div>
       <div class="profile-facts">
         ${financialTableMarkup(data)}
