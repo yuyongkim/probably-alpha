@@ -1,6 +1,6 @@
-import { marketWizardPeople, peopleSeries } from './market-wizards-people-data.js?v=1775487951';
-import { traderProfiles } from './market-wizards-data.js?v=1775487951';
-import { setupPageI18n, txt } from './i18n.js?v=1775487951';
+import { marketWizardPeople, peopleSeries } from './market-wizards-people-data.js?v=1775488167';
+import { traderProfiles } from './market-wizards-data.js?v=1775488167';
+import { setupPageI18n, txt } from './i18n.js?v=1775488167';
 
 function _getProfile(personId) {
   return traderProfiles.find((p) => p.id === personId) || null;

@@ -7,8 +7,8 @@ import {
   fmtNum,
   fmtQuarter,
   state,
-} from './core.js?v=1775487951';
-import { txt } from './i18n.js?v=1775487951';
+} from './core.js?v=1775488167';
+import { txt } from './i18n.js?v=1775488167';
 
 const MAIN_CHART_PAD = { top: 24, right: 128, bottom: 56, left: 60 };
 const EPS_CHART_PAD = { top: 48, right: 24, bottom: 70, left: 60 };

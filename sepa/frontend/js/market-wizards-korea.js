@@ -1,6 +1,6 @@
-import { getTraderProfile, traderProfiles } from './market-wizards-data.js?v=1775487951';
-import { setupPageI18n, txt } from './i18n.js?v=1775487951';
-import { termTip, setupTermTips } from './term-tips.js?v=1775487951';
+import { getTraderProfile, traderProfiles } from './market-wizards-data.js?v=1775488167';
+import { setupPageI18n, txt } from './i18n.js?v=1775488167';
+import { termTip, setupTermTips } from './term-tips.js?v=1775488167';
 import {
   $,
   escapeHtml,
@@ -13,7 +13,7 @@ import {
   fmtPlainPct,
   fmtPrice,
   toDateToken,
-} from './core.js?v=1775487951';
+} from './core.js?v=1775488167';
 import {
   movingAvg,
   sparklineSvg,
@@ -26,7 +26,7 @@ import {
   renderCompanyProfile,
   setupProfileDialogClose,
   openStockProfile,
-} from './renderers/stock-profile.js?v=1775487951';
+} from './renderers/stock-profile.js?v=1775488167';
 
 const DEFAULT_API_BASE = '';
 
@@ -809,7 +809,7 @@ async function runConsensus() {
       }
       items = [...symbolMap.values()]
         .filter(s => s.presets.length >= 2)
-        .sort((a, b) => b.presets.length - a.score || b.score - a.score);
+        .sort((a, b) => b.presets.length - a.presets.length || b.score - a.score);
     } catch {}
 
     // Fallback to live API if cache empty

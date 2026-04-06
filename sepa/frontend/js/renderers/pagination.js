@@ -2,8 +2,8 @@ import {
   $,
   escapeHtml,
   state,
-} from '../core.js?v=1775487951';
-import { txt } from '../i18n.js?v=1775487951';
+} from '../core.js?v=1775488167';
+import { txt } from '../i18n.js?v=1775488167';
 
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
