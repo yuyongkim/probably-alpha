@@ -1,7 +1,7 @@
-import { traderProfiles, getTraderProfile } from './market-wizards-data.js?v=1775472534';
-import { marketWizardPeople, peopleSeries } from './market-wizards-people-data.js?v=1775472534';
-import { escapeHtml } from './core.js?v=1775472534';
-import { txt } from './i18n.js?v=1775472534';
+import { traderProfiles, getTraderProfile } from './market-wizards-data.js?v=1775480720';
+import { marketWizardPeople, peopleSeries } from './market-wizards-people-data.js?v=1775480720';
+import { escapeHtml } from './core.js?v=1775480720';
+import { txt } from './i18n.js?v=1775480720';
 
 export { traderProfiles };
 

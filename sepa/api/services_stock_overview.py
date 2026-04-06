@@ -227,7 +227,7 @@ def stock_overview_payload(symbol: str, date_dir: str | None = None, as_of_date:
     supplementary = _naver_supplementary(symbol)  # QuantDB: ROA, EV/EBITDA 등 보조 지표만
 
     eps_rows = read_eps_series(symbol, as_of_date=token)
-    recent_eps = eps_rows[-24:] if eps_rows else []
+    recent_eps = eps_rows[-40:] if eps_rows else []
 
     series = read_price_series(symbol, as_of_date=token)
     sparkline: list[float] = []

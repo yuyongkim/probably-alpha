@@ -1,4 +1,4 @@
-import { txt } from './i18n.js?v=1775472534';
+import { txt } from './i18n.js?v=1775480720';
 
 export const $ = (id) => document.getElementById(id);
 

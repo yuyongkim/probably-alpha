@@ -14,8 +14,8 @@ import {
   fmtPlainPct,
   fmtPct,
   $,
-} from '../core.js?v=1775472534';
-import { txt } from '../i18n.js?v=1775472534';
+} from '../core.js?v=1775480720';
+import { txt } from '../i18n.js?v=1775480720';
 
 /* ── Moving Average helper ── */
 
@@ -116,8 +116,8 @@ export function epsBarChart(epsData) {
 
   // If no split available, treat all as quarterly
   const sections = [];
-  if (annual.length) sections.push({ rows: annual.slice(-8), title: txt({ ko: '연간 EPS', en: 'Annual EPS' }) });
-  if (quarterly.length) sections.push({ rows: quarterly.slice(-12), title: txt({ ko: '분기 EPS', en: 'Quarterly EPS' }) });
+  if (annual.length) sections.push({ rows: annual.slice(-10), title: txt({ ko: '연간 EPS', en: 'Annual EPS' }) });
+  if (quarterly.length) sections.push({ rows: quarterly.slice(-20), title: txt({ ko: '분기 EPS', en: 'Quarterly EPS' }) });
   if (!sections.length) sections.push({ rows: epsData.slice(-12), title: 'EPS' });
 
   return sections.map(({ rows, title }) => _epsBarSvg(rows, title)).join('');
