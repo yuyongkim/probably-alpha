@@ -1,6 +1,6 @@
-import { getTraderProfile, traderProfiles } from './market-wizards-data.js?v=1775484394';
-import { setupPageI18n, txt } from './i18n.js?v=1775484394';
-import { termTip, setupTermTips } from './term-tips.js?v=1775484394';
+import { getTraderProfile, traderProfiles } from './market-wizards-data.js?v=1775487695';
+import { setupPageI18n, txt } from './i18n.js?v=1775487695';
+import { termTip, setupTermTips } from './term-tips.js?v=1775487695';
 import {
   $,
   escapeHtml,
@@ -13,7 +13,7 @@ import {
   fmtPlainPct,
   fmtPrice,
   toDateToken,
-} from './core.js?v=1775484394';
+} from './core.js?v=1775487695';
 import {
   movingAvg,
   sparklineSvg,
@@ -26,7 +26,7 @@ import {
   renderCompanyProfile,
   setupProfileDialogClose,
   openStockProfile,
-} from './renderers/stock-profile.js?v=1775484394';
+} from './renderers/stock-profile.js?v=1775487695';
 
 const DEFAULT_API_BASE = '';
 
@@ -723,33 +723,52 @@ async function runTraderScreen() {
   const preset = $('traderScreenPreset')?.value || 'minervini';
   const rows = $('traderScreenRows');
   const meta = $('traderScreenMeta');
-  rows.innerHTML = `<tr><td colspan="8" class="empty-state">${txt({ ko: '스크리닝 중...', en: 'Screening...' })}</td></tr>`;
-  meta.textContent = '';
+  rows.innerHTML = `<tr><td colspan="8" class="empty-state">${txt({ ko: '로딩 중...', en: 'Loading...' })}</td></tr>`;
 
   try {
-    const data = await fetchJSON(`${DEFAULT_API_BASE}/api/screen/trader?preset=${preset}&limit=10`);
+    // Use cached daily picks first, fallback to live API
+    let data;
+    try {
+      const cached = await fetchJSON(`${DEFAULT_API_BASE}/api/presets/daily-picks`);
+      const picks = cached.items || cached;
+      if (picks[preset] && picks[preset].items?.length) {
+        data = picks[preset];
+        data.trader = data.strategy;
+        data.screened_symbols = '-';
+        data.passed = data.items.length;
+        data.date = 'cached';
+      }
+    } catch {}
+    if (!data) {
+      data = await fetchJSON(`${DEFAULT_API_BASE}/api/screen/trader?preset=${preset}&limit=10`);
+    }
     const items = data.items || [];
-    meta.innerHTML = `<strong>${escapeHtml(data.trader || preset)}</strong> — ${escapeHtml(data.description || '')} | ${txt({ ko: '대상', en: 'Universe' })}: ${fmtNum(data.screened_symbols || 0)} | ${txt({ ko: '통과', en: 'Passed' })}: ${fmtNum(data.passed || 0)} | ${txt({ ko: '기준일', en: 'Date' })}: ${data.date || 'latest'}`;
+    meta.innerHTML = `<strong>${escapeHtml(data.trader || preset)}</strong> — ${escapeHtml(data.description || '')} | ${txt({ ko: '통과', en: 'Passed' })}: ${fmtNum(data.passed || 0)}`;
 
     if (!items.length) {
-      rows.innerHTML = `<tr><td colspan="8" class="empty-state">${txt({ ko: '조건에 맞는 종목이 없습니다.', en: 'No stocks match the conditions.' })}</td></tr>`;
+      rows.innerHTML = `<tr><td colspan="8" class="empty-state">${txt({ ko: '조건에 맞는 종목이 없습니다.', en: 'No stocks match.' })}</td></tr>`;
       return;
     }
 
     rows.innerHTML = items.map((s, i) => `
-      <tr>
+      <tr class="clickable-row" data-symbol="${escapeHtml(s.symbol)}" style="cursor:pointer">
         <td>${i + 1}</td>
         <td><strong>${escapeHtml(s.name || s.symbol)}</strong><br><small style="color:var(--muted)">${escapeHtml(s.symbol)}</small></td>
         <td>${escapeHtml(s.sector || '-')}</td>
-        <td><span class="score ${s.tt_passed >= 7 ? 'good' : s.tt_passed >= 5 ? 'mid' : 'bad'}">${s.tt_passed}/8</span></td>
+        <td><span class="score ${(s.tt_passed || 0) >= 7 ? 'good' : (s.tt_passed || 0) >= 5 ? 'mid' : 'bad'}">${s.tt_passed || '-'}/8</span></td>
         <td>${s.rs_percentile?.toFixed(0) || '-'}%</td>
-        <td style="text-align:right">${fmtPrice(s.close)}</td>
-        <td style="text-align:right">${fmtPrice(s.high52)}</td>
-        <td style="text-align:right"><strong>${s.score?.toFixed(1) || '-'}</strong></td>
+        <td style="text-align:right">${s.execution ? fmtPrice(s.execution.entry_price) : fmtPrice(s.close)}</td>
+        <td style="text-align:right">${s.execution ? fmtPrice(s.execution.stop_price) : '-'}</td>
+        <td style="text-align:right"><strong>${Math.min(s.score || 0, 100).toFixed(1)}</strong></td>
       </tr>
     `).join('');
+
+    // Click to open profile
+    rows.querySelectorAll('.clickable-row[data-symbol]').forEach((row) => {
+      row.addEventListener('click', () => openStockProfile(row.dataset.symbol));
+    });
   } catch (e) {
-    rows.innerHTML = `<tr><td colspan="8" class="empty-state">${txt({ ko: '스크리닝 실패', en: 'Screening failed' })}: ${escapeHtml(String(e))}</td></tr>`;
+    rows.innerHTML = `<tr><td colspan="8" class="empty-state">${txt({ ko: '스크리닝 실패', en: 'Failed' })}: ${escapeHtml(String(e))}</td></tr>`;
   }
 }
 
@@ -769,25 +788,49 @@ const PRESET_LABELS = {
 
 async function runConsensus() {
   const rows = $('consensusRows');
-  rows.innerHTML = `<tr><td colspan="7" class="empty-state">${txt({ ko: '스캔 중... (10개 프리셋, 약 30초)', en: 'Scanning... (10 presets, ~30s)' })}</td></tr>`;
+  rows.innerHTML = `<tr><td colspan="7" class="empty-state">${txt({ ko: '로딩 중...', en: 'Loading...' })}</td></tr>`;
 
   try {
-    const data = await fetchJSON(`${DEFAULT_API_BASE}/api/screen/multi?limit=20`);
-    const items = data.items || [];
+    // Build consensus from cached preset-picks
+    let items = [];
+    try {
+      const cached = await fetchJSON(`${DEFAULT_API_BASE}/api/presets/daily-picks`);
+      const picks = cached.items || cached;
+      const symbolMap = new Map(); // symbol → {name, sector, presets[], score}
+      for (const [presetId, presetData] of Object.entries(picks)) {
+        if (!presetData?.items) continue;
+        for (const s of presetData.items) {
+          if (!s.symbol) continue;
+          if (!symbolMap.has(s.symbol)) {
+            symbolMap.set(s.symbol, { symbol: s.symbol, name: s.name, sector: s.sector, score: s.score || 0, tt_passed: s.tt_passed, rs_percentile: s.rs_percentile, presets: [] });
+          }
+          symbolMap.get(s.symbol).presets.push(presetId);
+        }
+      }
+      items = [...symbolMap.values()]
+        .filter(s => s.presets.length >= 2)
+        .sort((a, b) => b.presets.length - a.score || b.score - a.score);
+    } catch {}
+
+    // Fallback to live API if cache empty
+    if (!items.length) {
+      const data = await fetchJSON(`${DEFAULT_API_BASE}/api/screen/multi?limit=20`);
+      items = data.items || [];
+    }
 
     if (!items.length) {
       rows.innerHTML = `<tr><td colspan="7" class="empty-state">${txt({ ko: '매칭 종목 없음', en: 'No matches' })}</td></tr>`;
       return;
     }
 
-    rows.innerHTML = items.map((s, i) => `
-      <tr>
+    rows.innerHTML = items.slice(0, 20).map((s, i) => `
+      <tr class="clickable-row" data-symbol="${escapeHtml(s.symbol)}" style="cursor:pointer">
         <td>${i + 1}</td>
         <td><strong>${escapeHtml(s.name || s.symbol)}</strong><br><small style="color:var(--muted)">${escapeHtml(s.symbol)}</small></td>
         <td>${escapeHtml(s.sector || '-')}</td>
-        <td>${s.tt_passed}/8</td>
+        <td>${s.tt_passed || '-'}/8</td>
         <td>${s.rs_percentile?.toFixed(0) || '-'}%</td>
-        <td><strong>${s.score?.toFixed(1) || '-'}</strong></td>
+        <td><strong>${Math.min(s.score || 0, 100).toFixed(1)}</strong></td>
         <td>
           <div style="display:flex;flex-wrap:wrap;gap:3px">
             ${(s.presets || []).map(p => `<span style="font-size:10px;padding:2px 6px;border-radius:8px;background:${PRESET_COLORS[p] || '#666'}20;color:${PRESET_COLORS[p] || '#aaa'};border:1px solid ${PRESET_COLORS[p] || '#666'}40">${PRESET_LABELS[p] || p}</span>`).join('')}
@@ -795,6 +838,11 @@ async function runConsensus() {
         </td>
       </tr>
     `).join('');
+
+    // Click to open profile
+    rows.querySelectorAll('.clickable-row[data-symbol]').forEach((row) => {
+      row.addEventListener('click', () => openStockProfile(row.dataset.symbol));
+    });
   } catch (e) {
     rows.innerHTML = `<tr><td colspan="7" class="empty-state">${txt({ ko: '스캔 실패', en: 'Scan failed' })}: ${escapeHtml(String(e))}</td></tr>`;
   }
@@ -820,6 +868,10 @@ async function loadTraderPresets() {
     console.warn('Failed to load presets:', e);
   }
 }
-loadTraderPresets();
+loadTraderPresets().then(() => {
+  // Auto-run on page load (uses cached data, instant)
+  runTraderScreen();
+  runConsensus();
+});
 
 init();

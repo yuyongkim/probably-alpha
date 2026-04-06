@@ -14,8 +14,8 @@ import {
   fmtPlainPct,
   fmtPct,
   $,
-} from '../core.js?v=1775484394';
-import { txt } from '../i18n.js?v=1775484394';
+} from '../core.js?v=1775487695';
+import { txt } from '../i18n.js?v=1775487695';
 
 /* ── Moving Average helper ── */
 

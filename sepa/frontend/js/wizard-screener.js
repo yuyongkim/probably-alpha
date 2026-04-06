@@ -4,7 +4,7 @@
  * and renders a comprehensive screener view.
  */
 
-import { txt, setupPageI18n } from './i18n.js?v=1775484394';
+import { txt, setupPageI18n } from './i18n.js?v=1775487695';
 
 const DEFAULT_API = '';
 const CATEGORIES = [

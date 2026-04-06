@@ -1,6 +1,6 @@
-import { traderProfiles } from './market-wizards-data.js?v=1775484394';
-import { setupPageI18n, txt } from './i18n.js?v=1775484394';
-import { $, escapeHtml, fetchJSON, fmtDate, fmtNum, fmtPct, cls } from './core.js?v=1775484394';
+import { traderProfiles } from './market-wizards-data.js?v=1775487695';
+import { setupPageI18n, txt } from './i18n.js?v=1775487695';
+import { $, escapeHtml, fetchJSON, fmtDate, fmtNum, fmtPct, cls } from './core.js?v=1775487695';
 
 const DEFAULT_API_BASE = `${window.location.protocol}//${window.location.hostname || '127.0.0.1'}:8000`;
 
