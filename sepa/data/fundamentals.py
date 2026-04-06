@@ -155,6 +155,107 @@ def _get_shares(symbol: str) -> float | None:
 # Fallback: snapshot PER reverse-calc
 # ---------------------------------------------------------------------------
 
+def _read_quantdb_long_eps(symbol: str, cutoff: str) -> list[dict]:
+    """Read long EPS history from QuantDB (2009~2018) + Live NI (2016~2025)."""
+    out: list[dict] = []
+    sym = _strip_suffix(symbol)
+
+    try:
+        from sepa.data.quantdb_layout import resolve_quantdb_layout
+        from sepa.data.symbols import to_kiwoom_symbol
+        layout = resolve_quantdb_layout()
+        if not layout or not layout.snapshot:
+            return []
+
+        code = f'A{to_kiwoom_symbol(sym)}'
+
+        # 1) QuantDB financials_quarterly EPS (2009~2018)
+        import sqlite3
+        conn = sqlite3.connect(str(layout.snapshot), timeout=10)
+        conn.row_factory = sqlite3.Row
+        try:
+            rows = conn.execute(
+                "SELECT fiscal_year, fiscal_quarter, value FROM financials_quarterly "
+                "WHERE code = ? AND metric = 'EPS' ORDER BY fiscal_year, fiscal_quarter",
+                (code,),
+            ).fetchall()
+        except sqlite3.Error:
+            rows = []
+        finally:
+            conn.close()
+
+        for r in rows:
+            y = str(r['fiscal_year'] or '').strip()
+            q = str(r['fiscal_quarter'] or '').strip().upper()
+            if not y.isdigit() or q not in ('Q1', 'Q2', 'Q3', 'Q4'):
+                continue
+            period = f'{y}{q}'
+            avail = _period_available_token(period)
+            if cutoff and avail and avail > cutoff:
+                continue
+            out.append({
+                'period': period, 'period_type': 'quarterly',
+                'available_date': avail, 'eps': float(r['value']),
+            })
+
+        # 2) Live financials NI → EPS (2016~2025)
+        live_db = layout.snapshot.parent / 'stock_live_financials.db' if layout.snapshot else None
+        if live_db and live_db.exists():
+            shares = _get_shares(sym)
+            if shares and shares > 0:
+                lconn = sqlite3.connect(str(live_db), timeout=10)
+                lconn.row_factory = sqlite3.Row
+                try:
+                    # Annual
+                    for r in lconn.execute(
+                        "SELECT fiscal_year, value FROM stock_live_financials_annual "
+                        "WHERE code = ? AND metric IN ('당기순이익','순이익') ORDER BY fiscal_year",
+                        (code,),
+                    ).fetchall():
+                        y = str(r['fiscal_year'] or '').strip()
+                        if not y.isdigit():
+                            continue
+                        avail = _period_available_token(y)
+                        if cutoff and avail and avail > cutoff:
+                            continue
+                        ni = float(r['value'] or 0)
+                        out.append({
+                            'period': y, 'period_type': 'annual',
+                            'available_date': avail,
+                            'eps': float(round((ni * 100_000_000) / shares)),
+                        })
+
+                    # Quarterly
+                    for r in lconn.execute(
+                        "SELECT fiscal_year, fiscal_quarter, value FROM stock_live_financials_quarterly "
+                        "WHERE code = ? AND metric IN ('당기순이익','순이익') ORDER BY fiscal_year, fiscal_quarter",
+                        (code,),
+                    ).fetchall():
+                        y = str(r['fiscal_year'] or '').strip()
+                        q = str(r['fiscal_quarter'] or '').strip().upper()
+                        if not y.isdigit() or q not in ('Q1', 'Q2', 'Q3', 'Q4'):
+                            continue
+                        period = f'{y}{q}'
+                        avail = _period_available_token(period)
+                        if cutoff and avail and avail > cutoff:
+                            continue
+                        ni = float(r['value'] or 0)
+                        out.append({
+                            'period': period, 'period_type': 'quarterly',
+                            'available_date': avail,
+                            'eps': float(round((ni * 100_000_000) / shares)),
+                        })
+                except sqlite3.Error:
+                    pass
+                finally:
+                    lconn.close()
+
+    except Exception:
+        pass
+
+    return out
+
+
 def _snapshot_eps_fallback(symbol: str) -> list[dict]:
     try:
         from sepa.data.naver_financials import read_snapshot
@@ -241,14 +342,19 @@ def _read_eps_series_cached(
     cutoff: str,
     db_mtime_ns: int,
 ) -> tuple[tuple[str, str, str, float, float], ...]:
-    # Source 1: Naver direct EPS
+    # Source 1 (long history): QuantDB EPS + Live NI → EPS
+    quantdb_rows = _read_quantdb_long_eps(symbol, cutoff)
+
+    # Source 2: Naver direct EPS (most recent, highest priority)
     naver_rows = _read_naver_eps(symbol, cutoff)
 
-    # Source 2: Naver net_income → EPS
+    # Source 3: Naver net_income → EPS
     naver_ni_rows = _read_naver_ni_eps(symbol, cutoff)
 
-    # Merge: Naver direct > NI-derived > snapshot fallback
+    # Merge: QuantDB (oldest) < NI-derived < Naver direct (newest, highest priority)
     by_period: dict[str, dict] = {}
+    for row in quantdb_rows:
+        by_period[row['period']] = row
     for row in naver_ni_rows:
         by_period[row['period']] = row
     for row in naver_rows:
