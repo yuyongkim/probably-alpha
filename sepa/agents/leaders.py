@@ -324,14 +324,14 @@ class MinerviniLeaders:
                 opm=g_row.get('opm'),
             )
 
-            leader_score = (
-                rs_pct.get(symbol, 0.5) * 0.25
-                + tt * 0.20
-                + n52 * 0.15
-                + vol_exp * 0.15
-                + vol_cont * 0.15
-                + ep * 0.10
-            )
+            leader_score = min(1.0, (
+                min(1.0, rs_pct.get(symbol, 0.5)) * 0.25
+                + min(1.0, tt) * 0.20
+                + min(1.0, n52) * 0.15
+                + min(1.0, vol_exp) * 0.15
+                + min(1.0, vol_cont) * 0.15
+                + min(1.0, ep) * 0.10
+            ))
 
             sector_row = sector_map_data.get(sector, {})
             sector_ready = bool(sector_row.get('leadership_ready'))

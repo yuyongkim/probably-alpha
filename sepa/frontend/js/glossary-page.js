@@ -1,4 +1,4 @@
-import { getLang, setupPageI18n, txt } from './i18n.js?v=1775458394';
+import { getLang, setupPageI18n, txt } from './i18n.js?v=1775472534';
 
 const API_BASE = `${window.location.protocol}//${window.location.hostname || '127.0.0.1'}:8000`;
 

@@ -5,9 +5,9 @@ import {
   fmtRR,
   fmtShares,
   state,
-} from '../core.js?v=1775458394';
-import { txt } from '../i18n.js?v=1775458394';
-import { renderPaginatedMarkup } from './pagination.js?v=1775458394';
+} from '../core.js?v=1775472534';
+import { txt } from '../i18n.js?v=1775472534';
+import { renderPaginatedMarkup } from './pagination.js?v=1775472534';
 import {
   companyMarkup,
   defaultRowMarkup,
@@ -15,8 +15,8 @@ import {
   scoreMarkup,
   setDynamicText,
   stockContext,
-} from './shared.js?v=1775458394';
-import { openStockProfile } from './stock-profile.js?v=1775458394';
+} from './shared.js?v=1775472534';
+import { openStockProfile } from './stock-profile.js?v=1775472534';
 
 function recommendationRowMarkup(item, index) {
   const why = item?.why || {};

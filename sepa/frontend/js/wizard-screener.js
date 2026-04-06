@@ -4,7 +4,7 @@
  * and renders a comprehensive screener view.
  */
 
-import { txt, setupPageI18n } from './i18n.js?v=1775458394';
+import { txt, setupPageI18n } from './i18n.js?v=1775472534';
 
 const DEFAULT_API = 'http://127.0.0.1:8000';
 const CATEGORIES = [

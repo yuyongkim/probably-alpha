@@ -1,4 +1,4 @@
-import { txt } from './i18n.js?v=1775458394';
+import { txt } from './i18n.js?v=1775472534';
 
 const TERM_DEFS = {
   alpha: {
