@@ -525,7 +525,7 @@ def _read_investor_trend(symbol: str) -> list:
 # ── Pre-warm cache for pipeline-selected stocks ──────────────────────────
 
 def _collect_pipeline_symbols() -> list[str]:
-    """Gather all symbols that appear in the latest pipeline JSON outputs."""
+    """Gather all symbols from pipeline outputs + preset daily picks."""
     try:
         resolved = resolve_dir(None)
     except Exception:
@@ -544,13 +544,30 @@ def _collect_pipeline_symbols() -> list[str]:
                 s = row.get('symbol', '')
                 if s:
                     symbols.add(s.replace('.KS', '').replace('.KQ', ''))
-    # Also add gamma insights
+        elif isinstance(data, dict) and 'items' in data:
+            for row in data['items']:
+                s = row.get('symbol', '')
+                if s:
+                    symbols.add(s.replace('.KS', '').replace('.KQ', ''))
+
+    # Gamma insights
     gamma = _read_json_safe(resolved / 'gamma-insights.json', {})
     if isinstance(gamma, dict):
         for row in gamma.get('general', []):
             s = row.get('symbol', '')
             if s:
                 symbols.add(s.replace('.KS', '').replace('.KQ', ''))
+
+    # Preset daily picks — all stocks selected by any of the 25 presets
+    picks = _read_json_safe(resolved / 'preset-picks.json', {})
+    if isinstance(picks, dict):
+        for preset_data in picks.values():
+            if isinstance(preset_data, dict):
+                for item in preset_data.get('items', []):
+                    s = item.get('symbol', '')
+                    if s:
+                        symbols.add(s.replace('.KS', '').replace('.KQ', ''))
+
     return sorted(symbols)
 
 
