@@ -9,13 +9,13 @@ import {
   setDateInputValue,
   state,
   toDateToken,
-} from './core.js';
-import { getLang, setupPageI18n, txt } from './i18n.js';
-import { getAnalysisViewport, getEpsViewport, mainChartIndexFromClientX, renderAnalysisCharts } from './charts.js';
-import { resetPaginationPage } from './renderers/pagination.js';
-import { createRenderers } from './renderers.js';
-import { applyTraderPreset, getFullProfile, renderTraderTabs, traderProfiles } from './trader-tabs.js';
-import { setupTermTips, termTip } from './term-tips.js';
+} from './core.js?v=1775457533';
+import { getLang, setupPageI18n, txt } from './i18n.js?v=1775457533';
+import { getAnalysisViewport, getEpsViewport, mainChartIndexFromClientX, renderAnalysisCharts } from './charts.js?v=1775457533';
+import { resetPaginationPage } from './renderers/pagination.js?v=1775457533';
+import { createRenderers } from './renderers.js?v=1775457533';
+import { applyTraderPreset, getFullProfile, renderTraderTabs, traderProfiles } from './trader-tabs.js?v=1775457533';
+import { setupTermTips, termTip } from './term-tips.js?v=1775457533';
 
 let initialized = false;
 let resizeTimer = null;

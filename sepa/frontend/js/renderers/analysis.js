@@ -8,8 +8,8 @@ import {
   fmtPlainPct,
   fmtPrice,
   state,
-} from '../core.js';
-import { txt } from '../i18n.js';
+} from '../core.js?v=1775457533';
+import { txt } from '../i18n.js?v=1775457533';
 import {
   companyFactMarkup,
   companyMarkup,
@@ -18,7 +18,7 @@ import {
   scoreMarkup,
   setDynamicText,
   stockContext,
-} from './shared.js';
+} from './shared.js?v=1775457533';
 
 function sourceLabel(context = {}) {
   const labels = {
