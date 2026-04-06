@@ -338,7 +338,8 @@ export function financialTableMarkup(data) {
       </div>
     </div>` : '';
 
-  return `${infoDl}${finGrid}${cnsHtml}${businessSummaryMarkup(p.business_summary)}`;
+  // Consensus and overview are now rendered separately in the profile layout
+  return `${infoDl}${finGrid}`;
 }
 
 /* ── Session change display ── */
@@ -429,6 +430,26 @@ export function renderCompanyProfile(data, targetEl) {
 
   const price = p.price || tt.close;
 
+  // Build consensus + overview side by side
+  const cns = data.consensus || {};
+  const cnsBlock = cns.target_price ? `
+    <div style="flex:1;min-width:200px;padding:10px;background:rgba(96,160,255,.04);border-radius:8px;border-left:3px solid #60a0ff">
+      <h4 style="font-size:12px;color:#60a0ff;margin:0 0 8px">${txt({ ko: '컨센서스', en: 'Consensus' })}</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px">
+        <div><span style="color:var(--muted)">목표주가</span><br><strong>${fmtPrice(cns.target_price)}</strong></div>
+        <div><span style="color:var(--muted)">투자의견</span><br><strong>${cns.recommend_score ? cns.recommend_score.toFixed(1) + '/5' : '-'}</strong></div>
+        <div><span style="color:var(--muted)">추정EPS</span><br><strong>${cns.cns_eps ? Math.round(cns.cns_eps).toLocaleString() : '-'}</strong></div>
+        <div><span style="color:var(--muted)">추정PER</span><br><strong>${cns.cns_per ? cns.cns_per.toFixed(1) : '-'}</strong></div>
+      </div>
+    </div>` : '';
+
+  const summaryText = p.business_summary || '';
+  const overviewBlock = summaryText ? `
+    <div style="flex:2;min-width:280px;padding:10px;background:rgba(255,255,255,.02);border-radius:8px;border-left:3px solid var(--accent)">
+      <h4 style="font-size:12px;color:var(--accent);margin:0 0 6px">${txt({ ko: '기업 개요', en: 'Overview' })}</h4>
+      <p style="font-size:12px;color:var(--muted);margin:0;line-height:1.7">${escapeHtml(summaryText)}</p>
+    </div>` : '';
+
   el.innerHTML = `
     <div class="profile-grid">
       <div class="profile-chart">
@@ -441,8 +462,9 @@ export function renderCompanyProfile(data, targetEl) {
         ${financialTableMarkup(data)}
       </div>
     </div>
+    ${(cnsBlock || overviewBlock) ? `<div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">${cnsBlock}${overviewBlock}</div>` : ''}
     ${epsData.length >= 2 ? `
-    <div class="profile-eps" style="margin-top:12px">
+    <div style="margin-top:14px">
       <h4>${txt({ ko: 'EPS 추이', en: 'EPS Trend' })}</h4>
       ${epsBarChart(epsData)}
     </div>` : ''}
@@ -593,25 +615,78 @@ function _verificationPrompt(data) {
   const latestAnn = fs.annual && fs.annual.length ? fs.annual[fs.annual.length - 1] : {};
   const finStr = latestAnn.period ? `매출 ${latestAnn.revenue || '?'}억, 영업이익 ${latestAnn.op_profit || '?'}억, 순이익 ${latestAnn.net_income || '?'}억 (${latestAnn.period})` : '재무 데이터 없음';
 
-  const prompt = `한국 주식 "${name}" (종목코드: ${symbol}, 업종: ${sector})에 대해 다음을 검증해주세요.
+  // EPS trend summary
+  const epsData = data.eps_recent || [];
+  const annEps = epsData.filter((e) => e.period_type === 'annual').slice(-3);
+  const qtrEps = epsData.filter((e) => e.period_type === 'quarterly').slice(-4);
+  const epsAnnStr = annEps.map((e) => `${e.period}: ${e.eps}`).join(', ') || '없음';
+  const epsQtrStr = qtrEps.map((e) => `${e.period}: ${e.eps}`).join(', ') || '없음';
+  const epsYoy = qtrEps.length ? qtrEps[qtrEps.length - 1].eps_yoy : null;
 
-[현재 시스템 데이터]
+  // Investor trend summary
+  const trend = data.investor_trend || [];
+  const foreignSum = trend.reduce((s, t) => s + (t.foreign_net || 0), 0);
+  const instSum = trend.reduce((s, t) => s + (t.institution_net || 0), 0);
+  const trendStr = trend.length ? `최근 ${trend.length}일: 외국인 ${foreignSum > 0 ? '+' : ''}${Math.round(foreignSum).toLocaleString()}주, 기관 ${instSum > 0 ? '+' : ''}${Math.round(instSum).toLocaleString()}주` : '수급 데이터 없음';
+
+  // Pipeline scores
+  const pipeline = data.pipeline_scores || {};
+  const alphaStr = pipeline.alpha?.passed ? `Alpha PASS (${pipeline.alpha.score})` : 'Alpha FAIL';
+  const betaStr = pipeline.beta?.passed ? `Beta PASS` : 'Beta FAIL';
+  const gammaStr = pipeline.gamma?.passed ? `Gamma PASS` : 'Gamma FAIL';
+
+  const prompt = `## 한국 주식 2차 검증 요청
+
+종목: ${name} (${symbol})
+업종: ${sector}
+검증일: ${new Date().toISOString().slice(0, 10)}
+
+### 1. 시스템 산출 데이터 (교차 검증 필요)
 - 현재가: ${price ? Math.round(price).toLocaleString() + '원' : '?'}
-- PER: ${f.per ?? '?'}, PBR: ${f.pbr ?? '?'}, ROE: ${f.roe ?? '?'}%
+- PER: ${f.per ?? '?'} | PBR: ${f.pbr ?? '?'} | ROE: ${f.roe ?? '?'}%
 - ${finStr}
-${cns.target_price ? `- 컨센서스 목표주가: ${Math.round(cns.target_price).toLocaleString()}원, 추정EPS: ${cns.cns_eps || '?'}` : ''}
-${im.roa ? `- ROA: ${im.roa}%, ROIC: ${im.roic || '?'}%` : ''}
-${ep ? `- 매수가: ${ep.entry}원, 손절: ${ep.stop}원, 목표: ${ep.target}원` : ''}
+- 연간 EPS: ${epsAnnStr}
+- 분기 EPS: ${epsQtrStr}
+${epsYoy != null ? `- 최근 분기 EPS YoY: ${epsYoy > 0 ? '+' : ''}${epsYoy}%` : ''}
+${cns.target_price ? `- 컨센서스: 목표주가 ${Math.round(cns.target_price).toLocaleString()}원, 추정EPS ${cns.cns_eps || '?'}, 투자의견 ${cns.recommend_score || '?'}/5` : ''}
+${im.roa ? `- ROA: ${im.roa}% | ROIC: ${im.roic || '?'}% | EBITDA마진: ${im.ebitda_margin || '?'}%` : ''}
+- ${trendStr}
+- 파이프라인: ${alphaStr}, ${betaStr}, ${gammaStr}
+${ep ? `- 실행계획: 매수 ${ep.entry}원 → 손절 ${ep.stop}원 → 목표 ${ep.target}원 (R:R ${ep.rr_ratio || '?'})` : ''}
 
-[검증 요청]
-1. 재무 데이터 정확성: 위 PER/EPS/ROE/매출/순이익이 최신 공시와 일치하는지 확인
-2. 최근 뉴스/리스크: 최근 3개월 내 주요 뉴스, 공시, 규제 변화, 소송, 대주주 지분 변동
-3. 실적 전망: 향후 2분기 실적 컨센서스, 서프라이즈 가능성, 업황 변화
-4. 경쟁사 비교: 동일 업종(${sector}) 내 주요 경쟁사 대비 PER/PBR/성장률 비교
-5. 수급 이상 신호: 외국인/기관 대량 매도, 공매도 급증, 대차잔고 변화
-6. 이벤트 일정: 실적 발표일, 배당락일, 유상증자, 자사주 매입/소각 계획
-7. 기술적 위치: 52주 고점/저점 대비 현재 위치, 주요 지지/저항선
-8. 투자 의견 요약: 위 분석 기반으로 매수/관망/매도 중 하나와 핵심 근거 3줄`;
+### 2. 검증 항목 (각 항목별 결론 + 근거)
+
+**[재무 검증]**
+1. 위 PER/EPS/ROE/매출/순이익이 최신 DART 공시(사업보고서/분기보고서)와 일치하는가?
+2. 회계 기준 변경, 일회성 손익, 연결/별도 차이가 있는가?
+3. 부채비율, 유동비율, 이자보상배율은 안전한 수준인가?
+
+**[실적 전망]**
+4. 향후 2분기 매출/영업이익 컨센서스와 서프라이즈 가능성은?
+5. ${sector} 업종의 업황(수요/공급/가격) 변화 방향은?
+6. 신제품, 수주, 설비투자 등 성장 드라이버가 있는가?
+
+**[리스크 점검]**
+7. 최근 3개월 주요 뉴스: 규제 변화, 소송, 제재, 리콜, 해킹 등
+8. 대주주 지분 변동(매도/담보/증여), 임원 매매 내역
+9. 공매도 잔고 추이, 대차잔고 급증 여부
+10. 유상증자, CB/BW 전환, 자사주 매입/소각 계획
+
+**[밸류에이션]**
+11. 동일 업종(${sector}) 주요 경쟁사 3~5개와 PER/PBR/EV_EBITDA 비교표
+12. 현재 주가의 적정성: 역사적 밴드(5년) 대비 위치
+13. DCF 또는 상대가치 기반 적정 주가 범위
+
+**[기술적 분석]**
+14. 주요 지지선/저항선 (이동평균, 전고점/전저점)
+15. 거래량 추세: 최근 기관/외국인 수급 방향성
+
+### 3. 최종 결론
+위 15개 항목을 종합하여:
+- **투자의견**: 적극매수 / 매수 / 중립 / 매도 중 선택
+- **적정주가 범위**: 하단~상단
+- **핵심 근거 3가지**
+- **주요 리스크 2가지**`;
 
   return `
     <div style="margin-top:20px;padding:16px;background:rgba(96,160,255,.04);border:1px solid rgba(96,160,255,.15);border-radius:8px">
