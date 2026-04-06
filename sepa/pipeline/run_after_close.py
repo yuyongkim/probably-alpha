@@ -161,12 +161,59 @@ def build_after_close(as_of_date: str | None = None, refresh_live: bool = True) 
         logger.warning('wizard-screen skipped: %s', exc)
         print(f'  wizard-screen skipped: {exc}')
 
+    # Preset picks: screen all 25 presets for today's picks
+    try:
+        preset_picks = _generate_preset_picks(date_dir)
+        write_json(out / 'preset-picks.json', wrap_output(preset_picks, date_dir=date_dir))
+        total_picks = sum(len(v.get('items', [])) for v in preset_picks.values())
+        print(f'  preset-picks: {len(preset_picks)} presets, {total_picks} total picks')
+    except Exception as exc:
+        logger.warning('preset-picks skipped: %s', exc)
+        print(f'  preset-picks skipped: {exc}')
+
     upsert_daily(date_dir, recs, briefing=briefing, sectors=sectors, stocks=stocks)
     if _should_write_latest(date_dir):
         write_json(LATEST_PATH, {'date_dir': date_dir})
 
     print(f'[OK] after-close leaders generated: {out} | recommendations={len(recs)}')
     return date_dir
+
+
+def _generate_preset_picks(date_dir: str) -> dict:
+    """Screen all presets and return {preset_id: {items, strategy, ...}}."""
+    from sepa.backtest.presets import PRESETS
+    from sepa.backtest.screener import screen_universe
+    from sepa.data.ohlcv_db import read_ohlcv_batch
+
+    price_data = read_ohlcv_batch(min_rows=200)
+    if not price_data:
+        return {}
+
+    result = {}
+    for preset_id, config in PRESETS.items():
+        try:
+            picks = screen_universe(config, price_data)[:config.max_positions]
+            result[preset_id] = {
+                'strategy': config.name,
+                'family': config.family,
+                'description': config.description,
+                'items': [
+                    {
+                        'symbol': p.get('symbol'),
+                        'name': p.get('name'),
+                        'sector': p.get('sector'),
+                        'score': round(min(p.get('score', 0), 100), 1),
+                        'rs_percentile': p.get('rs_percentile'),
+                        'tt_passed': p.get('tt_passed'),
+                        'execution': p.get('execution'),
+                    }
+                    for p in picks
+                ],
+            }
+        except Exception:
+            result[preset_id] = {'strategy': config.name, 'items': [], 'error': True}
+
+    return result
 
 
 def main() -> None:

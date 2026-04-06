@@ -124,12 +124,28 @@
     const fmtNum = (v) => v != null ? Number(v).toFixed(2) : '-';
 
     let allPresets = [];
+    let dailyPicks = {};  // cached preset-picks from pipeline
 
     async function load() {
       try {
-        const resp = await fetch(`${API()}/api/presets/summary`);
-        const data = await resp.json();
-        allPresets = data.items || [];
+        const [summaryResp, picksResp] = await Promise.all([
+          fetch(`${API()}/api/presets/summary`),
+          fetch(`${API()}/api/presets/daily-picks`).catch(() => null),
+        ]);
+        const summaryData = await summaryResp.json();
+        allPresets = summaryData.items || [];
+
+        if (picksResp && picksResp.ok) {
+          const picksData = await picksResp.json();
+          dailyPicks = picksData.items || picksData || {};
+        }
+
+        // Enrich presets with pick counts
+        for (const p of allPresets) {
+          const dp = dailyPicks[p.id];
+          if (dp) p._daily_picks_count = (dp.items || []).length;
+        }
+
         render(allPresets);
       } catch (e) {
         document.getElementById('strategyGrid').innerHTML = `<p style="color:var(--bad)">로드 실패: ${e.message}</p>`;
@@ -169,6 +185,7 @@
               <span class="strategy-card__tag">${p.stop_desc}</span>
               <span class="strategy-card__tag">${p.params?.sizing_method === 'atr_risk' ? 'ATR 사이징' : '균등 배분'}</span>
               <span class="strategy-card__tag">최대 ${p.params?.max_positions || '?'}종목</span>
+              ${p._daily_picks_count ? `<span class="strategy-card__tag" style="background:var(--accent);color:#fff">오늘 ${p._daily_picks_count}종목</span>` : ''}
             </div>
           </div>`;
       }).join('');
@@ -190,8 +207,15 @@
       body.innerHTML = `<h2>${p.name}</h2><p style="color:var(--muted)">${p.description}</p><p>매수 후보 로딩 중...</p>`;
 
       try {
-        const resp = await fetch(`${API()}/api/presets/${presetId}/picks?limit=10&initial_cash=${capital()}`);
-        const data = await resp.json();
+        // Use cached daily picks if available, else fetch live
+        let data;
+        const cached = dailyPicks[presetId];
+        if (cached && cached.items && cached.items.length) {
+          data = cached;
+        } else {
+          const resp = await fetch(`${API()}/api/presets/${presetId}/picks?limit=10&initial_cash=${capital()}`);
+          data = await resp.json();
+        }
         const picks = data.items || [];
         const bt = p.backtest || {};
 

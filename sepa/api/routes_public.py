@@ -476,6 +476,12 @@ def presets_summary() -> dict:
     return {'items': result}
 
 
+@router.get('/api/presets/daily-picks')
+def preset_daily_picks(date_dir: str | None = None) -> dict:
+    """Pre-computed picks for all presets (from pipeline)."""
+    return signal_items_payload('preset-picks.json', date_dir=date_dir, decorate=False)
+
+
 @router.get('/api/presets/{preset_id}/picks')
 def preset_picks(preset_id: str, limit: int = 10, initial_cash: float = 100_000_000) -> dict:
     """Today's picks for a specific preset with execution plan."""
