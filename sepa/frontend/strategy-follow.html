@@ -222,7 +222,7 @@
                       <strong style="font-size:16px;cursor:pointer" class="pick-symbol" data-sym="${s.symbol}">${s.name || s.symbol}</strong>
                       <span style="color:var(--muted);margin-left:8px">${s.symbol} · ${s.sector || ''}</span>
                     </div>
-                    <span class="score ${(s.score || 0) >= 70 ? 'good' : (s.score || 0) >= 40 ? 'mid' : 'bad'}">${(s.score || 0).toFixed(1)}</span>
+                    <span class="score ${(s.score || 0) >= 70 ? 'good' : (s.score || 0) >= 40 ? 'mid' : 'bad'}">${Math.min(s.score || 0, 100).toFixed(1)}</span>
                   </div>
                   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px">
                     <div class="exec-row"><span class="exec-label">매수가</span><span class="exec-value">${fmtPrice(ex.entry_price)}</span></div>
@@ -230,7 +230,8 @@
                     <div class="exec-row"><span class="exec-label">목표가</span><span class="exec-value exec-target">${fmtPrice(ex.target_price)}</span></div>
                     <div class="exec-row"><span class="exec-label">R:R</span><span class="exec-value">${ex.rr_ratio || '-'}</span></div>
                     <div class="exec-row"><span class="exec-label">매수 수량</span><span class="exec-value">${ex.shares?.toLocaleString() || '-'}주</span></div>
-                    <div class="exec-row"><span class="exec-label">최대 손실</span><span class="exec-value exec-stop">${ex.max_loss_krw ? Math.round(ex.max_loss_krw).toLocaleString() + '원' : '-'} (${ex.max_loss_pct || '-'}%)</span></div>
+                    <div class="exec-row"><span class="exec-label">투자금액</span><span class="exec-value">${ex.position_value ? Math.round(ex.position_value).toLocaleString() + '원' : '-'}</span></div>
+                    <div class="exec-row"><span class="exec-label">최대 손실</span><span class="exec-value exec-stop">${ex.max_loss_krw ? Math.round(ex.max_loss_krw).toLocaleString() + '원' : '-'} (종목의 ${ex.max_loss_pct || '-'}%, 전체의 ${ex.max_loss_pct_equity || '-'}%)</span></div>
                   </div>
                   ${s.rs_percentile ? `<div style="margin-top:6px;font-size:12px;color:var(--muted)">RS ${s.rs_percentile?.toFixed(0)}% · TT ${s.tt_passed || '-'}/8 · ${ex.stop_type} · ${ex.sizing_method}</div>` : ''}
                 </div>`;

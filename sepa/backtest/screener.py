@@ -124,14 +124,20 @@ def _enrich_execution_plan(candidate: dict, config) -> None:
 
     # Position sizing
     equity = config.initial_cash
+    per_position = equity / max(1, config.max_positions)
+
     if config.sizing_method == 'atr_risk' and atr > 0:
         stop_dist = atr * config.atr_stop_multiplier
         shares = int((equity * config.risk_per_trade_pct) / stop_dist) if stop_dist > 0 else 0
+        position_value = shares * close
     else:
-        per_position = equity / max(1, config.max_positions)
+        position_value = per_position
         shares = int(per_position / close) if close > 0 else 0
 
     max_loss = shares * risk_per_share
+    # max_loss_pct is relative to the POSITION value, not total equity
+    max_loss_pct_of_position = round(risk_per_share / close * 100, 1) if close > 0 else 0
+    max_loss_pct_of_equity = round(max_loss / equity * 100, 2) if equity > 0 else 0
 
     candidate['execution'] = {
         'entry_price': int(round(close)),
@@ -139,8 +145,10 @@ def _enrich_execution_plan(candidate: dict, config) -> None:
         'target_price': int(round(target)),
         'rr_ratio': round(rr, 2),
         'shares': shares,
+        'position_value': int(round(position_value)),
         'max_loss_krw': int(round(max_loss)),
-        'max_loss_pct': round(max_loss / equity * 100, 2) if equity > 0 else 0,
+        'max_loss_pct': max_loss_pct_of_position,  # % of position
+        'max_loss_pct_equity': max_loss_pct_of_equity,  # % of total equity
         'stop_type': config.stop_type,
         'sizing_method': config.sizing_method,
     }
