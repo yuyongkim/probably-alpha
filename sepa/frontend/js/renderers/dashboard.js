@@ -6,9 +6,9 @@ import {
   fmtPct,
   fmtPlainPct,
   state,
-} from '../core.js?v=1775457533';
-import { txt } from '../i18n.js?v=1775457533';
-import { renderPaginatedMarkup } from './pagination.js?v=1775457533';
+} from '../core.js?v=1775457857';
+import { txt } from '../i18n.js?v=1775457857';
+import { renderPaginatedMarkup } from './pagination.js?v=1775457857';
 import {
   activeSectorRecord,
   breakoutLabel,
@@ -22,8 +22,8 @@ import {
   setDynamicText,
   stockContext,
   summaryReadyText,
-} from './shared.js?v=1775457533';
-import { openStockProfile } from './stock-profile.js?v=1775457533';
+} from './shared.js?v=1775457857';
+import { openStockProfile } from './stock-profile.js?v=1775457857';
 
 function bindSectorClick(selector, resolver, actions) {
   document.querySelectorAll(selector).forEach((node) => {

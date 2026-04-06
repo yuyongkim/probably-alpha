@@ -1,12 +1,12 @@
-import { escapeHtml, fmtDate, fmtNum, state } from '../core.js?v=1775457533';
-import { txt } from '../i18n.js?v=1775457533';
-import { renderPaginatedMarkup } from './pagination.js?v=1775457533';
+import { escapeHtml, fmtDate, fmtNum, state } from '../core.js?v=1775457857';
+import { txt } from '../i18n.js?v=1775457857';
+import { renderPaginatedMarkup } from './pagination.js?v=1775457857';
 import {
   backtestSessionMarkup,
   bucketWindowLabel,
   buildSectorContext,
   companyMarkup,
-} from './shared.js?v=1775457533';
+} from './shared.js?v=1775457857';
 
 function sectorMetric(item = {}) {
   if (item?.weekly_leader_score != null) {

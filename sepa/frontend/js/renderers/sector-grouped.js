@@ -8,16 +8,16 @@ import {
   fmtPrice,
   fmtCompact,
   state,
-} from '../core.js?v=1775457533';
-import { termTip } from '../term-tips.js?v=1775457533';
-import { txt } from '../i18n.js?v=1775457533';
-import { breakoutLabel, heatTone } from './shared.js?v=1775457533';
+} from '../core.js?v=1775457857';
+import { termTip } from '../term-tips.js?v=1775457857';
+import { txt } from '../i18n.js?v=1775457857';
+import { breakoutLabel, heatTone } from './shared.js?v=1775457857';
 import {
   movingAvg,
   sparklineSvg,
   openStockProfile,
   setupProfileDialogClose,
-} from './stock-profile.js?v=1775457533';
+} from './stock-profile.js?v=1775457857';
 
 function sectorCardMarkup(group, actions) {
   const meta = group.sector_meta || {};

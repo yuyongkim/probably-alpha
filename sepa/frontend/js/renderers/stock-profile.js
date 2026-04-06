@@ -14,8 +14,8 @@ import {
   fmtPlainPct,
   fmtPct,
   $,
-} from '../core.js?v=1775457533';
-import { txt } from '../i18n.js?v=1775457533';
+} from '../core.js?v=1775457857';
+import { txt } from '../i18n.js?v=1775457857';
 
 /* ── Moving Average helper ── */
 
@@ -831,6 +831,25 @@ export function renderProfileSkeleton(data) {
   const price = p.price || tt.close;
   const epsData = data.eps_recent || [];
 
+  // Consensus + Overview (same as renderCompanyProfile)
+  const cns = data.consensus || {};
+  const cnsBlock = cns.target_price ? `
+    <div style="flex:1;min-width:200px;padding:10px;background:rgba(96,160,255,.04);border-radius:8px;border-left:3px solid #60a0ff">
+      <h4 style="font-size:12px;color:#60a0ff;margin:0 0 8px">${txt({ ko: '컨센서스', en: 'Consensus' })}</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:13px">
+        <div><span style="color:var(--muted)">목표주가</span><br><strong>${fmtPrice(cns.target_price)}</strong></div>
+        <div><span style="color:var(--muted)">투자의견</span><br><strong>${cns.recommend_score ? cns.recommend_score.toFixed(1) + '/5' : '-'}</strong></div>
+        <div><span style="color:var(--muted)">추정EPS</span><br><strong>${cns.cns_eps ? Math.round(cns.cns_eps).toLocaleString() : '-'}</strong></div>
+        <div><span style="color:var(--muted)">추정PER</span><br><strong>${cns.cns_per ? cns.cns_per.toFixed(1) : '-'}</strong></div>
+      </div>
+    </div>` : '';
+  const summaryText = p.business_summary || '';
+  const overviewBlock = summaryText ? `
+    <div style="flex:2;min-width:280px;padding:10px;background:rgba(255,255,255,.02);border-radius:8px;border-left:3px solid var(--accent)">
+      <h4 style="font-size:12px;color:var(--accent);margin:0 0 6px">${txt({ ko: '기업 개요', en: 'Overview' })}</h4>
+      <p style="font-size:12px;color:var(--muted);margin:0;line-height:1.7">${escapeHtml(summaryText)}</p>
+    </div>` : '';
+
   return `
     <div class="profile-grid">
       <div class="profile-chart">
@@ -843,12 +862,14 @@ export function renderProfileSkeleton(data) {
         ${financialTableMarkup(data)}
       </div>
     </div>
+    ${(cnsBlock || overviewBlock) ? `<div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">${cnsBlock}${overviewBlock}</div>` : ''}
     ${epsData.length >= 2 ? `
-    <div class="profile-eps" style="margin-top:12px">
+    <div style="margin-top:14px">
       <h4>${txt({ ko: 'EPS 추이', en: 'EPS Trend' })}</h4>
       ${epsBarChart(epsData)}
     </div>` : ''}
     ${financialAnalysisTable(data)}
+    ${investorTrendMarkup(data.investor_trend)}
     <div class="profile-sections">
 
       <div class="profile-section" data-section="trend-template">
