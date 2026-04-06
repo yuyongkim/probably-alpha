@@ -256,6 +256,9 @@ export function financialAnalysisTable(data) {
   }).join('');
 
   const bodyRows = metrics.map((key) => {
+    // Skip row if ALL periods have null values
+    const hasAnyValue = allPeriods.some((p) => p[key] != null);
+    if (!hasAnyValue) return '';
     const label = txt(metricLabels[key] || { ko: key, en: key });
     const cells = allPeriods.map((p) => fmtCell(p[key], key)).join('');
     return `<tr><td class="fin-td fin-td--label">${escapeHtml(label)}</td>${cells}</tr>`;
@@ -318,7 +321,9 @@ export function financialTableMarkup(data) {
     [txt({ ko: '외인비율', en: 'Foreign' }), p.foreign_ratio ? escapeHtml(p.foreign_ratio) : '-'],
   ];
   const infoDl = `<dl class="profile-dl">${infoRows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl>`;
-  const finGrid = `<div class="profile-fin-grid">${finRows.map(([k, v]) => `<div class="fin-cell"><span class="fin-label">${k}</span><span class="fin-value">${v}</span></div>`).join('')}</div>`;
+  // Hide items with no data (value is '-')
+  const visibleFinRows = finRows.filter(([, v]) => v !== '-');
+  const finGrid = `<div class="profile-fin-grid">${visibleFinRows.map(([k, v]) => `<div class="fin-cell"><span class="fin-label">${k}</span><span class="fin-value">${v}</span></div>`).join('')}</div>`;
 
   // Consensus section
   const cns = data.consensus || {};
@@ -529,17 +534,16 @@ export function renderCompanyProfile(data, targetEl) {
         </dl>
       </div>
 
+      ${pers && pers.persistence_score != null ? `
       <div class="profile-section">
         <h4>${txt({ ko: '지속성', en: 'Persistence' })}</h4>
-        ${pers && pers.persistence_score != null ? `
         <dl class="profile-kv">
           <div><dt>Score</dt><dd>${fmtNum(pers.persistence_score, 1)}</dd></div>
           <div><dt>Appearance</dt><dd>${fmtPlainPct((pers.appearance_ratio || 0) * 100)}</dd></div>
           <div><dt>Streak</dt><dd>${pers.current_streak || 0} (max ${pers.max_streak || 0})</dd></div>
           <div><dt>Avg Rank</dt><dd>${pers.avg_rank != null ? fmtNum(pers.avg_rank, 1) : '-'}</dd></div>
         </dl>
-        ` : `<p style="color:var(--muted);font-size:12px">-</p>`}
-      </div>
+      </div>` : ''}
 
       ${ep && ep.entry ? `
       <div class="profile-section profile-section--full">
@@ -572,15 +576,16 @@ export function renderCompanyProfile(data, targetEl) {
 /* ── AI 2차 검증 프롬프트 ── */
 
 function _verificationPrompt(data) {
-  const p = data.profile || {};
+  if (!data) return '';
+  const p = data.profile || data || {};
   const f = p.financials || {};
   const cns = data.consensus || {};
   const im = data.investment_metrics || {};
   const fs = data.financial_summary || {};
   const ep = data.execution_plan;
 
-  const symbol = p.symbol || '?';
-  const name = p.name || symbol;
+  const symbol = p.symbol || data.symbol || '?';
+  const name = p.name || data.name || symbol;
   const price = p.price || 0;
   const sector = p.sector_small || p.sector_large || p.sector || '';
 
