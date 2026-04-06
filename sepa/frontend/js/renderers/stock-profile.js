@@ -14,8 +14,8 @@ import {
   fmtPlainPct,
   fmtPct,
   $,
-} from '../core.js?v=1775480720';
-import { txt } from '../i18n.js?v=1775480720';
+} from '../core.js?v=1775481741';
+import { txt } from '../i18n.js?v=1775481741';
 
 /* ── Moving Average helper ── */
 
@@ -32,7 +32,7 @@ export function movingAvg(data, period) {
 
 /* ── Sparkline SVG with MA20/MA60 and overlap-prevention labels ── */
 
-export function sparklineSvg(closes, width = 240, height = 80) {
+export function sparklineSvg(closes, width = 240, height = 80, endDate = '') {
   if (!closes || closes.length < 2) return '';
   const min = Math.min(...closes);
   const max = Math.max(...closes);
@@ -40,8 +40,9 @@ export function sparklineSvg(closes, width = 240, height = 80) {
   const padL = 2;
   const padR = 42;
   const padY = 2;
+  const padBot = endDate ? 14 : 0;
   const w = width - padL - padR;
-  const h = height - padY * 2;
+  const h = height - padY * 2 - padBot;
 
   const toX = (i) => padL + (i / (closes.length - 1)) * w;
   const toY = (v) => padY + h - ((v - min) / range) * h;
@@ -96,13 +97,38 @@ export function sparklineSvg(closes, width = 240, height = 80) {
     <text x="${padL + 30}" y="${padY + 8}" fill="#60a0ff" font-size="8" opacity="0.7">MA60</text>
   `;
 
-  return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="sparkline-svg">
+  // X-axis date labels (estimated from endDate and ~120 trading days)
+  let dateLabels = '';
+  if (endDate) {
+    const raw = String(endDate).replace(/-/g, '');
+    if (raw.length === 8) {
+      const endY = raw.slice(2, 4);
+      const endM = raw.slice(4, 6);
+      // Estimate start: ~6 months before end
+      let startM = parseInt(endM) - 6;
+      let startY = parseInt(endY);
+      if (startM <= 0) { startM += 12; startY -= 1; }
+      let midM = parseInt(endM) - 3;
+      let midY = parseInt(endY);
+      if (midM <= 0) { midM += 12; midY -= 1; }
+      const fmt = (y, m) => `${String(y).padStart(2, '0')}/${String(m).padStart(2, '0')}`;
+      const dateY = padY + h + padBot - 2;
+      dateLabels = `
+        <text x="${padL}" y="${dateY}" fill="var(--muted,#666)" font-size="8">${fmt(startY, startM)}</text>
+        <text x="${padL + w / 2}" y="${dateY}" text-anchor="middle" fill="var(--muted,#666)" font-size="8">${fmt(midY, midM)}</text>
+        <text x="${padL + w}" y="${dateY}" text-anchor="end" fill="var(--muted,#666)" font-size="8">${endY}/${endM}</text>
+      `;
+    }
+  }
+
+  return `<svg width="${width}" height="${height + padBot}" viewBox="0 0 ${width} ${height + padBot}" class="sparkline-svg">
     ${labels}
     <path d="${fillPath}" fill="${fillColor}"/>
     <path d="${linePath}" fill="none" stroke="${color}" stroke-width="1.5"/>
     ${maPath(ma20, '#f0c040')}
     ${maPath(ma60, '#60a0ff')}
     ${legend}
+    ${dateLabels}
   </svg>`;
 }
 
@@ -425,7 +451,7 @@ export function renderCompanyProfile(data, targetEl) {
   const lr = ts.least_resistance || {};
   const cwh = ts.cup_with_handle || {};
 
-  const sparkline = sparklineSvg(data.sparkline || p.sparkline || [], 340, 100);
+  const sparkline = sparklineSvg(data.sparkline || p.sparkline || [], 340, 100, (data.session || {}).date || data.date_dir || '');
   const epsData = data.eps_recent || p.eps_recent || [];
 
   const price = p.price || tt.close;
@@ -832,7 +858,7 @@ export function renderProfileSkeleton(data) {
   const rec = data.recommendation;
   const tt = ts.trend_template || {};
 
-  const spark = sparklineSvg(data.sparkline || [], 340, 100);
+  const spark = sparklineSvg(data.sparkline || [], 340, 100, (data.session || {}).date || data.date_dir || '');
   const price = p.price || tt.close;
   const epsData = data.eps_recent || [];
 
