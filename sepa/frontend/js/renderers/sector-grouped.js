@@ -8,16 +8,16 @@ import {
   fmtPrice,
   fmtCompact,
   state,
-} from '../core.js?v=1775487695';
-import { termTip } from '../term-tips.js?v=1775487695';
-import { txt } from '../i18n.js?v=1775487695';
-import { breakoutLabel, heatTone } from './shared.js?v=1775487695';
+} from '../core.js?v=1775487951';
+import { termTip } from '../term-tips.js?v=1775487951';
+import { txt } from '../i18n.js?v=1775487951';
+import { breakoutLabel, heatTone } from './shared.js?v=1775487951';
 import {
   movingAvg,
   sparklineSvg,
   openStockProfile,
   setupProfileDialogClose,
-} from './stock-profile.js?v=1775487695';
+} from './stock-profile.js?v=1775487951';
 
 function sectorCardMarkup(group, actions) {
   const meta = group.sector_meta || {};
@@ -68,7 +68,7 @@ function sectorCardMarkup(group, actions) {
           </div>
         </div>
         <div class="sector-grouped-card__stats">
-          <span><strong>${fmtNum(meta.leader_score, 1)}</strong><small>Score</small></span>
+          <span><strong>${fmtNum(Math.min(meta.leader_score || 0, 100), 1)}</strong><small>Score</small></span>
           <span><strong>${meta.alpha_count || 0}/${meta.universe_count || 0}</strong><small>Alpha</small></span>
           <span><strong>${fmtPct(meta.avg_ret120)}</strong><small>120D</small></span>
         </div>

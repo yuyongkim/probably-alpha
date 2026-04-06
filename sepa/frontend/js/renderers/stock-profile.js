@@ -14,8 +14,8 @@ import {
   fmtPlainPct,
   fmtPct,
   $,
-} from '../core.js?v=1775487695';
-import { txt } from '../i18n.js?v=1775487695';
+} from '../core.js?v=1775487951';
+import { txt } from '../i18n.js?v=1775487951';
 
 /* ── Moving Average helper ── */
 
@@ -569,7 +569,7 @@ export function renderCompanyProfile(data, targetEl) {
           <div><dt>Alpha</dt><dd><span class="profile-badge ${ps.alpha?.passed ? 'pass' : 'fail'}">${ps.alpha?.passed ? `PASS ${fmtNum(ps.alpha.score, 1)}` : 'FAIL'}</span></dd></div>
           <div><dt>Beta (VCP)</dt><dd><span class="profile-badge ${ps.beta?.passed ? 'pass' : 'fail'}">${ps.beta?.passed ? `PASS ${fmtNum(ps.beta.confidence, 2)}` : 'FAIL'}</span></dd></div>
           <div><dt>Gamma</dt><dd><span class="profile-badge ${ps.gamma?.passed ? 'pass' : 'fail'}">${ps.gamma?.passed ? `PASS ${fmtNum(ps.gamma.gamma_score, 1)}` : 'FAIL'}</span></dd></div>
-          <div><dt>Leader</dt><dd>${ps.leader?.ranked ? `<span class="profile-badge pass">${escapeHtml(ps.leader.stock_bucket || '-')}</span> ${fmtNum(ps.leader.leader_stock_score, 1)}` : '<span class="profile-badge fail">-</span>'}</dd></div>
+          <div><dt>Leader</dt><dd>${ps.leader?.ranked ? `<span class="profile-badge pass">${escapeHtml(ps.leader.stock_bucket || '-')}</span> ${fmtNum(Math.min(ps.leader.leader_stock_score || 0, 100), 1)}` : '<span class="profile-badge fail">-</span>'}</dd></div>
         </dl>
       </div>
 
@@ -579,7 +579,7 @@ export function renderCompanyProfile(data, targetEl) {
           <div><dt>Sector</dt><dd>${escapeHtml(sc.sector || p.sector || '-')}</dd></div>
           <div><dt>Breakout</dt><dd><span class="profile-badge ${sc.breakout_state === 'sector_breakout_confirmed' ? 'pass' : sc.breakout_state === 'sector_breakout_setup' ? 'neutral' : 'fail'}">${escapeHtml((sc.breakout_state || '-').replace(/^sector_/, '').replace(/_/g, ' '))}</span></dd></div>
           ${sc.leadership ? `
-          <div><dt>Leader Score</dt><dd>${fmtNum(sc.leadership.leader_score, 1)}</dd></div>
+          <div><dt>Leader Score</dt><dd>${fmtNum(Math.min(sc.leadership.leader_score || 0, 100), 1)}</dd></div>
           <div><dt>Ready</dt><dd><span class="profile-badge ${sc.leadership.leadership_ready ? 'pass' : 'fail'}">${sc.leadership.leadership_ready ? 'YES' : 'NO'}</span></dd></div>
           <div><dt>Alpha/Beta</dt><dd>${fmtPlainPct((sc.leadership.alpha_ratio || 0) * 100)} / ${fmtPlainPct((sc.leadership.beta_ratio || 0) * 100)}</dd></div>
           ` : ''}
@@ -938,7 +938,7 @@ export function renderProfileSkeleton(data) {
           <div><dt>Alpha</dt><dd><span class="profile-badge ${ps.alpha?.passed ? 'pass' : 'fail'}">${ps.alpha?.passed ? `PASS ${fmtNum(ps.alpha.score, 1)}` : 'FAIL'}</span></dd></div>
           <div><dt>Beta (VCP)</dt><dd><span class="profile-badge ${ps.beta?.passed ? 'pass' : 'fail'}">${ps.beta?.passed ? `PASS ${fmtNum(ps.beta.confidence, 2)}` : 'FAIL'}</span></dd></div>
           <div><dt>Gamma</dt><dd><span class="profile-badge ${ps.gamma?.passed ? 'pass' : 'fail'}">${ps.gamma?.passed ? `PASS ${fmtNum(ps.gamma.gamma_score, 1)}` : 'FAIL'}</span></dd></div>
-          <div><dt>Leader</dt><dd>${ps.leader?.ranked ? `<span class="profile-badge pass">${escapeHtml(ps.leader.stock_bucket || '-')}</span> ${fmtNum(ps.leader.leader_stock_score, 1)}` : '<span class="profile-badge fail">-</span>'}</dd></div>
+          <div><dt>Leader</dt><dd>${ps.leader?.ranked ? `<span class="profile-badge pass">${escapeHtml(ps.leader.stock_bucket || '-')}</span> ${fmtNum(Math.min(ps.leader.leader_stock_score || 0, 100), 1)}` : '<span class="profile-badge fail">-</span>'}</dd></div>
         </dl>
       </div>
 
@@ -948,7 +948,7 @@ export function renderProfileSkeleton(data) {
           <div><dt>Sector</dt><dd>${escapeHtml(sc.sector || p.sector || '-')}</dd></div>
           <div data-key="breakout"><dt>Breakout</dt><dd><span class="profile-badge neutral">${escapeHtml(sc.leadership?.breakout_state ? (sc.leadership.breakout_state).replace(/^sector_/, '').replace(/_/g, ' ') : '-')}</span></dd></div>
           ${sc.leadership ? `
-          <div><dt>Leader Score</dt><dd>${fmtNum(sc.leadership.leader_score, 1)}</dd></div>
+          <div><dt>Leader Score</dt><dd>${fmtNum(Math.min(sc.leadership.leader_score || 0, 100), 1)}</dd></div>
           <div><dt>Ready</dt><dd><span class="profile-badge ${sc.leadership.leadership_ready ? 'pass' : 'fail'}">${sc.leadership.leadership_ready ? 'YES' : 'NO'}</span></dd></div>
           ` : ''}
         </dl>

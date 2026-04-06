@@ -6,9 +6,9 @@ import {
   fmtPct,
   fmtPlainPct,
   state,
-} from '../core.js?v=1775487695';
-import { txt } from '../i18n.js?v=1775487695';
-import { renderPaginatedMarkup } from './pagination.js?v=1775487695';
+} from '../core.js?v=1775487951';
+import { txt } from '../i18n.js?v=1775487951';
+import { renderPaginatedMarkup } from './pagination.js?v=1775487951';
 import {
   activeSectorRecord,
   breakoutLabel,
@@ -22,8 +22,8 @@ import {
   setDynamicText,
   stockContext,
   summaryReadyText,
-} from './shared.js?v=1775487695';
-import { openStockProfile } from './stock-profile.js?v=1775487695';
+} from './shared.js?v=1775487951';
+import { openStockProfile } from './stock-profile.js?v=1775487951';
 
 function bindSectorClick(selector, resolver, actions) {
   document.querySelectorAll(selector).forEach((node) => {
@@ -112,7 +112,7 @@ function renderSectorHeatmap(items, actions) {
           <span class="sector-tile__state">${escapeHtml(item?.leadership_ready ? txt({ ko: 'Confirmed', en: 'Confirmed' }) : txt({ ko: 'Watch', en: 'Watch' }))}</span>
         </div>
         <strong>${escapeHtml(item?.sector || '-')}</strong>
-        <span class="sector-tile__score">${escapeHtml(fmtNum(item?.leader_score, 2))}</span>
+        <span class="sector-tile__score">${escapeHtml(fmtNum(Math.min(item?.leader_score || 0, 100), 2))}</span>
         <div class="sector-tile__meta">
           <small>${escapeHtml(summaryReadyText(item?.leadership_ready, item?.alpha_count || 0))}</small>
           <small>${escapeHtml(ret120Summary(item))}</small>
@@ -270,7 +270,7 @@ export function createDashboardRenderers(actions) {
     const summary = payload?.sector_summary || activeSectorRecord() || {};
     setDynamicText('sectorFocusMeta', [
       payload?.sector || '-',
-      `${txt({ ko: 'Score', en: 'Score' })} ${fmtNum(summary?.leader_score, 2)}`,
+      `${txt({ ko: 'Score', en: 'Score' })} ${fmtNum(Math.min(summary?.leader_score || 0, 100), 2)}`,
       breakoutLabel(summary?.breakout_state),
       `${txt({ ko: '120D', en: '120D' })} ${ret120Summary(summary)}`,
       `${txt({ ko: 'Date', en: 'Date' })} ${fmtDate(payload?.date_dir || state.latestDateDir)}`,

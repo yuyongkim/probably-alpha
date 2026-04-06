@@ -1,7 +1,7 @@
-import { traderProfiles, getTraderProfile } from './market-wizards-data.js?v=1775487695';
-import { marketWizardPeople, peopleSeries } from './market-wizards-people-data.js?v=1775487695';
-import { escapeHtml } from './core.js?v=1775487695';
-import { txt } from './i18n.js?v=1775487695';
+import { traderProfiles, getTraderProfile } from './market-wizards-data.js?v=1775487951';
+import { marketWizardPeople, peopleSeries } from './market-wizards-people-data.js?v=1775487951';
+import { escapeHtml } from './core.js?v=1775487951';
+import { txt } from './i18n.js?v=1775487951';
 
 export { traderProfiles };
 
@@ -140,7 +140,7 @@ function normalizedStockMetrics(item, sectorScore, rec) {
     beta: clamp(Number(item?.beta_confidence || 0) * 10),
     gamma: clamp(Number(item?.gamma_score || 0) * 10),
     ret: clamp(item?.ret120_pct),
-    leader: clamp((Number(item?.leader_stock_score || 0) / 120) * 100),
+    leader: clamp(Math.min(Number(item?.leader_stock_score || 0), 100)),
     recommendation: clamp(rec?.recommendation_score),
     sector: clamp(sectorScore),
     rr: rrScore(rec?.risk_plan?.rr_ratio),

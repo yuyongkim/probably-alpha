@@ -1,4 +1,4 @@
-import { txt } from './i18n.js?v=1775487695';
+import { txt } from './i18n.js?v=1775487951';
 
 export const $ = (id) => document.getElementById(id);
 
@@ -174,7 +174,8 @@ export function companyCell(item) {
 }
 
 export function scoreBadge(value) {
-  return `<span class="score ${cls(value)}">${fmtNum(value)}</span>`;
+  const v = Math.min(Number(value) || 0, 100);
+  return `<span class="score ${cls(v)}">${fmtNum(v)}</span>`;
 }
 
 export function log(message) {

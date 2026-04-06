@@ -1,18 +1,18 @@
-import { escapeHtml, fmtDate, fmtNum, state } from '../core.js?v=1775487695';
-import { txt } from '../i18n.js?v=1775487695';
-import { renderPaginatedMarkup } from './pagination.js?v=1775487695';
+import { escapeHtml, fmtDate, fmtNum, state } from '../core.js?v=1775487951';
+import { txt } from '../i18n.js?v=1775487951';
+import { renderPaginatedMarkup } from './pagination.js?v=1775487951';
 import {
   backtestSessionMarkup,
   bucketWindowLabel,
   buildSectorContext,
   companyMarkup,
-} from './shared.js?v=1775487695';
+} from './shared.js?v=1775487951';
 
 function sectorMetric(item = {}) {
   if (item?.weekly_leader_score != null) {
     return {
       label: txt({ ko: 'Weekly', en: 'Weekly' }),
-      value: fmtNum(item.weekly_leader_score, 2),
+      value: fmtNum(Math.min(item.weekly_leader_score || 0, 100), 2),
       note: txt({
         ko: `${item.appearance_count || 0}x / best #${item.best_rank || '-'}`,
         en: `${item.appearance_count || 0}x / best #${item.best_rank || '-'}`,
@@ -21,7 +21,7 @@ function sectorMetric(item = {}) {
   }
   return {
     label: txt({ ko: 'Score', en: 'Score' }),
-    value: fmtNum(item.leader_score, 2),
+    value: fmtNum(Math.min(item.leader_score || 0, 100), 2),
     note: txt({
       ko: `${item.alpha_count || 0} alpha / ${item.universe_count || 0} universe`,
       en: `${item.alpha_count || 0} alpha / ${item.universe_count || 0} universe`,
@@ -33,7 +33,7 @@ function stockMetric(item = {}) {
   if (item?.weekly_leader_score != null) {
     return {
       label: txt({ ko: 'Weekly', en: 'Weekly' }),
-      value: fmtNum(item.weekly_leader_score, 2),
+      value: fmtNum(Math.min(item.weekly_leader_score || 0, 100), 2),
       note: txt({
         ko: `${item.appearance_count || 0}x / best #${item.best_rank || '-'}`,
         en: `${item.appearance_count || 0}x / best #${item.best_rank || '-'}`,
@@ -42,7 +42,7 @@ function stockMetric(item = {}) {
   }
   return {
     label: txt({ ko: 'Score', en: 'Score' }),
-    value: fmtNum(item.leader_stock_score, 2),
+    value: fmtNum(Math.min(item.leader_stock_score || 0, 100), 2),
     note: escapeHtml(item?.sector || '-'),
   };
 }

@@ -1,6 +1,6 @@
-import { getTraderProfile, traderProfiles } from './market-wizards-data.js?v=1775487695';
-import { setupPageI18n, txt } from './i18n.js?v=1775487695';
-import { termTip, setupTermTips } from './term-tips.js?v=1775487695';
+import { getTraderProfile, traderProfiles } from './market-wizards-data.js?v=1775487951';
+import { setupPageI18n, txt } from './i18n.js?v=1775487951';
+import { termTip, setupTermTips } from './term-tips.js?v=1775487951';
 import {
   $,
   escapeHtml,
@@ -13,7 +13,7 @@ import {
   fmtPlainPct,
   fmtPrice,
   toDateToken,
-} from './core.js?v=1775487695';
+} from './core.js?v=1775487951';
 import {
   movingAvg,
   sparklineSvg,
@@ -26,7 +26,7 @@ import {
   renderCompanyProfile,
   setupProfileDialogClose,
   openStockProfile,
-} from './renderers/stock-profile.js?v=1775487695';
+} from './renderers/stock-profile.js?v=1775487951';
 
 const DEFAULT_API_BASE = '';
 
@@ -285,9 +285,9 @@ function renderPreset(profile) {
             <td>${companyCell(item)}</td>
             <td class="sparkline-cell">${sparklineSvg(closes)}</td>
             <td class="price-cell">${escapeHtml(fmtPrice(price))}</td>
-            <td><span class="score ${item.leader_stock_score >= 70 ? 'good' : item.leader_stock_score >= 40 ? 'mid' : 'bad'}">${fmtNum(item.leader_stock_score, 1)}</span></td>
+            <td><span class="score ${item.leader_stock_score >= 70 ? 'good' : item.leader_stock_score >= 40 ? 'mid' : 'bad'}">${fmtNum(Math.min(item.leader_stock_score || 0, 100), 1)}</span></td>
             <td>${escapeHtml(ret)}</td>
-            <td>${fmtNum(item.preset_score, 2)}</td>
+            <td>${fmtNum(Math.min(item.preset_score || 0, 100), 2)}</td>
             <td><small style="color:var(--muted)">${escapeHtml(item.reason_labels.slice(0,2).join(', '))}</small></td>
           </tr>`;
       }).join('');
@@ -302,8 +302,8 @@ function renderPreset(profile) {
               </div>
             </div>
             <div class="sector-grouped-card__stats">
-              <span><strong>${fmtNum(sector.preset_score, 1)}</strong><small>Preset</small></span>
-              <span><strong>${fmtNum(sector.leader_score, 1)}</strong><small>Leader</small></span>
+              <span><strong>${fmtNum(Math.min(sector.preset_score || 0, 100), 1)}</strong><small>Preset</small></span>
+              <span><strong>${fmtNum(Math.min(sector.leader_score || 0, 100), 1)}</strong><small>Leader</small></span>
               <span><strong>${sector.alpha_count || '-'}/${sector.universe_count || '-'}</strong><small>Alpha</small></span>
             </div>
           </div>
@@ -329,7 +329,7 @@ function renderPreset(profile) {
     presetSectorRows.innerHTML = ranking.sectors.map((item, index) => `
       <tr class="clickable-row${index === 0 ? ' is-active' : ''}" data-sector="${escapeHtml(item.sector)}">
         <td>${index + 1}</td><td>${escapeHtml(item.sector)}</td>
-        <td>${item.preset_score.toFixed(2)}</td><td>${Number(item.leader_score || 0).toFixed(2)}</td>
+        <td>${Math.min(item.preset_score || 0, 100).toFixed(2)}</td><td>${Number(item.leader_score || 0).toFixed(2)}</td>
         <td>${escapeHtml(item.reason_labels.join(' | '))}</td>
       </tr>
     `).join('');
@@ -464,7 +464,7 @@ function renderWeeklyPerformance(profile) {
     const weekLabel = r.bucket.bucket || '';
     return `
       <div class="weekly-bar${best}">
-        <span class="weekly-bar__score">${r.result.avgScore.toFixed(0)}</span>
+        <span class="weekly-bar__score">${Math.min(r.result.avgScore || 0, 100).toFixed(0)}</span>
         <div class="weekly-bar__fill" style="height:${pct}%"></div>
         <span class="weekly-bar__label">${escapeHtml(weekLabel.replace(/^\d{4}-/, ''))}</span>
       </div>
@@ -473,10 +473,10 @@ function renderWeeklyPerformance(profile) {
 
   rowsEl.innerHTML = ranked.map((r) => {
     const sectorChips = r.result.sectors.map((s) =>
-      `<span class="chip">${escapeHtml(s.sector)} <small>${s.preset_score.toFixed(0)}</small></span>`
+      `<span class="chip">${escapeHtml(s.sector)} <small>${Math.min(s.preset_score || 0, 100).toFixed(0)}</small></span>`
     ).join('') || '<span class="chip">-</span>';
     const stockChips = r.result.stocks.map((s) =>
-      `<span class="chip">${escapeHtml(s.name || s.symbol)} <small>${s.preset_score.toFixed(0)}</small></span>`
+      `<span class="chip">${escapeHtml(s.name || s.symbol)} <small>${Math.min(s.preset_score || 0, 100).toFixed(0)}</small></span>`
     ).join('') || '<span class="chip">-</span>';
     return `
       <tr>
@@ -541,7 +541,7 @@ function renderSectorGroupedView(items) {
         <td class="sparkline-cell">${sparklineSvg(stock.sparkline)}</td>
         <td class="price-cell">${(stock.price || (stock.sparkline && stock.sparkline.length ? stock.sparkline[stock.sparkline.length - 1] : null)) ? fmtPrice(stock.price || stock.sparkline[stock.sparkline.length - 1]) : '-'}</td>
         <td class="ma-cell"><span style="color:#f0c040">${ma20val != null ? fmtPrice(ma20val) : '-'}</span><br><span style="color:#60a0ff">${ma60val != null ? fmtPrice(ma60val) : '-'}</span></td>
-        <td><span class="score ${stock.leader_stock_score >= 70 ? 'good' : stock.leader_stock_score >= 40 ? 'mid' : 'bad'}">${fmtNum(stock.leader_stock_score, 1)}</span></td>
+        <td><span class="score ${stock.leader_stock_score >= 70 ? 'good' : stock.leader_stock_score >= 40 ? 'mid' : 'bad'}">${fmtNum(Math.min(stock.leader_stock_score || 0, 100), 1)}</span></td>
         <td>${fmtPlainPct(stock.ret120_pct)}</td>
         <td>${fmtNum(stock.beta_confidence, 2)}</td>
         <td><button type="button" class="profile-btn" data-symbol="${escapeHtml(stock.symbol)}" title="${txt({ ko: '기업개요', en: 'Company Profile' })}">&#x2139;</button></td>
@@ -559,7 +559,7 @@ function renderSectorGroupedView(items) {
             </div>
           </div>
           <div class="sector-grouped-card__stats">
-            <span><strong>${fmtNum(m.leader_score, 1)}</strong><small>${termTip('sector', 'Score')}</small></span>
+            <span><strong>${fmtNum(Math.min(m.leader_score || 0, 100), 1)}</strong><small>${termTip('sector', 'Score')}</small></span>
             <span><strong>${m.alpha_count || 0}/${m.universe_count || 0}</strong><small>${termTip('alpha', 'Alpha')}</small></span>
             <span><strong>${fmtPct(m.avg_ret120)}</strong><small>${termTip('ret', '120D')}</small></span>
           </div>

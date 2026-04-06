@@ -1,6 +1,6 @@
-import { traderProfiles } from './market-wizards-data.js?v=1775487695';
-import { setupPageI18n, txt } from './i18n.js?v=1775487695';
-import { $, escapeHtml, fetchJSON, fmtDate, fmtNum, fmtPct, cls } from './core.js?v=1775487695';
+import { traderProfiles } from './market-wizards-data.js?v=1775487951';
+import { setupPageI18n, txt } from './i18n.js?v=1775487951';
+import { $, escapeHtml, fetchJSON, fmtDate, fmtNum, fmtPct, cls } from './core.js?v=1775487951';
 
 const DEFAULT_API_BASE = `${window.location.protocol}//${window.location.hostname || '127.0.0.1'}:8000`;
 
@@ -303,7 +303,7 @@ function renderDebateCard(analysis) {
     const scoreClass = pick.preset_score >= 50 ? 'good' : pick.preset_score >= 30 ? 'mid' : 'bad';
     return `<div class="debate-pick">
       <strong>${escapeHtml(pick.name || pick.symbol)}</strong>
-      <span class="debate-pick__score ${scoreClass}">${fmtNum(pick.preset_score, 1)}</span>
+      <span class="debate-pick__score ${scoreClass}">${fmtNum(Math.min(pick.preset_score || 0, 100), 1)}</span>
       <small style="color:var(--muted)">${escapeHtml(pick.sector || '')}</small>
     </div>`;
   }).join('');

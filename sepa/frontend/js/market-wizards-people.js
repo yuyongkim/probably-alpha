@@ -1,6 +1,6 @@
-import { marketWizardPeople, peopleSeries } from './market-wizards-people-data.js?v=1775487695';
-import { traderProfiles } from './market-wizards-data.js?v=1775487695';
-import { setupPageI18n, txt } from './i18n.js?v=1775487695';
+import { marketWizardPeople, peopleSeries } from './market-wizards-people-data.js?v=1775487951';
+import { traderProfiles } from './market-wizards-data.js?v=1775487951';
+import { setupPageI18n, txt } from './i18n.js?v=1775487951';
 
 function _getProfile(personId) {
   return traderProfiles.find((p) => p.id === personId) || null;
@@ -238,7 +238,7 @@ async function screenTrader(presetId, personId) {
             <td>${escapeHtml(s.name || s.symbol)}</td>
             <td>${s.tt_passed}/8</td>
             <td>${s.rs_percentile?.toFixed(0) || '-'}%</td>
-            <td><strong>${s.score?.toFixed(1) || '-'}</strong></td>
+            <td><strong>${Math.min(s.score || 0, 100).toFixed(1) || '-'}</strong></td>
           </tr>
         `).join('')}
       </table>
