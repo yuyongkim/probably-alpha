@@ -99,8 +99,17 @@ async def lifespan(app: FastAPI):
 
 
 def create_app(current_settings: Settings = settings) -> FastAPI:
+    from pathlib import Path
+    from fastapi.staticfiles import StaticFiles
+
     app = FastAPI(title=APP_NAME, version='0.2.0', lifespan=lifespan)
     app.add_middleware(CORSMiddleware, **build_cors_middleware_options(current_settings))
     app.include_router(public_router)
     app.include_router(admin_router)
+
+    # Serve frontend static files at root (so single port works for tunnel)
+    frontend_dir = Path('sepa/frontend')
+    if frontend_dir.exists():
+        app.mount('/', StaticFiles(directory=str(frontend_dir), html=True), name='frontend')
+
     return app
