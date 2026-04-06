@@ -563,7 +563,60 @@ export function renderCompanyProfile(data, targetEl) {
       </div>` : ''}
 
     </div>
+
+    ${_verificationPrompt(data)}
   `;
+}
+
+
+/* ── AI 2차 검증 프롬프트 ── */
+
+function _verificationPrompt(data) {
+  const p = data.profile || {};
+  const f = p.financials || {};
+  const cns = data.consensus || {};
+  const im = data.investment_metrics || {};
+  const fs = data.financial_summary || {};
+  const ep = data.execution_plan;
+
+  const symbol = p.symbol || '?';
+  const name = p.name || symbol;
+  const price = p.price || 0;
+  const sector = p.sector_small || p.sector_large || p.sector || '';
+
+  // Build latest annual financials string
+  const latestAnn = fs.annual && fs.annual.length ? fs.annual[fs.annual.length - 1] : {};
+  const finStr = latestAnn.period ? `매출 ${latestAnn.revenue || '?'}억, 영업이익 ${latestAnn.op_profit || '?'}억, 순이익 ${latestAnn.net_income || '?'}억 (${latestAnn.period})` : '재무 데이터 없음';
+
+  const prompt = `한국 주식 "${name}" (종목코드: ${symbol}, 업종: ${sector})에 대해 다음을 검증해주세요.
+
+[현재 시스템 데이터]
+- 현재가: ${price ? Math.round(price).toLocaleString() + '원' : '?'}
+- PER: ${f.per ?? '?'}, PBR: ${f.pbr ?? '?'}, ROE: ${f.roe ?? '?'}%
+- ${finStr}
+${cns.target_price ? `- 컨센서스 목표주가: ${Math.round(cns.target_price).toLocaleString()}원, 추정EPS: ${cns.cns_eps || '?'}` : ''}
+${im.roa ? `- ROA: ${im.roa}%, ROIC: ${im.roic || '?'}%` : ''}
+${ep ? `- 매수가: ${ep.entry}원, 손절: ${ep.stop}원, 목표: ${ep.target}원` : ''}
+
+[검증 요청]
+1. 재무 데이터 정확성: 위 PER/EPS/ROE/매출/순이익이 최신 공시와 일치하는지 확인
+2. 최근 뉴스/리스크: 최근 3개월 내 주요 뉴스, 공시, 규제 변화, 소송, 대주주 지분 변동
+3. 실적 전망: 향후 2분기 실적 컨센서스, 서프라이즈 가능성, 업황 변화
+4. 경쟁사 비교: 동일 업종(${sector}) 내 주요 경쟁사 대비 PER/PBR/성장률 비교
+5. 수급 이상 신호: 외국인/기관 대량 매도, 공매도 급증, 대차잔고 변화
+6. 이벤트 일정: 실적 발표일, 배당락일, 유상증자, 자사주 매입/소각 계획
+7. 기술적 위치: 52주 고점/저점 대비 현재 위치, 주요 지지/저항선
+8. 투자 의견 요약: 위 분석 기반으로 매수/관망/매도 중 하나와 핵심 근거 3줄`;
+
+  return `
+    <div style="margin-top:20px;padding:16px;background:rgba(96,160,255,.04);border:1px solid rgba(96,160,255,.15);border-radius:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h4 style="margin:0;color:#60a0ff;font-size:14px">AI 2차 검증 프롬프트</h4>
+        <button onclick="navigator.clipboard.writeText(this.closest('div').querySelector('pre').textContent).then(()=>{this.textContent='복사됨!';setTimeout(()=>this.textContent='복사',1500)})" style="padding:4px 12px;background:#60a0ff;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px">복사</button>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin:0 0 8px">Perplexity, ChatGPT, Claude 등에 붙여넣기하여 2차 검증하세요.</p>
+      <pre style="font-size:12px;line-height:1.6;color:var(--text);white-space:pre-wrap;word-break:break-all;max-height:300px;overflow-y:auto;background:rgba(0,0,0,.3);padding:12px;border-radius:6px;margin:0">${escapeHtml(prompt)}</pre>
+    </div>`;
 }
 
 /* ── Phase 2 detail update (progressive rendering for market-wizards-korea) ── */
