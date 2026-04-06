@@ -1,6 +1,6 @@
-import { getTraderProfile, traderProfiles } from './market-wizards-data.js?v=1775482261';
-import { setupPageI18n, txt } from './i18n.js?v=1775482261';
-import { termTip, setupTermTips } from './term-tips.js?v=1775482261';
+import { getTraderProfile, traderProfiles } from './market-wizards-data.js?v=1775484394';
+import { setupPageI18n, txt } from './i18n.js?v=1775484394';
+import { termTip, setupTermTips } from './term-tips.js?v=1775484394';
 import {
   $,
   escapeHtml,
@@ -13,7 +13,7 @@ import {
   fmtPlainPct,
   fmtPrice,
   toDateToken,
-} from './core.js?v=1775482261';
+} from './core.js?v=1775484394';
 import {
   movingAvg,
   sparklineSvg,
@@ -26,9 +26,9 @@ import {
   renderCompanyProfile,
   setupProfileDialogClose,
   openStockProfile,
-} from './renderers/stock-profile.js?v=1775482261';
+} from './renderers/stock-profile.js?v=1775484394';
 
-const DEFAULT_API_BASE = `${window.location.protocol}//${window.location.hostname || '127.0.0.1'}:8000`;
+const DEFAULT_API_BASE = '';
 
 const state = {
   catalog: null,

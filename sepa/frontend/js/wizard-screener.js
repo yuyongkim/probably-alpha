@@ -4,9 +4,9 @@
  * and renders a comprehensive screener view.
  */
 
-import { txt, setupPageI18n } from './i18n.js?v=1775482261';
+import { txt, setupPageI18n } from './i18n.js?v=1775484394';
 
-const DEFAULT_API = 'http://127.0.0.1:8000';
+const DEFAULT_API = '';
 const CATEGORIES = [
   { id: 'all', label: { ko: '전체', en: 'All' } },
   { id: 'trend_following', label: { ko: '추세추종', en: 'Trend Following' } },

@@ -1,5 +1,5 @@
-import { compareAxis, traderProfiles } from './market-wizards-data.js?v=1775482261';
-import { setupPageI18n, txt } from './i18n.js?v=1775482261';
+import { compareAxis, traderProfiles } from './market-wizards-data.js?v=1775484394';
+import { setupPageI18n, txt } from './i18n.js?v=1775484394';
 
 function escapeHtml(value) {
   return String(value ?? '')

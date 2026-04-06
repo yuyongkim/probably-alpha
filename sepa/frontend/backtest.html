@@ -28,7 +28,7 @@
         <p class="lead">리더 섹터/리더 종목 전략의 과거 성과를 검증합니다.</p>
       </div>
       <div class="toolbar">
-        <input id="apiBase" value="http://127.0.0.1:8000" aria-label="API Base URL" />
+        <input id="apiBase" value="" aria-label="API Base URL" />
       </div>
     </header>
     <nav class="page-nav">
@@ -339,7 +339,7 @@
 
   <script type="module">
     const $ = id => document.getElementById(id);
-    const api = () => ($('apiBase')?.value || 'http://127.0.0.1:8000').replace(/\/+$/, '');
+    const api = () => ($('apiBase')?.value || '').replace(/\/+$/, '');
 
     // ── Trader Presets ──
     const PRESETS = [

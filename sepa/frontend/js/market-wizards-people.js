@@ -1,6 +1,6 @@
-import { marketWizardPeople, peopleSeries } from './market-wizards-people-data.js?v=1775482261';
-import { traderProfiles } from './market-wizards-data.js?v=1775482261';
-import { setupPageI18n, txt } from './i18n.js?v=1775482261';
+import { marketWizardPeople, peopleSeries } from './market-wizards-people-data.js?v=1775484394';
+import { traderProfiles } from './market-wizards-data.js?v=1775484394';
+import { setupPageI18n, txt } from './i18n.js?v=1775484394';
 
 function _getProfile(personId) {
   return traderProfiles.find((p) => p.id === personId) || null;
@@ -209,7 +209,7 @@ function renderSections() {
 
 function getApiBase() {
   const el = document.getElementById('apiBase');
-  return el ? el.value.replace(/\/+$/, '') : 'http://127.0.0.1:8000';
+  return el ? el.value.replace(/\/+$/, '') : '';
 }
 
 async function screenTrader(presetId, personId) {
