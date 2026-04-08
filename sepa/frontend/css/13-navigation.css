@@ -2,7 +2,7 @@
 .meta{
   margin-top:12px;
   padding:14px;
-  border-radius:20px;
+  border-radius:var(--radius-md);
   border:1px solid rgba(92,133,171,.16);
   background:rgba(8,18,31,.76);
   color:#d9e6f7;

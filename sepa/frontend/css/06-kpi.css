@@ -94,7 +94,7 @@
 .query-panel{
   margin-top:0;
   padding:14px 16px;
-  border-radius:20px;
+  border-radius:var(--radius-md);
   background:linear-gradient(180deg, rgba(10,22,36,.92), rgba(8,18,30,.88));
   box-shadow:none;
 }
@@ -106,7 +106,7 @@
 }
 .mini-stat-card{
   padding:12px;
-  border-radius:16px;
+  border-radius:var(--radius-sm);
   border:1px solid rgba(92,133,171,.16);
   background:rgba(8,18,31,.72);
 }
@@ -130,7 +130,7 @@
 .mini-stat-note{
   grid-column:1 / -1;
   padding:12px 14px;
-  border-radius:16px;
+  border-radius:var(--radius-sm);
   border:1px solid rgba(92,133,171,.12);
   background:rgba(10,21,35,.7);
   color:var(--muted);

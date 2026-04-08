@@ -8,7 +8,7 @@
   gap:10px;
   align-content:flex-start;
   padding:14px;
-  border-radius:20px;
+  border-radius:var(--radius-md);
   border:1px solid rgba(92,133,171,.14);
   background:linear-gradient(180deg, rgba(8,18,31,.84), rgba(7,16,27,.76));
 }
@@ -32,7 +32,7 @@
 }
 .wizard-card{
   padding:18px;
-  border-radius:22px;
+  border-radius:var(--radius-md);
   border:1px solid rgba(92,133,171,.16);
   background:linear-gradient(180deg, rgba(11,23,37,.88), rgba(8,17,29,.88));
 }
@@ -100,7 +100,7 @@
   padding:18px 24px;
   background:var(--panel);
   border:1px solid var(--line);
-  border-radius:16px;
+  border-radius:var(--radius-sm);
 }
 .trader-tab-section .panel-head{
   margin-bottom:12px;
@@ -110,7 +110,7 @@
   padding:10px 14px;
   font:12px/1.45 "IBM Plex Mono", monospace;
   background:rgba(8,19,35,.72);
-  border-radius:8px;
+  border-radius:var(--radius-xs);
   color:var(--muted);
 }
 .trader-tabs-row{
@@ -204,7 +204,7 @@
 }
 .person-card{
   padding:18px;
-  border-radius:22px;
+  border-radius:var(--radius-md);
   border:1px solid rgba(92,133,171,.16);
   background:linear-gradient(180deg, rgba(11,23,37,.88), rgba(8,17,29,.88));
 }

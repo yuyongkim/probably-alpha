@@ -147,7 +147,7 @@
   left:0;top:50%;
   transform:translateY(-50%);
   width:28px;height:28px;
-  border-radius:10px;
+  border-radius:var(--radius-xs);
   background:linear-gradient(135deg, rgba(77,184,255,.18), rgba(110,231,168,.12));
   border:1px solid rgba(92,133,171,.20);
 }
@@ -177,7 +177,7 @@
 .wizard-strat-card{
   position:relative;
   padding:18px;
-  border-radius:22px;
+  border-radius:var(--radius-md);
   border:1px solid rgba(92,133,171,.14);
   background:linear-gradient(180deg, rgba(11,23,37,.88), rgba(8,17,29,.88));
   cursor:pointer;
@@ -463,7 +463,7 @@
   background:linear-gradient(90deg, rgba(92,133,171,.08) 25%, rgba(92,133,171,.16) 50%, rgba(92,133,171,.08) 75%);
   background-size:200% 100%;
   animation:skeletonShimmer 1.8s ease-in-out infinite;
-  border-radius:8px;
+  border-radius:var(--radius-xs);
   color:transparent !important;
 }
 .skeleton *{visibility:hidden}
@@ -476,7 +476,7 @@
   z-index:900;
   width:48px;
   height:48px;
-  border-radius:16px;
+  border-radius:var(--radius-sm);
   border:1px solid rgba(92,133,171,.18);
   background:rgba(12,25,38,.90);
   backdrop-filter:blur(16px);
@@ -655,7 +655,7 @@
   .back-to-top{
     width:44px;
     height:44px;
-    border-radius:14px;
+    border-radius:var(--radius-sm);
     bottom:16px;
     right:16px;
   }
