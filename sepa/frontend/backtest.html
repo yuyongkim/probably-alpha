@@ -57,8 +57,8 @@
         <p class="panel-caption">트레이더를 선택하면 해당 전략에 맞는 규칙이 자동으로 설정됩니다.</p>
       </div>
     </div>
-    <article class="panel" style="padding:20px">
-      <div id="presetCards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px"></div>
+    <article class="panel bt-panel">
+      <div id="presetCards" class="bt-preset-grid"></div>
     </article>
   </section>
 
@@ -70,11 +70,11 @@
         <h2>주도섹터·주도주 로테이션 전략 (LeaderSectorStock v1)</h2>
       </div>
     </div>
-    <article class="panel" style="padding:20px">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px">
+    <article class="panel bt-panel">
+      <div class="bt-grid">
         <div>
-          <h3 style="margin-bottom:8px;color:var(--accent)">매수 규칙</h3>
-          <ul style="color:var(--muted);line-height:2;font-size:14px;padding-left:18px">
+          <h3 class="bt-section-subtitle">매수 규칙</h3>
+          <ul class="bt-rules-list">
             <li>LEADER_SCORING_SPEC 기준 <strong>상위 5개 섹터</strong> 선정</li>
             <li>각 섹터 내 <strong>LeaderScore 상위 종목</strong> 매수</li>
             <li>Trend Template 5/8 이상 + close > MA50 필수</li>
@@ -82,16 +82,16 @@
           </ul>
         </div>
         <div>
-          <h3 style="margin-bottom:8px;color:var(--accent)">매도 규칙</h3>
-          <ul style="color:var(--muted);line-height:2;font-size:14px;padding-left:18px">
+          <h3 class="bt-section-subtitle">매도 규칙</h3>
+          <ul class="bt-rules-list">
             <li><strong>손절</strong>: 진입가 대비 -7.5% 하락 시 즉시</li>
             <li><strong>리밸런싱 이탈</strong>: 종목이 Top 리더에서 빠질 때</li>
             <li><strong>섹터 이탈</strong>: 섹터가 Top 5에서 빠질 때</li>
           </ul>
         </div>
         <div>
-          <h3 style="margin-bottom:8px;color:var(--accent)">비용 모델</h3>
-          <ul style="color:var(--muted);line-height:2;font-size:14px;padding-left:18px">
+          <h3 class="bt-section-subtitle">비용 모델</h3>
+          <ul class="bt-rules-list">
             <li>수수료: 매수/매도 각 0.015%</li>
             <li>슬리피지: 0.1%</li>
             <li>거래세: 매도 시 0.18%</li>
@@ -113,9 +113,9 @@
     </div>
 
     <!-- Period & Portfolio -->
-    <article class="panel" style="padding:20px;margin-bottom:12px">
-      <h3 style="margin-bottom:12px;color:var(--accent)">기간 및 포트폴리오</h3>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+    <article class="panel bt-panel--spaced">
+      <h3 class="bt-section-title">기간 및 포트폴리오</h3>
+      <div class="bt-grid--narrow">
         <div>
           <label class="rule-label">시작일</label>
           <input id="btStart" type="text" value="20251112" class="rule-input" />
@@ -143,52 +143,52 @@
     </article>
 
     <!-- Alpha Rules -->
-    <article class="panel" style="padding:20px;margin-bottom:12px">
-      <h3 style="margin-bottom:12px;color:var(--accent)">Alpha — 추세 템플릿 (진입 필터)</h3>
+    <article class="panel bt-panel--spaced">
+      <h3 class="bt-section-title">Alpha — 추세 템플릿 (진입 필터)</h3>
       <div class="rule-grid">
         <label class="rule-toggle"><input type="checkbox" id="rAlphaTT" checked /><span>Trend Template 게이트</span><small>최소 N/8 조건 통과 필수</small></label>
-        <div style="display:flex;align-items:center;gap:8px;margin-left:28px">
-          <label class="rule-label" style="margin:0;white-space:nowrap">최소 통과</label>
-          <input id="rAlphaMinTT" type="number" value="5" min="1" max="8" class="rule-input" style="width:60px" /><span style="color:var(--muted)">/ 8</span>
+        <div class="bt-inline-row">
+          <label class="rule-label">최소 통과</label>
+          <input id="rAlphaMinTT" type="number" value="5" min="1" max="8" class="rule-input bt-inline-row__input--xs" /><span class="bt-unit">/ 8</span>
         </div>
         <label class="rule-toggle"><input type="checkbox" id="rAlphaRS" checked /><span>RS 백분위 게이트</span><small>120일 상대강도 상위만 진입</small></label>
-        <div style="display:flex;align-items:center;gap:8px;margin-left:28px">
-          <label class="rule-label" style="margin:0;white-space:nowrap">RS 임계값</label>
-          <input id="rAlphaRSVal" type="number" value="70" min="0" max="100" class="rule-input" style="width:60px" /><span style="color:var(--muted)">%</span>
+        <div class="bt-inline-row">
+          <label class="rule-label">RS 임계값</label>
+          <input id="rAlphaRSVal" type="number" value="70" min="0" max="100" class="rule-input bt-inline-row__input--xs" /><span class="bt-unit">%</span>
         </div>
         <label class="rule-toggle"><input type="checkbox" id="rAlphaMA50" checked /><span>close > MA50 필수</span><small>50일 이동평균 위에서만 진입</small></label>
       </div>
     </article>
 
     <!-- Sector Rules -->
-    <article class="panel" style="padding:20px;margin-bottom:12px">
-      <h3 style="margin-bottom:12px;color:var(--accent)">섹터 — 주도섹터 필터</h3>
+    <article class="panel bt-panel--spaced">
+      <h3 class="bt-section-title">섹터 — 주도섹터 필터</h3>
       <div class="rule-grid">
         <label class="rule-toggle"><input type="checkbox" id="rSectorFilter" checked /><span>주도섹터 제한</span><small>상위 N개 섹터 내 종목만 매수</small></label>
-        <div style="display:flex;align-items:center;gap:8px;margin-left:28px">
-          <label class="rule-label" style="margin:0;white-space:nowrap">상위 섹터 수</label>
-          <input id="rSectorTopN" type="number" value="5" min="1" max="20" class="rule-input" style="width:60px" />
+        <div class="bt-inline-row">
+          <label class="rule-label">상위 섹터 수</label>
+          <input id="rSectorTopN" type="number" value="5" min="1" max="20" class="rule-input bt-inline-row__input--xs" />
         </div>
-        <div style="display:flex;align-items:center;gap:8px;margin-left:28px">
-          <label class="rule-label" style="margin:0;white-space:nowrap">섹터당 최대</label>
-          <input id="btSectorLimit" type="number" value="3" min="1" max="10" class="rule-input" style="width:60px" /><span style="color:var(--muted)">종목</span>
+        <div class="bt-inline-row">
+          <label class="rule-label">섹터당 최대</label>
+          <input id="btSectorLimit" type="number" value="3" min="1" max="10" class="rule-input bt-inline-row__input--xs" /><span class="bt-unit">종목</span>
         </div>
       </div>
     </article>
 
     <!-- Extra Entry Conditions -->
-    <article class="panel" style="padding:20px;margin-bottom:12px">
-      <h3 style="margin-bottom:12px;color:var(--accent)">추가 진입 조건 (트레이더 철학)</h3>
+    <article class="panel bt-panel--spaced">
+      <h3 class="bt-section-title">추가 진입 조건 (트레이더 철학)</h3>
       <div class="rule-grid">
         <label class="rule-toggle"><input type="checkbox" id="rVolExpansion" /><span>거래량 팽창</span><small>최근 5일 거래량 > 50일 평균 × N배</small></label>
-        <div style="display:flex;align-items:center;gap:8px;margin-left:28px">
-          <label class="rule-label" style="margin:0;white-space:nowrap">최소 배수</label>
-          <input id="rVolRatio" type="number" value="1.5" min="1" max="5" step="0.1" class="rule-input" style="width:70px" /><span style="color:var(--muted)">배</span>
+        <div class="bt-inline-row">
+          <label class="rule-label">최소 배수</label>
+          <input id="rVolRatio" type="number" value="1.5" min="1" max="5" step="0.1" class="rule-input bt-inline-row__input--sm" /><span class="bt-unit">배</span>
         </div>
         <label class="rule-toggle"><input type="checkbox" id="rNear52W" /><span>52주 고점 근접</span><small>현재가 >= 52주 고점 × N%</small></label>
-        <div style="display:flex;align-items:center;gap:8px;margin-left:28px">
-          <label class="rule-label" style="margin:0;white-space:nowrap">근접 임계값</label>
-          <input id="rNear52WVal" type="number" value="85" min="50" max="100" class="rule-input" style="width:70px" /><span style="color:var(--muted)">%</span>
+        <div class="bt-inline-row">
+          <label class="rule-label">근접 임계값</label>
+          <input id="rNear52WVal" type="number" value="85" min="50" max="100" class="rule-input bt-inline-row__input--sm" /><span class="bt-unit">%</span>
         </div>
         <label class="rule-toggle"><input type="checkbox" id="rVCP" /><span>변동성 수축 (VCP)</span><small>ATR(10) < ATR(50) — 가격 수축 진행 중</small></label>
         <label class="rule-toggle"><input type="checkbox" id="r20dBreak" /><span>20일 채널 돌파</span><small>현재가 >= 최근 20일 최고가 (터틀 시스템)</small></label>
@@ -197,13 +197,13 @@
     </article>
 
     <!-- Risk Rules -->
-    <article class="panel" style="padding:20px;margin-bottom:12px">
-      <h3 style="margin-bottom:12px;color:var(--accent)">Delta — 리스크 관리</h3>
+    <article class="panel bt-panel--spaced">
+      <h3 class="bt-section-title">Delta — 리스크 관리</h3>
       <div class="rule-grid">
         <label class="rule-toggle"><input type="checkbox" id="rStopLoss" checked /><span>손절 규칙</span><small>진입가 대비 일정% 하락 시 자동 청산</small></label>
-        <div style="display:flex;align-items:center;gap:8px;margin-left:28px">
-          <label class="rule-label" style="margin:0;white-space:nowrap">손절 비율</label>
-          <input id="rStopPct" type="number" value="7.5" min="1" max="20" step="0.5" class="rule-input" style="width:70px" /><span style="color:var(--muted)">%</span>
+        <div class="bt-inline-row">
+          <label class="rule-label">손절 비율</label>
+          <input id="rStopPct" type="number" value="7.5" min="1" max="20" step="0.5" class="rule-input bt-inline-row__input--sm" /><span class="bt-unit">%</span>
         </div>
         <label class="rule-toggle"><input type="checkbox" id="rSectorExit" checked /><span>섹터 이탈 청산</span><small>섹터가 Top N에서 빠지면 해당 종목 청산</small></label>
         <label class="rule-toggle"><input type="checkbox" id="rLeaderExit" checked /><span>리더 이탈 청산</span><small>종목이 리더 목록에서 빠지면 청산</small></label>
@@ -211,20 +211,20 @@
     </article>
 
     <!-- Cost Rules -->
-    <article class="panel" style="padding:20px;margin-bottom:12px">
-      <h3 style="margin-bottom:12px;color:var(--accent)">비용 모델</h3>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+    <article class="panel bt-panel--spaced">
+      <h3 class="bt-section-title">비용 모델</h3>
+      <div class="bt-grid--narrow">
         <div>
           <label class="rule-label">수수료 (매수/매도)</label>
-          <input id="rCommission" type="number" value="0.015" min="0" max="1" step="0.001" class="rule-input" /><span style="color:var(--muted);font-size:11px">%</span>
+          <input id="rCommission" type="number" value="0.015" min="0" max="1" step="0.001" class="rule-input" /><span class="bt-unit--small">%</span>
         </div>
         <div>
           <label class="rule-label">슬리피지</label>
-          <input id="rSlippage" type="number" value="0.1" min="0" max="2" step="0.01" class="rule-input" /><span style="color:var(--muted);font-size:11px">%</span>
+          <input id="rSlippage" type="number" value="0.1" min="0" max="2" step="0.01" class="rule-input" /><span class="bt-unit--small">%</span>
         </div>
         <div>
           <label class="rule-label">거래세 (매도)</label>
-          <input id="rTax" type="number" value="0.18" min="0" max="1" step="0.01" class="rule-input" /><span style="color:var(--muted);font-size:11px">%</span>
+          <input id="rTax" type="number" value="0.18" min="0" max="1" step="0.01" class="rule-input" /><span class="bt-unit--small">%</span>
         </div>
         <div>
           <label class="rule-label">체결 방식</label>
@@ -237,9 +237,9 @@
     </article>
 
     <!-- Run Button -->
-    <article class="panel" style="padding:20px;text-align:center">
-      <button id="btnRunBacktest" style="padding:14px 40px;background:var(--accent);color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700;font-size:16px">백테스트 실행</button>
-      <p id="btStatus" style="margin-top:12px;color:var(--muted);font-size:13px"></p>
+    <article class="panel bt-panel bt-center">
+      <button id="btnRunBacktest" class="bt-run-btn">백테스트 실행</button>
+      <p id="btStatus" class="bt-run-status"></p>
     </article>
   </section>
 
@@ -265,7 +265,7 @@
     </div>
 
     <!-- Detail Table -->
-    <article class="panel" style="margin-top:16px">
+    <article class="panel bt-panel" style="margin-top:16px">
       <div class="panel-head">
         <div><h3>상세 지표</h3></div>
       </div>
@@ -278,7 +278,7 @@
     </article>
 
     <!-- Equity Curve -->
-    <article class="panel" style="margin-top:16px">
+    <article class="panel bt-panel" style="margin-top:16px">
       <div class="panel-head">
         <div><h3>자산 곡선</h3><p class="panel-caption">전략 자산 vs 벤치마크 추이</p></div>
       </div>
@@ -286,18 +286,18 @@
     </article>
 
     <!-- Trade Log -->
-    <article class="panel" style="margin-top:16px">
+    <article class="panel bt-panel" style="margin-top:16px">
       <div class="panel-head">
         <div><h3>거래 로그</h3><p class="panel-caption" id="tradeLogCaption">개별 매매 내역</p></div>
       </div>
-      <div style="max-height:400px;overflow-y:auto">
+      <div class="bt-trade-log">
         <table>
           <thead>
             <tr>
               <th>#</th><th>종목</th><th>매수일</th><th>매도일</th>
-              <th style="text-align:right">매수가</th><th style="text-align:right">매도가</th>
-              <th style="text-align:right">수량</th><th style="text-align:right">손익</th>
-              <th style="text-align:right">수익률</th><th>청산 사유</th>
+              <th class="text-right">매수가</th><th class="text-right">매도가</th>
+              <th class="text-right">수량</th><th class="text-right">손익</th>
+              <th class="text-right">수익률</th><th>청산 사유</th>
             </tr>
           </thead>
           <tbody id="tradeRows"></tbody>
@@ -306,7 +306,7 @@
     </article>
 
     <!-- Params -->
-    <article class="panel" style="margin-top:16px">
+    <article class="panel bt-panel" style="margin-top:16px">
       <div class="panel-head">
         <div><h3>실행 파라미터</h3></div>
       </div>
@@ -327,7 +327,7 @@
         <h2>과거 백테스트 결과</h2>
         <p class="panel-caption">이전에 실행한 백테스트 결과를 비교합니다.</p>
       </div>
-      <button id="btnLoadHistory" style="padding:8px 16px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);cursor:pointer">불러오기</button>
+      <button id="btnLoadHistory" class="bt-history-btn">불러오기</button>
     </div>
     <article class="panel">
       <table>
@@ -407,7 +407,7 @@
     function renderPresets() {
       const el = $('presetCards');
       el.innerHTML = PRESETS.map(p => `
-        <div class="preset-card" data-preset="${p.id}" style="border-left:3px solid ${p.color};padding:14px;background:var(--surface);border-radius:8px;cursor:pointer;transition:opacity .15s">
+        <div class="preset-card" data-preset="${p.id}" style="border-color:${p.color};padding:14px;background:var(--panel);border-radius:var(--radius-xs);cursor:pointer;transition:opacity .15s;border:1px solid">
           <div style="display:flex;justify-content:space-between;align-items:start">
             <div>
               <strong style="font-size:15px">${p.trader}</strong>

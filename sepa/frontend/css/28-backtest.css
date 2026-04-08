@@ -1,0 +1,60 @@
+/* === Backtest Page === */
+
+/* ── Layout utilities ── */
+.bt-panel{padding:var(--spacing-lg)}
+.bt-panel--spaced{padding:var(--spacing-lg);margin-bottom:12px}
+.bt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--spacing-lg)}
+.bt-grid--narrow{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.bt-center{text-align:center}
+
+/* ── Section headings ── */
+.bt-section-title{margin-bottom:12px;color:var(--accent)}
+.bt-section-subtitle{margin-bottom:8px;color:var(--accent)}
+
+/* ── Description lists ── */
+.bt-rules-list{color:var(--muted);line-height:2;font-size:14px;padding-left:18px}
+
+/* ── Inline form row (checkbox sub-options) ── */
+.bt-inline-row{display:flex;align-items:center;gap:8px;margin-left:28px}
+.bt-inline-row .rule-label{margin:0;white-space:nowrap}
+.bt-inline-row .rule-input--xs{width:60px}
+.bt-inline-row .rule-input--sm{width:70px}
+.bt-unit{color:var(--muted)}
+.bt-unit--small{color:var(--muted);font-size:11px}
+
+/* ── Run button ── */
+.bt-run-btn{
+  padding:14px 40px;
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  border-radius:var(--radius-xs);
+  cursor:pointer;
+  font-weight:700;
+  font-size:16px;
+}
+.bt-run-status{margin-top:12px;color:var(--muted);font-size:13px}
+
+/* ── Preset card grid ── */
+.bt-preset-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+
+/* ── Result section ── */
+.bt-result-kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;margin:16px 0}
+.bt-result-kpi dt{font-size:11px;color:var(--muted);margin-bottom:4px}
+.bt-result-kpi dd{font-size:22px;font-weight:700;margin:0}
+.bt-trade-log{max-height:400px;overflow-y:auto}
+
+/* ── History section ── */
+.bt-history-btn{
+  padding:8px 16px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:6px;
+  color:var(--text);
+  cursor:pointer;
+}
+
+/* ── Inline input sizes ── */
+.bt-inline-row__input--xs{width:60px}
+.bt-inline-row__input--sm{width:70px}
+.text-right{text-align:right}

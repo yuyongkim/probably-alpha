@@ -23,9 +23,9 @@
     .strategy-card__metrics dd { font-weight: 600; margin: 0; }
     .strategy-card__tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
     .strategy-card__tag { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(255,255,255,.06); color: var(--muted); }
-    .risk-low { border-left: 3px solid #22c55e; }
-    .risk-medium { border-left: 3px solid #f59e0b; }
-    .risk-high { border-left: 3px solid #ef4444; }
+    .risk-low { border-color: rgba(34,197,94,.28); }
+    .risk-medium { border-color: rgba(245,158,11,.28); }
+    .risk-high { border-color: rgba(239,68,68,.28); }
 
     .filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
     .filter-chip { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer; font-size: 13px; }
@@ -328,7 +328,7 @@
                 <li>종목당 최대 손실: ~${Math.round(capital() * (p.params?.stop_loss_pct || 0.075) / (p.params?.max_positions || 5)).toLocaleString()}원</li>
                 <li>전체 최대 손실 (전 종목 동시 손절): ~${Math.round(capital() * (p.params?.stop_loss_pct || 0.075)).toLocaleString()}원</li>
               </ul>
-              <div style="margin-top:16px;padding:12px;background:rgba(239,68,68,.1);border-radius:8px;border-left:3px solid var(--bad)">
+              <div style="margin-top:16px;padding:12px;background:rgba(239,68,68,.1);border-radius:8px;border:1px solid var(--bad)">
                 <strong style="color:var(--bad)">주의사항</strong>
                 <p style="margin:4px 0 0">과거 성과가 미래 수익을 보장하지 않습니다. 반드시 자신의 리스크 허용 범위 내에서 투자하세요.</p>
               </div>
