@@ -223,7 +223,7 @@ Start-Process powershell -ArgumentList '-NoExit', '-Command', $frontendCommand
 
 Start-Sleep -Seconds 1
 if ($openBrowser) {
-  Start-Process $frontendUrl
+  Start-Process $apiUrl
 }
 
-Write-Host "Done. In page, API Base = $apiUrl"
+Write-Host "Done. Dashboard at $apiUrl (API + frontend on same origin)"
