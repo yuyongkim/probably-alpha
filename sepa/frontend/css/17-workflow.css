@@ -19,7 +19,7 @@
   border:0;
   border-radius:999px;
   background:transparent;
-  color:#8fa4c1;
+  color:var(--muted-dim);
   font:12px/1 "IBM Plex Mono", monospace;
   cursor:pointer;
   transition:background .14s ease,color .14s ease,box-shadow .14s ease;

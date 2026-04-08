@@ -244,7 +244,7 @@
   border-radius:999px;
   border:1px solid rgba(92,133,171,.18);
   background:rgba(7,18,30,.92);
-  color:#a8bed8;
+  color:var(--text-label);
   font:11px/1.2 "IBM Plex Mono", monospace;
   letter-spacing:.02em;
 }
@@ -272,7 +272,7 @@
   border-radius:999px;
   display:inline-block;
 }
-.legend-dot.close{background:#80d0ff}
+.legend-dot.close{background:var(--accent-chart)}
 .legend-dot.sma20{background:#9fd3ff}
 .legend-dot.sma50{background:#98f1b7}
 .legend-dot.sma150{background:#ffbf63}
@@ -305,14 +305,14 @@
 .axis-mark{stroke:rgba(190,214,239,.26);stroke-width:1}
 .divider-line{stroke:rgba(190,214,239,.14);stroke-width:1}
 .axis-label{
-  fill:#8fa4c1;
+  fill:var(--muted-dim);
   font:11px/1 "IBM Plex Mono", monospace;
 }
 .axis-label.center{text-anchor:middle}
 .axis-label.right{text-anchor:end}
 .price-line{
   fill:none;
-  stroke:#80d0ff;
+  stroke:var(--accent-chart);
   stroke-width:2.4;
   stroke-linecap:round;
   stroke-linejoin:round;
@@ -337,7 +337,7 @@
 .volume-line{stroke:#ffbf63}
 .volume-up{fill:rgba(138,240,184,.48)}
 .volume-down{fill:rgba(255,158,158,.34)}
-.price-dot{fill:#80d0ff;stroke:#06111f;stroke-width:2}
+.price-dot{fill:var(--accent-chart);stroke:#06111f;stroke-width:2}
 .tooltip-pill{fill:#13253c;stroke:rgba(128,208,255,.25)}
 .tooltip-text{
   fill:#f0f6ff;

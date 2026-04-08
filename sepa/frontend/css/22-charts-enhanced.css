@@ -38,7 +38,7 @@
   display:inline-block;
   box-shadow:0 0 6px currentColor;
 }
-.legend-dot.close{background:#80d0ff;box-shadow:0 0 8px rgba(128,208,255,.4)}
+.legend-dot.close{background:var(--accent-chart);box-shadow:0 0 8px rgba(128,208,255,.4)}
 .legend-dot.sma50{background:#98f1b7;box-shadow:0 0 8px rgba(152,241,183,.3)}
 .legend-dot.sma150{background:#ffbf63;box-shadow:0 0 8px rgba(255,191,99,.3)}
 .legend-dot.sma200{background:#ff9b92;box-shadow:0 0 8px rgba(255,155,146,.3)}
@@ -47,7 +47,7 @@
 
 .price-line{
   fill:none;
-  stroke:#80d0ff;
+  stroke:var(--accent-chart);
   stroke-width:2.4;
   stroke-linecap:round;
   stroke-linejoin:round;
@@ -64,7 +64,7 @@
   background:rgba(7,18,30,.85);
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
-  color:#a8bed8;
+  color:var(--text-label);
   font:11px/1.2 "IBM Plex Mono", monospace;
   letter-spacing:.02em;
   transition:border-color var(--transition-fast);
@@ -81,7 +81,7 @@
   background:rgba(7,18,30,.85);
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
-  color:#a8bed8;
+  color:var(--text-label);
   font:12px/1 "IBM Plex Mono", monospace;
   cursor:pointer;
   transition:border-color var(--transition-fast), background var(--transition-fast), color var(--transition-fast);

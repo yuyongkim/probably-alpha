@@ -20,7 +20,7 @@ pre{
 .summary-card small{
   display:block;
   margin-top:6px;
-  color:#8fa4c1;
+  color:var(--muted-dim);
   font-size:11px;
 }
 
@@ -92,7 +92,7 @@ pre{
 
 .sector-tile__rank,
 .sector-tile__state{
-  color:#8fa4c1;
+  color:var(--muted-dim);
   font:11px/1.2 "IBM Plex Mono", monospace;
 }
 

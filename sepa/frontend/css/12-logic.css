@@ -89,7 +89,7 @@
   margin-bottom:0;
 }
 .logic-summary__meta{
-  color:#8fa4c1;
+  color:var(--muted-dim);
   font:11px/1.4 "IBM Plex Mono", monospace;
   white-space:nowrap;
 }

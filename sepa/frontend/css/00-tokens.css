@@ -12,9 +12,14 @@
   --text:#f0f7ff;
   --text-secondary:#d4e3f5;
   --text-tertiary:#b0c4de;
+  --text-label:#a8bed8;
+  --text-heading:#a8c0da;
+  --accent-kicker:#8bbdff;
   --muted:#8ea8c7;
+  --muted-dim:#8fa4c1;
   --accent:#4db8ff;
   --accent-soft:#7fd4ff;
+  --accent-chart:#80d0ff;
   --accent-glow:rgba(77,184,255,.15);
   --accent-ring:rgba(77,184,255,.25);
   --accent-surface:rgba(77,184,255,.08);

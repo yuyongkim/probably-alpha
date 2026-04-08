@@ -184,7 +184,7 @@
   gap:5px;
 }
 .bucket-entry__metric label{
-  color:#8fa4c1;
+  color:var(--muted-dim);
   font:11px/1 "IBM Plex Mono", monospace;
   text-transform:uppercase;
   letter-spacing:.04em;

@@ -124,7 +124,7 @@
 .mini-stat-card small{
   display:block;
   margin-top:6px;
-  color:#8fa4c1;
+  color:var(--muted-dim);
   font-size:11px;
 }
 .mini-stat-note{

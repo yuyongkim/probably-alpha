@@ -15,7 +15,7 @@
   font-weight:700;
   letter-spacing:.20em;
   text-transform:uppercase;
-  color:#8bbdff;
+  color:var(--accent-kicker);
   font-family:"IBM Plex Mono",monospace;
 }
 .hero-copy{
