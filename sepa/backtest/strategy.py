@@ -89,6 +89,11 @@ class StrategyConfig:
     initial_cash: int = 100_000_000
     max_positions: int = 5
 
+    # ── Transaction Costs (per BACKTEST_RULES.md section 2) ─────
+    commission: float | None = None   # None = use Portfolio default (0.015%)
+    slippage: float | None = None     # None = use Portfolio default (0.1%)
+    tax: float | None = None          # None = use Portfolio default (0.18%)
+
     # ── Stop / Exit ──────────────────────────────────────────────
     stop_type: str = 'fixed_pct'
     # 'fixed_pct' — fixed % below entry (default)

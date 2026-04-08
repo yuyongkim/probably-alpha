@@ -331,17 +331,11 @@ def backtest_run(
     require_20d_breakout: int = 0,
 ) -> dict:
     from sepa.backtest.engine import BacktestEngine
-    from sepa.backtest.portfolio import Portfolio
     from sepa.backtest.presets import get_preset
     from sepa.backtest.report import save_result
     from sepa.backtest.strategy import StrategyConfig
 
-    # Apply cost overrides
-    Portfolio.COMMISSION_RATE = commission
-    Portfolio.SLIPPAGE_RATE = slippage
-    Portfolio.TAX_RATE = tax
-
-    # Build strategy config
+    # Build strategy config (costs flow through config, not class mutation)
     if preset:
         from copy import copy
         base = get_preset(preset)
@@ -374,6 +368,9 @@ def backtest_run(
             require_volatility_contraction=bool(require_volatility_contraction),
             require_20d_breakout=bool(require_20d_breakout),
         )
+    config.commission = commission
+    config.slippage = slippage
+    config.tax = tax
 
     engine = BacktestEngine(strategy=config)
     result = engine.run(start, end)

@@ -43,10 +43,19 @@ class Portfolio:
     SLIPPAGE_RATE = 0.001
     TAX_RATE = 0.0018
 
-    def __init__(self, initial_cash: float = 100_000_000.0, max_positions: int = 10) -> None:
+    def __init__(
+        self, initial_cash: float = 100_000_000.0, max_positions: int = 10,
+        commission: float | None = None, slippage: float | None = None, tax: float | None = None,
+    ) -> None:
         self.initial_cash = initial_cash
         self.cash = initial_cash
         self.max_positions = max_positions
+        if commission is not None:
+            self.COMMISSION_RATE = commission
+        if slippage is not None:
+            self.SLIPPAGE_RATE = slippage
+        if tax is not None:
+            self.TAX_RATE = tax
         self.positions: dict[str, Position] = {}
         self.trades: list[Trade] = []
         self.equity_curve: list[dict] = []  # [{date, equity, cash, positions_value}]

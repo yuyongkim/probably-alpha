@@ -74,7 +74,10 @@ class BacktestEngine:
 
         print(f'[BT] Running {config.name} over {len(dates)} days ({dates[0]}~{dates[-1]})...')
 
-        portfolio = Portfolio(initial_cash=config.initial_cash, max_positions=config.max_positions)
+        portfolio = Portfolio(
+            initial_cash=config.initial_cash, max_positions=config.max_positions,
+            commission=config.commission, slippage=config.slippage, tax=config.tax,
+        )
         sector_map = load_sector_map()
         benchmark_prices = self._load_benchmark_prices()
         rebalance_dates = self._get_rebalance_dates(dates, config.rebalance)
