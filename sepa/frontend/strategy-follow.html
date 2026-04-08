@@ -245,7 +245,7 @@
           </div>
 
           <div id="tabPicks" class="tab-panel active">
-            <h3 style="margin-bottom:8px">📊 스크리닝 결과: ${data.screened?.toLocaleString() || '?'}개 중 ${picks.length}개 통과</h3>
+            <h3 style="margin-bottom:8px">스크리닝 결과: ${data.screened?.toLocaleString() || '?'}개 중 ${picks.length}개 통과</h3>
             ${picks.length ? picks.map((s) => {
               const ex = s.execution || {};
               return `
