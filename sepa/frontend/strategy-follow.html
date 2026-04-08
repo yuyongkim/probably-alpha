@@ -126,6 +126,7 @@
 
     const API = () => document.getElementById('apiBase').value.trim();
     const capital = () => Number(document.getElementById('userCapital').value.replace(/,/g, '')) || 100_000_000;
+    function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
     const fmtPct = (v) => v != null ? `${(v * 100).toFixed(1)}%` : '-';
     const fmtPrice = (v) => v != null ? `${Math.round(v).toLocaleString('ko-KR')}원` : '-';
@@ -156,7 +157,7 @@
 
         render(allPresets);
       } catch (e) {
-        document.getElementById('strategyGrid').innerHTML = `<p style="color:var(--bad)">로드 실패: ${e.message}</p>`;
+        document.getElementById('strategyGrid').innerHTML = `<p style="color:var(--bad)">로드 실패: ${esc(e.message)}</p>`;
       }
     }
 
@@ -251,8 +252,8 @@
                 <div class="exec-card">
                   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
                     <div>
-                      <strong style="font-size:16px;cursor:pointer" class="pick-symbol" data-sym="${s.symbol}">${s.name || s.symbol}</strong>
-                      <span style="color:var(--muted);margin-left:8px">${s.symbol} · ${s.sector || ''}</span>
+                      <strong style="font-size:16px;cursor:pointer" class="pick-symbol" data-sym="${esc(s.symbol)}">${esc(s.name || s.symbol)}</strong>
+                      <span style="color:var(--muted);margin-left:8px">${esc(s.symbol)} · ${esc(s.sector || '')}</span>
                     </div>
                     <span class="score ${(s.score || 0) >= 70 ? 'good' : (s.score || 0) >= 40 ? 'mid' : 'bad'}">${Math.min(s.score || 0, 100).toFixed(1)}</span>
                   </div>
@@ -354,7 +355,7 @@
         });
 
       } catch (e) {
-        body.innerHTML = `<h2>${p.name}</h2><p style="color:var(--bad)">로드 실패: ${e.message}</p>`;
+        body.innerHTML = `<h2>${esc(p.name)}</h2><p style="color:var(--bad)">로드 실패: ${esc(e.message)}</p>`;
       }
     }
 
