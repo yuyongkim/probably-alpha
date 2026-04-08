@@ -84,7 +84,7 @@
   color:#a8bed8;
   font:12px/1 "IBM Plex Mono", monospace;
   cursor:pointer;
-  transition:all var(--transition-fast);
+  transition:border-color var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
 }
 .chart-range-button.is-active{
   border-color:rgba(77,184,255,.40);

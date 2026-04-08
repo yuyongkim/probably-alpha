@@ -57,7 +57,7 @@
   -webkit-backdrop-filter:blur(14px);
   color:var(--text);
   text-decoration:none;
-  transition:all var(--transition-med);
+  transition:border-color var(--transition-med), background var(--transition-med), box-shadow var(--transition-med);
   position:relative;
   overflow:hidden;
 }

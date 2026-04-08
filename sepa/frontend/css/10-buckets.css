@@ -142,7 +142,7 @@
   background:var(--panel-glass);
   backdrop-filter:blur(12px);
   -webkit-backdrop-filter:blur(12px);
-  transition:all var(--transition-fast);
+  transition:border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
 }
 .link-button.bucket-entry:hover{
   transform:translateY(-2px);
