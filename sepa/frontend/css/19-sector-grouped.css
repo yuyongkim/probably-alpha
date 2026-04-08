@@ -14,9 +14,9 @@
   background:var(--panel);
   border:1px solid var(--line);
 }
-.sector-grouped-card.tone-border-good{border-left:3px solid var(--good)}
-.sector-grouped-card.tone-border-mid{border-left:3px solid var(--mid)}
-.sector-grouped-card.tone-border-bad{border-left:3px solid var(--bad)}
+.sector-grouped-card.tone-border-good{border-color:rgba(110,231,168,.22)}
+.sector-grouped-card.tone-border-mid{border-color:rgba(255,208,106,.18)}
+.sector-grouped-card.tone-border-bad{border-color:rgba(255,143,143,.18)}
 .sector-grouped-card__head{
   display:flex;
   justify-content:space-between;
