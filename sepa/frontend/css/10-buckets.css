@@ -145,7 +145,7 @@
   transition:border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast);
 }
 .link-button.bucket-entry:hover{
-  transform:translateY(-2px);
+  
   border-color:rgba(128,208,255,.28);
   background:rgba(14,28,45,.80);
   box-shadow:0 20px 40px rgba(0,0,0,.22), 0 0 24px var(--accent-glow);

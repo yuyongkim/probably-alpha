@@ -49,8 +49,6 @@
   border-radius:999px;
   border:1px solid rgba(92,133,171,.14);
   background:rgba(10,21,35,.55);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
   color:#c8ddf2;
   font-weight:500;
   font-size:13px;
@@ -59,7 +57,6 @@
   position:relative;
 }
 .nav-link:hover{
-  transform:translateY(-1px);
   border-color:var(--accent-ring);
   background:rgba(19,39,63,.85);
   color:var(--text);

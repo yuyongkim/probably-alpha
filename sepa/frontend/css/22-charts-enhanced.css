@@ -62,8 +62,6 @@
   border-radius:999px;
   border:1px solid rgba(92,133,171,.12);
   background:rgba(7,18,30,.85);
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
   color:var(--text-label);
   font:11px/1.2 "IBM Plex Mono", monospace;
   letter-spacing:.02em;
@@ -79,8 +77,6 @@
   border-radius:999px;
   border:1px solid rgba(92,133,171,.14);
   background:rgba(7,18,30,.85);
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
   color:var(--text-label);
   font:12px/1 "IBM Plex Mono", monospace;
   cursor:pointer;
@@ -106,7 +102,5 @@
   border-radius:var(--radius-md);
   border:1px solid rgba(92,133,171,.10);
   background:rgba(4,10,18,.90);
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
   overflow:hidden;
 }

@@ -28,7 +28,7 @@ thead{
   border-bottom:2px solid rgba(77,184,255,.12);
 }
 tbody tr{
-  transition:background var(--transition-fast), box-shadow var(--transition-fast);
+  transition:background 0.1s ease;
 }
 tbody tr:nth-child(even){
   background:rgba(12,25,38,.25);

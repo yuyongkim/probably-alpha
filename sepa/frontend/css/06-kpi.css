@@ -15,12 +15,10 @@
   border-radius:var(--radius-md);
   border:1px solid rgba(92,133,171,.14);
   background:var(--panel-glass);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
   transition:transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 .kpi:hover{
-  transform:translateY(-2px);
+  
   border-color:var(--accent-ring);
   box-shadow:0 12px 32px rgba(0,0,0,.20), 0 0 0 1px var(--line-glow);
 }
@@ -58,13 +56,11 @@
   border-radius:var(--radius-sm);
   border:1px solid rgba(92,133,171,.12);
   background:var(--panel-glass);
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
   transition:transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
   position:relative;
 }
 .kpi-card:hover{
-  transform:translateY(-2px);
+  
   border-color:rgba(77,184,255,.22);
   box-shadow:0 12px 28px rgba(0,0,0,.20);
 }

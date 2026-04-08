@@ -1,11 +1,9 @@
-/* === Performance Fix: eliminate GPU-heavy effects causing flicker === */
+/* === Performance Fix: remaining GPU-heavy effects === */
+/* Most fixes are now integrated into base CSS files.
+   This file only handles edge cases and supplementary overrides. */
 
-/* ── 1. KILL ALL backdrop-filter blur (main culprit) ── */
-.panel,
-.control-band,
-.analysis-panel,
+/* ── 1. Kill remaining backdrop-filter on dynamically styled elements ── */
 .subpage-hero,
-.page-nav,
 .page-footer,
 .back-to-top,
 .note-strip,
@@ -18,108 +16,21 @@
   backdrop-filter: none !important;
 }
 
-/* Compensate lost blur with slightly more opaque backgrounds */
-.panel {
-  background: rgba(12, 25, 38, 0.92) !important;
-}
-.control-band {
-  background:
-    linear-gradient(180deg, rgba(10, 20, 34, 0.96), rgba(7, 16, 28, 0.94)) !important;
-}
-.analysis-panel {
-  background:
-    radial-gradient(ellipse 50% 40% at 5% 0%, rgba(77, 184, 255, 0.08), transparent),
-    linear-gradient(180deg, rgba(12, 24, 39, 0.97), rgba(6, 14, 24, 0.98)) !important;
-}
-.page-nav {
-  background: rgba(6, 14, 24, 0.96) !important;
-}
 .page-footer {
-  background: linear-gradient(180deg, rgba(10, 20, 34, 0.94), rgba(6, 14, 24, 0.90)) !important;
+  background: linear-gradient(180deg, rgba(10, 20, 34, 0.94), rgba(6, 14, 24, 0.90));
 }
 .back-to-top {
-  background: rgba(12, 25, 38, 0.96) !important;
+  background: rgba(12, 25, 38, 0.96);
 }
 .chart-note-pill,
 .chart-range-button {
-  background: rgba(7, 18, 30, 0.96) !important;
+  background: rgba(7, 18, 30, 0.96);
 }
 .chart-surface {
-  background: rgba(4, 10, 18, 0.96) !important;
+  background: rgba(4, 10, 18, 0.96);
 }
 
-/* ── 2. REMOVE hover transforms that cause layout thrash ── */
-.panel:hover,
-.wizard-card:hover,
-.person-card:hover,
-.hub-link-card:hover,
-.bucket-card:hover,
-.sector-grouped-card:hover,
-.wizard-strat-card:hover,
-.definition-card:hover,
-.glossary-card:hover,
-.mini-stat-card:hover,
-.summary-card:hover,
-.note-pill:hover,
-button:hover {
-  transform: none !important;
-}
-
-/* ── 3. SIMPLIFY hover transitions: only color changes, no box-shadow ── */
-.panel {
-  transition: border-color 0.15s ease !important;
-}
-.panel:hover {
-  box-shadow: var(--shadow) !important;
-}
-
-tbody tr {
-  transition: background 0.1s ease !important;
-  will-change: background;
-}
-tbody tr:hover {
-  background: rgba(77, 184, 255, 0.06) !important;
-  box-shadow: inset 3px 0 0 var(--accent) !important;
-}
-/* Prevent hover flicker: stable row height */
-tbody tr td {
-  box-sizing: border-box;
-}
-
-.wizard-card,
-.person-card,
-.hub-link-card,
-.bucket-card,
-.sector-grouped-card,
-.wizard-strat-card,
-.glossary-card,
-.definition-card {
-  transition: border-color 0.15s ease !important;
-}
-.wizard-card:hover,
-.person-card:hover,
-.hub-link-card:hover,
-.bucket-card:hover,
-.sector-grouped-card:hover,
-.wizard-strat-card:hover,
-.glossary-card:hover,
-.definition-card:hover {
-  box-shadow: var(--shadow) !important;
-}
-
-.mini-stat-card,
-.summary-card,
-.note-pill,
-.profile-badge,
-.selector-chip {
-  transition: border-color 0.1s ease !important;
-}
-.mini-stat-card:hover,
-.summary-card:hover {
-  box-shadow: none !important;
-}
-
-/* ── 4. REMOVE heavy filter effects from SVG chart lines ── */
+/* ── 2. Remove heavy filter effects from SVG chart lines ── */
 .price-line {
   filter: none !important;
 }
@@ -131,40 +42,12 @@ tbody tr td {
   filter: none !important;
 }
 
-/* ── 5. SIMPLIFY chart card hover ── */
-.chart-card--terminal:hover {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), var(--shadow-lg) !important;
-}
-.svg-chart:hover {
-  border-color: rgba(92, 133, 171, 0.18);
-}
-
-/* ── 6. Reduce animation overhead ── */
-.section-shell,
-.hero-grid,
-.kpi-strip,
-.trader-tab-section,
-.control-band {
-  animation-duration: 0.2s !important;
-}
-
-/* ── 7. Contain paint for major sections ── */
-/* Only use style containment. layout containment can cause SVG sparklines
-   inside sector-grouped cards to vanish during scroll repaints. */
-.section-shell {
-  contain: style;
-}
-.chart-card,
-.kpi-card {
-  contain: style;
-}
-
-/* ── 8. Sparkline hover fix ── */
+/* ── 3. Sparkline hover fix ── */
 .sparkline-svg:hover line {
   opacity: 1 !important;
 }
 
-/* ── 9. Remove glow box-shadows from active states ── */
+/* ── 4. Simplify active state glow ── */
 .selector-chip.is-active {
   box-shadow: none !important;
 }

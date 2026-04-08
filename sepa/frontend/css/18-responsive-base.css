@@ -2,6 +2,7 @@
 .section-shell{
   margin-top:18px;
   scroll-margin-top:20px;
+  contain:style;
 }
 
 .section-header{
