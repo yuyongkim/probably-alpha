@@ -169,7 +169,7 @@ SEPA_FORCE_LIVE_REFRESH=1 python -m sepa.pipeline.refresh_market_data
 
 **필수** (`.env` 파일에 설정):
 - `KIWOOM_APP_KEY`, `KIWOOM_SECRET_KEY` — Kiwoom API 인증
-- `API_HOST` (기본 127.0.0.1), `API_PORT` (기본 8000), `FRONTEND_PORT` (기본 8080)
+- `API_HOST` (기본 127.0.0.1), `API_PORT` (기본 8200), `FRONTEND_PORT` (기본 8280)
 
 **선택**:
 - `SEPA_FORCE_LIVE_REFRESH=1` — 캐시 무시 강제 갱신

@@ -200,10 +200,10 @@ def build_cors_middleware_options(current_settings: Settings = settings) -> dict
         # Replace wildcard with specific allowed origins
         origins = [
             'https://sepa.yule.pics',
-            'http://localhost:8000',
-            'http://127.0.0.1:8000',
-            'http://localhost:8080',
-            'http://127.0.0.1:8080',
+            'http://localhost:8200',
+            'http://127.0.0.1:8200',
+            'http://localhost:8280',
+            'http://127.0.0.1:8280',
         ]
 
     return {
