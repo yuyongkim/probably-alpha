@@ -50,7 +50,7 @@
   color:var(--text);
 }
 .sector-grouped-card__stats small{
-  font-size:10px;
+  font-size:11px;
   color:var(--muted);
   text-transform:uppercase;
 }
@@ -80,7 +80,7 @@
 }
 .sector-grouped-card__table .company-cell small{
   display:block;
-  font-size:10px;
+  font-size:11px;
   color:var(--muted);
 }
 .sparkline-cell{

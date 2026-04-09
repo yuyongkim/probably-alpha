@@ -133,7 +133,7 @@
 .profile-kv dd{margin:0;font-weight:600;color:var(--text)}
 .profile-checks{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 .profile-check{
-  font-size:10px;
+  font-size:11px;
   padding:2px 6px;
   border-radius:4px;
   background:rgba(138,240,184,.12);
@@ -152,7 +152,7 @@
   text-align:center;
 }
 .profile-exec-grid .exec-item{font-size:12px}
-.profile-exec-grid .exec-item .label{color:var(--muted);font-size:10px}
+.profile-exec-grid .exec-item .label{color:var(--muted);font-size:11px}
 .profile-exec-grid .exec-item .value{font-size:15px;font-weight:700}
 /* Naver-style financial grid */
 .profile-fin-grid{
@@ -170,7 +170,7 @@
   align-items:center;
   padding:4px 2px;
 }
-.fin-label{font-size:10px;color:var(--muted);text-transform:uppercase}
+.fin-label{font-size:11px;color:var(--muted);text-transform:uppercase}
 .fin-value{font-size:13px;font-weight:600;color:var(--text)}
 
 /* ── Financial Performance Table (Naver-style) ── */
@@ -203,7 +203,7 @@
 }
 .fin-th{
   padding:6px 8px;
-  font-size:10px;
+  font-size:11px;
   font-weight:600;
   color:var(--muted);
   text-align:right;

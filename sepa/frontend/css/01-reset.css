@@ -10,7 +10,7 @@ body{
     radial-gradient(ellipse 50% 50% at 50% 100%, rgba(77,184,255,.03), transparent),
     linear-gradient(180deg, #050d17 0%, #081220 50%, #060e18 100%);
   color:var(--text);
-  font:14px/1.65 "IBM Plex Sans KR", "Segoe UI", system-ui, sans-serif;
+  font:15px/1.6 "IBM Plex Sans KR", "Segoe UI", system-ui, sans-serif;
   text-rendering:optimizeLegibility;
 }
 h1,h2,h3,h4,p{margin:0}
