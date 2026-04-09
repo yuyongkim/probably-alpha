@@ -4,7 +4,7 @@
    ══════════════════════════════════════════════════════════ */
 
 .wizard-strat-card{
-  transition:all var(--transition-fast);
+  transition:border-color var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast), color var(--transition-fast);
 }
 .wizard-strat-card:hover{
   transform:translateY(-2px);

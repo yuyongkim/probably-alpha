@@ -162,7 +162,7 @@ tbody tr.is-selected td{
 /* ── 45. IMPROVED HUB LINK CARD ICONS ── */
 .hub-link-card{
   border-left:3px solid transparent;
-  transition:all var(--transition-med);
+  transition:border-color var(--transition-med), background var(--transition-med), box-shadow var(--transition-med), color var(--transition-med);
 }
 .hub-link-card:hover{
   border-left-color:var(--accent);
