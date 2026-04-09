@@ -30,16 +30,15 @@ def _csv_env(name: str, default: tuple[str, ...] = ()) -> tuple[str, ...]:
 
 
 def _default_cors_origins() -> tuple[str, ...]:
-    frontend_port = _int_env('FRONTEND_PORT', 8080)
+    api_port = _int_env('API_PORT', 8200)
+    frontend_port = _int_env('FRONTEND_PORT', 8280)
     frontend_host = os.getenv('FRONTEND_HOST', '127.0.0.1').strip() or '127.0.0.1'
-    origins: list[str] = []
+    origins: list[str] = ['https://sepa.yule.pics']
     hosts = ['127.0.0.1', 'localhost'] if frontend_host in {'0.0.0.0', '127.0.0.1'} else [frontend_host]
     for host in hosts:
-        origins.append(f'http://{host}:{frontend_port}')
-    # Always include the default dev frontend port (8080) if env overrides to a different port
-    if frontend_port != 8080:
-        for host in hosts:
-            origins.append(f'http://{host}:8080')
+        origins.append(f'http://{host}:{api_port}')
+        if frontend_port != api_port:
+            origins.append(f'http://{host}:{frontend_port}')
     return tuple(dict.fromkeys(origins))
 
 
@@ -58,9 +57,9 @@ class Settings:
     eia_api_key: str = os.getenv("EIA_API_KEY", "")
 
     api_host: str = os.getenv("API_HOST", "127.0.0.1")
-    api_port: int = _int_env("API_PORT", 8000)
+    api_port: int = _int_env("API_PORT", 8200)
     frontend_host: str = os.getenv("FRONTEND_HOST", "127.0.0.1")
-    frontend_port: int = _int_env("FRONTEND_PORT", 8080)
+    frontend_port: int = _int_env("FRONTEND_PORT", 8280)
 
     cors_origins: tuple[str, ...] = field(default_factory=lambda: _csv_env("SEPA_CORS_ORIGINS", _default_cors_origins()))
     cors_allow_credentials: bool = _bool_env("SEPA_CORS_ALLOW_CREDENTIALS", False)

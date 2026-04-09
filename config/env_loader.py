@@ -37,7 +37,8 @@ def _candidate_paths(path: Path | None = None) -> list[Path]:
     shared_path = Path(shared_env) if shared_env else None
     root_env = _repo_root() / '.env'
     cwd_env = Path.cwd() / '.env'
-    candidates = [shared_path, *_desktop_quantdb_env_candidates(), root_env, cwd_env]
+    # Local .env takes priority over QuantDB fallback
+    candidates = [shared_path, root_env, cwd_env, *_desktop_quantdb_env_candidates()]
 
     deduped: list[Path] = []
     seen: set[str] = set()
