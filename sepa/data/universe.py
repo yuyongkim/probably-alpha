@@ -2,8 +2,13 @@ from __future__ import annotations
 
 import csv
 import os
+import time
 from functools import lru_cache
 from pathlib import Path
+
+_universe_cache: list[dict[str, str]] | None = None
+_universe_cache_ts: float = 0.0
+_UNIVERSE_TTL = 300.0  # 5 minutes
 
 from sepa.data.quantdb import health as quantdb_health
 from sepa.data.quantdb import read_universe as read_quantdb_universe
@@ -122,6 +127,18 @@ def _cached_quantdb_universe(limit: int, markets_key: str) -> tuple[dict[str, st
 
 
 def load_universe(path: Path | None = None) -> list[dict[str, str]]:
+    global _universe_cache, _universe_cache_ts
+    if path is None and _universe_cache is not None and (time.time() - _universe_cache_ts) < _UNIVERSE_TTL:
+        return _universe_cache
+
+    result = _load_universe_uncached(path)
+    if path is None:
+        _universe_cache = result
+        _universe_cache_ts = time.time()
+    return result
+
+
+def _load_universe_uncached(path: Path | None = None) -> list[dict[str, str]]:
     # Priority 1: ohlcv.db symbol_meta (fastest, most complete)
     try:
         from sepa.data.ohlcv_db import get_active_universe, DB_PATH
