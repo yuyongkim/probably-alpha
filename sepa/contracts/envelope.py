@@ -9,6 +9,12 @@ import os
 import uuid
 from datetime import datetime
 
+from sepa.data.price_history import latest_trading_date
+
+
+def _default_date_dir() -> str:
+    return latest_trading_date()
+
 
 _RUN_ID: str | None = None
 
@@ -40,7 +46,7 @@ def wrap_output(
     """
     envelope: dict = {
         "schema_version": schema_version,
-        "date": date_dir or datetime.now().strftime("%Y%m%d"),
+        "date": date_dir or _default_date_dir(),
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "pipeline_run_id": _get_run_id(),
         "stale_data": stale_data,

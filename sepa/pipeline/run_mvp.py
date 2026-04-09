@@ -35,7 +35,8 @@ def _maybe_refresh_live_data(enabled: bool) -> None:
 
 
 def run_pipeline(as_of_date: str | None = None, refresh_live: bool = True) -> str:
-    date_dir = normalize_date_token(as_of_date) or datetime.now().strftime('%Y%m%d')
+    from sepa.data.price_history import latest_trading_date
+    date_dir = normalize_date_token(as_of_date) or latest_trading_date()
     reset_run_id()
     _maybe_refresh_live_data(enabled=refresh_live and not as_of_date)
 

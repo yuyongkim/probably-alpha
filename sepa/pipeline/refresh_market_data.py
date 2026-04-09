@@ -105,7 +105,8 @@ def main() -> None:
     cached_updated = 0
     yf_updated = 0
     missing: list[str] = []
-    today_token = datetime.now().date().isoformat()
+    from sepa.data.price_history import latest_trading_date
+    today_token = latest_trading_date()
     force_live_refresh = os.getenv('SEPA_FORCE_LIVE_REFRESH', '0').strip() == '1'
 
     for sym in symbols:

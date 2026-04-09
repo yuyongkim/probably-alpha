@@ -125,7 +125,8 @@ def _should_write_latest(date_dir: str) -> bool:
 
 
 def build_after_close(as_of_date: str | None = None, refresh_live: bool = True) -> str:
-    date_dir = normalize_date_token(as_of_date) or datetime.now().strftime('%Y%m%d')
+    from sepa.data.price_history import latest_trading_date
+    date_dir = normalize_date_token(as_of_date) or latest_trading_date()
     if refresh_live and not as_of_date:
         run_live_cycle()
     else:

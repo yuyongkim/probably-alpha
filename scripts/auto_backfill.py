@@ -25,8 +25,9 @@ from sepa.storage.recommendation_store import snapshot_exists
 
 
 def main() -> None:
-    today = datetime.now().strftime('%Y%m%d')
-    print(f'[auto-backfill] {today} - refreshing market data...')
+    from sepa.data.price_history import latest_trading_date
+    today = latest_trading_date()
+    print(f'[auto-backfill] {today} (latest trading date) - refreshing market data...')
 
     try:
         refresh_market_data()

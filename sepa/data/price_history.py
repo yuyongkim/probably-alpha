@@ -38,6 +38,61 @@ def is_business_date_token(value: str | None) -> bool:
         return False
 
 
+# ── KRX 공휴일 (주말 제외, 고정+변동) ──
+# 매년 업데이트 필요. 음력 기반 공휴일은 연도별 하드코딩.
+_KRX_HOLIDAYS: set[str] = {
+    # 2025
+    '20250101', '20250128', '20250129', '20250130',  # 신정, 설날
+    '20250301', '20250505', '20250506',               # 삼일절, 어린이날, 대체
+    '20250601', '20250606', '20250815',               # 석가탄신일, 현충일, 광복절
+    '20251003', '20251005', '20251006', '20251007',   # 개천절, 추석
+    '20251009', '20251225',                            # 한글날, 성탄절
+    # 2026
+    '20260101', '20260216', '20260217', '20260218',   # 신정, 설날
+    '20260301', '20260505', '20260519',               # 삼일절, 어린이날, 석가탄신일
+    '20260606', '20260815',                            # 현충일, 광복절
+    '20260924', '20260925', '20260926',               # 추석
+    '20261003', '20261009', '20261225',               # 개천절, 한글날, 성탄절
+    # 2027
+    '20270101', '20270205', '20270206', '20270207',   # 신정, 설날
+    '20270301', '20270505', '20270513',               # 삼일절, 어린이날, 석가탄신일
+    '20270606', '20270815',                            # 현충일, 광복절
+    '20271003', '20271009', '20271013', '20271014', '20271015',  # 개천절, 한글날, 추석
+    '20271225',                                        # 성탄절
+}
+
+
+def is_krx_trading_day(d: date) -> bool:
+    """주말과 KRX 공휴일을 모두 체크하여 실제 거래일인지 판단."""
+    if d.weekday() >= 5:
+        return False
+    return d.strftime('%Y%m%d') not in _KRX_HOLIDAYS
+
+
+def previous_trading_date(ref: date | None = None) -> str:
+    """ref 기준 직전 거래일(영업일)을 YYYYMMDD 형식으로 반환.
+
+    ref가 None이면 오늘 기준.
+    ref 자체가 거래일이면 ref의 전 거래일을 반환.
+    """
+    cursor = (ref or date.today()) - timedelta(days=1)
+    while not is_krx_trading_day(cursor):
+        cursor -= timedelta(days=1)
+    return cursor.strftime('%Y%m%d')
+
+
+def latest_trading_date(ref: date | None = None) -> str:
+    """ref 기준 가장 최근 거래일을 YYYYMMDD 형식으로 반환.
+
+    ref가 거래일이면 ref를 반환. 아니면 직전 거래일.
+    ref가 None이면 오늘 기준.
+    """
+    cursor = ref or date.today()
+    while not is_krx_trading_day(cursor):
+        cursor -= timedelta(days=1)
+    return cursor.strftime('%Y%m%d')
+
+
 def read_price_series(
     symbol: str,
     data_dir: Path = Path('data/market-data/ohlcv'),
