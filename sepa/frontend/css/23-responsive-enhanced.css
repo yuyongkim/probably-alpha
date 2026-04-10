@@ -175,15 +175,7 @@
   .analysis-summary{grid-template-columns:1fr}
   .mini-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 
-  .company-profile-dialog{
-    width:100vw;
-    max-width:100vw;
-    border-radius:var(--radius-md) var(--radius-md) 0 0;
-    max-height:85vh;
-  }
-  .profile-grid{grid-template-columns:1fr}
-  .profile-sections{grid-template-columns:1fr}
-  .profile-exec-grid{grid-template-columns:repeat(3,1fr)}
+  /* Company profile dialog mobile rules live in 20-company-dialog.css */
 
   .omega-plan{grid-template-columns:1fr}
 
