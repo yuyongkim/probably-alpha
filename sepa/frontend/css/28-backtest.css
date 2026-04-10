@@ -58,3 +58,54 @@
 .bt-inline-row__input--xs{width:60px}
 .bt-inline-row__input--sm{width:70px}
 .text-right{text-align:right}
+
+/* ══════════════════════════════════════════════════════════
+   MOBILE (backtest page)
+   ══════════════════════════════════════════════════════════ */
+
+@media (max-width:768px){
+  .bt-panel,
+  .bt-panel--spaced{
+    padding:var(--spacing-md);
+  }
+  .bt-grid,
+  .bt-grid--narrow{
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+  .bt-inline-row{
+    margin-left:20px;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .bt-inline-row .rule-label{
+    flex-basis:100%;
+  }
+  .bt-inline-row__input--xs,
+  .bt-inline-row__input--sm,
+  .bt-inline-row .rule-input--xs,
+  .bt-inline-row .rule-input--sm{
+    width:80px;
+    min-height:40px;
+  }
+  .bt-run-btn{
+    width:100%;
+    padding:14px 20px;
+  }
+  .bt-trade-log{
+    max-height:60vh;
+  }
+  .bt-preset-grid{
+    grid-template-columns:1fr;
+  }
+  .bt-result-kpi{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media (max-width:480px){
+  .bt-inline-row{margin-left:12px}
+  .bt-section-title,
+  .bt-section-subtitle{font-size:14px}
+  .bt-result-kpi dd{font-size:18px}
+}
