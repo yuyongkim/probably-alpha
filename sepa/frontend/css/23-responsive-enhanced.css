@@ -229,11 +229,20 @@
   .eps-range-meta{flex-direction:column;align-items:flex-start;gap:6px}
 }
 
-/* Ultra-small: 380px */
+/* Ultra-small: 480px */
 @media (max-width:480px){
   body{padding:8px}
   h1{font-size:20px}
-  .kpi-strip{grid-template-columns:1fr}
-  .mini-stat-grid{grid-template-columns:1fr}
-  .panel{padding:12px;border-radius:16px}
+  /* Keep 2-col KPI strip — single column is too tall on phones */
+  .kpi-strip{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .kpi-card{padding:10px}
+  .kpi-card strong{font-size:16px}
+  .mini-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .panel{padding:12px;border-radius:var(--radius-md)}
+  /* Tighter section rhythm */
+  .section-shell{margin-top:12px}
+  .section-header{margin-bottom:8px}
+  /* Page nav: wrap tighter, smaller chips */
+  .page-nav{gap:6px}
+  .nav-link{padding:8px 14px;font-size:12px;min-height:36px}
 }
