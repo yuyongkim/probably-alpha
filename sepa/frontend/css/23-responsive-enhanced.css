@@ -106,26 +106,46 @@
     border-radius:var(--radius-md);
   }
 
-  /* Horizontal scroll for tables on mobile */
-  .panel > table,
-  .chart-card > table,
-  article > table{
+  /* Horizontal scroll for tables on mobile.
+     Panels have overflow:hidden so we make the panel itself scroll
+     horizontally when it contains a wide table. Using display:block
+     on the panel breaks its grid layout, so we use a wrapper approach:
+     the table keeps its natural layout and scrolls within the article. */
+  .panel{
+    overflow:hidden auto;
+  }
+  article.panel > table{
     display:block;
     overflow-x:auto;
     -webkit-overflow-scrolling:touch;
+    max-width:100%;
+    /* Let columns size to content, no forced width */
+    table-layout:auto;
   }
-  .panel > table thead,
-  .panel > table tbody,
-  .panel > table tr,
-  .chart-card > table thead,
-  .chart-card > table tbody,
-  .chart-card > table tr{
-    display:table;
-    width:100%;
-    table-layout:fixed;
+  /* Minimum table widths so content doesn't squish — scroll kicks in */
+  article.panel > table{min-width:520px}
+  /* First column (rank/name) stays visible via sticky positioning */
+  article.panel > table thead th:first-child,
+  article.panel > table tbody td:first-child{
+    position:sticky;
+    left:0;
+    background:rgba(8,18,31,.96);
+    z-index:1;
   }
-  .panel > table{
-    min-width:600px;
+  article.panel > table thead th:first-child{
+    background:rgba(12,25,38,.96);
+  }
+  /* Scroll hint: subtle shadow on right edge */
+  article.panel > table{
+    background:
+      linear-gradient(to right, transparent 96%, rgba(77,184,255,.10) 100%),
+      transparent;
+  }
+  /* Compact cell padding on mobile */
+  article.panel > table th,
+  article.panel > table td{
+    padding:10px 10px;
+    white-space:nowrap;
   }
 
   .section-header{
