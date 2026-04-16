@@ -16,6 +16,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from urllib.request import urlopen
+from urllib.error import URLError
 
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
@@ -32,7 +33,11 @@ def fetch(endpoint: str) -> dict | list:
 
 def collect_market_data(date_dir: str | None = None) -> dict:
     query = f"?date_dir={date_dir}" if date_dir else ""
-    dashboard = fetch(f"/api/dashboard{query}")
+    try:
+        dashboard = fetch(f"/api/dashboard{query}")
+    except URLError:
+        from sepa.api.services_dashboard import dashboard_payload
+        dashboard = dashboard_payload(date_dir)
 
     sectors = dashboard.get("sectors", {}).get("items", [])
     stocks = dashboard.get("stocks", {}).get("items", [])

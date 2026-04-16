@@ -1,10 +1,6 @@
 import { marketWizardPeople, peopleSeries } from './market-wizards-people-data.js?v=1775488167';
-import { traderProfiles } from './market-wizards-data.js?v=1775488167';
+import { getFullProfile, getPresetBinding, presetBindingBadge } from './trader-tabs.js?v=1775488167';
 import { setupPageI18n, txt } from './i18n.js?v=1775488167';
-
-function _getProfile(personId) {
-  return traderProfiles.find((p) => p.id === personId) || null;
-}
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -13,6 +9,34 @@ function escapeHtml(value) {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;');
+}
+
+const state = {
+  presetCatalog: new Map(),
+};
+
+function getPresetMeta(presetId) {
+  return presetId ? state.presetCatalog.get(presetId) || null : null;
+}
+
+function runtimeConditionsMarkup(profile, presetMeta) {
+  const runtimeConditions = presetMeta?.runtime_conditions || [];
+  const formula = profile?.preset?.formula || '';
+  if (!runtimeConditions.length && !formula) return '';
+  return `
+    <div style="margin-top:10px">
+      ${formula ? `
+        <h4 style="color:var(--accent);font-size:13px;margin:10px 0 4px">${txt({ ko: '프리셋 수식', en: 'Preset formula' })}</h4>
+        <div class="logic-formula" style="font-size:12px;margin:0 0 10px">${escapeHtml(formula)}</div>
+      ` : ''}
+      ${runtimeConditions.length ? `
+        <h4 style="color:var(--accent);font-size:13px;margin:10px 0 4px">${txt({ ko: '런타임 조건식', en: 'Runtime conditions' })}</h4>
+        <ul style="font-size:13px;color:var(--muted);padding-left:18px;line-height:1.8;margin:0">
+          ${runtimeConditions.map((condition) => `<li><code>${escapeHtml(condition)}</code></li>`).join('')}
+        </ul>
+      ` : ''}
+    </div>
+  `;
 }
 
 function peopleInSeries(seriesId) {
@@ -59,73 +83,14 @@ function renderSummary() {
   }).join('');
 }
 
-// Preset mapping: person id -> backtest preset id
-const PERSON_PRESET = {
-  'mark-minervini': 'minervini',
-  'william-oneil': 'oneil',
-  'david-ryan': 'oneil',
-  'richard-dennis': 'dennis',
-  'ed-seykota': 'seykota',
-  'larry-hite': 'hite',
-  'paul-tudor-jones': 'jones',
-  'richard-driehaus': 'driehaus',
-  'marty-schwartz': 'schwartz',
-  'linda-bradford-raschke': 'raschke',
-  'mark-weinstein': 'weinstein',
-  'joel-greenblatt': 'greenblatt',
-  'ray-dalio': 'dalio',
-  'stanley-druckenmiller': 'druckenmiller',
-  'bruce-kovner': 'kovner',
-  'jesse-livermore': 'livermore',
-  'nicolas-darvas': 'darvas',
-  'steve-cohen': 'cohen',
-  'michael-steinhardt': 'steinhardt',
-  'edward-thorp': 'thorp',
-  'peter-brandt': 'brandt',
-  'ahmet-okumus': 'okumus',
-  'dana-galante': 'galante',
-  'jason-shapiro': 'shapiro',
-  'gary-bielfeldt': 'bielfeldt',
-  'gil-blake': 'blake',
-  // Cluster mappings (similar style → nearest preset)
-  'michael-marcus': 'livermore',
-  'tom-basso': 'seykota',
-  'william-eckhardt': 'dennis',
-  'al-weiss': 'brandt',
-  'victor-sperandeo': 'kovner',
-  'jim-rogers': 'kovner',
-  'randy-mckay': 'schwartz',
-  'bill-lipschutz': 'kovner',
-  'stuart-walton': 'darvas',
-  'michael-masters': 'cohen',
-  'mark-d-cook': 'schwartz',
-  'buddy-fletcher': 'greenblatt',
-  'steve-watson': 'cohen',
-  'colm-oshea': 'kovner',
-  'larry-benedict': 'schwartz',
-  'scott-ramsey': 'brandt',
-  'jaffray-woodriff': 'thorp',
-  'jamie-mai': 'shapiro',
-  'michael-platt': 'hite',
-  'steve-clark': 'weinstein',
-  'martin-taylor': 'kovner',
-  'tom-claugus': 'greenblatt',
-  'joe-vidich': 'greenblatt',
-  'kevin-daly': 'greenblatt',
-  'jimmy-balodimas': 'shapiro',
-  'john-netto': 'schwartz',
-  'chris-camillo': 'darvas',
-  'marsten-parker': 'seykota',
-  'michael-kean': 'dalio',
-  'pavel-krejci': 'hite',
-};
 
 function personCard(person) {
-  const presetId = PERSON_PRESET[person.id] || '';
+  const binding = getPresetBinding(person.id);
+  const presetId = binding.presetId || '';
   const hasPreset = !!presetId;
-  // Try to get detailed profile from market-wizards-data
-  const profile = _getProfile(person.id);
-  const hasProfile = profile && profile.philosophy && profile.philosophy.length > 0;
+  const profile = getFullProfile(person.id);
+  const presetMeta = getPresetMeta(presetId);
+  const hasProfile = !!profile;
 
   return `
     <article class="person-card" data-person-id="${escapeHtml(person.id)}" style="cursor:pointer">
@@ -135,16 +100,16 @@ function personCard(person) {
           <h3>${escapeHtml(person.name)}</h3>
         </div>
         <div style="display:flex;gap:4px">
-          ${hasPreset ? '<span style="font-size:10px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:10px">전략</span>' : ''}
-          ${hasProfile ? '<span style="font-size:10px;background:#7c3aed;color:#fff;padding:2px 8px;border-radius:10px">프로필</span>' : ''}
+          ${hasPreset ? presetBindingBadge(binding.binding) : presetBindingBadge('draft')}
+          ${hasProfile ? `<span style="font-size:10px;background:#7c3aed;color:#fff;padding:2px 8px;border-radius:10px">${escapeHtml(txt({ ko: '프로필', en: 'Profile' }))}</span>` : ''}
         </div>
       </div>
       <p class="person-card__brief">${escapeHtml(person.brief)}</p>
       <div class="person-meta">
         ${person.keywords.map((keyword) => `<span class="wizard-chip">${escapeHtml(keyword)}</span>`).join('')}
+        ${hasPreset ? `<span class="wizard-chip">${escapeHtml(binding.presetLabel)}</span>` : ''}
       </div>
 
-      <!-- Expandable detail section -->
       <div class="person-card__detail" id="detail-${escapeHtml(person.id)}" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
         ${hasProfile ? `
           <div style="margin-bottom:10px">
@@ -168,6 +133,7 @@ function personCard(person) {
             <ul style="font-size:13px;color:var(--muted);padding-left:18px;line-height:1.8;margin:0">
               ${profile.koreaPlaybook.map((c) => `<li>${escapeHtml(c)}</li>`).join('')}
             </ul>` : ''}
+          ${runtimeConditionsMarkup(profile, presetMeta)}
         ` : `<p style="font-size:13px;color:var(--muted)">${escapeHtml(person.brief)}</p>`}
       </div>
 
@@ -210,6 +176,17 @@ function renderSections() {
 function getApiBase() {
   const el = document.getElementById('apiBase');
   return el ? el.value.replace(/\/+$/, '') : '';
+}
+
+async function loadPresetCatalog() {
+  try {
+    const resp = await fetch(`${getApiBase()}/api/backtest/presets`);
+    const data = await resp.json();
+    state.presetCatalog = new Map((data.items || []).map((item) => [item.id, item]));
+  } catch (error) {
+    console.warn('Failed to load preset catalog:', error);
+    state.presetCatalog = new Map();
+  }
 }
 
 async function screenTrader(presetId, personId) {
@@ -274,13 +251,17 @@ function bindDetailToggle() {
   });
 }
 
-setupPageI18n('market-wizards-people', () => {
+function renderAll() {
   renderSummary();
   renderSections();
   bindScreenButtons();
   bindDetailToggle();
+}
+
+setupPageI18n('market-wizards-people', () => {
+  renderAll();
 });
-renderSummary();
-renderSections();
-bindScreenButtons();
-bindDetailToggle();
+renderAll();
+loadPresetCatalog().finally(() => {
+  renderAll();
+});

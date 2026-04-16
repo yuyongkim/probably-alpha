@@ -1,4 +1,4 @@
-import { getTraderProfile, traderProfiles } from './market-wizards-data.js?v=1775488167';
+import { getFullProfile, renderTraderTabs, presetBindingBadge, TRADER_BINDING_FILTERS } from './trader-tabs.js?v=1775488167';
 import { setupPageI18n, txt } from './i18n.js?v=1775488167';
 import { termTip, setupTermTips } from './term-tips.js?v=1775488167';
 import {
@@ -29,6 +29,7 @@ import {
 } from './renderers/stock-profile.js?v=1775488167';
 
 const DEFAULT_API_BASE = '';
+const DEFAULT_TRADER_ID = 'ed-seykota';
 
 const state = {
   catalog: null,
@@ -38,6 +39,8 @@ const state = {
   stocks: [],
   recMap: new Map(),
   weeklyBuckets: [],
+  presetCatalog: new Map(),
+  traderBindingFilter: 'all',
 };
 
 /* ── Helpers (page-specific) ── */
@@ -212,6 +215,30 @@ function buttonMarkup(profile, activeId) {
   return `<a class="selector-chip ${active}" href="#${escapeHtml(profile.id)}">${escapeHtml(profile.name)}</a>`;
 }
 
+function renderBindingFilters() {
+  const root = $('wizardSelectorFilters');
+  if (!root) return;
+  root.innerHTML = TRADER_BINDING_FILTERS.map((item) => {
+    const active = item.id === state.traderBindingFilter ? 'is-active' : '';
+    return `<button type="button" class="selector-chip ${active}" data-binding-filter="${escapeHtml(item.id)}">${escapeHtml(txt(item.label))}</button>`;
+  }).join('');
+}
+
+function runtimeConditionsMarkup(profile) {
+  const presetId = profile?.presetBinding?.presetId || '';
+  const presetMeta = presetId ? state.presetCatalog.get(presetId) : null;
+  const runtimeConditions = presetMeta?.runtime_conditions || [];
+  if (!runtimeConditions.length) return '';
+  return `
+    <article class="panel strategy-card">
+      <h3>${escapeHtml(txt({ ko: '런타임 조건식', en: 'Runtime conditions' }))}</h3>
+      <ul class="wizard-list">
+        ${runtimeConditions.map((condition) => `<li><code>${escapeHtml(condition)}</code></li>`).join('')}
+      </ul>
+    </article>
+  `;
+}
+
 function renderPreset(profile) {
   const presetExplain = $('presetExplain');
   const presetFormula = $('presetFormula');
@@ -342,12 +369,15 @@ function renderDetail(profile) {
   const selector = $('wizardSelector');
   if (!detail || !meta || !selector) return;
 
-  selector.innerHTML = traderProfiles.map((profileItem) => buttonMarkup(profileItem, profile.id)).join('');
+  renderTraderTabs('wizardSelector', profile.id, state.traderBindingFilter);
+  renderBindingFilters();
   meta.innerHTML = `
+    ${presetBindingBadge(profile.presetBinding?.binding || 'draft')}
     <span class="chip" style="background:#2563eb;color:#fff;font-weight:600">${escapeHtml(profile.style)}</span>
     <span class="chip" style="background:#7c3aed;color:#fff">${escapeHtml(profile.fit.focus)}</span>
     <span class="chip" style="background:#0d9488;color:#fff">${escapeHtml(profile.fit.timeframe)}</span>
     <span class="chip" style="background:#d97706;color:#fff">${escapeHtml(profile.fit.trigger)}</span>
+    ${profile.presetBinding?.presetLabel ? `<span class="chip" style="background:#111827;color:#cbd5e1;border:1px solid rgba(148,163,184,.35)">${escapeHtml(profile.presetBinding.presetLabel)}</span>` : ''}
   `;
 
   detail.innerHTML = `
@@ -384,6 +414,7 @@ function renderDetail(profile) {
           ${profile.checkpoints.map((item) => `<li>${escapeHtml(item)}</li>`).join('')}
         </ul>
       </article>
+      ${runtimeConditionsMarkup(profile)}
       <article class="panel strategy-card">
         <h3>${escapeHtml(txt({ ko: '실행 순서', en: 'Execution Order' }))}</h3>
         <ol class="wizard-list wizard-list--ordered">
@@ -402,7 +433,7 @@ function renderDetail(profile) {
 
 function activeProfile() {
   const raw = window.location.hash.replace(/^#/, '').trim();
-  return getTraderProfile(raw);
+  return getFullProfile(raw || DEFAULT_TRADER_ID) || getFullProfile(DEFAULT_TRADER_ID);
 }
 
 function syncHash() {
@@ -682,6 +713,18 @@ function bindEvents() {
   $('btnPresetLatest')?.addEventListener('click', async () => {
     await loadPresetContext('');
   });
+  $('wizardSelector')?.addEventListener('click', (event) => {
+    const chip = event.target.closest('[data-trader-id]');
+    if (!chip) return;
+    const traderId = chip.dataset.traderId || DEFAULT_TRADER_ID;
+    window.location.hash = traderId === 'default' ? DEFAULT_TRADER_ID : traderId;
+  });
+  $('wizardSelectorFilters')?.addEventListener('click', (event) => {
+    const chip = event.target.closest('[data-binding-filter]');
+    if (!chip) return;
+    state.traderBindingFilter = chip.dataset.bindingFilter || 'all';
+    syncHash();
+  });
   window.addEventListener('hashchange', () => syncHash());
 }
 
@@ -855,6 +898,7 @@ async function loadTraderPresets() {
   try {
     const data = await fetchJSON(`${DEFAULT_API_BASE}/api/backtest/presets`);
     const items = data.items || [];
+    state.presetCatalog = new Map(items.map((item) => [item.id, item]));
     const sel = $('traderScreenPreset');
     if (!sel) return;
     items.forEach(p => {
@@ -864,6 +908,7 @@ async function loadTraderPresets() {
       sel.appendChild(opt);
     });
     if (items.length) sel.value = items[0].id;
+    syncHash();
   } catch (e) {
     console.warn('Failed to load presets:', e);
   }

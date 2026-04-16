@@ -498,6 +498,247 @@ export const traderProfiles = [
       filters: { minAlpha: 35 },
     },
   },
+  {
+    id: 'michael-marcus',
+    name: 'Michael Marcus',
+    englishName: 'Michael Marcus',
+    style: 'Trend / Macro',
+    philosophy: [
+      'Press the big move when the tape and macro backdrop agree, but scale only when the market keeps proving the thesis.',
+      'The edge is not constant activity. It is concentration during rare periods when trend and narrative align.'
+    ],
+    checkpoints: [
+      'Sector leadership is already visible before adding size.',
+      'Breakout or continuation entry happens above rising moving averages.',
+      'Volume and persistence confirm the move is institutional, not random.',
+      'Risk is cut quickly if the trend loses character.'
+    ],
+    koreaPlaybook: [
+      'Use Korea Presets after sector leadership is clear, especially when semis, defense, or exporters dominate the tape.',
+      'Treat the first leader as a probe and add only if the sector keeps widening.',
+      'Avoid laggards inside the same theme even if valuation looks cheaper.'
+    ],
+    projectHooks: ['Sector drill-down for concentration', 'Leader stock score for adding size', 'Omega plan before pressing winners'],
+    fit: { focus: 'Trend + macro alignment', timeframe: 'Weeks to months', trigger: 'Theme-confirmed continuation', risk: 'Concentrate only after proof' },
+    preset: {
+      headline: 'Marcus-style overlay rewards sectors where trend strength and capital concentration reinforce each other.',
+      formula: 'Preset = 0.20 Leader + 0.18 Sector + 0.18 Alpha + 0.14 Return120 + 0.12 Recommendation + 0.10 Beta + 0.08 R/R',
+      sectorWeights: { rs: 0.28, leader: 0.24, alpha: 0.20, beta: 0.10, ret: 0.18 },
+      stockWeights: { leader: 0.20, sector: 0.18, alpha: 0.18, ret: 0.14, recommendation: 0.12, beta: 0.10, rr: 0.08 },
+      filters: { minAlpha: 55, minRecommendation: 40 },
+    },
+  },
+  {
+    id: 'bill-lipschutz',
+    name: 'Bill Lipschutz',
+    englishName: 'Bill Lipschutz',
+    style: 'FX / Judgment / Risk-Reward',
+    philosophy: [
+      'A setup is only interesting when the payoff geometry is clearly favorable.',
+      'Narrative matters, but size should expand only when the risk-reward map is obvious.'
+    ],
+    checkpoints: [
+      'Target distance is materially larger than stop distance.',
+      'The stock is not extended far above the tactical moving average.',
+      'Trend bias is supportive, not conflicting.',
+      'The trade can be explained in one clean sentence.'
+    ],
+    koreaPlaybook: [
+      'Prefer names where a recent base or 20-day line gives a tight stop.',
+      'Skip stretched breakouts with weak upside room into visible overhead supply.',
+      'Use R-multiple and execution-plan quality before conviction labels.'
+    ],
+    projectHooks: ['Omega R/R column', 'Least-resistance signal', 'Execution plan sizing sanity check'],
+    fit: { focus: 'Risk-reward asymmetry', timeframe: 'Days to weeks', trigger: 'Tight-risk continuation', risk: 'Only take asymmetric setups' },
+    preset: {
+      headline: 'Lipschutz-style overlay leans hardest on R-multiple and tactical distance to invalidation.',
+      formula: 'Preset = 0.24 R/R + 0.18 Recommendation + 0.16 Beta + 0.14 Alpha + 0.12 Leader + 0.10 Sector + 0.06 Return120',
+      sectorWeights: { leader: 0.24, rs: 0.24, alpha: 0.18, beta: 0.18, ret: 0.16 },
+      stockWeights: { rr: 0.24, recommendation: 0.18, beta: 0.16, alpha: 0.14, leader: 0.12, sector: 0.10, ret: 0.06 },
+      filters: { minAlpha: 45, minRecommendation: 35 },
+    },
+  },
+  {
+    id: 'tom-basso',
+    name: 'Tom Basso',
+    englishName: 'Tom Basso',
+    style: 'Systems / Process Stability',
+    philosophy: [
+      'Process durability matters more than emotional excitement.',
+      'Good trades should feel ordinary because the position-sizing logic already did the hard work.'
+    ],
+    checkpoints: [
+      'Volatility is controlled enough for clean position sizing.',
+      'The trend is established before capital is committed.',
+      'Sector exposure is diversified rather than accidentally concentrated.',
+      'There is no need to predict every bar.'
+    ],
+    koreaPlaybook: [
+      'Favor steadier trend names over noisy momentum spikes.',
+      'Use weekly backtest stability and persistence before selecting concentrated leaders.',
+      'Hold only as long as the trend remains statistically normal.'
+    ],
+    projectHooks: ['Weekly preset performance', 'Persistence cards', 'ATR-aware execution discipline'],
+    fit: { focus: 'Stable trend participation', timeframe: 'Weeks to months', trigger: 'Orderly trend continuation', risk: 'Let sizing do the defense' },
+    preset: {
+      headline: 'Basso-style overlay prefers calm, scalable trends instead of the most explosive names on the board.',
+      formula: 'Preset = 0.20 Alpha + 0.18 Leader + 0.16 Sector + 0.14 Return120 + 0.12 Beta + 0.10 Recommendation + 0.10 R/R',
+      sectorWeights: { rs: 0.26, leader: 0.24, alpha: 0.20, beta: 0.12, ret: 0.18 },
+      stockWeights: { alpha: 0.20, leader: 0.18, sector: 0.16, ret: 0.14, beta: 0.12, recommendation: 0.10, rr: 0.10 },
+      filters: { minAlpha: 45 },
+    },
+  },
+  {
+    id: 'victor-sperandeo',
+    name: 'Victor Sperandeo',
+    englishName: 'Victor Sperandeo',
+    style: 'Macro / Turning Points',
+    philosophy: [
+      'The inflection matters more than the middle of the move.',
+      'Trend change becomes tradable when structure, participation, and regime evidence flip together.'
+    ],
+    checkpoints: [
+      'A recent reversal level is clearly broken.',
+      'Volume confirms that the change is real.',
+      'The broader market is not directly fighting the position.',
+      'Follow-through exists beyond the first breakout candle.'
+    ],
+    koreaPlaybook: [
+      'Watch sector promotion from watchlist to confirmed leader for early rotation entries.',
+      'Prefer names emerging from damaged charts into fresh Stage-2 style behavior.',
+      'Avoid late entries after the reversal has already become crowded.'
+    ],
+    projectHooks: ['Sector watchlist vs confirmed leader states', 'Breakout state labels', 'Past-date review of reversals'],
+    fit: { focus: 'Inflection and regime shift', timeframe: 'Days to weeks', trigger: 'Confirmed reversal pivot', risk: 'Need follow-through quickly' },
+    preset: {
+      headline: 'Sperandeo-style overlay hunts for early pivot confirmation rather than mature trend comfort.',
+      formula: 'Preset = 0.20 Beta + 0.18 Alpha + 0.16 LeastResistance + 0.14 Sector + 0.12 Leader + 0.10 Recommendation + 0.10 Return120',
+      sectorWeights: { beta: 0.26, rs: 0.22, alpha: 0.20, leader: 0.16, ret: 0.16 },
+      stockWeights: { beta: 0.20, alpha: 0.18, leastResistance: 0.16, sector: 0.14, leader: 0.12, recommendation: 0.10, ret: 0.10 },
+      filters: { minAlpha: 45 },
+    },
+  },
+  {
+    id: 'stuart-walton',
+    name: 'Stuart Walton',
+    englishName: 'Stuart Walton',
+    style: 'Stocks / Recovery / Stage Entry',
+    philosophy: [
+      'The best recovery trades still need institutional-quality structure.',
+      'The edge is buying the transition from repair to leadership, not the deepest damage.'
+    ],
+    checkpoints: [
+      'Price is reclaiming major long-term averages.',
+      'Volume expands on the reclaim attempt.',
+      'The sector backdrop is improving, not isolated.',
+      'The entry is still close enough to a logical stop.'
+    ],
+    koreaPlaybook: [
+      'Focus on names moving from base repair into fresh relative strength leadership.',
+      'Use Korea Presets to find stocks turning up with sector confirmation, not just dead-cat bounces.',
+      'Favor early stage-2 candidates over fully extended winners.'
+    ],
+    projectHooks: ['Stage-2 style candidates', 'Sector-grouped cards', 'Execution plan before committing size'],
+    fit: { focus: 'Recovery into leadership', timeframe: 'Weeks', trigger: 'High-volume reclaim', risk: 'Stop under repair range' },
+    preset: {
+      headline: 'Walton-style overlay looks for repaired structure that is just beginning to earn leadership status.',
+      formula: 'Preset = 0.20 Alpha + 0.18 Beta + 0.16 Sector + 0.14 Leader + 0.12 Recommendation + 0.10 Return120 + 0.10 LeastResistance',
+      sectorWeights: { alpha: 0.24, beta: 0.22, rs: 0.22, leader: 0.16, ret: 0.16 },
+      stockWeights: { alpha: 0.20, beta: 0.18, sector: 0.16, leader: 0.14, recommendation: 0.12, ret: 0.10, leastResistance: 0.10 },
+      filters: { minAlpha: 45 },
+    },
+  },
+  {
+    id: 'jeff-yass',
+    name: 'Jeff Yass',
+    englishName: 'Jeff Yass',
+    style: 'Options / Edge / Probability',
+    philosophy: [
+      'A trade without measurable edge is entertainment, not process.',
+      'Probability framing should be visible in both setup quality and position discipline.'
+    ],
+    checkpoints: [
+      'The setup has enough payoff skew.',
+      'The stock is liquid and structurally tradable.',
+      'The setup is repeatable, not just anecdotal.',
+      'Risk can be capped cleanly.'
+    ],
+    koreaPlaybook: [
+      'Prefer liquid KOSPI/KOSDAQ leaders where the stop and target are both visible on the chart.',
+      'Use probability-style thinking on repeatable breakout or continuation structures.',
+      'Avoid storytelling setups with no measurable invalidation.'
+    ],
+    projectHooks: ['R/R column', 'Preset consensus', 'Backtest buckets for repeatability'],
+    fit: { focus: 'Repeatable statistical edge', timeframe: 'Days to weeks', trigger: 'Structured setup with skew', risk: 'Cap downside cleanly' },
+    preset: {
+      headline: 'Yass-style overlay emphasizes repeatability, liquidity, and payoff asymmetry over narrative conviction.',
+      formula: 'Preset = 0.22 R/R + 0.18 Beta + 0.16 Alpha + 0.14 Recommendation + 0.12 Leader + 0.10 Sector + 0.08 Return120',
+      sectorWeights: { beta: 0.24, rs: 0.24, alpha: 0.20, leader: 0.16, ret: 0.16 },
+      stockWeights: { rr: 0.22, beta: 0.18, alpha: 0.16, recommendation: 0.14, leader: 0.12, sector: 0.10, ret: 0.08 },
+      filters: { minAlpha: 40 },
+    },
+  },
+  {
+    id: 'michael-lauer',
+    name: 'Michael Lauer',
+    englishName: 'Michael Lauer',
+    style: 'Value / Skeptical',
+    philosophy: [
+      'Cheapness alone is not enough; the setup still needs a reason to matter now.',
+      'Skeptical value work means separating true mispricing from obvious traps.'
+    ],
+    checkpoints: [
+      'Valuation is favorable versus peers.',
+      'Balance-sheet risk is tolerable.',
+      'There is some sign of demand improvement.',
+      'The thesis is not entirely dependent on hope.'
+    ],
+    koreaPlaybook: [
+      'Use value-style presets after confirming that selling pressure is no longer dominant.',
+      'Prefer stocks where low multiples are paired with emerging price repair.',
+      'Treat structurally broken names as drafts, not automatic buys.'
+    ],
+    projectHooks: ['Value screen metrics', 'Company profile balance-sheet view', 'Price repair via sector-grouped cards'],
+    fit: { focus: 'Skeptical value repair', timeframe: 'Weeks to quarters', trigger: 'Cheap with improving tape', risk: 'Avoid value traps' },
+    preset: {
+      headline: 'Lauer-style overlay blends valuation sensitivity with a requirement that the tape has stopped deteriorating.',
+      formula: 'Preset = 0.22 Gamma + 0.18 Recommendation + 0.16 Alpha + 0.14 Sector + 0.12 Leader + 0.10 Return120 + 0.08 Beta',
+      sectorWeights: { leader: 0.24, rs: 0.20, alpha: 0.18, beta: 0.14, ret: 0.24 },
+      stockWeights: { gamma: 0.22, recommendation: 0.18, alpha: 0.16, sector: 0.14, leader: 0.12, ret: 0.10, beta: 0.08 },
+      filters: { minAlpha: 35 },
+    },
+  },
+  {
+    id: 'william-eckhardt',
+    name: 'William Eckhardt',
+    englishName: 'William Eckhardt',
+    style: 'Systems / Probability',
+    philosophy: [
+      'The system should do the decision-making before emotions are invited into the trade.',
+      'Trading edge survives by following probabilistic rules through uncomfortable streaks.'
+    ],
+    checkpoints: [
+      'The entry belongs to a tested rule family.',
+      'Trend evidence is objective rather than interpretive.',
+      'Sizing and exit logic are predefined.',
+      'The current market state still resembles the tested environment.'
+    ],
+    koreaPlaybook: [
+      'Use breakout presets only when the chart is rule-clean and volume-backed.',
+      'Ignore discretionary temptation to anticipate entries before the trigger prints.',
+      'Let preset and backtest evidence dominate over storytelling.'
+    ],
+    projectHooks: ['Backtest preset results', 'Wizard screener hit rates', 'Risk-plan sizing discipline'],
+    fit: { focus: 'System purity', timeframe: 'Weeks to months', trigger: 'Rule-confirmed breakout', risk: 'Process over comfort' },
+    preset: {
+      headline: 'Eckhardt-style overlay favors rule-clean trend setups with tested behavior and objective invalidation.',
+      formula: 'Preset = 0.22 Alpha + 0.20 Beta + 0.16 Return120 + 0.14 Leader + 0.10 Sector + 0.10 Recommendation + 0.08 R/R',
+      sectorWeights: { rs: 0.30, alpha: 0.22, beta: 0.18, leader: 0.16, ret: 0.14 },
+      stockWeights: { alpha: 0.22, beta: 0.20, ret: 0.16, leader: 0.14, sector: 0.10, recommendation: 0.10, rr: 0.08 },
+      filters: { minAlpha: 50 },
+    },
+  },
+
 ];
 
 export function getTraderProfile(traderId) {

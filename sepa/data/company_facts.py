@@ -64,7 +64,7 @@ def _fast_info_value(fast_info, key: str):
         value = getattr(fast_info, key)
         if value is not None:
             return value
-    except (AttributeError, TypeError, ValueError):
+    except (AttributeError, TypeError, ValueError, KeyError):
         pass
     try:
         return fast_info.get(key)

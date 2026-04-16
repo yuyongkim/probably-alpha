@@ -1,0 +1,76 @@
+person_id,name,series,bucket,mapping_type,preset_id,manual_korea_profile
+michael-marcus,Michael Marcus,market-wizards,Trend / Macro,direct,livermore,yes
+bruce-kovner,Bruce Kovner,market-wizards,Macro / Risk,direct,kovner,no
+richard-dennis,Richard Dennis,market-wizards,Trend / Systems,direct,dennis,yes
+paul-tudor-jones,Paul Tudor Jones,market-wizards,Macro / Risk,direct,jones,yes
+gary-bielfeldt,Gary Bielfeldt,market-wizards,Patience / Size,direct,bielfeldt,no
+ed-seykota,Ed Seykota,market-wizards,Systems / Trend,direct,seykota,yes
+larry-hite,Larry Hite,market-wizards,Systems / Risk,direct,hite,yes
+michael-steinhardt,Michael Steinhardt,market-wizards,Stocks / Macro,direct,steinhardt,no
+william-oneil,William O'Neil,market-wizards,Growth / Earnings,direct,oneil,yes
+david-ryan,David Ryan,market-wizards,Growth / Momentum,direct,oneil,no
+marty-schwartz,Marty Schwartz,market-wizards,Short-Term / Timing,direct,schwartz,yes
+jim-rogers,Jim Rogers,market-wizards,Macro / Long Cycle,direct,kovner,no
+mark-weinstein,Mark Weinstein,market-wizards,Psychology / Risk,direct,weinstein,yes
+bruce-gelber,Bruce Gelber,market-wizards,Discretionary / Experience,direct,cohen,no
+tom-baldwin,Tom Baldwin,market-wizards,Pit Trader / Aggressive,direct,schwartz,no
+tony-saliba,Tony Saliba,market-wizards,Options / Recovery,direct,thorp,no
+bill-lipschutz,Bill Lipschutz,new-market-wizards,FX / Judgment,direct,kovner,yes
+randy-mckay,Randy McKay,new-market-wizards,Discretionary / Veteran,direct,schwartz,no
+al-weiss,Al Weiss,new-market-wizards,Chart / Trend,direct,brandt,no
+gil-blake,Gil Blake,new-market-wizards,Swing / Momentum,direct,blake,no
+victor-sperandeo,Victor Sperandeo,new-market-wizards,Macro / Turning Points,direct,kovner,yes
+tom-basso,Tom Basso,new-market-wizards,Systems / Process,direct,seykota,yes
+william-eckhardt,William Eckhardt,new-market-wizards,Systems / Probability,direct,dennis,yes
+stanley-druckenmiller,Stanley Druckenmiller,new-market-wizards,Macro / Concentration,direct,druckenmiller,yes
+richard-driehaus,Richard Driehaus,new-market-wizards,Growth / Momentum,direct,driehaus,yes
+linda-bradford-raschke,Linda Bradford Raschke,new-market-wizards,Short-Term / Pattern,direct,raschke,yes
+mark-ritchie,Mark Ritchie,new-market-wizards,Futures / Instinct,direct,seykota,no
+joe-ritchie,Joe Ritchie,new-market-wizards,Systems / Team,direct,dennis,no
+blair-hull,Blair Hull,new-market-wizards,Options / Quant,direct,thorp,no
+jeff-yass,Jeff Yass,new-market-wizards,Options / Edge,direct,thorp,yes
+charles-faulkner,Charles Faulkner,new-market-wizards,Psychology / Performance,direct,hite,no
+robert-krausz,Robert Krausz,new-market-wizards,Mindset / Interpretation,direct,brandt,no
+stuart-walton,Stuart Walton,stock-market-wizards,Stocks / Recovery,direct,darvas,yes
+michael-lauer,Michael Lauer,stock-market-wizards,Value / Skeptical,direct,greenblatt,yes
+steve-watson,Steve Watson,stock-market-wizards,Stocks / Execution,direct,cohen,no
+dana-galante,Dana Galante,stock-market-wizards,Long-Short / Balance,direct,galante,no
+mark-d-cook,Mark D. Cook,stock-market-wizards,Discretionary / Rebuild,direct,schwartz,no
+buddy-fletcher,"Alphonse ""Buddy"" Fletcher Jr.",stock-market-wizards,Value / Structure,direct,greenblatt,no
+ahmet-okumus,Ahmet Okumus,stock-market-wizards,Growth / Concentration,direct,okumus,no
+mark-minervini,Mark Minervini,stock-market-wizards,SEPA / Structure,direct,minervini,yes
+steve-lescarbeau,Steve Lescarbeau,stock-market-wizards,Systems / Emotional Control,direct,seykota,no
+michael-masters,Michael Masters,stock-market-wizards,Stocks / Opportunity Flow,direct,cohen,no
+john-bender,John Bender,stock-market-wizards,Quant / Systematic,direct,thorp,no
+claudio-guazzoni,Claudio Guazzoni,stock-market-wizards,Short Bias / Risk,direct,galante,no
+david-shaw,David Shaw,stock-market-wizards,Quant / Computing,direct,thorp,no
+steve-cohen,Steve Cohen,stock-market-wizards,Stocks / Speed,direct,cohen,no
+ari-kiev,Ari Kiev,stock-market-wizards,Psychology / Coaching,direct,hite,no
+colm-oshea,Colm O'Shea,hedge-fund-market-wizards,Macro / Event,direct,kovner,no
+ray-dalio,Ray Dalio,hedge-fund-market-wizards,Macro / Process,direct,dalio,yes
+larry-benedict,Larry Benedict,hedge-fund-market-wizards,Discretionary / Recovery,direct,schwartz,no
+scott-ramsey,Scott Ramsey,hedge-fund-market-wizards,Discretionary / Structure,direct,brandt,no
+jaffray-woodriff,Jaffray Woodriff,hedge-fund-market-wizards,Quant / Data,direct,thorp,no
+edward-thorp,Edward Thorp,hedge-fund-market-wizards,Probability / Edge,direct,thorp,no
+jamie-mai,Jamie Mai,hedge-fund-market-wizards,Asymmetry / Event,direct,shapiro,no
+michael-platt,Michael Platt,hedge-fund-market-wizards,Multi-Strategy / Risk,direct,hite,no
+steve-clark,Steve Clark,hedge-fund-market-wizards,Stocks / Repetition,direct,weinstein,no
+martin-taylor,Martin Taylor,hedge-fund-market-wizards,Rates / Narrative,direct,kovner,no
+tom-claugus,Tom Claugus,hedge-fund-market-wizards,Value / Adaptive,direct,greenblatt,no
+joe-vidich,Joe Vidich,hedge-fund-market-wizards,Credit / Special Situations,direct,greenblatt,no
+kevin-daly,Kevin Daly,hedge-fund-market-wizards,Value / Event,direct,greenblatt,no
+jimmy-balodimas,Jimmy Balodimas,hedge-fund-market-wizards,Event / Contrarian,direct,shapiro,no
+joel-greenblatt,Joel Greenblatt,hedge-fund-market-wizards,Value / Special Situations,direct,greenblatt,yes
+jesse-livermore,Jesse Livermore,unknown-market-wizards,Leader Hunting / Pivotal Points,direct,livermore,yes
+nicolas-darvas,Nicolas Darvas,unknown-market-wizards,Box Breakout / New Highs,direct,darvas,yes
+peter-brandt,Peter Brandt,unknown-market-wizards,Chart / Risk,direct,brandt,no
+jason-shapiro,Jason Shapiro,unknown-market-wizards,Contrarian / Macro,direct,shapiro,no
+richard-bargh,Richard Bargh,unknown-market-wizards,Mindset / Trading Process,direct,seykota,no
+amrit-sall,Amrit Sall,unknown-market-wizards,Event / Concentration,direct,druckenmiller,no
+daljit-dhaliwal,Daljit Dhaliwal,unknown-market-wizards,Research / Validation,direct,greenblatt,no
+john-netto,John Netto,unknown-market-wizards,Stocks / Pattern,direct,schwartz,no
+jeffrey-neumann,Jeffrey Neumann,unknown-market-wizards,Theme / Field Work,direct,druckenmiller,no
+chris-camillo,Chris Camillo,unknown-market-wizards,Alternative Data / Social Signals,direct,darvas,no
+marsten-parker,Marsten Parker,unknown-market-wizards,Systems / Compounding,direct,seykota,no
+michael-kean,Michael Kean,unknown-market-wizards,Portfolio / Balance,direct,dalio,no
+pavel-krejci,Pavel Krejci,unknown-market-wizards,Independent / Outperformance,direct,hite,no

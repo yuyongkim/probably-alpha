@@ -183,7 +183,14 @@ def load_symbols(path: Path | None = None) -> list[str]:
 
 
 def load_sector_map_from_universe(path: Path | None = None) -> dict[str, str]:
-    return {normalize_symbol(row['symbol']): row['sector'] for row in load_universe(path=path)}
+    result: dict[str, str] = {}
+    for row in load_universe(path=path):
+        sym = normalize_symbol(row['symbol'])
+        sector = row['sector']
+        # Prefer non-Other: '000020' (제조) must not be overwritten by '000020.KS' (Other)
+        if sym not in result or result[sym] == 'Other':
+            result[sym] = sector
+    return result
 
 
 @lru_cache(maxsize=4)

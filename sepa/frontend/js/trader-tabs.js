@@ -1,9 +1,130 @@
-import { traderProfiles, getTraderProfile } from './market-wizards-data.js?v=1775488167';
+import { traderProfiles } from './market-wizards-data.js?v=1775488167';
 import { marketWizardPeople, peopleSeries } from './market-wizards-people-data.js?v=1775488167';
 import { escapeHtml } from './core.js?v=1775488167';
 import { txt } from './i18n.js?v=1775488167';
 
 export { traderProfiles };
+
+const DIRECT_PERSON_PRESET = {
+  'mark-minervini': 'minervini',
+  'william-oneil': 'oneil',
+  'david-ryan': 'oneil',
+  'richard-dennis': 'dennis',
+  'william-eckhardt': 'dennis',
+  'joe-ritchie': 'dennis',
+  'ed-seykota': 'seykota',
+  'tom-basso': 'seykota',
+  'marsten-parker': 'seykota',
+  'mark-ritchie': 'seykota',
+  'steve-lescarbeau': 'seykota',
+  'richard-bargh': 'seykota',
+  'larry-hite': 'hite',
+  'michael-platt': 'hite',
+  'pavel-krejci': 'hite',
+  'charles-faulkner': 'hite',
+  'ari-kiev': 'hite',
+  'paul-tudor-jones': 'jones',
+  'ray-dalio': 'dalio',
+  'michael-kean': 'dalio',
+  'richard-driehaus': 'driehaus',
+  'marty-schwartz': 'schwartz',
+  'tom-baldwin': 'schwartz',
+  'randy-mckay': 'schwartz',
+  'mark-d-cook': 'schwartz',
+  'larry-benedict': 'schwartz',
+  'john-netto': 'schwartz',
+  'linda-bradford-raschke': 'raschke',
+  'mark-weinstein': 'weinstein',
+  'steve-clark': 'weinstein',
+  'joel-greenblatt': 'greenblatt',
+  'michael-lauer': 'greenblatt',
+  'buddy-fletcher': 'greenblatt',
+  'tom-claugus': 'greenblatt',
+  'joe-vidich': 'greenblatt',
+  'kevin-daly': 'greenblatt',
+  'daljit-dhaliwal': 'greenblatt',
+  'stanley-druckenmiller': 'druckenmiller',
+  'amrit-sall': 'druckenmiller',
+  'jeffrey-neumann': 'druckenmiller',
+  'bruce-kovner': 'kovner',
+  'bill-lipschutz': 'kovner',
+  'victor-sperandeo': 'kovner',
+  'jim-rogers': 'kovner',
+  'colm-oshea': 'kovner',
+  'martin-taylor': 'kovner',
+  'jesse-livermore': 'livermore',
+  'michael-marcus': 'livermore',
+  'nicolas-darvas': 'darvas',
+  'stuart-walton': 'darvas',
+  'chris-camillo': 'darvas',
+  'steve-cohen': 'cohen',
+  'bruce-gelber': 'cohen',
+  'michael-masters': 'cohen',
+  'steve-watson': 'cohen',
+  'michael-steinhardt': 'steinhardt',
+  'edward-thorp': 'thorp',
+  'jeff-yass': 'thorp',
+  'tony-saliba': 'thorp',
+  'blair-hull': 'thorp',
+  'jaffray-woodriff': 'thorp',
+  'john-bender': 'thorp',
+  'david-shaw': 'thorp',
+  'peter-brandt': 'brandt',
+  'al-weiss': 'brandt',
+  'scott-ramsey': 'brandt',
+  'robert-krausz': 'brandt',
+  'ahmet-okumus': 'okumus',
+  'dana-galante': 'galante',
+  'claudio-guazzoni': 'galante',
+  'jason-shapiro': 'shapiro',
+  'jamie-mai': 'shapiro',
+  'jimmy-balodimas': 'shapiro',
+  'gary-bielfeldt': 'bielfeldt',
+  'gil-blake': 'blake',
+};
+
+const CLUSTER_PERSON_PRESET = {};
+
+const PRESET_LABEL_MAP = {
+  minervini: 'Minervini',
+  oneil: "O'Neil",
+  dennis: 'Dennis',
+  seykota: 'Seykota',
+  hite: 'Hite',
+  jones: 'Jones',
+  dalio: 'Dalio',
+  driehaus: 'Driehaus',
+  schwartz: 'Schwartz',
+  raschke: 'Raschke',
+  weinstein: 'Weinstein',
+  greenblatt: 'Greenblatt',
+  druckenmiller: 'Druckenmiller',
+  kovner: 'Kovner',
+  livermore: 'Livermore',
+  darvas: 'Darvas',
+  cohen: 'Cohen',
+  steinhardt: 'Steinhardt',
+  thorp: 'Thorp',
+  brandt: 'Brandt',
+  okumus: 'Okumus',
+  galante: 'Galante',
+  shapiro: 'Shapiro',
+  bielfeldt: 'Bielfeldt',
+  blake: 'Blake',
+};
+
+const BINDING_LABELS = {
+  direct: { ko: 'Direct', en: 'Direct' },
+  cluster: { ko: 'Nearest', en: 'Nearest' },
+  draft: { ko: 'Draft', en: 'Draft' },
+};
+
+export const TRADER_BINDING_FILTERS = [
+  { id: 'all', label: { ko: 'All', en: 'All' } },
+  { id: 'direct', label: BINDING_LABELS.direct },
+  { id: 'cluster', label: BINDING_LABELS.cluster },
+  { id: 'draft', label: BINDING_LABELS.draft },
+];
 
 /* ── Bucket → Archetype mapping ── */
 
@@ -79,16 +200,60 @@ function buildAutoPreset(person) {
   };
 }
 
+export function getPresetBinding(personId) {
+  if (DIRECT_PERSON_PRESET[personId]) {
+    const presetId = DIRECT_PERSON_PRESET[personId];
+    return {
+      binding: 'direct',
+      presetId,
+      presetLabel: PRESET_LABEL_MAP[presetId] || presetId,
+    };
+  }
+  if (CLUSTER_PERSON_PRESET[personId]) {
+    const presetId = CLUSTER_PERSON_PRESET[personId];
+    return {
+      binding: 'cluster',
+      presetId,
+      presetLabel: PRESET_LABEL_MAP[presetId] || presetId,
+    };
+  }
+  return {
+    binding: 'draft',
+    presetId: '',
+    presetLabel: txt({ ko: 'Draft preset', en: 'Draft preset' }),
+  };
+}
+
+export function presetBindingBadge(binding) {
+  const label = txt(BINDING_LABELS[binding] || BINDING_LABELS.draft);
+  const color = binding === 'direct' ? '#2563eb' : binding === 'cluster' ? '#7c3aed' : '#64748b';
+  return `<span style="font-size:10px;padding:2px 8px;border-radius:999px;background:${color};color:#fff">${escapeHtml(label)}</span>`;
+}
+
 /**
  * Get a complete profile for any person by id.
  * Uses hand-crafted profiles for the 6 anchors, auto-generates for others.
  */
 export function getFullProfile(personId) {
   const handCrafted = traderProfiles.find((p) => p.id === personId);
-  if (handCrafted) return handCrafted;
+  if (handCrafted) return { ...handCrafted, presetBinding: getPresetBinding(personId) };
 
   const person = marketWizardPeople.find((p) => p.id === personId);
   if (!person) return null;
+
+  if (person.relatedProfileId) {
+    const relatedProfile = traderProfiles.find((p) => p.id === person.relatedProfileId);
+    if (relatedProfile) {
+      return {
+        ...relatedProfile,
+        id: person.id,
+        name: person.name,
+        englishName: person.englishName || person.name,
+        style: relatedProfile.style || person.bucket,
+        presetBinding: getPresetBinding(person.id),
+      };
+    }
+  }
 
   return {
     id: person.id,
@@ -101,6 +266,7 @@ export function getFullProfile(personId) {
     projectHooks: [],
     fit: { focus: person.bucket, timeframe: '-', trigger: '-', risk: '-' },
     preset: buildAutoPreset(person),
+    presetBinding: getPresetBinding(person.id),
   };
 }
 
@@ -206,7 +372,7 @@ export function applyTraderPreset(traderId, sectors, stocks, recommendations) {
 /**
  * Render the trader tabs UI: "Default" button + all wizards grouped by series.
  */
-export function renderTraderTabs(containerId, activeId) {
+export function renderTraderTabs(containerId, activeId, filterMode = 'all') {
   const container = document.getElementById(containerId);
   if (!container) return;
 
@@ -215,7 +381,11 @@ export function renderTraderTabs(containerId, activeId) {
   const anchorIds = new Set(traderProfiles.map((p) => p.id));
 
   const seriesGroups = peopleSeries.map((series) => {
-    const people = marketWizardPeople.filter((p) => p.series === series.id);
+    const people = marketWizardPeople.filter((p) => {
+      if (p.series !== series.id) return false;
+      if (filterMode === 'all') return true;
+      return getPresetBinding(p.id).binding === filterMode;
+    });
     if (!people.length) return '';
     const chips = people.map((p) => {
       const active = p.id === activeId ? 'is-active' : '';

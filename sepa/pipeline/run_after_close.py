@@ -102,6 +102,26 @@ def write_html_report(path: Path, date_dir: str, recs: list[dict]) -> None:
     path.write_text(html, encoding='utf-8')
 
 
+def _generate_trader_debate(out: Path, date_dir: str) -> bool:
+    """Generate trader debate JSON for the requested date when possible."""
+    try:
+        from scripts.generate_debate import collect_market_data, build_rule_based_debate
+    except Exception as exc:
+        logger.warning('trader-debate import skipped: %s', exc)
+        print(f'  trader-debate skipped: {exc}')
+        return False
+
+    try:
+        debate = build_rule_based_debate(collect_market_data(date_dir))
+        write_json(out / 'trader-debate.json', debate)
+        print('  trader-debate: generated')
+        return True
+    except Exception as exc:
+        logger.warning('trader-debate skipped: %s', exc)
+        print(f'  trader-debate skipped: {exc}')
+        return False
+
+
 def _read_delta(path: Path) -> list[dict]:
     if not path.exists():
         return []
@@ -171,6 +191,8 @@ def build_after_close(as_of_date: str | None = None, refresh_live: bool = True) 
     except Exception as exc:
         logger.warning('preset-picks skipped: %s', exc)
         print(f'  preset-picks skipped: {exc}')
+
+    _generate_trader_debate(out, date_dir)
 
     upsert_daily(date_dir, recs, briefing=briefing, sectors=sectors, stocks=stocks)
     if _should_write_latest(date_dir):

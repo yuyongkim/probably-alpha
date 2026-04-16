@@ -19,6 +19,7 @@ from sepa.wizards import (
 )
 from sepa.wizards.indicators import rsi, ema, sma, bollinger_bands, atr, adx, nr7
 from sepa.wizards.kiwoom_export import KiwoomExporter
+from sepa.backtest.presets import CLUSTER_PERSON_PRESET_MAP, PERSON_PRESET_MAP, list_presets
 
 
 # ---------------------------------------------------------------------------
@@ -332,3 +333,44 @@ class TestKiwoomExport:
         data = json.loads(path.read_text(encoding='utf-8'))
         assert data['total_strategies'] == len(ALL_STRATEGIES)
         assert 'combined_conditions' in data
+
+
+class TestPresetPersonMappings:
+
+    def test_all_promoted_aliases_are_available_in_person_map(self):
+        sample_ids = [
+            'jim-rogers',
+            'al-weiss',
+            'tony-saliba',
+            'blair-hull',
+            'randy-mckay',
+            'buddy-fletcher',
+            'steve-lescarbeau',
+            'john-bender',
+            'tom-baldwin',
+            'bruce-gelber',
+            'mark-ritchie',
+            'jeffrey-neumann',
+        ]
+        for person_id in sample_ids:
+            assert person_id in PERSON_PRESET_MAP
+
+    def test_cluster_map_is_retired_after_full_promotion(self):
+        assert CLUSTER_PERSON_PRESET_MAP == {}
+
+    def test_backtest_preset_api_payload_includes_runtime_conditions(self):
+        presets = list_presets()
+        oneil = next(item for item in presets if item['id'] == 'oneil')
+        assert oneil['runtime_conditions']
+        assert any('EPS YoY' in line for line in oneil['runtime_conditions'])
+        assert 'Close >= 52W High x 0.75' in oneil['runtime_conditions']
+        assert 'EPS QoQ >= 25%' in oneil['runtime_conditions']
+
+    def test_okumus_runtime_conditions_match_deep_value_turnaround(self):
+        presets = list_presets()
+        okumus = next(item for item in presets if item['id'] == 'okumus')
+        assert 'PER <= 8.0' in okumus['runtime_conditions']
+        assert 'PBR <= 0.7' in okumus['runtime_conditions']
+        assert 'Debt ratio <= 100%' in okumus['runtime_conditions']
+        assert 'Close <= 52W High x 0.50' in okumus['runtime_conditions']
+        assert '5D return > 0%' in okumus['runtime_conditions']

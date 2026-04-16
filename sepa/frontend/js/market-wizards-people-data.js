@@ -84,6 +84,8 @@ export const marketWizardPeople = [
   person('jimmy-balodimas', 'hedge-fund-market-wizards', 'Jimmy Balodimas', 'Event / Contrarian', 'Searched for unusual setups where the crowd was misaligned.', ['event', 'contrarian', 'structure']),
   person('joel-greenblatt', 'hedge-fund-market-wizards', 'Joel Greenblatt', 'Value / Special Situations', 'Known for simple but powerful value and special-situation thinking.', ['value', 'special situations', 'simple process']),
 
+  person('jesse-livermore', 'unknown-market-wizards', 'Jesse Livermore', 'Leader Hunting / Pivotal Points', 'A legendary tape reader focused on pivotal points, leadership, and waiting for confirmation.', ['leaders', 'pivotal', 'trend']),
+  person('nicolas-darvas', 'unknown-market-wizards', 'Nicolas Darvas', 'Box Breakout / New Highs', 'Known for box breakouts, new highs, and strict exits when the box fails.', ['breakout', 'new highs', 'structure']),
   person('peter-brandt', 'unknown-market-wizards', 'Peter Brandt', 'Chart / Risk', 'A classical chart trader who values risk control as much as pattern recognition.', ['charts', 'risk', 'classical patterns']),
   person('jason-shapiro', 'unknown-market-wizards', 'Jason Shapiro', 'Contrarian / Macro', 'Reads sentiment extremes and macro positioning for opportunity.', ['contrarian', 'macro', 'sentiment']),
   person('richard-bargh', 'unknown-market-wizards', 'Richard Bargh', 'Mindset / Trading Process', 'Stresses mental structure and repeatable routines over noise.', ['mindset', 'process', 'discipline']),

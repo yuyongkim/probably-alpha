@@ -35,7 +35,7 @@ PRESETS: dict[str, StrategyConfig] = {
         min_tt_pass=6, rs_threshold=80.0,
         require_ma50=True, require_close_gt_sma200=True,
         require_volume_expansion=True, min_volume_ratio=1.5,
-        require_near_52w_high=True, near_52w_threshold=0.85,
+        require_near_52w_high=True, near_52w_threshold=0.75,
         use_earnings_filter=True,
         min_eps_growth_yoy=25.0,
         min_revenue_growth_yoy=20.0,
@@ -319,13 +319,15 @@ PRESETS: dict[str, StrategyConfig] = {
     ),
 
     'okumus': StrategyConfig(
-        name='Okumus 집중성장',
-        description='소수 고확신 성장주에 집중. EPS 가속 + RS 최상위.',
-        family='growth_momentum',
-        signal_type='trend_template',
-        min_tt_pass=6, rs_threshold=85.0,
-        use_earnings_filter=True,
-        min_eps_growth_yoy=20.0,
+        name='Okumus Deep Value Turnaround',
+        description='극단적 저PBR/PER과 턴어라운드 초기 신호를 결합한 역발상 가치.',
+        family='value',
+        signal_type='value_screen',
+        max_per=8.0,
+        max_pbr=0.7,
+        min_roe_value=0.0,
+        max_debt_ratio=100.0,
+        sector_filter=False,
         max_positions=3, stop_loss_pct=0.10,
         stop_type='fixed_pct',
         trailing_stop=True, trailing_start_pct=0.20, trailing_distance_pct=0.10,
@@ -394,34 +396,140 @@ def get_preset(name: str) -> StrategyConfig | None:
     return PRESETS.get(name)
 
 
+PRESET_RUNTIME_OVERRIDES: dict[str, list[str]] = {
+    'oneil': [
+        'EPS QoQ >= 25%',
+        'Market cap >= 1000억',
+    ],
+    'okumus': [
+        'Close <= 52W High x 0.50',
+        '5D return > 0%',
+        'Volume ratio >= 1.50x',
+    ],
+    'galante': [
+        'PER >= sector PER x 2.0',
+        'Close < SMA50 < SMA200',
+        '20D return <= -10%',
+        'Short-bias profile; runtime preset remains defensive proxy',
+    ],
+}
+
+
+def preset_runtime_conditions(preset_id: str, config: StrategyConfig) -> list[str]:
+    """Return human-readable runtime condition expressions for a preset."""
+    conditions: list[str] = []
+
+    if config.signal_type == 'trend_template':
+        conditions.append(f'TT >= {config.min_tt_pass}/8')
+        conditions.append(f'RS >= {config.rs_threshold:.0f}')
+        if config.require_ma50:
+            conditions.append('Close > SMA50')
+        if config.require_close_gt_sma200:
+            conditions.append('Close > SMA200')
+        if config.require_near_52w_high:
+            conditions.append(f'Close >= 52W High x {config.near_52w_threshold:.2f}')
+        if config.require_volume_expansion:
+            conditions.append(f'Volume ratio >= {config.min_volume_ratio:.2f}x')
+        if config.require_volatility_contraction:
+            conditions.append('ATR10 < ATR50')
+        if config.require_20d_breakout:
+            conditions.append('Close >= 20D High')
+    elif config.signal_type == 'channel_breakout':
+        conditions.append(f'Close >= {config.channel_entry_period}D High')
+        conditions.append(f'Exit < {config.channel_exit_period}D Low')
+        if config.require_channel_volume:
+            conditions.append('Breakout volume confirmation')
+    elif config.signal_type == 'value_screen':
+        conditions.append(f'PER <= {config.max_per:.1f}')
+        conditions.append(f'PBR <= {config.max_pbr:.1f}')
+        if config.min_roe_value > 0:
+            conditions.append(f'ROE >= {config.min_roe_value:.1f}%')
+        conditions.append(f'Debt ratio <= {config.max_debt_ratio:.0f}%')
+    elif config.signal_type == 'swing':
+        conditions.append(f'TT >= {config.min_tt_pass}/8')
+        conditions.append(f'RS >= {config.rs_threshold:.0f}')
+        if config.require_ma50:
+            conditions.append('Close > SMA50')
+        if config.require_volatility_contraction:
+            conditions.append('Volatility contraction required')
+        if config.require_20d_breakout:
+            conditions.append('Close >= 20D High')
+
+    if config.use_earnings_filter:
+        conditions.append(f'EPS YoY >= {config.min_eps_growth_yoy:.0f}%')
+        if config.min_revenue_growth_yoy:
+            conditions.append(f'Revenue YoY >= {config.min_revenue_growth_yoy:.0f}%')
+        if config.require_eps_acceleration:
+            conditions.append('EPS acceleration required')
+    if config.min_roe:
+        conditions.append(f'ROE >= {config.min_roe:.1f}%')
+
+    if config.use_market_filter:
+        conditions.append(f'Market > {config.market_ma_period}D MA')
+        if config.cash_in_bear_pct:
+            conditions.append(f'Cash in bear = {config.cash_in_bear_pct:.0%}')
+
+    if config.sector_filter:
+        conditions.append(f'Top sectors <= {config.top_sectors}')
+        conditions.append(f'Sector cap <= {config.sector_limit}')
+
+    if config.sizing_method == 'atr_risk':
+        conditions.append(f'Risk/trade <= {config.risk_per_trade_pct:.1%}')
+        conditions.append(f'ATR period = {config.atr_period}')
+    elif config.sizing_method == 'equal_weight':
+        conditions.append(f'Max positions = {config.max_positions}')
+
+    if config.stop_type == 'fixed_pct':
+        conditions.append(f'Stop = -{config.stop_loss_pct:.1%}')
+    elif config.stop_type == 'atr_trailing':
+        conditions.append(f'Stop = {config.atr_stop_multiplier:.1f} ATR trailing')
+    elif config.stop_type == 'ma_trailing':
+        conditions.append(f'Exit < MA{config.ma_exit_period}')
+    elif config.stop_type == 'channel_exit':
+        conditions.append(f'Exit < {config.channel_exit_period}D Low')
+
+    if config.trailing_stop:
+        conditions.append(
+            f'Trail after +{config.trailing_start_pct:.0%} / distance {config.trailing_distance_pct:.0%}'
+        )
+    if config.profit_target_pct:
+        conditions.append(f'Take profit = +{config.profit_target_pct:.0%}')
+    conditions.extend(PRESET_RUNTIME_OVERRIDES.get(preset_id, []))
+    conditions.append(f'Rebalance = {config.rebalance}')
+    return conditions
+
+
 # Mapping: preset id -> wizard index person id(s)
 PRESET_PERSON_MAP: dict[str, list[str]] = {
     'minervini': ['mark-minervini'],
     'oneil': ['william-oneil', 'david-ryan'],
-    'dennis': ['richard-dennis'],
-    'seykota': ['ed-seykota'],
-    'hite': ['larry-hite'],
+    'dennis': ['richard-dennis', 'william-eckhardt', 'joe-ritchie'],
+    'seykota': ['ed-seykota', 'tom-basso', 'marsten-parker', 'mark-ritchie', 'steve-lescarbeau', 'richard-bargh'],
+    'hite': ['larry-hite', 'michael-platt', 'pavel-krejci', 'charles-faulkner', 'ari-kiev'],
     'jones': ['paul-tudor-jones'],
-    'dalio': ['ray-dalio'],
+    'dalio': ['ray-dalio', 'michael-kean'],
     'driehaus': ['richard-driehaus'],
-    'schwartz': ['marty-schwartz'],
+    'schwartz': ['marty-schwartz', 'tom-baldwin', 'randy-mckay', 'mark-d-cook', 'larry-benedict', 'john-netto'],
     'raschke': ['linda-bradford-raschke'],
-    'weinstein': ['mark-weinstein'],
-    'greenblatt': ['joel-greenblatt'],
-    'druckenmiller': ['stanley-druckenmiller'],
-    'kovner': ['bruce-kovner'],
-    'livermore': ['jesse-livermore'],
-    'darvas': ['nicolas-darvas'],
-    'cohen': ['steve-cohen'],
+    'weinstein': ['mark-weinstein', 'steve-clark'],
+    'greenblatt': ['joel-greenblatt', 'michael-lauer', 'buddy-fletcher', 'tom-claugus', 'joe-vidich', 'kevin-daly', 'daljit-dhaliwal'],
+    'druckenmiller': ['stanley-druckenmiller', 'amrit-sall', 'jeffrey-neumann'],
+    'kovner': ['bruce-kovner', 'bill-lipschutz', 'victor-sperandeo', 'jim-rogers', 'colm-oshea', 'martin-taylor'],
+    'livermore': ['jesse-livermore', 'michael-marcus'],
+    'darvas': ['nicolas-darvas', 'stuart-walton', 'chris-camillo'],
+    'cohen': ['steve-cohen', 'bruce-gelber', 'michael-masters', 'steve-watson'],
     'steinhardt': ['michael-steinhardt'],
-    'thorp': ['edward-thorp'],
-    'brandt': ['peter-brandt'],
+    'thorp': ['edward-thorp', 'jeff-yass', 'tony-saliba', 'blair-hull', 'jaffray-woodriff', 'john-bender', 'david-shaw'],
+    'brandt': ['peter-brandt', 'al-weiss', 'scott-ramsey', 'robert-krausz'],
     'okumus': ['ahmet-okumus'],
-    'galante': ['dana-galante'],
-    'shapiro': ['jason-shapiro'],
+    'galante': ['dana-galante', 'claudio-guazzoni'],
+    'shapiro': ['jason-shapiro', 'jamie-mai', 'jimmy-balodimas'],
     'bielfeldt': ['gary-bielfeldt'],
     'blake': ['gil-blake'],
 }
+
+# Kept for compatibility after promoting every mapped trader to direct runtime linkage.
+CLUSTER_PERSON_PRESET_MAP: dict[str, str] = {}
 
 PERSON_PRESET_MAP: dict[str, str] = {}
 for _preset_id, _person_ids in PRESET_PERSON_MAP.items():
@@ -438,6 +546,7 @@ def list_presets() -> list[dict]:
             'family': v.family,
             'signal_type': v.signal_type,
             'person_ids': PRESET_PERSON_MAP.get(k, []),
+            'runtime_conditions': preset_runtime_conditions(k, v),
             'params': {
                 'signal_type': v.signal_type,
                 'min_tt_pass': v.min_tt_pass,
