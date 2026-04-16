@@ -91,7 +91,7 @@ python -m http.server 8280 --directory sepa/frontend
 
 ## Security defaults
 
-- `POST /api/admin/backtest/run` now requires `SEPA_ADMIN_TOKEN`; public endpoints remain read-only while admin-triggered runs can persist audit artifacts.
+- `POST /api/admin/backtest/run` now requires `SEPA_ADMIN_TOKEN`; public endpoints remain read-only and the request path no longer writes backtest result files.
 - API docs are **off by default**; enable them explicitly with `SEPA_ENABLE_DOCS=1` for local/dev use.
 - Browser automation tooling (`puppeteer`) is tracked as a dev dependency, and `npm audit` is currently clean.
 

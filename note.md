@@ -146,3 +146,20 @@
 - ?? ??/?? repo ?? ??:
   - `58176e3` Document the security posture in the public README
   - `0097073` Harden public repo defaults before wider exposure
+
+## Final security hardening checkpoint (2026-04-16)
+
+- Public repo branch is `main` and current security hardening commit is `0097073`.
+- Verified in this session:
+  - `python -m pytest -q` -> `131 passed`
+  - `npm audit --json` -> `0 vulnerabilities`
+- Main security changes now live on GitHub:
+  - public backtest execution removed; backtest runs require `POST /api/admin/backtest/run`
+  - API docs are off by default unless `SEPA_ENABLE_DOCS=1`
+  - admin bearer token uses constant-time comparison
+  - public preset routes no longer mutate shared preset state
+  - `puppeteer` moved to `devDependencies`
+- Remaining known security debt:
+  - CSP still depends on `unsafe-inline`
+  - rate limiting is still in-memory only
+  - admin auth is still a static bearer-token model
