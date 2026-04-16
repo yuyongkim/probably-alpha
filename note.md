@@ -45,3 +45,10 @@
 - 공개 repo로 push 완료했습니다.
 - compare/PR 대신 필요한 공개용 기본 문서를 직접 채우는 방향으로 진행 중입니다.
 - 현재 추가 작업: 루트 `README.md` 작성 및 저장소 첫인상 정리.
+- 루트 `README.md` 작성 완료, 공개 repo에 push 완료.
+- 최근 공개용 정리 커밋:
+  - `be8a6a5` Preserve session context in a top-level note
+  - `2a11006` Give the public repo a usable front door
+- GitHub compare 화면에서 `main` 과 `master` 가 서로 다른 히스토리라고 뜨는 문제를 확인했습니다.
+- 원인: GitHub에서 생성된 `main` 초기 커밋과 로컬에서 push한 `master` 히스토리가 따로 시작했기 때문입니다.
+- 정리 방향: 원격 `main` 을 현재 작업 히스토리와 맞추고, 이후 기본 작업 브랜치도 `main` 기준으로 정렬합니다.
