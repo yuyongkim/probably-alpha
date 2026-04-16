@@ -87,6 +87,7 @@ python -m http.server 8280 --directory sepa/frontend
 - `GET /api/briefing/latest`
 - `GET /api/trader-debate`
 - `GET /api/backtest/presets`
+- Public backtest result endpoints are read-only; mutating or generative backtest execution is admin-only.
 
 ## Key docs
 
@@ -103,8 +104,9 @@ Preset / wizard work:
 
 ## Current notes
 
-- The repo currently tracks `master`.
+- The repo currently tracks `main`.
 - Market Wizards pages now expose preset runtime conditions directly from the preset API.
+- API docs are disabled by default and must be explicitly enabled in dev/local configuration.
 - Root-level `note.md` is used as a running session handoff note because long chat sessions can get flaky.
 
 ## License
