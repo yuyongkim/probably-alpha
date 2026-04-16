@@ -126,7 +126,7 @@
   - `puppeteer` ? `devDependencies` ? ???? `npm audit` ? ?? `0 vulnerabilities`
 - ??:
   - `python -m pytest tests/api/test_factory.py tests/api/test_services.py tests/api/test_security_routes.py -q` ? `13 passed`
-  - `python -m pytest -q` ? `136 passed`
+  - `python -m pytest -q` ? `131 passed`
   - `npm audit --json` ? high / critical ?? `0 vulnerabilities`
 - ?? ???:
   - CSP ? `unsafe-inline` ? ?? ?? ?? ?? ??? ??? ???
@@ -143,3 +143,6 @@
   - constant-time admin token comparison
   - preset copy isolation and symbol validation hardening
   - puppeteer moved to `devDependencies`
+- ?? ??/?? repo ?? ??:
+  - `58176e3` Document the security posture in the public README
+  - `0097073` Harden public repo defaults before wider exposure
