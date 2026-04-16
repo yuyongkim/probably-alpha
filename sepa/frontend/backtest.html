@@ -503,11 +503,20 @@
         if (activePresetId && activePresetId !== 'custom') {
           params.set('preset', activePresetId);
         }
-        const resp = await fetch(`${api()}/api/backtest/run?${params}`);
+        const adminToken = window.prompt('Admin token required. Paste SEPA_ADMIN_TOKEN to run this backtest.');
+        if (!adminToken) {
+          status.textContent = 'Admin token required.';
+          status.style.color = '#ffb84d';
+          return;
+        }
+        const resp = await fetch(`${api()}/api/admin/backtest/run?${params}`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${adminToken}` },
+        });
         const result = await resp.json();
 
-        if (result.error) {
-          status.textContent = `오류: ${result.error}`;
+        if (!resp.ok || result.error) {
+          status.textContent = `Error: ${result.detail || result.error || resp.statusText}`;
           status.style.color = '#ff6b6b';
           return;
         }

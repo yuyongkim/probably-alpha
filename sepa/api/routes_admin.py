@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import os
+import secrets
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from sepa.api.models import DailySignalsBuildRequest, HistoryBackfillRequest
+from sepa.api.routes_public import run_backtest_job
 from sepa.api.services import backfill_history_payload, build_daily_signals
 
 _bearer = HTTPBearer(auto_error=False)
@@ -15,7 +17,8 @@ def _verify_admin_token(credentials: HTTPAuthorizationCredentials | None = Depen
     token = os.getenv('SEPA_ADMIN_TOKEN', '').strip()
     if not token:
         raise HTTPException(status_code=503, detail='SEPA_ADMIN_TOKEN not configured')
-    if credentials is None or credentials.credentials != token:
+    provided = credentials.credentials.strip() if credentials and credentials.credentials else ''
+    if not provided or not secrets.compare_digest(provided, token):
         raise HTTPException(status_code=401, detail='invalid or missing admin token')
 
 
@@ -35,4 +38,61 @@ def admin_history_backfill(request: HistoryBackfillRequest) -> dict:
         lookback_days=request.lookback_days,
         forward_days=request.forward_days,
         force=request.force,
+    )
+
+
+@router.post('/backtest/run')
+def admin_backtest_run(
+    start: str = Query('20251112', pattern=r'^\d{8}$'),
+    end: str = Query('20260402', pattern=r'^\d{8}$'),
+    preset: str | None = None,
+    initial_cash: float = Query(100_000_000, ge=1_000_000, le=10_000_000_000),
+    max_positions: int = Query(10, ge=1, le=50),
+    sector_limit: int = Query(3, ge=1, le=20),
+    top_sectors: int = Query(5, ge=1, le=20),
+    rebalance: str = Query('weekly', pattern=r'^(daily|weekly|biweekly|monthly)$'),
+    stop_loss_pct: float = Query(0.075, ge=0.0, le=0.5),
+    commission: float = Query(0.00015, ge=0.0, le=0.01),
+    slippage: float = Query(0.001, ge=0.0, le=0.05),
+    tax: float = Query(0.0018, ge=0.0, le=0.05),
+    alpha_min_tt: int = Query(5, ge=0, le=8),
+    alpha_rs_threshold: float = Query(70.0, ge=0.0, le=100.0),
+    require_ma50: int = Query(1, ge=0, le=1),
+    require_sma200: int = Query(1, ge=0, le=1),
+    sector_filter: int = Query(1, ge=0, le=1),
+    sector_exit: int = Query(1, ge=0, le=1),
+    leader_exit: int = Query(1, ge=0, le=1),
+    require_volume_expansion: int = Query(0, ge=0, le=1),
+    min_volume_ratio: float = Query(1.5, ge=0.0, le=10.0),
+    require_near_52w_high: int = Query(0, ge=0, le=1),
+    near_52w_threshold: float = Query(0.85, ge=0.0, le=1.0),
+    require_volatility_contraction: int = Query(0, ge=0, le=1),
+    require_20d_breakout: int = Query(0, ge=0, le=1),
+) -> dict:
+    return run_backtest_job(
+        start=start,
+        end=end,
+        preset=preset,
+        initial_cash=initial_cash,
+        max_positions=max_positions,
+        sector_limit=sector_limit,
+        top_sectors=top_sectors,
+        rebalance=rebalance,
+        stop_loss_pct=stop_loss_pct,
+        commission=commission,
+        slippage=slippage,
+        tax=tax,
+        alpha_min_tt=alpha_min_tt,
+        alpha_rs_threshold=alpha_rs_threshold,
+        require_ma50=require_ma50,
+        require_sma200=require_sma200,
+        sector_filter=sector_filter,
+        sector_exit=sector_exit,
+        leader_exit=leader_exit,
+        require_volume_expansion=require_volume_expansion,
+        min_volume_ratio=min_volume_ratio,
+        require_near_52w_high=require_near_52w_high,
+        near_52w_threshold=near_52w_threshold,
+        require_volatility_contraction=require_volatility_contraction,
+        require_20d_breakout=require_20d_breakout,
     )

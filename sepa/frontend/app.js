@@ -3,9 +3,13 @@ import { initApp } from './js/main.js';
 try {
   initApp();
 } catch (err) {
-  document.body.insertAdjacentHTML(
-    'afterbegin',
-    `<pre style="color:red;padding:16px;background:#fff3f3;border:2px solid red;margin:8px">JS Init Error: ${err}\n${err.stack || ''}</pre>`,
-  );
+  const pre = document.createElement('pre');
+  pre.style.color = 'red';
+  pre.style.padding = '16px';
+  pre.style.background = '#fff3f3';
+  pre.style.border = '2px solid red';
+  pre.style.margin = '8px';
+  pre.textContent = `JS Init Error: ${err}\n${err.stack || ''}`;
+  document.body.prepend(pre);
   console.error('initApp error:', err);
 }

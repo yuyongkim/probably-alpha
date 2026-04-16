@@ -46,7 +46,7 @@ class BuildCorsMiddlewareOptionsTest(unittest.TestCase):
 
 class SecurityHeadersMiddlewareTest(unittest.TestCase):
     def test_csp_allows_google_font_assets_used_by_frontend(self) -> None:
-        app = create_app()
+        app = create_app(Settings(enable_docs=False))
         client = TestClient(app)
 
         response = client.get('/market-wizards-korea.html')
@@ -55,6 +55,24 @@ class SecurityHeadersMiddlewareTest(unittest.TestCase):
         csp = response.headers['content-security-policy']
         self.assertIn("style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", csp)
         self.assertIn("font-src 'self' https://fonts.gstatic.com", csp)
+
+
+class DocsExposureTest(unittest.TestCase):
+    def test_docs_disabled_by_default(self) -> None:
+        app = create_app(Settings(enable_docs=False))
+        client = TestClient(app)
+
+        response = client.get('/docs')
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_docs_can_be_enabled_explicitly(self) -> None:
+        app = create_app(Settings(enable_docs=True))
+        client = TestClient(app)
+
+        response = client.get('/docs')
+
+        self.assertEqual(response.status_code, 200)
 
 
 if __name__ == '__main__':

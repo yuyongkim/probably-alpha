@@ -229,8 +229,7 @@ def create_app(current_settings: Settings = settings) -> FastAPI:
         title=APP_NAME,
         version='0.2.0',
         lifespan=lifespan,
-        # Don't expose docs in production
-        docs_url=None if current_settings.api_host != '127.0.0.1' else '/docs',
+        docs_url='/docs' if current_settings.enable_docs else None,
         redoc_url=None,
     )
 

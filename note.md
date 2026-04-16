@@ -56,3 +56,90 @@
   - 현재 작업 히스토리를 `main` 으로 정렬
   - 로컬 기본 브랜치를 `main` 으로 전환
   - 이후 추가 정리로 원격 `master` 브랜치 제거까지 진행 중
+
+## 보안 점검 메모
+
+- 사용자가 보안 점검 여부를 질문했습니다.
+- 현재 결론: **기본 보안 항목 일부는 확인됐지만, 전체 보안 감사가 끝난 상태는 아님**.
+- 확인된 항목:
+  - `.env` 는 `.gitignore` 로 제외되어 있고 tracked 상태가 아님
+  - admin 엔드포인트는 `SEPA_ADMIN_TOKEN` bearer 검증이 없으면 503, 틀리면 401 처리
+  - CORS 는 wildcard 대신 명시 origin 목록 사용, credentials 비활성화
+  - CSP / 보안 헤더는 적용 중
+- 확인된 리스크:
+  - `npm audit` 기준 **high 1건**
+  - 경로: `puppeteer -> @puppeteer/browsers -> proxy-agent -> pac-proxy-agent -> get-uri -> basic-ftp@5.2.0`
+  - advisory: `basic-ftp` CRLF / command injection 계열
+- 아직 안 한 것:
+  - Python dependency 전용 취약점 스캔
+  - git 히스토리 전체 비밀값 누출 스캔
+  - 배포 환경 기준 보안 점검
+  - 전체 코드베이스 대상의 정식 security review
+
+## 정식 security review 결과 (2026-04-16)
+
+- 결론: **FAIR, but not ready for unrestricted internet exposure**
+- CRITICAL: 없음
+- HIGH:
+  - `/api/backtest/run` 이 공개 GET 엔드포인트인데 무거운 백테스트 실행 + 결과 저장까지 수행
+- MEDIUM:
+  - CSP가 `unsafe-inline` 에 의존
+  - `/docs` 노출 여부가 `API_HOST == 127.0.0.1` 같은 환경 휴리스틱에 묶여 있음
+  - in-memory rate limiting 만 사용
+- LOW:
+  - 일부 요청이 글로벌 preset 상태를 직접 변경
+  - admin auth 가 단일 static bearer token + plain equality 비교
+  - npm tree 에 `basic-ftp@5.2.0` transitive advisory 존재
+- confirmed non-findings:
+  - tracked 파일 내 하드코딩된 실제 비밀값은 확인되지 않음
+  - `.env` 는 ignore 중
+  - `requirements.txt` 기준 `pip_audit` 는 known vulnerability 없음
+- 즉시 우선순위:
+  1. `/api/backtest/run` 보호
+  2. CSP 강화
+  3. docs 노출 플래그를 명시 env 로 변경
+  4. preset 글로벌 mutation 제거
+  5. npm transitive advisory 정리
+
+## 현재 진행 중
+
+- 사용자가 `$ultrawork` 로 바로 진행하라고 지시했습니다.
+- 병렬 작업으로 보안 수정 진행 중:
+  - 백엔드 보안 수정
+  - npm/dependency 및 공개 repo 표면 정리
+- 사용자 요구사항:
+  - 수정된 사항을 git 에 반영
+  - README 까지 포함해서 push
+
+## ?? ?? ?? ?? (2026-04-16)
+
+- `$ultrawork` ?? ? ?? ??? ?? repo ??? ?? ??????.
+- ???/API ??:
+  - `/api/backtest/run` ?? ?? ??? ???? `POST /api/admin/backtest/run` ?? ??
+  - admin ?? ??? `secrets.compare_digest` ? ??
+  - `SEPA_ENABLE_DOCS` ???? ??? docs ??? ?? ????
+  - `preset_picks` ??? ?? preset ??? ?? ??? ??? ??? ??
+  - `stock_quant` ?? ??? public route ???? ??
+- ???/?? ??:
+  - `sepa/frontend/backtest.html` ? admin ???? ??? ????? ??
+  - `sepa/frontend/app.js` ? raw HTML ?? ?? ??? ??? `textContent` ???? ??
+  - `puppeteer` ? `devDependencies` ? ???? `npm audit` ? ?? `0 vulnerabilities`
+- ??:
+  - `python -m pytest tests/api/test_factory.py tests/api/test_services.py tests/api/test_security_routes.py -q` ? `13 passed`
+  - `python -m pytest -q` ? `136 passed`
+  - `npm audit --json` ? high / critical ?? `0 vulnerabilities`
+- ?? ???:
+  - CSP ? `unsafe-inline` ? ?? ?? ?? ?? ??? ??? ???
+  - ?? ???? reverse proxy/CDN ? ?? ??? ???? ??? ?? ?? ??
+
+## Security remediation completion (2026-04-16)
+
+- Full verification completed.
+- `python -m pytest -q` -> `131 passed`
+- `npm audit --json` -> `0 vulnerabilities`
+- Security changes now staged for commit/push:
+  - admin-only backtest execution via `/api/admin/backtest/run`
+  - explicit `SEPA_ENABLE_DOCS` flag
+  - constant-time admin token comparison
+  - preset copy isolation and symbol validation hardening
+  - puppeteer moved to `devDependencies`

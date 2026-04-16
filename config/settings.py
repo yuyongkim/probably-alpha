@@ -60,6 +60,7 @@ class Settings:
     api_port: int = _int_env("API_PORT", 8200)
     frontend_host: str = os.getenv("FRONTEND_HOST", "127.0.0.1")
     frontend_port: int = _int_env("FRONTEND_PORT", 8280)
+    enable_docs: bool = _bool_env("SEPA_ENABLE_DOCS", False)
 
     cors_origins: tuple[str, ...] = field(default_factory=lambda: _csv_env("SEPA_CORS_ORIGINS", _default_cors_origins()))
     cors_allow_credentials: bool = _bool_env("SEPA_CORS_ALLOW_CREDENTIALS", False)

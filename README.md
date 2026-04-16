@@ -89,6 +89,12 @@ python -m http.server 8280 --directory sepa/frontend
 - `GET /api/backtest/presets`
 - Public backtest result endpoints are read-only; mutating or generative backtest execution is admin-only.
 
+## Security defaults
+
+- `POST /api/admin/backtest/run` now requires `SEPA_ADMIN_TOKEN`; public endpoints remain read-only while admin-triggered runs can persist audit artifacts.
+- API docs are **off by default**; enable them explicitly with `SEPA_ENABLE_DOCS=1` for local/dev use.
+- Browser automation tooling (`puppeteer`) is tracked as a dev dependency, and `npm audit` is currently clean.
+
 ## Key docs
 
 Start here:
@@ -107,6 +113,7 @@ Preset / wizard work:
 - The repo currently tracks `main`.
 - Market Wizards pages now expose preset runtime conditions directly from the preset API.
 - API docs are disabled by default and must be explicitly enabled in dev/local configuration.
+- Browser-driven backtest generation now requires an admin token and the admin API; public endpoints stay read-only.
 - Root-level `note.md` is used as a running session handoff note because long chat sessions can get flaky.
 
 ## License

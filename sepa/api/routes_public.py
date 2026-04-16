@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from copy import copy
 
 from fastapi import APIRouter, HTTPException
 
@@ -55,6 +56,26 @@ def _validate_date(value: str | None) -> str | None:
     if not _DATE_RE.match(v):
         raise HTTPException(status_code=400, detail=f'invalid date format: {value}')
     return v
+
+
+def _validate_range(name: str, value: int, *, minimum: int, maximum: int) -> int:
+    if value < minimum or value > maximum:
+        raise HTTPException(status_code=400, detail=f'{name} must be between {minimum} and {maximum}')
+    return value
+
+
+def _validate_decimal(name: str, value: float, *, minimum: float, maximum: float) -> float:
+    if value < minimum or value > maximum:
+        raise HTTPException(status_code=400, detail=f'{name} must be between {minimum} and {maximum}')
+    return value
+
+
+def _validate_rebalance(value: str) -> str:
+    allowed = {'daily', 'weekly', 'biweekly', 'monthly'}
+    normalized = value.strip().lower()
+    if normalized not in allowed:
+        raise HTTPException(status_code=400, detail=f'invalid rebalance value: {value}')
+    return normalized
 
 
 @router.get('/api/dashboard')
@@ -213,7 +234,7 @@ def sector_members(sector: str, date_dir: str | None = None) -> dict:
 def stock_quant(symbol: str) -> dict:
     """Quantitative metrics computed from Naver financial data."""
     from sepa.scoring.quant_metrics import compute_stock_quant
-    return compute_stock_quant(symbol)
+    return compute_stock_quant(_validate_symbol(symbol))
 
 
 @router.get('/api/backtest/presets')
@@ -282,9 +303,11 @@ def screen_by_trader(
     from sepa.backtest.screener import screen_universe
     from sepa.data.ohlcv_db import read_ohlcv_batch
 
-    config = get_preset(preset)
-    if not config:
+    base = get_preset(preset)
+    if not base:
         raise HTTPException(status_code=400, detail=f'Unknown preset: {preset}')
+    config = copy(base)
+    limit = _validate_range('limit', limit, minimum=1, maximum=50)
 
     price_data = read_ohlcv_batch(as_of_date=as_of_date, min_rows=200)
     if not price_data:
@@ -302,8 +325,7 @@ def screen_by_trader(
     }
 
 
-@router.get('/api/backtest/run')
-def backtest_run(
+def run_backtest_job(
     start: str = '20251112',
     end: str = '20260402',
     preset: str | None = None,
@@ -332,12 +354,28 @@ def backtest_run(
 ) -> dict:
     from sepa.backtest.engine import BacktestEngine
     from sepa.backtest.presets import get_preset
-    from sepa.backtest.report import save_result
     from sepa.backtest.strategy import StrategyConfig
 
-    # Build strategy config (costs flow through config, not class mutation)
+    start = _validate_date(start)
+    end = _validate_date(end)
+    if start is None or end is None:
+        raise HTTPException(status_code=400, detail='start and end are required')
+
+    max_positions = _validate_range('max_positions', max_positions, minimum=1, maximum=50)
+    sector_limit = _validate_range('sector_limit', sector_limit, minimum=1, maximum=20)
+    top_sectors = _validate_range('top_sectors', top_sectors, minimum=1, maximum=20)
+    initial_cash = _validate_decimal('initial_cash', initial_cash, minimum=1, maximum=1_000_000_000_000)
+    stop_loss_pct = _validate_decimal('stop_loss_pct', stop_loss_pct, minimum=0.0, maximum=1.0)
+    commission = _validate_decimal('commission', commission, minimum=0.0, maximum=0.1)
+    slippage = _validate_decimal('slippage', slippage, minimum=0.0, maximum=0.1)
+    tax = _validate_decimal('tax', tax, minimum=0.0, maximum=0.1)
+    alpha_min_tt = _validate_range('alpha_min_tt', alpha_min_tt, minimum=0, maximum=8)
+    alpha_rs_threshold = _validate_decimal('alpha_rs_threshold', alpha_rs_threshold, minimum=0.0, maximum=100.0)
+    min_volume_ratio = _validate_decimal('min_volume_ratio', min_volume_ratio, minimum=0.0, maximum=10.0)
+    near_52w_threshold = _validate_decimal('near_52w_threshold', near_52w_threshold, minimum=0.0, maximum=1.0)
+    rebalance = _validate_rebalance(rebalance)
+
     if preset:
-        from copy import copy
         base = get_preset(preset)
         if not base:
             return {'error': f'Unknown preset: {preset}'}
@@ -368,15 +406,13 @@ def backtest_run(
             require_volatility_contraction=bool(require_volatility_contraction),
             require_20d_breakout=bool(require_20d_breakout),
         )
+
     config.commission = commission
     config.slippage = slippage
     config.tax = tax
 
     engine = BacktestEngine(strategy=config)
     result = engine.run(start, end)
-
-    if 'error' not in result:
-        save_result(result)
     return result
 
 
@@ -486,10 +522,13 @@ def preset_picks(preset_id: str, limit: int = 10, initial_cash: float = 100_000_
     from sepa.backtest.screener import screen_universe
     from sepa.data.ohlcv_db import read_ohlcv_batch
 
-    config = get_preset(preset_id)
-    if not config:
+    base = get_preset(preset_id)
+    if not base:
         return {'error': f'Unknown preset: {preset_id}'}
 
+    limit = _validate_range('limit', limit, minimum=1, maximum=50)
+    initial_cash = _validate_decimal('initial_cash', initial_cash, minimum=1, maximum=1_000_000_000_000)
+    config = copy(base)
     config.initial_cash = int(initial_cash)
     price_data = read_ohlcv_batch(min_rows=200)
     if not price_data:
