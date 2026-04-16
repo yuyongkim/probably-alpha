@@ -163,3 +163,12 @@
   - CSP still depends on `unsafe-inline`
   - rate limiting is still in-memory only
   - admin auth is still a static bearer-token model
+
+
+## 2026-04-16 security follow-up
+
+- Verified the current security hardening state already landed in git (`0097073`, `58176e3`).
+- Re-ran verification after the repo-surface cleanup pass.
+- `python -m pytest -q` -> `131 passed`
+- `npm audit --json` -> `0 vulnerabilities`
+- README security note was tightened to clarify that public request paths do not write backtest result files.
