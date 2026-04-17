@@ -1,16 +1,17 @@
 from __future__ import annotations
 
 import logging
-import time
 import threading
-from collections import defaultdict
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from config.settings import Settings, settings
+from sepa.api.csp import build_content_security_policy
+from sepa.api.rate_limit import RateLimitMiddleware, RateLimitPolicy
 from sepa.api.routes_admin import router as admin_router
 from sepa.api.routes_public import router as public_router
 from sepa.api.services import APP_NAME
@@ -18,103 +19,28 @@ from sepa.api.services import APP_NAME
 logger = logging.getLogger(__name__)
 
 
-# ── Security Headers Middleware ──────────────────────────────────────────
-
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """Add security headers to every response."""
+
+    def __init__(self, app, csp_value: str):
+        super().__init__(app)
+        self.csp_value = csp_value
 
     async def dispatch(self, request: Request, call_next):
         response: Response = await call_next(request)
 
-        # Content Security Policy
-        response.headers['Content-Security-Policy'] = (
-            "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline'; "
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-            "img-src 'self' data: blob:; "
-            "font-src 'self' https://fonts.gstatic.com; "
-            "connect-src 'self'; "
-            "frame-ancestors 'none'; "
-            "base-uri 'self'; "
-            "form-action 'self'"
-        )
-
-        # Prevent clickjacking
+        response.headers['Content-Security-Policy'] = self.csp_value
         response.headers['X-Frame-Options'] = 'DENY'
-
-        # Prevent MIME sniffing
         response.headers['X-Content-Type-Options'] = 'nosniff'
-
-        # XSS protection (legacy browsers)
         response.headers['X-XSS-Protection'] = '1; mode=block'
-
-        # HSTS (force HTTPS)
         response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-
-        # Referrer policy
         response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-
-        # Permissions policy (disable unnecessary browser features)
         response.headers['Permissions-Policy'] = (
             'camera=(), microphone=(), geolocation=(), '
             'payment=(), usb=(), magnetometer=()'
         )
-
         return response
 
-
-# ── Rate Limiting Middleware ─────────────────────────────────────────────
-
-class RateLimitMiddleware(BaseHTTPMiddleware):
-    """Simple in-memory rate limiter per IP.
-
-    Limits:
-      - API endpoints: 60 requests per minute
-      - Static files: 200 requests per minute
-    """
-
-    def __init__(self, app, api_rpm: int = 60, static_rpm: int = 200):
-        super().__init__(app)
-        self.api_rpm = api_rpm
-        self.static_rpm = static_rpm
-        self._hits: dict[str, list[float]] = defaultdict(list)
-        self._lock = threading.Lock()
-
-    def _check_rate(self, key: str, limit: int) -> bool:
-        now = time.time()
-        window = 60.0
-        with self._lock:
-            hits = self._hits[key]
-            # Remove old entries
-            self._hits[key] = [t for t in hits if now - t < window]
-            if len(self._hits[key]) >= limit:
-                return False
-            self._hits[key].append(now)
-            return True
-
-    async def dispatch(self, request: Request, call_next):
-        client_ip = request.client.host if request.client else 'unknown'
-        path = request.url.path
-
-        if path.startswith('/api/'):
-            key = f'api:{client_ip}'
-            limit = self.api_rpm
-        else:
-            key = f'static:{client_ip}'
-            limit = self.static_rpm
-
-        if not self._check_rate(key, limit):
-            return Response(
-                content='{"error":"rate_limit_exceeded","message":"Too many requests"}',
-                status_code=429,
-                media_type='application/json',
-                headers={'Retry-After': '60'},
-            )
-
-        return await call_next(request)
-
-
-# ── Error Sanitization ──────────────────────────────────────────────────
 
 class ErrorSanitizeMiddleware(BaseHTTPMiddleware):
     """Catch unhandled exceptions and return sanitized error response."""
@@ -130,8 +56,6 @@ class ErrorSanitizeMiddleware(BaseHTTPMiddleware):
                 media_type='application/json',
             )
 
-
-# ── Cache Warmup ────────────────────────────────────────────────────────
 
 def _warmup_caches() -> None:
     """Pre-warm expensive LRU caches in a background thread."""
@@ -191,13 +115,9 @@ def _warmup_caches() -> None:
         logger.exception('cache warmup failed (non-fatal)')
 
 
-# ── CORS Configuration ──────────────────────────────────────────────────
-
 def build_cors_middleware_options(current_settings: Settings = settings) -> dict:
-    # Restrict CORS to specific origins (not wildcard)
     origins = list(current_settings.cors_origins)
     if '*' in origins:
-        # Replace wildcard with specific allowed origins
         origins = [
             'https://sepa.yule.pics',
             'http://localhost:8200',
@@ -209,8 +129,8 @@ def build_cors_middleware_options(current_settings: Settings = settings) -> dict
     return {
         'allow_origins': origins,
         'allow_credentials': False,
-        'allow_methods': ['GET', 'POST'],  # Only what we need
-        'allow_headers': ['Content-Type', 'Authorization'],
+        'allow_methods': ['GET', 'POST'],
+        'allow_headers': ['Content-Type', 'Authorization', 'X-SEPA-Admin-Token'],
     }
 
 
@@ -222,8 +142,17 @@ async def lifespan(app: FastAPI):
 
 
 def create_app(current_settings: Settings = settings) -> FastAPI:
-    from pathlib import Path
     from fastapi.staticfiles import StaticFiles
+
+    frontend_dir = Path('sepa/frontend')
+    csp_value = build_content_security_policy(frontend_dir) if frontend_dir.exists() else "default-src 'self'"
+    rate_limit_policy = RateLimitPolicy(
+        api_rpm=current_settings.rate_limit_api_rpm,
+        static_rpm=current_settings.rate_limit_static_rpm,
+        window_seconds=current_settings.rate_limit_window_seconds,
+        trust_proxy_headers=current_settings.rate_limit_trust_proxy_headers,
+        trusted_proxy_ips=current_settings.rate_limit_trusted_proxy_ips,
+    )
 
     app = FastAPI(
         title=APP_NAME,
@@ -233,17 +162,14 @@ def create_app(current_settings: Settings = settings) -> FastAPI:
         redoc_url=None,
     )
 
-    # Middleware order matters: outermost first
     app.add_middleware(ErrorSanitizeMiddleware)
-    app.add_middleware(RateLimitMiddleware, api_rpm=120, static_rpm=300)
-    app.add_middleware(SecurityHeadersMiddleware)
+    app.add_middleware(RateLimitMiddleware, policy=rate_limit_policy)
+    app.add_middleware(SecurityHeadersMiddleware, csp_value=csp_value)
     app.add_middleware(CORSMiddleware, **build_cors_middleware_options(current_settings))
 
     app.include_router(public_router)
     app.include_router(admin_router)
 
-    # Serve frontend
-    frontend_dir = Path('sepa/frontend')
     if frontend_dir.exists():
         app.mount('/', StaticFiles(directory=str(frontend_dir), html=True), name='frontend')
 

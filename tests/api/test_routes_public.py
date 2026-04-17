@@ -28,11 +28,15 @@ class PublicRouteSecurityTest(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_backtest_run_requires_admin_token(self) -> None:
-        with patch.dict(os.environ, {'SEPA_ADMIN_TOKEN': ''}):
+        with patch.dict(os.environ, {'SEPA_ADMIN_TOKEN': '', 'SEPA_ADMIN_TOKENS': '', 'SEPA_ADMIN_PREVIOUS_TOKENS': ''}):
             response = self.client.post('/api/admin/backtest/run')
 
         self.assertEqual(response.status_code, 503)
-        self.assertEqual(response.json()['detail'], 'SEPA_ADMIN_TOKEN not configured')
+        self.assertEqual(
+            response.json()['detail'],
+            'admin authentication unavailable',
+        )
+        self.assertEqual(response.headers['www-authenticate'], 'Bearer realm="sepa-admin"')
 
     def test_admin_backtest_run_requires_post_and_returns_results(self) -> None:
         class FakeEngine:
@@ -51,6 +55,31 @@ class PublicRouteSecurityTest(unittest.TestCase):
                 response = self.client.post(
                     '/api/admin/backtest/run?preset=minervini&start=20251112&end=20260402',
                     headers={'Authorization': 'Bearer topsecret'},
+                )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['strategy'], get_preset('minervini').name)
+
+    def test_admin_backtest_run_accepts_rotated_token_in_legacy_header(self) -> None:
+        class FakeEngine:
+            def __init__(self, strategy) -> None:
+                self.strategy = strategy
+
+            def run(self, start: str, end: str) -> dict:
+                return {
+                    'strategy': self.strategy.name,
+                    'period': {'start': start, 'end': end},
+                    'metrics': {'total_return': 0.12},
+                }
+
+        with patch.dict(
+            os.environ,
+            {'SEPA_ADMIN_TOKEN': 'topsecret', 'SEPA_ADMIN_PREVIOUS_TOKENS': 'oldersecret', 'SEPA_ADMIN_ALLOW_LEGACY_HEADER': '1'},
+        ):
+            with patch('sepa.backtest.engine.BacktestEngine', FakeEngine):
+                response = self.client.post(
+                    '/api/admin/backtest/run?preset=minervini&start=20251112&end=20260402',
+                    headers={'X-SEPA-Admin-Token': 'oldersecret'},
                 )
 
         self.assertEqual(response.status_code, 200)

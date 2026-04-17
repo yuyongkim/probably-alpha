@@ -29,6 +29,17 @@ def _csv_env(name: str, default: tuple[str, ...] = ()) -> tuple[str, ...]:
     return tuple(item.strip() for item in raw.split(',') if item.strip())
 
 
+def _admin_tokens_from_env() -> tuple[str, ...]:
+    tokens: list[str] = []
+    primary = os.getenv('SEPA_ADMIN_TOKEN', '').strip()
+    previous = _csv_env('SEPA_ADMIN_PREVIOUS_TOKENS', ())
+    additional = _csv_env('SEPA_ADMIN_TOKENS', ())
+    for token in (primary, *previous, *additional):
+        if token and token not in tokens:
+            tokens.append(token)
+    return tuple(tokens)
+
+
 def _default_cors_origins() -> tuple[str, ...]:
     api_port = _int_env('API_PORT', 8200)
     frontend_port = _int_env('FRONTEND_PORT', 8280)
@@ -60,7 +71,17 @@ class Settings:
     api_port: int = _int_env("API_PORT", 8200)
     frontend_host: str = os.getenv("FRONTEND_HOST", "127.0.0.1")
     frontend_port: int = _int_env("FRONTEND_PORT", 8280)
-    enable_docs: bool = _bool_env("SEPA_ENABLE_DOCS", False)
+    enable_docs: bool = field(default_factory=lambda: _bool_env("SEPA_ENABLE_DOCS", False))
+    admin_tokens: tuple[str, ...] = field(default_factory=_admin_tokens_from_env)
+    admin_allow_legacy_header: bool = field(default_factory=lambda: _bool_env("SEPA_ADMIN_ALLOW_LEGACY_HEADER", True))
+    admin_audit_failures: bool = field(default_factory=lambda: _bool_env("SEPA_ADMIN_AUDIT_FAILURES", True))
+    rate_limit_api_rpm: int = field(default_factory=lambda: _int_env("SEPA_RATE_LIMIT_API_RPM", 120))
+    rate_limit_static_rpm: int = field(default_factory=lambda: _int_env("SEPA_RATE_LIMIT_STATIC_RPM", 300))
+    rate_limit_window_seconds: int = field(default_factory=lambda: _int_env("SEPA_RATE_LIMIT_WINDOW_SECONDS", 60))
+    rate_limit_trust_proxy_headers: bool = field(default_factory=lambda: _bool_env("SEPA_RATE_LIMIT_TRUST_PROXY_HEADERS", False))
+    rate_limit_trusted_proxy_ips: tuple[str, ...] = field(
+        default_factory=lambda: _csv_env("SEPA_RATE_LIMIT_TRUSTED_PROXY_IPS", ())
+    )
 
     cors_origins: tuple[str, ...] = field(default_factory=lambda: _csv_env("SEPA_CORS_ORIGINS", _default_cors_origins()))
     cors_allow_credentials: bool = _bool_env("SEPA_CORS_ALLOW_CREDENTIALS", False)
@@ -72,4 +93,8 @@ class Settings:
     cache_root: Path = Path(os.getenv("SEPA_CACHE_ROOT", "data/cache"))
 
 
-settings = Settings()
+def load_settings() -> Settings:
+    return Settings()
+
+
+settings = load_settings()

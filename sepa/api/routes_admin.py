@@ -1,28 +1,22 @@
 from __future__ import annotations
 
-import os
-import secrets
-
 from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-
-from sepa.api.models import DailySignalsBuildRequest, HistoryBackfillRequest
+from sepa.api.admin_auth import verify_admin_token
+from sepa.api.models import (
+    DailySignalsBuildRequest,
+    EtfBacktestRunRequest,
+    EtfHistoryBackfillRequest,
+    HistoryBackfillRequest,
+    KisCashOrderRequest,
+    KisOrderPreviewRequest,
+)
 from sepa.api.routes_public import run_backtest_job
 from sepa.api.services import backfill_history_payload, build_daily_signals
+from sepa.api.services_etf import backfill_etf_history_payload, run_etf_backtest_payload
+from sepa.api.services_kis import kis_order_cash_payload, kis_order_preview_payload
+from sepa.brokers import KisApiError
 
-_bearer = HTTPBearer(auto_error=False)
-
-
-def _verify_admin_token(credentials: HTTPAuthorizationCredentials | None = Depends(_bearer)) -> None:
-    token = os.getenv('SEPA_ADMIN_TOKEN', '').strip()
-    if not token:
-        raise HTTPException(status_code=503, detail='SEPA_ADMIN_TOKEN not configured')
-    provided = credentials.credentials.strip() if credentials and credentials.credentials else ''
-    if not provided or not secrets.compare_digest(provided, token):
-        raise HTTPException(status_code=401, detail='invalid or missing admin token')
-
-
-router = APIRouter(prefix='/api/admin', tags=['admin'], dependencies=[Depends(_verify_admin_token)])
+router = APIRouter(prefix='/api/admin', tags=['admin'], dependencies=[Depends(verify_admin_token)])
 
 
 @router.post('/daily-signals')

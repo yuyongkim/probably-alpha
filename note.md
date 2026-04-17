@@ -172,3 +172,45 @@
 - `python -m pytest -q` -> `131 passed`
 - `npm audit --json` -> `0 vulnerabilities`
 - README security note was tightened to clarify that public request paths do not write backtest result files.
+
+## 2026-04-17 ultrawork security pass
+
+- User requested all remaining security follow-ups in parallel (`$ultrawork`).
+- In progress / integrated in working tree:
+  - CSP builder + security header wiring to block inline script execution on tracked dashboard pages.
+  - Configurable proxy-aware rate limiting (`SEPA_RATE_LIMIT_*` envs) with response headers.
+  - Admin auth rotation support via `SEPA_ADMIN_PREVIOUS_TOKENS` / `SEPA_ADMIN_TOKENS` plus optional legacy header shutdown.
+  - README / `.env.example` / `docs/40_operations/SECURITY_HARDENING.md` updates for deployment posture.
+- Verification plan before commit/push:
+  - `python -m pytest tests/api/test_factory.py tests/api/test_rate_limit.py tests/api/test_admin_auth.py tests/api/test_routes_public.py -q`
+  - `python -m pytest -q`
+
+## 2026-04-17 ultrawork security/public hardening
+
+- Ran a five-lane hardening pass covering CSP/script externalization, proxy-aware rate limiting, admin token rotation/legacy-header handling, README/public docs updates, and deployment security checklist refresh.
+- Frontend pages now avoid inline `<script>` blocks; shared helpers added for back-to-top and global error banners, and page-specific scripts were externalized.
+- CSP now keeps `script-src 'self'` strict; inline styles are still allowed for now because the frontend still uses style attributes.
+- Admin auth now supports rotation env vars and optional legacy header fallback; public/admin security tests were updated.
+- Verification completed:
+  - `python -m pytest tests/api/test_factory.py tests/api/test_admin_auth.py tests/api/test_rate_limit.py tests/api/test_routes_public.py tests/api/test_etf_routes.py tests/api/test_kis_routes.py -q` -> passed
+  - `python -m pytest -q` -> `165 passed, 12 subtests passed`
+  - `npm audit --json` -> `0 vulnerabilities`
+- Next repo action in this session: stage the coherent source/docs/tests set (excluding `.omx`), commit, and push to `origin/main`.
+
+
+## 2026-04-17 ultrawork security pass (completed)
+
+- Completed parallel-style security follow-up integration across CSP, rate limiting, admin auth, README/front-door docs, and deployment guidance.
+- Current verified state:
+  - `python -m pytest -q` -> `165 passed, 12 subtests passed`
+  - `npm audit --json` -> `0 vulnerabilities`
+- Landed security behaviors in working tree:
+  - public mutation stays admin-only
+  - docs stay off by default unless `SEPA_ENABLE_DOCS=1`
+  - admin auth supports token rotation envs and legacy-header shutdown
+  - rate limiting is proxy-aware when explicitly configured and now emits rate-limit headers
+  - CSP no longer allows inline scripts; inline page bootstraps moved into JS files
+- Remaining known debt:
+  - rate limiting is still in-memory/process-local
+  - admin auth is still shared-token based
+  - inline styles still keep `style-src 'unsafe-inline'`
