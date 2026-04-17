@@ -186,12 +186,6 @@
 
   <main id="wizardDetail" class="wizard-detail"></main>
 
-  <script>
-    window.addEventListener('error', function(e) {
-      document.body.insertAdjacentHTML('afterbegin',
-        '<pre style="color:red;padding:16px;background:#fff3f3;border:2px solid red;margin:8px">JS Error: ' + e.message + '\n' + (e.filename || '') + ':' + (e.lineno || '') + '</pre>');
-    });
-  </script>
   <button class="back-to-top" id="backToTop" aria-label="Back to top">&uarr;</button>
 
   <footer class="page-footer">
@@ -206,18 +200,8 @@
     </div>
   </footer>
 
+  <script src="./js/error-banner.js?v=1775488167"></script>
   <script type="module" src="./js/market-wizards-korea.js?v=1775488167"></script>
-  <script>
-    (function(){
-      var btn=document.getElementById('backToTop');
-      if(!btn)return;
-      window.addEventListener('scroll',function(){
-        btn.classList.toggle('is-visible',window.scrollY>400);
-      },{passive:true});
-      btn.addEventListener('click',function(){
-        window.scrollTo({top:0,behavior:'smooth'});
-      });
-    })();
-  </script>
+  <script src="./js/back-to-top.js?v=1775488167"></script>
 </body>
 </html>

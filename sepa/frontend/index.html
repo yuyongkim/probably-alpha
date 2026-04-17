@@ -44,6 +44,7 @@
       <a class="nav-link" href="./trader-debate.html">트레이더 토론</a>
       <a class="nav-link" href="./backtest.html">백테스트</a>
       <a class="nav-link" href="./strategy-follow.html">전략 따라하기</a>
+      <a class="nav-link" href="./kis-mobile.html">KIS Mobile</a>
     </nav>
 
     <div class="control-band__meta control-band__meta--wide">
@@ -664,7 +665,7 @@
   </section>
   </main>
 
-  <button class="back-to-top" id="backToTop" aria-label="Back to top">&uarr;</button>
+  <button class="back-to-top" id="backToTop" data-scroll-threshold="600" aria-label="Back to top">&uarr;</button>
 
   <footer class="page-footer">
     <div class="page-footer__brand">
@@ -680,17 +681,6 @@
   </footer>
 
   <script type="module" src="./app.js?v=1775488167"></script>
-  <script>
-    (function(){
-      var btn=document.getElementById('backToTop');
-      if(!btn)return;
-      window.addEventListener('scroll',function(){
-        btn.classList.toggle('is-visible',window.scrollY>600);
-      },{passive:true});
-      btn.addEventListener('click',function(){
-        window.scrollTo({top:0,behavior:'smooth'});
-      });
-    })();
-  </script>
+  <script src="./js/back-to-top.js?v=1775488167"></script>
 </body>
 </html>

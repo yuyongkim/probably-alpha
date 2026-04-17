@@ -304,3 +304,109 @@ def detect_cup_with_handle(
                 best = cand
 
     return best if best is not None else default
+
+
+def _cluster_levels(
+    candidates: list[tuple[float, str]],
+    *,
+    tolerance_pct: float,
+) -> list[dict]:
+    if not candidates:
+        return []
+
+    ordered = sorted(candidates, key=lambda item: item[0])
+    groups: list[dict] = []
+    for price, date_value in ordered:
+        if not groups:
+            groups.append({'prices': [price], 'last_date': date_value})
+            continue
+
+        anchor = sum(groups[-1]['prices']) / len(groups[-1]['prices'])
+        distance_pct = abs(price - anchor) / anchor * 100.0 if anchor else 0.0
+        if distance_pct <= tolerance_pct:
+            groups[-1]['prices'].append(price)
+            if date_value > groups[-1]['last_date']:
+                groups[-1]['last_date'] = date_value
+        else:
+            groups.append({'prices': [price], 'last_date': date_value})
+
+    result: list[dict] = []
+    for group in groups:
+        prices = group['prices']
+        result.append(
+            {
+                'price': round(sum(prices) / len(prices), 2),
+                'touches': len(prices),
+                'last_date': group['last_date'],
+            }
+        )
+    return result
+
+
+def detect_support_resistance(
+    price_series: list[dict],
+    *,
+    lookback: int = 180,
+    order: int = 5,
+    tolerance_pct: float = 1.0,
+    max_levels: int = 3,
+) -> dict:
+    default = {
+        'current_price': 0.0,
+        'supports': [],
+        'resistances': [],
+        'nearest_support': None,
+        'nearest_resistance': None,
+    }
+    rows = [row for row in price_series if row.get('close')]
+    if len(rows) < max(order * 2 + 5, 20):
+        return default
+
+    window = rows[-lookback:]
+    closes = [float(row.get('close', 0.0) or 0.0) for row in window]
+    dates = [str(row.get('date', '')) for row in window]
+    current_price = closes[-1]
+    if current_price <= 0:
+        return default
+
+    smoothed = _smooth(closes, window=3)
+    high_idx = _find_local_highs(smoothed, order=order)
+    low_idx = _find_local_lows(smoothed, order=order)
+
+    high_candidates = [(closes[idx], dates[idx]) for idx in high_idx if closes[idx] > 0]
+    low_candidates = [(closes[idx], dates[idx]) for idx in low_idx if closes[idx] > 0]
+
+    if not high_candidates:
+        high_candidates.append((max(closes[-20:]), dates[closes.index(max(closes[-20:]))]))
+    if not low_candidates:
+        low_candidates.append((min(closes[-20:]), dates[closes.index(min(closes[-20:]))]))
+
+    supports = [
+        {
+            **item,
+            'distance_pct': round((current_price / item['price'] - 1.0) * 100.0, 2) if item['price'] else None,
+        }
+        for item in _cluster_levels(low_candidates, tolerance_pct=tolerance_pct)
+        if item['price'] < current_price
+    ]
+    resistances = [
+        {
+            **item,
+            'distance_pct': round((item['price'] / current_price - 1.0) * 100.0, 2) if current_price else None,
+        }
+        for item in _cluster_levels(high_candidates, tolerance_pct=tolerance_pct)
+        if item['price'] > current_price
+    ]
+
+    supports.sort(key=lambda item: item['price'], reverse=True)
+    resistances.sort(key=lambda item: item['price'])
+    supports = supports[:max_levels]
+    resistances = resistances[:max_levels]
+
+    return {
+        'current_price': round(current_price, 2),
+        'supports': supports,
+        'resistances': resistances,
+        'nearest_support': supports[0] if supports else None,
+        'nearest_resistance': resistances[0] if resistances else None,
+    }

@@ -727,7 +727,7 @@ ${ep ? '시스템 제안: 매수 ' + ep.entry + '원, 손절 ' + ep.stop + '원,
     <div style="margin-top:20px;padding:16px;background:rgba(96,160,255,.04);border:1px solid rgba(96,160,255,.15);border-radius:8px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <h4 style="margin:0;color:#60a0ff;font-size:14px">AI 2차 검증 프롬프트</h4>
-        <button onclick="navigator.clipboard.writeText(this.closest('div').querySelector('pre').textContent).then(()=>{this.textContent='복사됨!';setTimeout(()=>this.textContent='복사',1500)})" style="padding:4px 12px;background:#60a0ff;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px">복사</button>
+        <button class="copy-ai-prompt" type="button" style="padding:4px 12px;background:#60a0ff;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:12px">복사</button>
       </div>
       <p style="font-size:12px;color:var(--muted);margin:0 0 8px">Perplexity, ChatGPT, Claude 등에 붙여넣기하여 2차 검증하세요.</p>
       <pre style="font-size:12px;line-height:1.6;color:var(--text);white-space:pre-wrap;word-break:break-all;max-height:300px;overflow-y:auto;background:rgba(0,0,0,.3);padding:12px;border-radius:6px;margin:0">${escapeHtml(prompt)}</pre>
@@ -1018,12 +1018,28 @@ export function openStockProfile(symbol, apiBase) {
 /* ── Setup dialog close button ── */
 
 export function setupProfileDialogClose() {
-  const closeBtn = $('profileClose');
-  const dialog = $('companyProfileDialog');
-  if (closeBtn && dialog) {
-    closeBtn.addEventListener('click', () => dialog.close());
-    dialog.addEventListener('click', (e) => {
-      if (e.target === dialog) dialog.close();
-    });
-  }
+    const closeBtn = $('profileClose');
+    const dialog = $('companyProfileDialog');
+    if (closeBtn && dialog) {
+        closeBtn.addEventListener('click', () => dialog.close());
+        dialog.addEventListener('click', (e) => {
+            if (e.target === dialog) dialog.close();
+        });
+        dialog.addEventListener('click', async (event) => {
+            const button = event.target instanceof HTMLElement ? event.target.closest('.copy-ai-prompt') : null;
+            if (!(button instanceof HTMLButtonElement)) {
+                return;
+            }
+            const container = button.closest('div');
+            const prompt = container?.querySelector('pre')?.textContent;
+            if (!prompt) {
+                return;
+            }
+            await navigator.clipboard.writeText(prompt);
+            button.textContent = '복사됨!';
+            window.setTimeout(() => {
+                button.textContent = '복사';
+            }, 1500);
+        });
+    }
 }

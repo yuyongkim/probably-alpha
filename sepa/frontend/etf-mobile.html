@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#08121f" />
+  <title>KIS ETF Mobile</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <style>
+    :root{
+      --bg:#08121f;
+      --panel:#102033;
+      --panel-2:#142842;
+      --line:rgba(118,163,213,.18);
+      --text:#edf5ff;
+      --muted:#9ab2cf;
+      --accent:#4db8ff;
+      --good:#73e3a5;
+      --warn:#ffd166;
+      --bad:#ff7b7b;
+      --shadow:0 18px 42px rgba(0,0,0,.28);
+      --radius:20px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:"Segoe UI",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(77,184,255,.18), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(115,227,165,.14), transparent 24%),
+        linear-gradient(180deg, #07101a 0%, #0a1624 100%);
+      padding:16px;
+    }
+    .shell{
+      width:min(100%, 760px);
+      margin:0 auto;
+      display:grid;
+      gap:14px;
+    }
+    .hero,
+    .panel{
+      background:linear-gradient(180deg, rgba(16,32,51,.96), rgba(12,25,40,.96));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .hero{padding:18px}
+    .hero h1{
+      margin:6px 0 10px;
+      font-size:28px;
+      line-height:1.1;
+      letter-spacing:-.03em;
+    }
+    .hero p{
+      margin:0;
+      color:var(--muted);
+      line-height:1.55;
+      font-size:14px;
+    }
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      font-size:11px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--accent);
+    }
+    .panel{
+      padding:16px;
+      display:grid;
+      gap:12px;
+    }
+    .panel-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+    }
+    .panel-head h2{
+      margin:0;
+      font-size:18px;
+    }
+    .panel-head p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+    }
+    .row{display:grid;gap:10px}
+    .grid-2{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+    label{
+      display:block;
+      margin-bottom:6px;
+      font-size:12px;
+      color:var(--muted);
+    }
+    input, textarea, select, button{
+      width:100%;
+      border-radius:14px;
+      border:1px solid rgba(118,163,213,.22);
+      background:rgba(10,20,34,.92);
+      color:var(--text);
+      padding:12px 14px;
+      font:inherit;
+    }
+    textarea{
+      min-height:88px;
+      resize:vertical;
+    }
+    button{
+      background:linear-gradient(135deg, #2386c8, #4db8ff);
+      border:none;
+      font-weight:700;
+      cursor:pointer;
+      color:#03111d;
+      box-shadow:0 12px 24px rgba(77,184,255,.2);
+    }
+    .ghost{
+      background:transparent;
+      color:var(--text);
+      border:1px solid rgba(118,163,213,.22);
+      box-shadow:none;
+    }
+    .metrics{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+    .metric{
+      padding:12px;
+      border-radius:16px;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(118,163,213,.14);
+    }
+    .metric strong{
+      display:block;
+      margin-top:6px;
+      font-size:18px;
+      letter-spacing:-.02em;
+    }
+    .metric small{color:var(--muted)}
+    .pill-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .pill{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(118,163,213,.18);
+      background:rgba(255,255,255,.03);
+      font-size:12px;
+      color:var(--muted);
+    }
+    .list{
+      display:grid;
+      gap:10px;
+    }
+    .card{
+      padding:12px;
+      border-radius:16px;
+      background:linear-gradient(180deg, rgba(20,40,66,.92), rgba(12,24,39,.92));
+      border:1px solid rgba(118,163,213,.14);
+      display:grid;
+      gap:8px;
+    }
+    .card-top{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .score{
+      min-width:72px;
+      text-align:right;
+    }
+    .score strong{
+      display:block;
+      font-size:24px;
+      letter-spacing:-.03em;
+    }
+    .good{color:var(--good)}
+    .warn{color:var(--warn)}
+    .bad{color:var(--bad)}
+    .muted{color:var(--muted)}
+    .mono{font-family:Consolas,monospace}
+    .note{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.5;
+    }
+    .inline-actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    a{
+      color:var(--accent);
+      text-decoration:none;
+    }
+    @media (max-width:640px){
+      body{padding:12px}
+      .hero h1{font-size:24px}
+      .grid-2,.metrics,.inline-actions{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">KIS / ETF Mobile</div>
+      <h1>ETF 분석과 프로파일 추천을 휴대폰에서 바로</h1>
+      <p>한국투자증권 Open API의 실시간 ETF 현재가와 일봉을 읽어 와서 지지·저항, 추세 상태, 휴리스틱 진입 레벨을 빠르게 확인합니다. 주문은 이 페이지에서 직접 보내지 않고 서버의 관리자 API로 분리해 두었습니다.</p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>연결 상태</h2>
+          <p>KIS 인증 설정과 토큰 발급 가능 여부를 확인합니다.</p>
+        </div>
+        <button id="btnHealth" class="ghost" type="button">상태 새로고침</button>
+      </div>
+      <div class="grid-2">
+        <div>
+          <label for="apiBase">API Base URL</label>
+          <input id="apiBase" value="" placeholder="비우면 현재 origin 사용" />
+        </div>
+        <div>
+          <label>Health</label>
+          <div id="healthBox" class="metric">
+            <small>대기 중</small>
+            <strong>-</strong>
+          </div>
+        </div>
+      </div>
+      <p class="note">실제 주문은 <span class="mono">POST /api/admin/kis/order-preview</span>, <span class="mono">POST /api/admin/kis/order-cash</span> 로 분리되어 있습니다. 모바일 브라우저에서는 관리자 토큰을 직접 넣지 않는 구성을 권장합니다.</p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>ETF 개별 분석</h2>
+          <p>현재가, 추세, 지지·저항, 휴리스틱 트레이드 레벨을 조회합니다.</p>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <label for="symbolInput">ETF 코드</label>
+          <input id="symbolInput" value="069500" placeholder="예: 069500" />
+        </div>
+        <div class="inline-actions" style="align-self:end;">
+          <button id="btnAnalyze" type="button">분석 조회</button>
+          <button id="btnSample" class="ghost" type="button">샘플 코드 넣기</button>
+        </div>
+      </div>
+      <div id="analysisBox" class="row">
+        <div class="note">ETF 코드를 넣고 분석 조회를 누르면 여기에 결과가 표시됩니다.</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>투자 성향별 후보 추천</h2>
+          <p>직접 고른 ETF 후보군 안에서만 상대평가합니다.</p>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <label for="riskProfile">투자 성향</label>
+          <select id="riskProfile">
+            <option value="conservative">보수형</option>
+            <option value="balanced" selected>균형형</option>
+            <option value="aggressive">공격형</option>
+          </select>
+        </div>
+        <div>
+          <label for="symbolsTextarea">ETF 후보군</label>
+          <textarea id="symbolsTextarea">069500
+360750
+114800</textarea>
+        </div>
+      </div>
+      <button id="btnRecommend" type="button">후보군 추천 실행</button>
+      <div id="recommendationBox" class="list">
+        <div class="note">추천 결과는 여기 표시됩니다. 전 시장 전체가 아니라 입력한 후보군 내부 순위입니다.</div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>바로 쓰는 흐름</h2>
+          <p>현재 프로젝트에 붙이는 가장 현실적인 순서입니다.</p>
+        </div>
+      </div>
+      <div class="list">
+        <div class="card">
+          <strong>1. 전략 설계</strong>
+          <div class="note">이 페이지에서 지지·저항과 추세 상태를 확인하고, ETF 후보군을 프로파일별로 1차 압축합니다.</div>
+        </div>
+        <div class="card">
+          <strong>2. 백테스트</strong>
+          <div class="note">선정한 ETF 코드만 별도 유니버스로 구성해 현재 백테스트 엔진에 넣거나, ETF 전용 전략 모듈을 추가해 검증합니다.</div>
+        </div>
+        <div class="card">
+          <strong>3. 주문 실행</strong>
+          <div class="note">서버에서 관리자 토큰으로 주문 프리뷰를 먼저 호출하고, 확인 후에만 현금 주문 API를 실행합니다.</div>
+        </div>
+      </div>
+      <div class="note">메인 대시보드로 돌아가려면 <a href="./index.html">SEPA Command Center</a> 를 열면 됩니다.</div>
+    </section>
+  </main>
+
+  <script src="./js/etf-mobile-page.js?v=1775488167"></script>
+</body>
+</html>

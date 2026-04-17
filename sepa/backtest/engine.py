@@ -41,6 +41,11 @@ class BacktestEngine:
         self.strategy = strategy or StrategyConfig()
 
     @classmethod
+    def clear_cache(cls) -> None:
+        cls._cached_full_data = None
+        cls._cached_price_index = None
+
+    @classmethod
     def _ensure_data(cls):
         """Load data once, cache for all instances."""
         if cls._cached_full_data is not None:
@@ -58,8 +63,12 @@ class BacktestEngine:
         config = self.strategy
 
         self._ensure_data()
-        full_data = self._cached_full_data
-        price_index = self._cached_price_index
+        full_data = self._cached_full_data or {}
+        price_index = self._cached_price_index or {}
+        if config.symbol_whitelist:
+            allowed = {str(symbol).strip().upper() for symbol in config.symbol_whitelist if str(symbol).strip()}
+            full_data = {symbol: data for symbol, data in full_data.items() if symbol.upper() in allowed}
+            price_index = {symbol: data for symbol, data in price_index.items() if symbol.upper() in allowed}
         if not full_data:
             return {'error': 'No price data in ohlcv.db.'}
 
@@ -189,6 +198,8 @@ class BacktestEngine:
             'run_id': f"bt_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
             'strategy': config.name,
             'strategy_description': config.description,
+            'universe_label': config.universe_label or 'default',
+            'symbol_whitelist': list(config.symbol_whitelist),
             'period': {'start': start_date, 'end': end_date},
             'params': {
                 'initial_cash': int(config.initial_cash),
@@ -224,6 +235,8 @@ class BacktestEngine:
                 'stop_loss_pct': config.stop_loss_pct,
                 'sizing_method': config.sizing_method,
                 'risk_per_trade_pct': config.risk_per_trade_pct,
+                'ignore_sector_constraints': config.ignore_sector_constraints,
+                'benchmark_symbol': config.benchmark_symbol or None,
             },
             'metrics': metrics,
             'equity_curve': portfolio.equity_curve,
@@ -366,6 +379,11 @@ class BacktestEngine:
         return index
 
     def _load_benchmark_prices(self) -> dict[str, float]:
+        if self.strategy.benchmark_symbol:
+            from sepa.data.ohlcv_db import read_ohlcv
+            rows = read_ohlcv(self.strategy.benchmark_symbol)
+            if rows:
+                return {str(r.get('date', '')).replace('-', ''): r.get('close', 0.0) for r in rows if r.get('close', 0.0) > 0}
         path = market_index_path('KOSPI')
         if not path.exists():
             return {}

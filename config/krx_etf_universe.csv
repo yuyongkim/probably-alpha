@@ -1,0 +1,13 @@
+symbol,name,asset_class,theme,risk_profile,leverage,inverse,benchmark_symbol
+069500,KODEX 200,equity,국내대형주,balanced,N,N,069500
+102110,TIGER 200,equity,국내대형주,balanced,N,N,069500
+229200,KODEX 코스닥150,equity,국내성장주,aggressive,N,N,069500
+122630,KODEX 레버리지,equity,국내대형주,aggressive,Y,N,069500
+252670,KODEX 200선물인버스2X,equity,헤지,aggressive,Y,Y,069500
+114800,KODEX 인버스,equity,헤지,balanced,N,Y,069500
+360750,TIGER 미국S&P500,equity,미국지수,balanced,N,N,360750
+379800,KODEX 미국S&P500TR,equity,미국지수,balanced,N,N,360750
+381170,TIGER 미국테크TOP10 INDXX,equity,미국테크,aggressive,N,N,360750
+305080,TIGER 미국채10년선물,bond,미국채권,conservative,N,N,305080
+273130,KODEX 종합채권(AA-이상)액티브,bond,국내채권,conservative,N,N,273130
+132030,KODEX 골드선물(H),commodity,금,balanced,N,N,132030

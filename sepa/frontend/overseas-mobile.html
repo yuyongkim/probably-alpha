@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#08121f" />
+  <title>Overseas Mobile</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <style>
+    :root{
+      --bg:#08121f;
+      --panel:#102033;
+      --line:rgba(118,163,213,.18);
+      --text:#edf5ff;
+      --muted:#9ab2cf;
+      --accent:#4db8ff;
+      --good:#73e3a5;
+      --warn:#ffd166;
+      --shadow:0 18px 42px rgba(0,0,0,.28);
+      --radius:20px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:"Segoe UI",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(77,184,255,.18), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(115,227,165,.14), transparent 24%),
+        linear-gradient(180deg, #07101a 0%, #0a1624 100%);
+      padding:16px;
+    }
+    .shell{width:min(100%,760px);margin:0 auto;display:grid;gap:14px}
+    .hero,.panel{
+      background:linear-gradient(180deg, rgba(16,32,51,.96), rgba(12,25,40,.96));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .hero{padding:18px}
+    .hero h1{margin:8px 0 10px;font-size:28px;line-height:1.08;letter-spacing:-.03em}
+    .hero p,.note{margin:0;color:var(--muted);line-height:1.55;font-size:13px}
+    .eyebrow{display:inline-flex;gap:6px;align-items:center;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+    .panel{padding:16px;display:grid;gap:12px}
+    .panel-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+    .panel-head h2{margin:0;font-size:18px}
+    .panel-head p{margin:6px 0 0;color:var(--muted);font-size:13px;line-height:1.45}
+    input,select,button{
+      width:100%;
+      border-radius:14px;
+      border:1px solid rgba(118,163,213,.22);
+      background:rgba(10,20,34,.92);
+      color:var(--text);
+      padding:12px 14px;
+      font:inherit;
+    }
+    button{background:linear-gradient(135deg, #2386c8, #4db8ff);border:none;color:#03111d;font-weight:700;cursor:pointer}
+    .ghost{background:transparent;color:var(--text);border:1px solid rgba(118,163,213,.22)}
+    .grid-2,.metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .metric,.card{border-radius:16px;border:1px solid rgba(118,163,213,.14);background:rgba(255,255,255,.03);padding:12px}
+    .metric strong{display:block;margin-top:6px;font-size:20px;letter-spacing:-.03em}
+    .pill-row{display:flex;flex-wrap:wrap;gap:8px}
+    .pill{padding:8px 10px;border-radius:999px;border:1px solid rgba(118,163,213,.18);background:rgba(255,255,255,.03);color:var(--muted);font-size:12px}
+    .mono{font-family:Consolas,monospace}
+    a{color:var(--accent);text-decoration:none}
+    @media (max-width:640px){body{padding:12px}.hero h1{font-size:24px}.grid-2,.metrics{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">KIS / Overseas</div>
+      <h1>해외주식 정보를 휴대폰에서 빠르게 읽기</h1>
+      <p>KIS 해외주식 현재가, 상세 기본정보, 최근 일봉 100개, 지지·저항과 추세 상태를 한 번에 봅니다. 이 페이지는 읽기 전용이며 주문/계좌 기능은 붙이지 않았습니다.</p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>조회 입력</h2>
+          <p>미국 종목은 기본적으로 `NAS`, `AAPL`, `512` 조합으로 시작하면 됩니다.</p>
+        </div>
+      </div>
+      <div class="grid-2">
+        <input id="apiBase" value="" placeholder="비우면 현재 origin 사용" />
+        <button id="btnSample" class="ghost" type="button">샘플 넣기</button>
+      </div>
+      <div class="grid-2">
+        <input id="symbolInput" value="AAPL" placeholder="심볼" />
+        <input id="exchangeInput" value="NAS" placeholder="거래소 코드" />
+      </div>
+      <div class="grid-2">
+        <input id="productTypeInput" value="512" placeholder="상품유형코드" />
+        <button id="btnAnalyze" type="button">해외주식 분석 조회</button>
+      </div>
+      <p class="note">공식 샘플 주석 기준 예: `512=미국 나스닥/뉴욕/아멕스 계열`, `AAPL`, `NAS`.</p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>분석 결과</h2>
+          <p>현재가, 기본정보, 최근 추세와 레벨을 함께 봅니다.</p>
+        </div>
+      </div>
+      <div id="analysisBox" class="note">조회 전입니다.</div>
+      <p class="note"><a href="./kis-mobile.html">KIS Mobile</a> 로 돌아가면 전체 상품군 카탈로그를 다시 볼 수 있습니다.</p>
+    </section>
+  </main>
+
+  <script src="./js/overseas-mobile-page.js?v=1775488167"></script>
+</body>
+</html>

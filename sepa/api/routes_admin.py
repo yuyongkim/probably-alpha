@@ -90,3 +90,64 @@ def admin_backtest_run(
         require_volatility_contraction=require_volatility_contraction,
         require_20d_breakout=require_20d_breakout,
     )
+
+
+@router.post('/kis/order-preview')
+def admin_kis_order_preview(request: KisOrderPreviewRequest) -> dict:
+    try:
+        return kis_order_preview_payload(
+            request.symbol,
+            order_price=request.order_price,
+            order_type=request.order_type,
+            include_cma=request.include_cma,
+            include_overseas=request.include_overseas,
+        )
+    except KisApiError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+
+
+@router.post('/kis/order-cash')
+def admin_kis_order_cash(request: KisCashOrderRequest) -> dict:
+    try:
+        return kis_order_cash_payload(
+            request.symbol,
+            side=request.side,
+            quantity=request.quantity,
+            order_price=request.order_price,
+            order_type=request.order_type,
+            exchange_code=request.exchange_code,
+            sell_type=request.sell_type,
+            condition_price=request.condition_price,
+        )
+    except KisApiError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+
+
+@router.post('/kis/etf-history/backfill')
+def admin_kis_etf_history_backfill(request: EtfHistoryBackfillRequest) -> dict:
+    try:
+        return backfill_etf_history_payload(
+            symbols=request.symbols,
+            date_from=request.date_from,
+            date_to=request.date_to,
+        )
+    except KisApiError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+
+
+@router.post('/backtest/etf/run')
+def admin_backtest_etf_run(request: EtfBacktestRunRequest) -> dict:
+    return run_etf_backtest_payload(
+        symbols=request.symbols,
+        start=request.start,
+        end=request.end,
+        preset=request.preset,
+        initial_cash=request.initial_cash,
+        max_positions=request.max_positions,
+        rebalance=request.rebalance,
+        stop_loss_pct=request.stop_loss_pct,
+        commission=request.commission,
+        slippage=request.slippage,
+        tax=request.tax,
+        benchmark_symbol=request.benchmark_symbol,
+    )

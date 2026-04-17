@@ -5,6 +5,15 @@ from copy import copy
 
 from fastapi import APIRouter, HTTPException
 
+from sepa.api.models import EtfProfileRecommendationRequest
+from sepa.api.services_etf import etf_universe_payload
+from sepa.api.services_kis_catalog import kis_product_catalog_payload
+from sepa.api.services_kis import (
+    etf_analysis_payload,
+    etf_profile_recommendations_payload,
+    kis_health_payload,
+)
+from sepa.api.services_overseas import overseas_stock_analysis_payload
 from sepa.api.services import (
     backtest_leaders_payload,
     briefing_latest_payload,
@@ -32,6 +41,7 @@ from sepa.api.services import (
     summary_payload,
     trader_debate_payload,
 )
+from sepa.brokers import KisApiError
 
 
 router = APIRouter(tags=['public'])
@@ -86,6 +96,29 @@ def dashboard(date_dir: str | None = None) -> dict:
 @router.get('/api/health')
 def health() -> dict:
     return health_payload()
+
+
+@router.get('/api/kis/health')
+def kis_health() -> dict:
+    return kis_health_payload()
+
+
+@router.get('/api/kis/catalog')
+def kis_catalog(
+    orderable_only: bool = False,
+    backtestable_only: bool = False,
+    project_supported_only: bool = False,
+) -> dict:
+    return kis_product_catalog_payload(
+        orderable_only=orderable_only,
+        backtestable_only=backtestable_only,
+        project_supported_only=project_supported_only,
+    )
+
+
+@router.get('/api/etf/universe')
+def etf_universe(risk_profile: str | None = None, theme: str | None = None) -> dict:
+    return etf_universe_payload(risk_profile=risk_profile, theme=theme)
 
 
 @router.get('/api/latest')
@@ -154,6 +187,46 @@ def stock_analysis(symbol: str, as_of_date: str | None = None) -> dict:
     if result.get('error') == 'no_price_data':
         raise HTTPException(status_code=404, detail=f'no price data for symbol: {symbol}')
     return result
+
+
+@router.get('/api/overseas/stock/{symbol}/analysis')
+def overseas_stock_analysis(symbol: str, exchange_code: str = 'NAS', product_type_code: str = '512') -> dict:
+    try:
+        return overseas_stock_analysis_payload(
+            symbol=_validate_symbol(symbol),
+            exchange_code=exchange_code,
+            product_type_code=product_type_code,
+        )
+    except KisApiError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+
+
+@router.get('/api/etf/{symbol}/analysis')
+def etf_analysis(symbol: str, date_from: str | None = None, date_to: str | None = None) -> dict:
+    try:
+        return etf_analysis_payload(
+            symbol=_validate_symbol(symbol),
+            date_from=_validate_date(date_from),
+            date_to=_validate_date(date_to),
+        )
+    except KisApiError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+
+
+@router.post('/api/etf/recommendations/profile')
+def etf_profile_recommendations(request: EtfProfileRecommendationRequest) -> dict:
+    try:
+        symbols = [_validate_symbol(symbol) for symbol in request.symbols]
+        return etf_profile_recommendations_payload(
+            symbols,
+            risk_profile=request.risk_profile,
+            date_from=_validate_date(request.date_from),
+            date_to=_validate_date(request.date_to),
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except KisApiError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
 
 
 @router.get('/api/stock/{symbol}/overview')

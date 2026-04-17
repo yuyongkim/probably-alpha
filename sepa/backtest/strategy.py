@@ -23,6 +23,10 @@ class StrategyConfig:
     name: str = 'Custom'
     description: str = ''
     family: str = ''  # growth_momentum, trend_following, swing, macro, value
+    universe_label: str = ''
+    symbol_whitelist: tuple[str, ...] = field(default_factory=tuple)
+    ignore_sector_constraints: bool = False
+    benchmark_symbol: str = ''
 
     # ── Signal Type ──────────────────────────────────────────────
     signal_type: str = 'trend_template'

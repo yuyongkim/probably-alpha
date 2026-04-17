@@ -16,6 +16,9 @@ _SCHEMA = """
 CREATE TABLE IF NOT EXISTS ohlcv (
     symbol     TEXT    NOT NULL,
     trade_date TEXT    NOT NULL,
+    open       REAL,
+    high       REAL,
+    low        REAL,
     close      REAL    NOT NULL,
     volume     INTEGER DEFAULT 0,
     PRIMARY KEY (symbol, trade_date)
@@ -40,6 +43,7 @@ def ensure_db(path: Path | None = None) -> Path:
     p = path or DB_PATH
     conn = _connect(p)
     conn.executescript(_SCHEMA)
+    _ensure_optional_columns(conn)
     conn.close()
     return p
 
@@ -57,8 +61,19 @@ def import_csv_dir(csv_dir: Path, db_path: Path | None = None, *, verbose: bool 
         if not rows:
             continue
         conn.executemany(
-            'INSERT OR REPLACE INTO ohlcv (symbol, trade_date, close, volume) VALUES (?, ?, ?, ?)',
-            [(symbol, r['date'], r['close'], r['volume']) for r in rows],
+            'INSERT OR REPLACE INTO ohlcv (symbol, trade_date, open, high, low, close, volume) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [
+                (
+                    symbol,
+                    r['date'],
+                    r.get('open'),
+                    r.get('high'),
+                    r.get('low'),
+                    r['close'],
+                    r['volume'],
+                )
+                for r in rows
+            ],
         )
         total += len(rows)
         if verbose and (i + 1) % 500 == 0:
@@ -80,12 +95,12 @@ def read_ohlcv(symbol: str, *, as_of_date: str | None = None, db_path: Path | No
         if as_of_date:
             cutoff = as_of_date.replace('-', '')
             rows = conn.execute(
-                'SELECT trade_date, close, volume FROM ohlcv WHERE symbol = ? AND trade_date <= ? ORDER BY trade_date',
+                'SELECT trade_date, open, high, low, close, volume FROM ohlcv WHERE symbol = ? AND trade_date <= ? ORDER BY trade_date',
                 (sym, cutoff),
             ).fetchall()
         else:
             rows = conn.execute(
-                'SELECT trade_date, close, volume FROM ohlcv WHERE symbol = ? ORDER BY trade_date',
+                'SELECT trade_date, open, high, low, close, volume FROM ohlcv WHERE symbol = ? ORDER BY trade_date',
                 (sym,),
             ).fetchall()
     finally:
@@ -94,6 +109,9 @@ def read_ohlcv(symbol: str, *, as_of_date: str | None = None, db_path: Path | No
     return [
         {
             'date': _format_date(row['trade_date']),
+            'open': float(row['open']) if row['open'] is not None else float(row['close']),
+            'high': float(row['high']) if row['high'] is not None else float(row['close']),
+            'low': float(row['low']) if row['low'] is not None else float(row['close']),
             'close': float(row['close']),
             'volume': int(row['volume']),
         }
@@ -164,12 +182,20 @@ def upsert_rows(symbol: str, rows: list[dict], *, db_path: Path | None = None) -
     ensure_db(db_path)
     conn = _connect(db_path)
     data = [
-        (symbol, str(r.get('date', '')).replace('-', ''), float(r.get('close', 0)), int(float(r.get('volume', 0))))
+        (
+            symbol,
+            str(r.get('date', '')).replace('-', ''),
+            _safe_float(r.get('open')),
+            _safe_float(r.get('high')),
+            _safe_float(r.get('low')),
+            float(r.get('close', 0)),
+            int(float(r.get('volume', 0))),
+        )
         for r in rows
         if float(r.get('close', 0)) > 0
     ]
     conn.executemany(
-        'INSERT OR REPLACE INTO ohlcv (symbol, trade_date, close, volume) VALUES (?, ?, ?, ?)',
+        'INSERT OR REPLACE INTO ohlcv (symbol, trade_date, open, high, low, close, volume) VALUES (?, ?, ?, ?, ?, ?, ?)',
         data,
     )
     conn.commit()
@@ -263,8 +289,19 @@ def sync_from_csv_dir(csv_dir: Path, *, db_path: Path | None = None) -> int:
         if not rows:
             continue
         conn.executemany(
-            'INSERT OR REPLACE INTO ohlcv (symbol, trade_date, close, volume) VALUES (?, ?, ?, ?)',
-            [(symbol, r['date'], r['close'], r['volume']) for r in rows],
+            'INSERT OR REPLACE INTO ohlcv (symbol, trade_date, open, high, low, close, volume) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [
+                (
+                    symbol,
+                    r['date'],
+                    r.get('open'),
+                    r.get('high'),
+                    r.get('low'),
+                    r['close'],
+                    r['volume'],
+                )
+                for r in rows
+            ],
         )
         total += len(rows)
     conn.commit()
@@ -281,13 +318,50 @@ def _parse_csv(path: Path) -> list[dict]:
         for row in csv.DictReader(f):
             date_str = str(row.get('date', '')).strip().replace('-', '')
             try:
+                open_price = _safe_float(row.get('open'))
+                high_price = _safe_float(row.get('high'))
+                low_price = _safe_float(row.get('low'))
                 close = float(row.get('close', 0) or 0)
                 volume = int(float(row.get('volume', 0) or 0))
             except (ValueError, TypeError):
                 continue
             if date_str and close > 0:
-                rows.append({'date': date_str, 'close': round(close, 2), 'volume': max(0, volume)})
+                rows.append(
+                    {
+                        'date': date_str,
+                        'open': round(open_price, 2) if open_price is not None else round(close, 2),
+                        'high': round(high_price, 2) if high_price is not None else round(close, 2),
+                        'low': round(low_price, 2) if low_price is not None else round(close, 2),
+                        'close': round(close, 2),
+                        'volume': max(0, volume),
+                    }
+                )
     return rows
+
+
+def _safe_float(value) -> float | None:
+    try:
+        raw = str(value).replace(',', '').strip()
+        if not raw:
+            return None
+        return float(raw)
+    except (TypeError, ValueError):
+        return None
+
+
+def _ensure_optional_columns(conn: sqlite3.Connection) -> None:
+    existing = {
+        row['name']
+        for row in conn.execute('PRAGMA table_info(ohlcv)').fetchall()
+    }
+    for column_name, definition in (
+        ('open', 'REAL'),
+        ('high', 'REAL'),
+        ('low', 'REAL'),
+    ):
+        if column_name not in existing:
+            conn.execute(f'ALTER TABLE ohlcv ADD COLUMN {column_name} {definition}')
+    conn.commit()
 
 
 def _format_date(token: str) -> str:

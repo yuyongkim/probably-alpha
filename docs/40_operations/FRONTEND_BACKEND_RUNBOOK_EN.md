@@ -20,6 +20,13 @@ python3 -m sepa.pipeline.run_live_cycle
 uvicorn sepa.api.app:app --host 127.0.0.1 --port 8000 --reload
 ```
 
+Production-facing defaults to keep in mind:
+
+- keep `SEPA_ENABLE_DOCS=0` unless docs are deliberately exposed
+- set `SEPA_ADMIN_TOKEN` before using any `/api/admin/*` route
+- if you sit behind nginx/Caddy/Cloudflare, only enable `SEPA_RATE_LIMIT_TRUST_PROXY_HEADERS=1` after setting `SEPA_RATE_LIMIT_TRUSTED_PROXY_IPS`
+- public routes are read-only; expensive or file-writing jobs stay behind admin auth
+
 Key endpoints:
 - `/api/summary`
 - `/api/alpha`
@@ -36,3 +43,9 @@ python3 -m http.server 8080 --directory sepa/frontend
 Open: `http://127.0.0.1:8080`
 
 API Base value: `http://127.0.0.1:8000`
+
+## 4) Security hardening references
+
+- deployment checklist: `docs/40_operations/SECURITY_HARDENING.md`
+- runtime defaults: `.env.example`
+- admin requests should prefer `Authorization: Bearer <token>`; the `X-SEPA-Admin-Token` header is a temporary migration fallback

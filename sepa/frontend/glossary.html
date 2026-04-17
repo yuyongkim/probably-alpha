@@ -76,17 +76,6 @@
   </footer>
 
   <script type="module" src="./js/glossary-page.js?v=1775488167"></script>
-  <script>
-    (function(){
-      var btn=document.getElementById('backToTop');
-      if(!btn)return;
-      window.addEventListener('scroll',function(){
-        btn.classList.toggle('is-visible',window.scrollY>400);
-      },{passive:true});
-      btn.addEventListener('click',function(){
-        window.scrollTo({top:0,behavior:'smooth'});
-      });
-    })();
-  </script>
+  <script src="./js/back-to-top.js?v=1775488167"></script>
 </body>
 </html>

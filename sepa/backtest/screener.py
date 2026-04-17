@@ -41,6 +41,12 @@ def screen_universe(
     market_close : KOSPI close price (for market filter)
     market_ma200 : KOSPI 200-day MA (for market filter)
     """
+    if config.symbol_whitelist:
+        allowed = {str(symbol).strip().upper() for symbol in config.symbol_whitelist if str(symbol).strip()}
+        price_data = {symbol: rows for symbol, rows in price_data.items() if symbol.upper() in allowed}
+        if not price_data:
+            return []
+
     # Market regime filter (Jones, Dalio)
     if config.use_market_filter and market_close and market_ma200:
         if market_close < market_ma200:
@@ -61,29 +67,34 @@ def screen_universe(
         return []
 
     # Sector filtering (shared across all types)
-    sector_map = _get_sector_map()
-    for c in candidates:
-        if 'sector' not in c:
-            c['sector'] = get_sector(c['symbol'], sector_map)
-
-    if config.sector_filter:
-        sector_scores: dict[str, float] = {}
+    if config.ignore_sector_constraints:
+        synthetic_sector = config.universe_label or 'ETF'
         for c in candidates:
-            sec = c.get('sector', 'Other')
-            sector_scores[sec] = sector_scores.get(sec, 0) + c.get('score', 0)
-        top_secs = sorted(sector_scores, key=sector_scores.get, reverse=True)[:config.top_sectors]
-        candidates = [c for c in candidates if c.get('sector', 'Other') in top_secs]
+            c['sector'] = synthetic_sector
+    else:
+        sector_map = _get_sector_map()
+        for c in candidates:
+            if 'sector' not in c:
+                c['sector'] = get_sector(c['symbol'], sector_map)
 
-    # Sector limit
-    if config.sector_limit > 0:
-        sector_count: dict[str, int] = {}
-        limited: list[dict] = []
-        for c in sorted(candidates, key=lambda x: x.get('score', 0), reverse=True):
-            sec = c.get('sector', 'Other')
-            if sector_count.get(sec, 0) < config.sector_limit:
-                limited.append(c)
-                sector_count[sec] = sector_count.get(sec, 0) + 1
-        candidates = limited
+        if config.sector_filter:
+            sector_scores: dict[str, float] = {}
+            for c in candidates:
+                sec = c.get('sector', 'Other')
+                sector_scores[sec] = sector_scores.get(sec, 0) + c.get('score', 0)
+            top_secs = sorted(sector_scores, key=sector_scores.get, reverse=True)[:config.top_sectors]
+            candidates = [c for c in candidates if c.get('sector', 'Other') in top_secs]
+
+        # Sector limit
+        if config.sector_limit > 0:
+            sector_count: dict[str, int] = {}
+            limited: list[dict] = []
+            for c in sorted(candidates, key=lambda x: x.get('score', 0), reverse=True):
+                sec = c.get('sector', 'Other')
+                if sector_count.get(sec, 0) < config.sector_limit:
+                    limited.append(c)
+                    sector_count[sec] = sector_count.get(sec, 0) + 1
+            candidates = limited
 
     candidates.sort(key=lambda x: x.get('score', 0), reverse=True)
     result = candidates[:config.max_positions * 2]

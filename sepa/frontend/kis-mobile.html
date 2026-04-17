@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#08121f" />
+  <title>KIS Mobile</title>
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <style>
+    :root{
+      --bg:#08121f;
+      --panel:#102033;
+      --line:rgba(118,163,213,.18);
+      --text:#edf5ff;
+      --muted:#9ab2cf;
+      --accent:#4db8ff;
+      --good:#73e3a5;
+      --warn:#ffd166;
+      --shadow:0 18px 42px rgba(0,0,0,.28);
+      --radius:20px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      font-family:"Segoe UI",sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(77,184,255,.18), transparent 28%),
+        radial-gradient(circle at bottom left, rgba(115,227,165,.14), transparent 24%),
+        linear-gradient(180deg, #07101a 0%, #0a1624 100%);
+      padding:16px;
+    }
+    .shell{
+      width:min(100%, 760px);
+      margin:0 auto;
+      display:grid;
+      gap:14px;
+    }
+    .hero,.panel{
+      background:linear-gradient(180deg, rgba(16,32,51,.96), rgba(12,25,40,.96));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .hero{padding:18px}
+    .hero h1{
+      margin:8px 0 10px;
+      font-size:28px;
+      line-height:1.08;
+      letter-spacing:-.03em;
+    }
+    .hero p,.note{
+      margin:0;
+      color:var(--muted);
+      line-height:1.55;
+      font-size:13px;
+    }
+    .eyebrow{
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+      font-size:11px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+      color:var(--accent);
+    }
+    .panel{
+      padding:16px;
+      display:grid;
+      gap:12px;
+    }
+    .panel-head{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:flex-start;
+    }
+    .panel-head h2{
+      margin:0;
+      font-size:18px;
+    }
+    .panel-head p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+    }
+    input,button{
+      width:100%;
+      border-radius:14px;
+      border:1px solid rgba(118,163,213,.22);
+      background:rgba(10,20,34,.92);
+      color:var(--text);
+      padding:12px 14px;
+      font:inherit;
+    }
+    button{
+      background:linear-gradient(135deg, #2386c8, #4db8ff);
+      border:none;
+      color:#03111d;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .ghost{
+      background:transparent;
+      color:var(--text);
+      border:1px solid rgba(118,163,213,.22);
+    }
+    .grid-2{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+    }
+    .stat,.card{
+      border-radius:16px;
+      border:1px solid rgba(118,163,213,.14);
+      background:rgba(255,255,255,.03);
+      padding:12px;
+    }
+    .stat strong{
+      display:block;
+      margin-top:6px;
+      font-size:20px;
+      letter-spacing:-.03em;
+    }
+    .list{
+      display:grid;
+      gap:10px;
+    }
+    .card-top{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .pill-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .pill{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(118,163,213,.18);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      font-size:12px;
+    }
+    .good{color:var(--good)}
+    .warn{color:var(--warn)}
+    .links{
+      display:grid;
+      gap:10px;
+    }
+    .link-card{
+      padding:14px;
+      border-radius:16px;
+      border:1px solid rgba(118,163,213,.14);
+      background:linear-gradient(180deg, rgba(20,40,66,.92), rgba(12,24,39,.92));
+      text-decoration:none;
+      color:var(--text);
+    }
+    .link-card strong{
+      display:block;
+      margin-bottom:6px;
+    }
+    a{color:var(--accent);text-decoration:none}
+    @media (max-width:640px){
+      body{padding:12px}
+      .hero h1{font-size:24px}
+      .grid-2,.stats{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">KIS / Product Scope</div>
+      <h1>KIS에서 가능한 전체 상품군을 먼저 보고, 그다음 현재 프로젝트 지원 범위를 고릅니다</h1>
+      <p>이 페이지는 공식 KIS 샘플 저장소 기준 상품군과, 현재 SEPA 프로젝트에서 이미 연결된 범위를 함께 보여줍니다. 지금은 국내주식과 국내 ETF/ETN이 가장 잘 붙어 있고, 나머지 상품군은 순차적으로 확장하는 구조가 안전합니다.</p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>연결 상태</h2>
+          <p>API 서버 기준 KIS 인증 가능 여부를 먼저 확인합니다.</p>
+        </div>
+        <button id="btnHealth" class="ghost" type="button">새로고침</button>
+      </div>
+      <div class="grid-2">
+        <input id="apiBase" value="" placeholder="비우면 현재 origin 사용" />
+        <div id="healthBox" class="stat">
+          <small class="note">대기 중</small>
+          <strong>-</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>KIS 상품 카탈로그</h2>
+          <p>KIS 자체 지원 범위와 현재 프로젝트 지원 범위를 분리해서 봅니다.</p>
+        </div>
+        <button id="btnCatalog" class="ghost" type="button">카탈로그 갱신</button>
+      </div>
+      <div id="catalogSummary" class="stats">
+        <div class="stat"><small class="note">로딩 중</small><strong>...</strong></div>
+      </div>
+      <div id="catalogList" class="list"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>지금 바로 쓰는 레인</h2>
+          <p>현재 이 프로젝트에서 실제 분석과 백테스트까지 이어지는 우선 레인입니다.</p>
+        </div>
+      </div>
+      <div class="links">
+        <a class="link-card" href="./etf-mobile.html">
+          <strong>ETF Mobile</strong>
+          <span class="note">국내 ETF/ETN 분석, 성향별 후보 비교, 히스토리 적재 후 ETF 백테스트까지 가장 잘 연결된 레인입니다.</span>
+        </a>
+        <a class="link-card" href="./overseas-mobile.html">
+          <strong>Overseas Mobile</strong>
+          <span class="note">해외주식 현재가, 상세 기본정보, 최근 일봉, 지지·저항을 빠르게 보는 읽기 전용 레인입니다.</span>
+        </a>
+        <a class="link-card" href="./index.html">
+          <strong>SEPA Command Center</strong>
+          <span class="note">국내주식 중심 리더 스캔, 추천, 백테스트 흐름은 메인 대시보드에 남아 있습니다.</span>
+        </a>
+      </div>
+      <p class="note">해외주식, 채권, 선물옵션은 KIS 샘플상 주문/시세 지원이 보여도, 현재 프로젝트에는 전용 백테스트/체결 모델이 아직 붙지 않았습니다.</p>
+    </section>
+  </main>
+
+  <script src="./js/kis-mobile-page.js?v=1775488167"></script>
+</body>
+</html>
