@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import unittest
+from tempfile import TemporaryDirectory
 from pathlib import Path
 from unittest.mock import patch
 
 from fastapi import HTTPException
 
 from sepa.api import services
+from sepa.api.services_dashboard import _latest_complete_dashboard_dir
 
 
 class ApiServicesTest(unittest.TestCase):
@@ -68,6 +70,45 @@ class ApiServicesTest(unittest.TestCase):
                 'force': True,
             },
         )
+
+    def test_dashboard_falls_back_to_latest_complete_signal_bundle(self) -> None:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            latest = root / '20260417'
+            previous = root / '20260414'
+            latest.mkdir(parents=True, exist_ok=True)
+            previous.mkdir(parents=True, exist_ok=True)
+
+            required = [
+                'alpha-passed.json',
+                'beta-vcp-candidates.json',
+                'delta-risk-plan.json',
+                'omega-final-picks.json',
+                'leader-stocks.json',
+                'leader-sectors.json',
+                'recommendations.json',
+            ]
+            for name in required:
+                (previous / name).write_text('[]', encoding='utf-8')
+            # leave latest incomplete on purpose
+            (latest / 'alpha-passed.json').write_text('[]', encoding='utf-8')
+
+            resolved = _latest_complete_dashboard_dir(latest)
+
+            self.assertEqual(resolved, previous)
+
+    def test_dashboard_raises_when_no_complete_bundle_exists(self) -> None:
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            latest = root / '20260417'
+            latest.mkdir(parents=True, exist_ok=True)
+            (latest / 'alpha-passed.json').write_text('[]', encoding='utf-8')
+
+            with self.assertRaises(HTTPException) as ctx:
+                _latest_complete_dashboard_dir(latest)
+
+            self.assertEqual(ctx.exception.status_code, 404)
+            self.assertIn('missing file', ctx.exception.detail)
 
 
 if __name__ == '__main__':

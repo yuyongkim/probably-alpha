@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from fastapi import HTTPException
 
 from sepa.analysis.sector_logic import build_logic_payload
@@ -10,9 +12,34 @@ from sepa.storage.recommendation_store import get_history, get_latest, get_snaps
 from sepa.api.services import decorate_payload, read_json, resolve_dir
 
 
+REQUIRED_DASHBOARD_FILES = (
+    'alpha-passed.json',
+    'beta-vcp-candidates.json',
+    'delta-risk-plan.json',
+    'omega-final-picks.json',
+    'leader-stocks.json',
+    'leader-sectors.json',
+    'recommendations.json',
+)
+
+
+def _latest_complete_dashboard_dir(preferred: Path) -> Path:
+    if all((preferred / name).exists() for name in REQUIRED_DASHBOARD_FILES):
+        return preferred
+
+    signal_root = preferred.parent
+    candidates = sorted(path for path in signal_root.glob('*') if path.is_dir())
+    for candidate in reversed(candidates):
+        if all((candidate / name).exists() for name in REQUIRED_DASHBOARD_FILES):
+            return candidate
+
+    missing = next(name for name in REQUIRED_DASHBOARD_FILES if not (preferred / name).exists())
+    raise HTTPException(status_code=404, detail=f'missing file: {missing}')
+
+
 def dashboard_payload(date_dir: str | None = None) -> dict:
     """Combined endpoint: resolves date once and reads each JSON file once."""
-    resolved = resolve_dir(date_dir)
+    resolved = _latest_complete_dashboard_dir(resolve_dir(date_dir))
     date_key = resolved.name
 
     # Read each JSON file exactly once

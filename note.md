@@ -224,3 +224,8 @@
   - workspace/KIS hub UI expansion on `index.html`
   - shared chat assistant assets and page wiring for ETF/KIS/overseas mobile pages
   - assistant API/service scaffolding and related settings/tests
+
+## 2026-04-18 QA finding
+
+- `/` loaded but the legacy SEPA dashboard section emitted a 404 against `/api/dashboard` because the newest signal bundle (`20260417`) was incomplete and missing `leader-stocks.json`.
+- Fix direction: make the combined dashboard API fall back to the latest complete signal bundle instead of hard-failing on the newest incomplete folder.
