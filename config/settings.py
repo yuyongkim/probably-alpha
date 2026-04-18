@@ -93,7 +93,7 @@ class Settings:
         default_factory=lambda: _csv_env("SEPA_RATE_LIMIT_TRUSTED_PROXY_IPS", ())
     )
     llm_provider: str = os.getenv("SEPA_LLM_PROVIDER", "ollama")
-    llm_timeout_seconds: int = _int_env("SEPA_LLM_TIMEOUT_SECONDS", 60)
+    llm_timeout_seconds: int = _int_env("SEPA_LLM_TIMEOUT_SECONDS", 120)
     llm_temperature: float = _float_env("SEPA_LLM_TEMPERATURE", 0.2)
     llm_max_history_messages: int = _int_env("SEPA_LLM_MAX_HISTORY_MESSAGES", 8)
     ollama_base_url: str = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434")

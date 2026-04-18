@@ -45,6 +45,8 @@ def _http_json(
         raise AssistantProviderError(exc.code, raw[:500] or 'LLM request failed') from exc
     except URLError as exc:
         raise AssistantProviderError(503, f'LLM network error: {exc}') from exc
+    except TimeoutError as exc:
+        raise AssistantProviderError(504, 'LLM request timed out while waiting for the model response') from exc
     except json.JSONDecodeError as exc:
         raise AssistantProviderError(502, 'LLM returned invalid JSON') from exc
 
