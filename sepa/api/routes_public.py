@@ -5,7 +5,8 @@ from copy import copy
 
 from fastapi import APIRouter, HTTPException
 
-from sepa.api.models import EtfProfileRecommendationRequest
+from sepa.api.models import AssistantChatRequest, EtfProfileRecommendationRequest
+from sepa.api.services_llm import AssistantProviderError, assistant_chat_payload, assistant_health_payload
 from sepa.api.services_etf import etf_universe_payload
 from sepa.api.services_kis_catalog import kis_product_catalog_payload
 from sepa.api.services_kis import (
@@ -103,6 +104,11 @@ def kis_health() -> dict:
     return kis_health_payload()
 
 
+@router.get('/api/assistant/health')
+def assistant_health() -> dict:
+    return assistant_health_payload()
+
+
 @router.get('/api/kis/catalog')
 def kis_catalog(
     orderable_only: bool = False,
@@ -114,6 +120,18 @@ def kis_catalog(
         backtestable_only=backtestable_only,
         project_supported_only=project_supported_only,
     )
+
+
+@router.post('/api/assistant/chat')
+def assistant_chat(request: AssistantChatRequest) -> dict:
+    try:
+        return assistant_chat_payload(
+            page_id=request.page_id,
+            messages=[item.model_dump() for item in request.messages],
+            context=request.context,
+        )
+    except AssistantProviderError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
 
 
 @router.get('/api/etf/universe')

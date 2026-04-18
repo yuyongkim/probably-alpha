@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#08121f" />
   <title>Overseas Mobile</title>
   <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <link rel="stylesheet" href="./css/30-chat-assistant.css" />
   <style>
     :root{
       --bg:#08121f;
@@ -38,6 +39,29 @@
       border-radius:var(--radius);
       box-shadow:var(--shadow);
     }
+    .workspace-nav{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-bottom:2px;
+    }
+    .workspace-nav__link{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:42px;
+      padding:10px 16px;
+      border-radius:999px;
+      border:1px solid rgba(118,163,213,.18);
+      background:rgba(255,255,255,.03);
+      color:var(--text);
+      text-decoration:none;
+      font-size:13px;
+    }
+    .workspace-nav__link.is-active{
+      border-color:rgba(77,184,255,.42);
+      background:rgba(77,184,255,.14);
+    }
     .hero{padding:18px}
     .hero h1{margin:8px 0 10px;font-size:28px;line-height:1.08;letter-spacing:-.03em}
     .hero p,.note{margin:0;color:var(--muted);line-height:1.55;font-size:13px}
@@ -64,11 +88,30 @@
     .pill{padding:8px 10px;border-radius:999px;border:1px solid rgba(118,163,213,.18);background:rgba(255,255,255,.03);color:var(--muted);font-size:12px}
     .mono{font-family:Consolas,monospace}
     a{color:var(--accent);text-decoration:none}
-    @media (max-width:640px){body{padding:12px}.hero h1{font-size:24px}.grid-2,.metrics{grid-template-columns:1fr}}
+    @media (max-width:640px){
+      body{padding:12px}
+      .hero h1{font-size:24px}
+      .grid-2,.metrics{grid-template-columns:1fr}
+      .workspace-nav{
+        flex-wrap:nowrap;
+        overflow-x:auto;
+        scrollbar-width:none;
+        -webkit-overflow-scrolling:touch;
+      }
+      .workspace-nav::-webkit-scrollbar{display:none}
+      .workspace-nav__link{white-space:nowrap; flex-shrink:0}
+    }
   </style>
 </head>
-<body>
+<body data-chat-page="overseas-stocks">
   <main class="shell">
+    <nav class="workspace-nav" aria-label="KIS Workspace Navigation">
+      <a class="workspace-nav__link" href="./index.html">Workspace Home</a>
+      <a class="workspace-nav__link" href="./kis-mobile.html">KIS Catalog</a>
+      <a class="workspace-nav__link" href="./etf-mobile.html">Domestic ETF</a>
+      <a class="workspace-nav__link is-active" href="./overseas-mobile.html">Overseas Stocks</a>
+      <a class="workspace-nav__link" href="./index.html#main-content">Legacy SEPA</a>
+    </nav>
     <section class="hero">
       <div class="eyebrow">KIS / Overseas</div>
       <h1>해외주식 정보를 휴대폰에서 빠르게 읽기</h1>
@@ -109,6 +152,7 @@
     </section>
   </main>
 
+  <script src="./js/chat-assistant.js?v=1775488167"></script>
   <script src="./js/overseas-mobile-page.js?v=1775488167"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -63,3 +63,14 @@ class EtfBacktestRunRequest(BaseModel):
     slippage: float = Field(default=0.001, ge=0.0, le=0.05)
     tax: float = Field(default=0.0018, ge=0.0, le=0.05)
     benchmark_symbol: str | None = None
+
+
+class AssistantChatMessage(BaseModel):
+    role: Literal['user', 'assistant']
+    content: str = Field(min_length=1, max_length=4000)
+
+
+class AssistantChatRequest(BaseModel):
+    page_id: str = Field(min_length=1, max_length=64)
+    messages: list[AssistantChatMessage] = Field(min_length=1, max_length=12)
+    context: Any | None = None

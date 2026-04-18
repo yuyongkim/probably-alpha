@@ -12,7 +12,157 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="stylesheet" href="./styles.css" />
 </head>
-<body>
+<body data-chat-page="workspace-home">
+  <section class="workspace-shell">
+    <div class="workspace-shell__head">
+      <div>
+        <span class="workspace-badge">KIS Workspace</span>
+        <h2>KIS 중심으로 보고, SEPA는 분석 엔진으로 쓰는 구조</h2>
+        <p>이 화면 아래는 기존 SEPA 대시보드입니다. 위쪽 허브에서 상품군 카탈로그, ETF, 해외주식으로 바로 들어가고, 필요할 때만 아래 레거시 SEPA 분석 화면으로 내려가도록 바꿨습니다.</p>
+      </div>
+      <div class="workspace-badge">Legacy SEPA Below</div>
+    </div>
+    <nav class="workspace-nav" aria-label="KIS Workspace Navigation">
+      <a class="workspace-nav__link is-active" href="./index.html">Workspace Home</a>
+      <a class="workspace-nav__link" href="./kis-mobile.html">KIS Catalog</a>
+      <a class="workspace-nav__link" href="./etf-mobile.html">Domestic ETF</a>
+      <a class="workspace-nav__link" href="./overseas-mobile.html">Overseas Stocks</a>
+      <a class="workspace-nav__link" href="#main-content">Legacy SEPA</a>
+    </nav>
+    <div class="workspace-grid">
+      <a class="workspace-card" href="./kis-mobile.html">
+        <span class="workspace-card__eyebrow">Scope First</span>
+        <strong>KIS Product Catalog</strong>
+        <p>한국투자증권에서 실제로 다룰 수 있는 상품군과, 현재 프로젝트가 어디까지 붙어 있는지 먼저 봅니다.</p>
+        <span class="workspace-card__meta">국내주식 / ETF / 해외주식 / 채권 / 파생</span>
+      </a>
+      <a class="workspace-card" href="./etf-mobile.html">
+        <span class="workspace-card__eyebrow">Best Connected</span>
+        <strong>Domestic ETF</strong>
+        <p>국내 ETF/ETN은 분석, 히스토리 적재, 백테스트까지 가장 잘 연결된 레인입니다.</p>
+        <span class="workspace-card__meta">정보 조회 + 백테스트</span>
+      </a>
+      <a class="workspace-card" href="./overseas-mobile.html">
+        <span class="workspace-card__eyebrow">Research Lane</span>
+        <strong>Overseas Stocks</strong>
+        <p>해외주식은 현재가, 상세 정보, 최근 일봉, 지지·저항을 모바일 친화적으로 먼저 봅니다.</p>
+        <span class="workspace-card__meta">정보 조회 전용</span>
+      </a>
+      <a class="workspace-card" href="#main-content">
+        <span class="workspace-card__eyebrow">Legacy Engine</span>
+        <strong>SEPA Dashboard</strong>
+        <p>기존 리더 스캔, 차트 데스크, 실행 리뷰는 아래 레거시 SEPA 화면에서 계속 사용할 수 있습니다.</p>
+        <span class="workspace-card__meta">국내주식 중심 분석</span>
+      </a>
+    </div>
+    <p class="workspace-note">기존 화면을 그대로 둔 채 KIS 허브를 위에 추가했습니다.</p>
+  </section>
+  <section class="workspace-stack">
+    <section id="workspace-catalog" class="panel workspace-panel">
+      <div class="workspace-panel__head">
+        <div>
+          <h3>KIS Product Catalog</h3>
+          <p>KIS에서 가능한 상품군과 현재 프로젝트에서 실제로 붙어 있는 범위를 같은 화면에서 봅니다.</p>
+        </div>
+        <span class="workspace-panel__meta">Scope / Support / Priority</span>
+      </div>
+      <div class="workspace-form-grid">
+        <div class="workspace-field">
+          <label for="workspaceApiBase">Workspace API Base URL</label>
+          <input id="workspaceApiBase" value="" placeholder="비우면 현재 origin 사용" />
+        </div>
+        <div class="workspace-field">
+          <label>Workspace Actions</label>
+          <div class="workspace-actions">
+            <button id="workspaceRefreshHealth" class="workspace-button" type="button">KIS 상태 확인</button>
+            <button id="workspaceRefreshCatalog" class="workspace-button is-secondary" type="button">카탈로그 갱신</button>
+          </div>
+        </div>
+      </div>
+      <div id="workspaceStats" class="workspace-stats">
+        <div class="workspace-stat">
+          <span class="workspace-inline-note">로딩 중</span>
+          <strong>...</strong>
+        </div>
+      </div>
+      <div id="workspaceCatalogList" class="workspace-results"></div>
+    </section>
+
+    <section id="workspace-etf" class="panel workspace-panel">
+      <div class="workspace-panel__head">
+        <div>
+          <h3>Domestic ETF Lane</h3>
+          <p>국내 ETF/ETN 분석, 후보 비교, 휴리스틱 레벨 확인까지 이 페이지에서 바로 합니다.</p>
+        </div>
+        <span class="workspace-panel__meta">Best Connected Lane</span>
+      </div>
+      <div class="workspace-form-grid">
+        <div class="workspace-field">
+          <label for="workspaceEtfSymbol">ETF 코드</label>
+          <input id="workspaceEtfSymbol" value="069500" placeholder="예: 069500" />
+        </div>
+        <div class="workspace-field">
+          <label>ETF 분석</label>
+          <div class="workspace-actions">
+            <button id="workspaceEtfAnalyze" class="workspace-button" type="button">ETF 분석 조회</button>
+            <a class="workspace-button is-secondary" href="./etf-mobile.html">전용 페이지</a>
+          </div>
+        </div>
+        <div class="workspace-field">
+          <label for="workspaceEtfRisk">투자 성향</label>
+          <select id="workspaceEtfRisk">
+            <option value="conservative">보수형</option>
+            <option value="balanced" selected>균형형</option>
+            <option value="aggressive">공격형</option>
+          </select>
+        </div>
+        <div class="workspace-field">
+          <label for="workspaceEtfSymbols">ETF 후보군</label>
+          <textarea id="workspaceEtfSymbols">069500
+360750
+114800
+102110</textarea>
+        </div>
+      </div>
+      <div class="workspace-actions">
+        <button id="workspaceEtfRecommend" class="workspace-button" type="button">후보군 추천</button>
+      </div>
+      <div id="workspaceEtfResult" class="workspace-results"></div>
+      <div id="workspaceEtfRecommendation" class="workspace-results"></div>
+    </section>
+
+    <section id="workspace-overseas" class="panel workspace-panel">
+      <div class="workspace-panel__head">
+        <div>
+          <h3>Overseas Stock Lane</h3>
+          <p>해외주식은 읽기 중심으로 현재가, 기본정보, 최근 일봉과 지지·저항을 빠르게 확인합니다.</p>
+        </div>
+        <span class="workspace-panel__meta">Research Lane</span>
+      </div>
+      <div class="workspace-form-grid">
+        <div class="workspace-field">
+          <label for="workspaceOverseasSymbol">심볼</label>
+          <input id="workspaceOverseasSymbol" value="AAPL" placeholder="예: AAPL" />
+        </div>
+        <div class="workspace-field">
+          <label for="workspaceOverseasExchange">거래소 코드</label>
+          <input id="workspaceOverseasExchange" value="NAS" placeholder="예: NAS" />
+        </div>
+        <div class="workspace-field">
+          <label for="workspaceOverseasProductType">상품유형코드</label>
+          <input id="workspaceOverseasProductType" value="512" placeholder="예: 512" />
+        </div>
+        <div class="workspace-field">
+          <label>해외주식 분석</label>
+          <div class="workspace-actions">
+            <button id="workspaceOverseasAnalyze" class="workspace-button" type="button">해외주식 분석</button>
+            <a class="workspace-button is-secondary" href="./overseas-mobile.html">전용 페이지</a>
+          </div>
+        </div>
+      </div>
+      <div id="workspaceOverseasResult" class="workspace-results"></div>
+    </section>
+  </section>
   <a href="#main-content" class="skip-link">본문으로 건너뛰기</a>
   <section class="control-band">
     <header class="page-header">
@@ -681,6 +831,8 @@
   </footer>
 
   <script type="module" src="./app.js?v=1775488167"></script>
+  <script src="./js/chat-assistant.js?v=1775488167"></script>
+  <script src="./js/workspace-hub-page.js?v=1775488167"></script>
   <script src="./js/back-to-top.js?v=1775488167"></script>
 </body>
 </html>

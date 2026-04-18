@@ -214,3 +214,13 @@
   - rate limiting is still in-memory/process-local
   - admin auth is still shared-token based
   - inline styles still keep `style-src 'unsafe-inline'`
+
+## 2026-04-18 pre-QA checkpoint
+
+- Git remote remains `origin -> https://github.com/yuyongkim/probably-alpha.git`
+- Active branch remains `main`
+- Before running `/qa`, current uncommitted work is being snapshotted into git first so QA fixes can stay isolated.
+- Current WIP includes:
+  - workspace/KIS hub UI expansion on `index.html`
+  - shared chat assistant assets and page wiring for ETF/KIS/overseas mobile pages
+  - assistant API/service scaffolding and related settings/tests
