@@ -1,8 +1,14 @@
-// Value · Piotroski — single symbol breakdown, default Samsung.
+// Value · Piotroski — dense KPI + single-symbol breakdown (real).
 
 import { fetchEnvelope } from "@/lib/api";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { DenseSummary } from "@/components/shared/DenseSummary";
+import { Panel } from "@/components/shared/Panel";
 import { PiotroskiBreakdown } from "@/components/value/PiotroskiBreakdown";
 import type { PiotroskiResponse } from "@/types/value";
+import { PIOTROSKI_KPI } from "@/lib/value/mockData";
+
+export const revalidate = 300;
 
 export default async function ValuePiotroskiPage({
   searchParams,
@@ -10,16 +16,18 @@ export default async function ValuePiotroskiPage({
   searchParams: Promise<{ symbol?: string }>;
 }) {
   const { symbol = "005930" } = await searchParams;
-  const p = await fetchEnvelope<PiotroskiResponse>(
-    `/api/v1/value/piotroski?symbol=${symbol}`,
-  );
+  const p = await fetchEnvelope<PiotroskiResponse>(`/api/v1/value/piotroski?symbol=${symbol}`);
   return (
-    <div className="space-y-4">
-      <header>
-        <h1 className="display text-3xl">Piotroski F-Score</h1>
-        <p className="text-sm text-[color:var(--fg-muted)]">?symbol=005930</p>
-      </header>
-      <PiotroskiBreakdown p={p} />
-    </div>
+    <>
+      <PageHeader
+        crumbs={[{ label: "Value" }, { label: "Piotroski F-Score", current: true }]}
+        title="Piotroski F-Score 9"
+        meta={`FINANCIAL STRENGTH SCORING · JOSEPH PIOTROSKI · ${symbol}`}
+      />
+      <DenseSummary cells={PIOTROSKI_KPI} />
+      <Panel title={`F-Score Breakdown — ${symbol}`} muted={`${p.score}/${p.max_possible} (as of ${p.as_of})`}>
+        <PiotroskiBreakdown p={p} />
+      </Panel>
+    </>
   );
 }

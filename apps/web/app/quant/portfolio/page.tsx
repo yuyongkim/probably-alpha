@@ -1,9 +1,14 @@
-// Quant · Portfolio — equal-weight + factor IC views.
+// Quant · Portfolio Builder — dense KPI + equal-weight composite + factor IC bars.
 
 import { fetchEnvelope } from "@/lib/api";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { DenseSummary } from "@/components/shared/DenseSummary";
+import { Panel } from "@/components/shared/Panel";
 import { SmartBetaHeatmap } from "@/components/quant/SmartBetaHeatmap";
 import { ICBar } from "@/components/quant/ICBar";
 import type { SmartBetaResponse, ICResponse } from "@/types/quant";
+
+export const revalidate = 60;
 
 const FACTORS = ["momentum", "value", "quality", "low_vol"] as const;
 
@@ -15,19 +20,30 @@ export default async function QuantPortfolioPage() {
     ),
   ]);
   return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="display text-3xl">Portfolio & IC</h1>
-        <p className="text-sm text-[color:var(--fg-muted)]">
-          Equal-weight composite · 6-month factor IC on ky.db
-        </p>
-      </header>
-      <SmartBetaHeatmap holdings={holding.holdings} variant="equal_weight" />
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <>
+      <PageHeader
+        crumbs={[{ label: "Quant" }, { label: "포트폴리오", current: true }]}
+        title="포트폴리오 빌더"
+        meta="EQUAL-WEIGHT COMPOSITE · 6M FACTOR IC"
+      />
+      <DenseSummary
+        cells={[
+          { label: "Holdings", value: String(holding.holdings.length), delta: "equal-weight", tone: "pos" },
+          { label: "Variant", value: holding.variant, delta: "smart-beta" },
+          { label: "As Of", value: holding.as_of, delta: "ky.db" },
+          { label: "Factor IC (6M)", value: "4", delta: "Momentum · Value · Quality · LV" },
+          { label: "리밸런싱", value: "월 1회", delta: "자동", tone: "pos" },
+          { label: "KIS 자동주문", value: "OFF", delta: "준비 중" },
+        ]}
+      />
+      <Panel title="Equal-Weight Composite" muted={`${holding.holdings.length} holdings · ${holding.as_of}`} style={{ marginBottom: 10 }}>
+        <SmartBetaHeatmap holdings={holding.holdings} variant="equal_weight" />
+      </Panel>
+      <div className="grid-2-equal">
         {ics.map((ic) => (
           <ICBar key={ic.factor} ic={ic} />
         ))}
       </div>
-    </div>
+    </>
   );
 }

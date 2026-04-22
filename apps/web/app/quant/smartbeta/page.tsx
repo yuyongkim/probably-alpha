@@ -1,26 +1,50 @@
-// Quant · Smart Beta — 6 variants in a grid.
+// Quant · Smart Beta — dense KPI + heatmap + real holdings for the selected variant.
 
 import { fetchEnvelope } from "@/lib/api";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { DenseSummary } from "@/components/shared/DenseSummary";
+import { Panel } from "@/components/shared/Panel";
+import { Heatmap } from "@/components/shared/Heatmap";
 import { SmartBetaHeatmap } from "@/components/quant/SmartBetaHeatmap";
 import type { SmartBetaResponse } from "@/types/quant";
+import { SMARTBETA_KPI, SMARTBETA_HEATMAP } from "@/lib/quant/mockData";
 
-const VARIANTS = ["low_vol", "quality", "momentum", "equal_weight", "high_div", "qmj"] as const;
+export const revalidate = 60;
 
-export default async function QuantSmartBetaPage() {
-  const bundles = await Promise.all(
-    VARIANTS.map((v) => fetchEnvelope<SmartBetaResponse>(`/api/v1/quant/smart_beta?variant=${v}&n=15`)),
+export default async function QuantSmartBetaPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ variant?: string }>;
+}) {
+  const { variant = "low_vol" } = await searchParams;
+  const data = await fetchEnvelope<SmartBetaResponse>(
+    `/api/v1/quant/smart_beta?variant=${variant}&n=20`,
   );
   return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="display text-3xl">Smart Beta</h1>
-        <p className="text-sm text-[color:var(--fg-muted)]">6 index variants · ky.db</p>
-      </header>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {bundles.map((b) => (
-          <SmartBetaHeatmap key={b.variant} holdings={b.holdings} variant={b.variant} />
-        ))}
-      </div>
-    </div>
+    <>
+      <PageHeader
+        crumbs={[{ label: "Quant" }, { label: "Smart Beta", current: true }]}
+        title="Smart Beta 전략"
+        meta="LOW VOL · QUALITY · VALUE · MOMENTUM · DIVIDEND · EQUAL WEIGHT"
+      />
+      <DenseSummary cells={SMARTBETA_KPI} />
+      <Panel
+        title="Smart Beta × 기간 성과"
+        muted="KOSPI 대비 초과수익"
+        bodyPadding="tight"
+        style={{ marginBottom: 10 }}
+      >
+        <Heatmap
+          firstColumnWidth="150px"
+          columnHeaders={SMARTBETA_HEATMAP.columns}
+          rowLabel="Strategy"
+          rows={SMARTBETA_HEATMAP.rows.map((r) => ({
+            name: r.name,
+            cells: r.cells.map(([value, level]) => ({ value, level })),
+          }))}
+        />
+      </Panel>
+      <SmartBetaHeatmap holdings={data.holdings} variant={data.variant} />
+    </>
   );
 }
