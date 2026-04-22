@@ -1,17 +1,27 @@
-// Value · DCF — Placeholder (Phase 3 ports Finance_analysis).
-export default function ValueDcfPage() {
+// Value · DCF — 2-stage DCF for a given symbol (default: Samsung).
+
+import { fetchEnvelope } from "@/lib/api";
+import { DCFResult } from "@/components/value/DCFResult";
+import type { DcfResponse } from "@/types/value";
+
+export default async function ValueDcfPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ symbol?: string; g?: string; gt?: string }>;
+}) {
+  const { symbol = "005930", g = "0.10", gt = "0.025" } = await searchParams;
+  const dcf = await fetchEnvelope<DcfResponse>(
+    `/api/v1/value/dcf/${symbol}?growth_high=${g}&growth_term=${gt}`,
+  );
   return (
-    <div>
-      <h1 className="display text-3xl mb-2">DCF Workbench</h1>
-      <p className="text-sm text-[color:var(--fg-muted)] mb-6">
-        자유현금흐름 할인 · 민감도 · 시나리오.
-      </p>
-      <div className="p-6 rounded-md border border-border bg-[color:var(--surface)]">
-        <div className="text-[color:var(--accent)] text-xs uppercase tracking-widest mb-2">
-          Coming in Phase 3
-        </div>
-        <p className="text-sm">Finance_analysis 의 DCF 엔진을 services/dcf.py 로 이식 예정.</p>
-      </div>
+    <div className="space-y-4">
+      <header>
+        <h1 className="display text-3xl">DCF Workbench</h1>
+        <p className="text-sm text-[color:var(--fg-muted)]">
+          2-stage FCF · ?symbol=005930&amp;g=0.10&amp;gt=0.025
+        </p>
+      </header>
+      <DCFResult dcf={dcf} />
     </div>
   );
 }
