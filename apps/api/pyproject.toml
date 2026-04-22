@@ -10,11 +10,14 @@ dependencies = [
     "pydantic>=2.6",
     "pydantic-settings>=2.2",
     "python-dotenv>=1.0",
+    "sqlalchemy>=2.0",
     "ky-core",
+    "ky-adapters",
 ]
 
 [tool.uv.sources]
 ky-core = { path = "../../packages/core", editable = true }
+ky-adapters = { path = "../../packages/adapters", editable = true }
 
 [project.optional-dependencies]
 dev = [

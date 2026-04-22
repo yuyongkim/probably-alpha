@@ -1,9 +1,11 @@
 [project]
 name = "ky-core"
-version = "0.0.1"
-description = "ky-platform data core (PIT store + factor library + universe utilities)"
+version = "0.0.2"
+description = "ky-platform data core (SQLite storage + factor library + universe utilities)"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "sqlalchemy>=2.0",
+]
 
 [build-system]
 requires = ["setuptools>=68"]
