@@ -1,21 +1,33 @@
-// Chartist · Today
-// Placeholder page — wired in Phase 3 via hooks/useChartistToday.ts
-// See CONTRIBUTING.md §1 (page files ≤100 lines).
-export default function ChartistTodayPage() {
+// Chartist · Today — server component; assembly only (CONTRIBUTING §1).
+import { fetchEnvelope } from "@/lib/api";
+import type { TodayBundle } from "@/types/chartist";
+import { MarketStrip } from "@/components/chartist/today/MarketStrip";
+import { SummaryCards } from "@/components/chartist/today/SummaryCards";
+import { TopLeadersTable } from "@/components/chartist/today/TopLeadersTable";
+import { TopSectorsList } from "@/components/chartist/today/TopSectorsList";
+
+export const revalidate = 60;
+
+export default async function ChartistTodayPage() {
+  const bundle = await fetchEnvelope<TodayBundle>("/api/v1/chartist/today");
+
   return (
     <div>
-      <h1 className="display text-3xl mb-2">오늘의 시장</h1>
-      <p className="text-sm text-[color:var(--fg-muted)] mb-6">
-        섹터 로테이션 · 리더 스캔 · 마지막 백테스트 요약.
-      </p>
-      <div className="p-6 rounded-md border border-border bg-[color:var(--surface)]">
-        <div className="text-[color:var(--accent)] text-xs uppercase tracking-widest mb-2">
-          Coming in Phase 3
+      <div className="flex items-baseline justify-between mb-3">
+        <div>
+          <h1 className="display text-3xl">오늘의 주도주</h1>
+          <div className="text-xs text-[color:var(--fg-muted)] mt-1">
+            KRX · {bundle.date} CLOSE · SEPA LENS · {bundle.universe_size.toLocaleString()} UNIVERSE
+          </div>
         </div>
-        <p className="text-sm">
-          이 페이지는 <code className="mono">/api/v1/chartist/today</code> 에서 데이터를 받아
-          SummaryRow · DenseTable · QuoteStrip 컴포넌트를 조립합니다.
-        </p>
+      </div>
+      <MarketStrip items={bundle.market} />
+      <SummaryCards items={bundle.summary} />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <div className="lg:col-span-2">
+          <TopLeadersTable leaders={bundle.leaders} />
+        </div>
+        <TopSectorsList sectors={bundle.sectors} />
       </div>
     </div>
   );

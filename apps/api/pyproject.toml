@@ -10,7 +10,11 @@ dependencies = [
     "pydantic>=2.6",
     "pydantic-settings>=2.2",
     "python-dotenv>=1.0",
+    "ky-core",
 ]
+
+[tool.uv.sources]
+ky-core = { path = "../../packages/core", editable = true }
 
 [project.optional-dependencies]
 dev = [
