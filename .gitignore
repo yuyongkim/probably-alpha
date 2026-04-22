@@ -1,0 +1,142 @@
+# ============================================================
+# ky-platform .gitignore
+# Strong defensive defaults — refuses to track secrets, bloat, caches.
+# ============================================================
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+.eggs/
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtualenvs
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+
+# Test / type / lint caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+.nox/
+coverage.xml
+*.cover
+
+# ---- Node / Next.js / pnpm / turbo ----
+node_modules/
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.next/
+out/
+.turbo/
+.nuxt/
+.vercel/
+.svelte-kit/
+dist/
+build/
+.npm/
+.eslintcache
+*.tsbuildinfo
+
+# ---- Environment / secrets ----
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+*.crt
+*.p12
+*.keystore
+secrets/
+.secrets/
+
+# ---- Databases / data files ----
+*.db
+*.sqlite
+*.sqlite3
+*.duckdb
+*.parquet.bak
+data/raw/
+data/tmp/
+
+# ---- IDE / editors ----
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.shared.json
+.idea/
+*.swp
+*.swo
+*~
+.cursor/
+
+# ---- OS cruft ----
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ---- Logs ----
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ---- Legacy guard rails ----
+# If someone ever hard-copies a legacy project, never track its bloat
+legacy/**/node_modules/
+legacy/**/.next/
+legacy/**/.venv/
+legacy/**/venv/
+legacy/**/__pycache__/
+legacy/**/.env
+legacy/**/.env.*
+legacy/**/dist/
+legacy/**/build/
+legacy/**/*.db
+legacy/**/*.sqlite
+legacy/**/*.parquet
+
+# ---- Local dev artifacts ----
+.claude/
+.omx/
+.gstack/
+.antigravity/
+tmp/
+.tmp/
+scratch/

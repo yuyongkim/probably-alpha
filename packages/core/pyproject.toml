@@ -1,0 +1,13 @@
+[project]
+name = "ky-core"
+version = "0.0.1"
+description = "ky-platform data core (PIT store + factor library + universe utilities)"
+requires-python = ">=3.11"
+dependencies = []
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["ky_core*"]
