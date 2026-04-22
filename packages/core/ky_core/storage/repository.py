@@ -15,7 +15,7 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.orm import Session
 
 from ky_core.storage.db import get_session_factory, init_db
-from ky_core.storage.schema import Filing, Observation, Universe
+from ky_core.storage.schema import Filing, FinancialPIT, Observation, OHLCV, Universe
 
 
 class Repository:
@@ -179,6 +179,8 @@ class Repository:
                 "market": r["market"],
                 "name": r.get("name"),
                 "sector": r.get("sector"),
+                "industry": r.get("industry"),
+                "is_etf": bool(r.get("is_etf", False)),
                 "meta": r.get("meta"),
                 "updated_at": now,
                 "owner_id": r.get("owner_id", self.owner_id),
@@ -191,6 +193,8 @@ class Repository:
             set_={
                 "name": stmt.excluded.name,
                 "sector": stmt.excluded.sector,
+                "industry": stmt.excluded.industry,
+                "is_etf": stmt.excluded.is_etf,
                 "meta": stmt.excluded.meta,
                 "updated_at": stmt.excluded.updated_at,
             },
@@ -198,6 +202,197 @@ class Repository:
         with self.session() as sess:
             sess.execute(stmt)
         return len(payload)
+
+    def count_universe(self) -> int:
+        with self.session() as sess:
+            return sess.query(Universe).filter(Universe.owner_id == self.owner_id).count()
+
+    def get_universe(self, ticker: str) -> dict[str, Any] | None:
+        with self.session() as sess:
+            stmt = (
+                select(Universe)
+                .where(Universe.ticker == ticker, Universe.owner_id == self.owner_id)
+                .limit(1)
+            )
+            row = sess.execute(stmt).scalars().first()
+            if not row:
+                return None
+            return {
+                "ticker": row.ticker,
+                "market": row.market,
+                "name": row.name,
+                "sector": row.sector,
+                "industry": row.industry,
+                "is_etf": bool(row.is_etf),
+                "meta": row.meta,
+            }
+
+    # --------- OHLCV ---------
+
+    def upsert_ohlcv(self, rows: Iterable[dict[str, Any]]) -> int:
+        """Batch upsert OHLCV rows.
+
+        Each row must contain: symbol, date (ISO), close, source_id.
+        Optional: open, high, low, volume, adj_close, market, owner_id.
+        """
+        rows = list(rows)
+        if not rows:
+            return 0
+        now = datetime.utcnow()
+        payload = []
+        for row in rows:
+            payload.append(
+                {
+                    "symbol": row["symbol"],
+                    "market": row.get("market") or "UNKNOWN",
+                    "date": row["date"],
+                    "open": row.get("open"),
+                    "high": row.get("high"),
+                    "low": row.get("low"),
+                    "close": row["close"],
+                    "volume": row.get("volume"),
+                    "adj_close": row.get("adj_close"),
+                    "source_id": row["source_id"],
+                    "fetched_at": now,
+                    "owner_id": row.get("owner_id", self.owner_id),
+                }
+            )
+        stmt = sqlite_insert(OHLCV.__table__).values(payload)
+        stmt = stmt.on_conflict_do_update(
+            index_elements=["owner_id", "symbol", "date"],
+            set_={
+                "market": stmt.excluded.market,
+                "open": stmt.excluded.open,
+                "high": stmt.excluded.high,
+                "low": stmt.excluded.low,
+                "close": stmt.excluded.close,
+                "volume": stmt.excluded.volume,
+                "adj_close": stmt.excluded.adj_close,
+                "source_id": stmt.excluded.source_id,
+                "fetched_at": stmt.excluded.fetched_at,
+            },
+        )
+        with self.session() as sess:
+            sess.execute(stmt)
+        return len(payload)
+
+    def get_ohlcv(
+        self,
+        symbol: str,
+        start: str | None = None,
+        end: str | None = None,
+        limit: int | None = None,
+    ) -> list[dict[str, Any]]:
+        with self.session() as sess:
+            stmt = select(OHLCV).where(
+                OHLCV.symbol == symbol,
+                OHLCV.owner_id == self.owner_id,
+            )
+            if start:
+                stmt = stmt.where(OHLCV.date >= start)
+            if end:
+                stmt = stmt.where(OHLCV.date <= end)
+            stmt = stmt.order_by(OHLCV.date.asc())
+            if limit:
+                stmt = stmt.limit(limit)
+            return [_ohlcv_to_dict(r) for r in sess.execute(stmt).scalars().all()]
+
+    def get_ohlcv_latest(self, symbol: str) -> dict[str, Any] | None:
+        with self.session() as sess:
+            stmt = (
+                select(OHLCV)
+                .where(OHLCV.symbol == symbol, OHLCV.owner_id == self.owner_id)
+                .order_by(desc(OHLCV.date))
+                .limit(1)
+            )
+            row = sess.execute(stmt).scalars().first()
+            return _ohlcv_to_dict(row) if row else None
+
+    def count_ohlcv(self) -> int:
+        with self.session() as sess:
+            return sess.query(OHLCV).filter(OHLCV.owner_id == self.owner_id).count()
+
+    def count_ohlcv_symbols(self) -> int:
+        from sqlalchemy import distinct, func
+        with self.session() as sess:
+            return sess.query(func.count(distinct(OHLCV.symbol))).filter(
+                OHLCV.owner_id == self.owner_id
+            ).scalar() or 0
+
+    # --------- Financials PIT ---------
+
+    def upsert_financials(self, rows: Iterable[dict[str, Any]]) -> int:
+        rows = list(rows)
+        if not rows:
+            return 0
+        now = datetime.utcnow()
+        payload = []
+        for row in rows:
+            payload.append(
+                {
+                    "corp_code": row.get("corp_code"),
+                    "symbol": row["symbol"],
+                    "report_date": row.get("report_date"),
+                    "period_end": row["period_end"],
+                    "period_type": row["period_type"],
+                    "revenue": row.get("revenue"),
+                    "operating_income": row.get("operating_income"),
+                    "net_income": row.get("net_income"),
+                    "total_assets": row.get("total_assets"),
+                    "total_liabilities": row.get("total_liabilities"),
+                    "total_equity": row.get("total_equity"),
+                    "raw": row.get("raw"),
+                    "source_id": row["source_id"],
+                    "fetched_at": now,
+                    "owner_id": row.get("owner_id", self.owner_id),
+                }
+            )
+        stmt = sqlite_insert(FinancialPIT.__table__).values(payload)
+        stmt = stmt.on_conflict_do_update(
+            index_elements=["owner_id", "symbol", "period_end", "period_type", "source_id"],
+            set_={
+                "corp_code": stmt.excluded.corp_code,
+                "report_date": stmt.excluded.report_date,
+                "revenue": stmt.excluded.revenue,
+                "operating_income": stmt.excluded.operating_income,
+                "net_income": stmt.excluded.net_income,
+                "total_assets": stmt.excluded.total_assets,
+                "total_liabilities": stmt.excluded.total_liabilities,
+                "total_equity": stmt.excluded.total_equity,
+                "raw": stmt.excluded.raw,
+                "fetched_at": stmt.excluded.fetched_at,
+            },
+        )
+        with self.session() as sess:
+            sess.execute(stmt)
+        return len(payload)
+
+    def get_financials(
+        self,
+        symbol: str,
+        period_end: str | None = None,
+        as_of: str | None = None,
+    ) -> list[dict[str, Any]]:
+        """Return financials. If ``as_of`` provided, only those with
+        report_date <= as_of (proper PIT query)."""
+        with self.session() as sess:
+            stmt = select(FinancialPIT).where(
+                FinancialPIT.symbol == symbol,
+                FinancialPIT.owner_id == self.owner_id,
+            )
+            if period_end:
+                stmt = stmt.where(FinancialPIT.period_end == period_end)
+            if as_of:
+                stmt = stmt.where(FinancialPIT.report_date != None)  # noqa: E711
+                stmt = stmt.where(FinancialPIT.report_date <= as_of)
+            stmt = stmt.order_by(FinancialPIT.period_end.desc())
+            return [_fin_to_dict(r) for r in sess.execute(stmt).scalars().all()]
+
+    def count_financials(self) -> int:
+        with self.session() as sess:
+            return sess.query(FinancialPIT).filter(
+                FinancialPIT.owner_id == self.owner_id
+            ).count()
 
 
 # --------------------------------------------------------------------------- #
@@ -228,5 +423,40 @@ def _filing_to_dict(row: Filing) -> dict[str, Any]:
         "summary": row.summary,
         "meta": row.meta,
         "fetched_at": row.fetched_at.isoformat() if row.fetched_at else None,
+        "owner_id": row.owner_id,
+    }
+
+
+def _ohlcv_to_dict(row: OHLCV) -> dict[str, Any]:
+    return {
+        "symbol": row.symbol,
+        "market": row.market,
+        "date": row.date,
+        "open": row.open,
+        "high": row.high,
+        "low": row.low,
+        "close": row.close,
+        "volume": row.volume,
+        "adj_close": row.adj_close,
+        "source_id": row.source_id,
+        "owner_id": row.owner_id,
+    }
+
+
+def _fin_to_dict(row: FinancialPIT) -> dict[str, Any]:
+    return {
+        "corp_code": row.corp_code,
+        "symbol": row.symbol,
+        "report_date": row.report_date,
+        "period_end": row.period_end,
+        "period_type": row.period_type,
+        "revenue": row.revenue,
+        "operating_income": row.operating_income,
+        "net_income": row.net_income,
+        "total_assets": row.total_assets,
+        "total_liabilities": row.total_liabilities,
+        "total_equity": row.total_equity,
+        "raw": row.raw,
+        "source_id": row.source_id,
         "owner_id": row.owner_id,
     }

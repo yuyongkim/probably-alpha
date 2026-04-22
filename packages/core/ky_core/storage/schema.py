@@ -9,6 +9,8 @@ Design notes:
   the natural key.
 - ``Filing`` mirrors OpenDART rows but generalises to any filing source.
 - ``Universe`` is a stub for ticker metadata (populated once KIS is live).
+- ``OHLCV`` carries daily price/volume for any symbol (KR + US + ...).
+- ``FinancialPIT`` carries point-in-time quarterly/annual fundamentals.
 - ``meta`` columns are JSON blobs for source-specific fields we don't want to
   promote to first-class columns.
 """
@@ -17,7 +19,18 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import JSON, DateTime, Float, Index, Integer, String, Text, UniqueConstraint
+from sqlalchemy import (
+    JSON,
+    BigInteger,
+    Boolean,
+    DateTime,
+    Float,
+    Index,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -85,7 +98,7 @@ class Filing(Base):
 
 
 # --------------------------------------------------------------------------- #
-# Universe — ticker master (stub)                                             #
+# Universe — ticker master                                                    #
 # --------------------------------------------------------------------------- #
 
 
@@ -93,6 +106,7 @@ class Universe(Base):
     __tablename__ = "universe"
     __table_args__ = (
         UniqueConstraint("ticker", "market", "owner_id", name="uq_universe_ticker_market_owner"),
+        Index("ix_universe_ticker", "ticker"),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -100,8 +114,79 @@ class Universe(Base):
     market: Mapped[str] = mapped_column(String(16), nullable=False)  # KOSPI/KOSDAQ/NASDAQ/...
     name: Mapped[str | None] = mapped_column(String(128), nullable=True)
     sector: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    industry: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    is_etf: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     meta: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
     updated_at: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
+    )
+    owner_id: Mapped[str] = mapped_column(String(32), nullable=False, default="self")
+
+
+# --------------------------------------------------------------------------- #
+# OHLCV — daily price/volume bars                                             #
+# --------------------------------------------------------------------------- #
+
+
+class OHLCV(Base):
+    __tablename__ = "ohlcv"
+    __table_args__ = (
+        UniqueConstraint(
+            "owner_id", "symbol", "date",
+            name="uq_ohlcv_owner_symbol_date",
+        ),
+        Index("ix_ohlcv_date_symbol", "date", "symbol"),
+        Index("ix_ohlcv_symbol_date", "symbol", "date"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    symbol: Mapped[str] = mapped_column(String(32), nullable=False)       # "005930"
+    market: Mapped[str] = mapped_column(String(16), nullable=False, default="UNKNOWN")
+    date: Mapped[str] = mapped_column(String(10), nullable=False)          # ISO YYYY-MM-DD
+    open: Mapped[float | None] = mapped_column(Float, nullable=True)
+    high: Mapped[float | None] = mapped_column(Float, nullable=True)
+    low: Mapped[float | None] = mapped_column(Float, nullable=True)
+    close: Mapped[float] = mapped_column(Float, nullable=False)
+    volume: Mapped[int | None] = mapped_column(BigInteger, nullable=True)
+    adj_close: Mapped[float | None] = mapped_column(Float, nullable=True)
+    source_id: Mapped[str] = mapped_column(String(32), nullable=False)      # "company_credit" | "quant_platform"
+    fetched_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False
+    )
+    owner_id: Mapped[str] = mapped_column(String(32), nullable=False, default="self")
+
+
+# --------------------------------------------------------------------------- #
+# FinancialsPIT — point-in-time quarterly/annual fundamentals                 #
+# --------------------------------------------------------------------------- #
+
+
+class FinancialPIT(Base):
+    __tablename__ = "financials_pit"
+    __table_args__ = (
+        UniqueConstraint(
+            "owner_id", "symbol", "period_end", "period_type", "source_id",
+            name="uq_fin_pit_owner_sym_period_type_src",
+        ),
+        Index("ix_fin_pit_symbol_period", "symbol", "period_end"),
+        Index("ix_fin_pit_report_date", "report_date"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    corp_code: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    symbol: Mapped[str] = mapped_column(String(32), nullable=False)
+    report_date: Mapped[str | None] = mapped_column(String(10), nullable=True)     # 공시일 (PIT)
+    period_end: Mapped[str] = mapped_column(String(10), nullable=False)            # 회계기간 종료
+    period_type: Mapped[str] = mapped_column(String(8), nullable=False)            # "Q1" | "Q2" | "Q3" | "Q4" | "FY"
+    revenue: Mapped[float | None] = mapped_column(Float, nullable=True)
+    operating_income: Mapped[float | None] = mapped_column(Float, nullable=True)
+    net_income: Mapped[float | None] = mapped_column(Float, nullable=True)
+    total_assets: Mapped[float | None] = mapped_column(Float, nullable=True)
+    total_liabilities: Mapped[float | None] = mapped_column(Float, nullable=True)
+    total_equity: Mapped[float | None] = mapped_column(Float, nullable=True)
+    raw: Mapped[str | None] = mapped_column(Text, nullable=True)   # JSON string for extras
+    source_id: Mapped[str] = mapped_column(String(32), nullable=False)
+    fetched_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False
     )
     owner_id: Mapped[str] = mapped_column(String(32), nullable=False, default="self")

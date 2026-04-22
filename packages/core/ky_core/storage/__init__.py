@@ -13,13 +13,15 @@ from __future__ import annotations
 
 from ky_core.storage.db import DEFAULT_DB_PATH, get_engine, get_session_factory, init_db
 from ky_core.storage.repository import Repository
-from ky_core.storage.schema import Base, Filing, Observation, Universe
+from ky_core.storage.schema import Base, Filing, FinancialPIT, Observation, OHLCV, Universe
 
 __all__ = [
     "Base",
     "DEFAULT_DB_PATH",
     "Filing",
+    "FinancialPIT",
     "Observation",
+    "OHLCV",
     "Repository",
     "Universe",
     "get_engine",
