@@ -1,6 +1,7 @@
 // SummaryRow — a one-line editorial summary block used at the top of most pages.
 // Keep this component presentational; data comes from hooks.
 // Target ≤ 60 lines (CONTRIBUTING §1).
+import type { JSX } from "react";
 
 export interface SummaryCell {
   label: string;

@@ -10,6 +10,9 @@ from datetime import date, timedelta
 from typing import Any
 
 # FRED — U.S. macro
+# Growth / inflation / liquidity / credit must all be covered so that
+# compute_compass() (packages/core/ky_core/macro/compass.py) has at least
+# one series per axis. BAA10Y/AAA10Y drive the credit axis.
 FRED_SERIES: list[str] = [
     "GDP",
     "CPIAUCSL",
@@ -18,6 +21,8 @@ FRED_SERIES: list[str] = [
     "DGS10",
     "DGS2",
     "DFF",
+    "BAA10Y",
+    "AAA10Y",
 ]
 
 # ECOS — Bank of Korea. Each row: (stat_code, item_code, freq, description)

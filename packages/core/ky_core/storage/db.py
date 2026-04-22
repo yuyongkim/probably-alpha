@@ -7,6 +7,7 @@ from pathlib import Path
 
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import NullPool
 
 DEFAULT_DB_PATH = Path.home() / ".ky-platform" / "data" / "ky.db"
 
@@ -22,11 +23,18 @@ def _resolve_db_path() -> Path:
 def get_engine() -> Engine:
     path = _resolve_db_path()
     url = f"sqlite:///{path.as_posix()}"
+    # NullPool: every session opens its own SQLite connection and closes on
+    # disposal. SQLite handles many concurrent *readers* cheaply and the default
+    # QueuePool (size=5, overflow=10) gets exhausted quickly when the API runs
+    # parallel page requests that each hold a session for several seconds —
+    # the FastAPI thread-pool can fan out to ~40 workers. NullPool avoids the
+    # QueuePool exhaustion without hurting correctness on file-backed SQLite.
     engine = create_engine(
         url,
         future=True,
         echo=False,
-        connect_args={"check_same_thread": False},
+        poolclass=NullPool,
+        connect_args={"check_same_thread": False, "timeout": 30},
     )
     return engine
 
