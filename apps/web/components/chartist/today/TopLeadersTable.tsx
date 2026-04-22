@@ -3,6 +3,7 @@
 // promote to shared/DenseTable once a second consumer needs the same
 // cell renderers (ticker pair, pattern chip, tone-colored mono cells).
 import type { Leader } from "@/types/chartist";
+import { TickerName } from "@/components/shared/TickerName";
 
 interface Props {
   leaders: Leader[];
@@ -69,7 +70,7 @@ export function TopLeadersTable({ leaders }: Props) {
                 style={{ borderBottom: "1px solid var(--border-soft)" }}
               >
                 <td className="py-1 px-2">
-                  <span className="font-medium">{l.name}</span>
+                  <TickerName symbol={l.symbol} name={l.name} sector={l.sector} />
                   <span className="mono ml-2 text-[10.5px] text-[color:var(--fg-muted)]">
                     {l.symbol}
                   </span>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import "@/styles/globals.css";
+import { StockDetailModalMount } from "@/components/shared/modals/StockDetailModalMount";
 
 export const metadata: Metadata = {
   title: "ky-platform",
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </nav>
         </header>
         <main className="px-6 py-8">{children}</main>
+        <StockDetailModalMount />
       </body>
     </html>
   );
