@@ -71,6 +71,11 @@ C:/Users/USER/Desktop/_integration_backup_20260422/
 - Stock Detail Modal 은 글로벌 상태 + dynamic import
 - 스타일은 Tailwind + CSS variables (`styles/globals.css`)
 
+## Knowledge base
+
+- **BOK RAG** — 한국은행 보고서 ~40K 청크를 Ollama `bge-m3` (1024-dim) 로 임베딩한 벡터 인덱스. 저장: `~/.ky-platform/data/rag_bok/` (`vectors.npy` + `chunks.jsonl` + `meta.json`). 빌드 스크립트: `scripts/build_rag_bok.py`.
+- **Buffett RAG (TF-IDF)** — `packages/core/ky_core/research/buffett.py`. 기존 QuantPlatform 포팅분, 로컬 기동만으로 동작.
+
 ## 상태
 
 Phase 2 (scaffold) 완료. 다음 단계:

@@ -25,7 +25,8 @@ except Exception:  # pragma: no cover
 logger = logging.getLogger(__name__)
 
 
-DEFAULT_MODEL = "claude-3-5-haiku-20241022"
+DEFAULT_MODEL = "claude-haiku-4-5-20251001"
+DEFAULT_MAX_TOKENS = 4096
 SYSTEM_PROMPT = (
     "You are a terse research analyst helping a Korean investor. "
     "Answer in the same language as the question (Korean when Korean, "
@@ -101,7 +102,7 @@ def _claude_answer(question: str, context: str) -> Optional[str]:
         client = anthropic.Anthropic(api_key=api_key)
         msg = client.messages.create(
             model=os.getenv("KY_CLAUDE_MODEL", DEFAULT_MODEL),
-            max_tokens=800,
+            max_tokens=int(os.getenv("KY_CLAUDE_MAX_TOKENS", str(DEFAULT_MAX_TOKENS))),
             system=SYSTEM_PROMPT,
             messages=[
                 {
@@ -109,7 +110,8 @@ def _claude_answer(question: str, context: str) -> Optional[str]:
                     "content": (
                         f"Context chunks:\n{context}\n\n"
                         f"Question: {question}\n\n"
-                        "Give a focused answer (<=200 words) with inline [#n] citations."
+                        "Answer with inline [#n] citations. Be thorough when the "
+                        "question warrants it; skip filler."
                     ),
                 }
             ],

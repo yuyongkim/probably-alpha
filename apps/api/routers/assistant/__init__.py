@@ -33,14 +33,15 @@ log = logging.getLogger(__name__)
 router = APIRouter()
 
 
-DEFAULT_MODEL = "claude-3-5-haiku-20241022"
+DEFAULT_MODEL = "claude-haiku-4-5-20251001"
+DEFAULT_MAX_TOKENS = 4096
 SYSTEM_PROMPT = (
     "You are Alpha Assistant — a concise research aide embedded in the ky-platform "
     "trading dashboard. Answer in the user's language (Korean if they write Korean, "
     "English if English). Ground every numeric claim in the provided CONTEXT or "
     "KNOWLEDGE BASE sections; cite knowledge chunks inline as [#n]. Never invent "
-    "tickers, prices, or ratios. Keep answers under 220 words and use bullet points "
-    "when comparing items."
+    "tickers, prices, or ratios. Prefer bullet points when comparing items; be "
+    "thorough when the question warrants it but avoid filler."
 )
 
 
@@ -245,7 +246,7 @@ def _call_claude(
         messages = injected + history
         msg = client.messages.create(
             model=os.getenv("KY_CLAUDE_MODEL", DEFAULT_MODEL),
-            max_tokens=800,
+            max_tokens=int(os.getenv("KY_CLAUDE_MAX_TOKENS", str(DEFAULT_MAX_TOKENS))),
             system=SYSTEM_PROMPT,
             messages=messages,
         )

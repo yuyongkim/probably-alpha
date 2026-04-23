@@ -138,3 +138,15 @@ shared.env  →  apps/api/.env  →  실행 셸의 env
 - 로컬 개발: `scripts/dev.sh` (api 8300 + web 8380)
 - 레거시 `sepa.yule.pics` (port 8200) 는 병렬 운영 — 안정화 이전까지 건드리지 않음
 - 배포 전략: Phase 5+ 에서 `/setup-deploy` 로 결정
+
+---
+
+## 7. RAG / 지식 베이스
+
+| 인덱스 | 임베딩 | 저장 위치 | 빌드 |
+|---|---|---|---|
+| **BOK (한국은행 보고서)** | Ollama `bge-m3` (1024-dim) | `~/.ky-platform/data/rag_bok/vectors.npy` + `chunks.jsonl` | `scripts/build_rag_bok.py` (~40K 청크) |
+| **Buffett Q&A** | TF-IDF (sklearn) | `packages/core/ky_core/research/buffett.py` 내장 | 포트 완료 (QuantPlatform 기반) |
+
+- BGE-M3 경로는 Ollama가 로컬에서 `http://localhost:11434`에서 돌고 있어야 함 (`OLLAMA_URL` 상수).
+- 두 인덱스는 독립적이며, 라우터에서 용도에 따라 선택 호출: 거시/정책 질의 → BOK, 가치투자 Q&A → Buffett.
