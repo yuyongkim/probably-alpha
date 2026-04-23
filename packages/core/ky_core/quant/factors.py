@@ -18,11 +18,14 @@ from typing import Any, Iterable
 
 from sqlalchemy import text
 
-from ky_core.quant.pit import ttm_fin
+from ky_core.quant.pit import ttm_fin, ttm_fin_bulk
 from ky_core.storage import Repository
 
 _CACHE_TTL_SECONDS = 300
 _CACHE: dict[str, tuple[float, list[dict[str, Any]]]] = {}
+# Side-cache for the fundamentals map produced during scan(); downstream
+# screeners (academic/value) read from here instead of hitting the DB again.
+_FIN_CACHE: dict[str, tuple[float, dict[str, dict[str, Any]]]] = {}
 
 _ALLOWED_MARKETS = ("KOSPI", "KOSDAQ", "KONEX")
 
@@ -135,12 +138,8 @@ def _summarise_bars(bars: list[tuple[str, float]]) -> dict[str, Any]:
 
 
 def _fundamentals_map(repo: Repository, symbols: list[str], as_of: str) -> dict[str, dict[str, Any]]:
-    out: dict[str, dict[str, Any]] = {}
-    for s in symbols:
-        fin = ttm_fin(repo, s, as_of=as_of)
-        if fin:
-            out[s] = fin
-    return out
+    """One bulk SQL scan instead of per-symbol ``ttm_fin`` calls."""
+    return ttm_fin_bulk(repo, symbols, as_of=as_of)
 
 
 def scan(
@@ -165,6 +164,7 @@ def scan(
     symbols = [r["symbol"] for r in base]
     prices = _load_price_windows(repo, symbols, as_of)
     fins = _fundamentals_map(repo, symbols, as_of)
+    _FIN_CACHE[key] = (now, fins)
     # Raw values
     rows: list[dict[str, Any]] = []
     for meta in base:
@@ -230,3 +230,27 @@ def top_by_factor(
 
 def clear_cache() -> None:
     _CACHE.clear()
+    _FIN_CACHE.clear()
+
+
+def cached_fins(
+    as_of: str,
+    markets: tuple[str, ...] = _ALLOWED_MARKETS,
+    *,
+    repo: Repository | None = None,
+) -> dict[str, dict[str, Any]]:
+    """Return the fundamentals map produced by the most recent scan().
+
+    If the cache entry is missing or stale we trigger a scan to populate it.
+    Downstream screeners (academic.py, value/*.py) use this to avoid the
+    N+1 ``ttm_fin`` calls that previously dominated their latency.
+    """
+    key = _cache_key(as_of, markets)
+    now = time.time()
+    hit = _FIN_CACHE.get(key)
+    if hit and now - hit[0] < _CACHE_TTL_SECONDS:
+        return hit[1]
+    # warm the cache via scan()
+    scan(as_of, markets, repo=repo)
+    hit = _FIN_CACHE.get(key)
+    return hit[1] if hit else {}

@@ -13,8 +13,66 @@ from __future__ import annotations
 
 from typing import Any
 
-from ky_core.quant.pit import ttm_fin
+from ky_core.quant.pit import ttm_fin, ttm_fin_bulk
 from ky_core.storage import Repository
+
+
+def _altman_from_fin(
+    symbol: str, fin: dict[str, Any] | None, as_of: str | None
+) -> dict[str, Any] | None:
+    if not fin:
+        return None
+    assets = fin.get("total_assets")
+    liab = fin.get("total_liabilities")
+    equity = fin.get("total_equity")
+    rev = fin.get("revenue_ttm")
+    op = fin.get("operating_income_ttm")
+    if not assets or assets <= 0 or not liab or liab <= 0:
+        return None
+    working_capital_proxy = assets * 0.25
+    retained_earnings_proxy = (equity or 0) * 0.5
+    market_cap_proxy = (equity or 0) * 1.5
+    a = working_capital_proxy / assets
+    b = retained_earnings_proxy / assets
+    c = (op or 0) / assets
+    d = market_cap_proxy / liab if liab > 0 else 0
+    e = (rev or 0) / assets
+    z = 1.2 * a + 1.4 * b + 3.3 * c + 0.6 * d + 1.0 * e
+    if z > 2.99:
+        zone = "safe"
+    elif z > 1.81:
+        zone = "grey"
+    else:
+        zone = "distress"
+    return {
+        "symbol": symbol,
+        "as_of": as_of,
+        "A_wc_assets": a,
+        "B_re_assets": b,
+        "C_ebit_assets": c,
+        "D_mcap_liab": d,
+        "E_sales_assets": e,
+        "z_score": z,
+        "zone": zone,
+        "proxy": True,
+    }
+
+
+def altman_bulk(
+    symbols: list[str],
+    *,
+    as_of: str,
+    repo: Repository | None = None,
+) -> dict[str, dict[str, Any]]:
+    """Score a universe in one pass using bulk PIT reads."""
+    repo = repo or Repository()
+    fin_map = ttm_fin_bulk(repo, symbols, as_of=as_of)
+    out: dict[str, dict[str, Any]] = {}
+    for sym in symbols:
+        row = _altman_from_fin(sym, fin_map.get(sym), as_of)
+        if row:
+            out[sym] = row
+    return out
 
 
 def altman_z(

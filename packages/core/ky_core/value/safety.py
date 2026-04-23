@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ky_core.quant.factors import scan
+from ky_core.quant.factors import cached_fins, scan
 from ky_core.quant.pit import latest_price, ttm_fin
 from ky_core.storage import Repository
 from ky_core.value.dcf import dcf_value
@@ -46,23 +46,18 @@ def mos_leaderboard(
 def net_net(
     *, as_of: str, n: int = 30, repo: Repository | None = None
 ) -> list[dict[str, Any]]:
-    """Graham net-net: market cap proxy < 2/3 * (current assets − total liabilities).
-
-    We don't have current-assets detail, so we use total_assets × 0.5 as an
-    approximation. Still finds deeply discounted balance-sheet plays.
-    """
+    """Graham net-net: market cap proxy < 2/3 * (current assets − total liabilities)."""
     repo = repo or Repository()
     rows = scan(as_of, repo=repo)
+    fin_map = cached_fins(as_of, repo=repo)
     out: list[dict[str, Any]] = []
     for r in rows:
-        fin = ttm_fin(repo, r["symbol"], as_of=as_of)
+        fin = fin_map.get(r["symbol"])
         if not fin or not fin.get("total_assets") or not fin.get("total_liabilities"):
             continue
         current_proxy = fin["total_assets"] * 0.5 - fin["total_liabilities"]
         if current_proxy <= 0:
             continue
-        # Market-cap proxy: equity × 1.5 / close is the "shares outstanding" we
-        # used elsewhere; that means MC ≈ equity × 1.5. Use equity directly.
         mc_proxy = fin["total_equity"] * 1.5 if fin.get("total_equity") else None
         if not mc_proxy:
             continue
@@ -80,9 +75,10 @@ def deep_value_leaderboard(
     """Deep-value combo: P/B proxy < 1 and PEG proxy < 1."""
     repo = repo or Repository()
     rows = scan(as_of, repo=repo)
+    fin_map = cached_fins(as_of, repo=repo)
     out: list[dict[str, Any]] = []
     for r in rows:
-        fin = ttm_fin(repo, r["symbol"], as_of=as_of)
+        fin = fin_map.get(r["symbol"])
         if not fin or not fin.get("total_equity") or not r.get("close"):
             continue
         equity = fin["total_equity"]

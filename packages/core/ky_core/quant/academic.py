@@ -6,32 +6,32 @@
 - Super Quant (value + quality + momentum composite)
 
 All strategies read from factors.scan() output + PIT financials via
-the helpers in :mod:`ky_core.quant.pit`, so each screener stays declarative.
+the bulk helpers in :mod:`ky_core.quant.pit`, so each screener stays
+declarative **and** sub-second (no per-symbol SQL).
 """
 from __future__ import annotations
 
 import json
 from typing import Any
 
-from ky_core.quant.factors import scan
-from ky_core.quant.pit import latest_fin, ttm_fin
+from ky_core.quant.factors import cached_fins, scan
+from ky_core.quant.pit import ttm_fin_pair_bulk
 from ky_core.storage import Repository
 
 
 def magic_formula(as_of: str, *, n: int = 30, repo: Repository | None = None) -> list[dict[str, Any]]:
     """Greenblatt: rank by sum of (ROC rank + EarningsYield rank). Lower is better.
 
-    ROC ≈ operating_income / (total_assets − total_liabilities + total_liabilities)
-         = operating_income / total_assets (we fall back to this when
-         current assets/liabilities are unavailable in financials_pit).
-    Earnings Yield ≈ operating_income / market_cap_proxy (close as proxy when
-         shares outstanding aren't available — rank-based so proxy is OK).
+    ROC ≈ operating_income / total_assets (fallback when current-assets /
+         current-liabilities aren't available in financials_pit).
+    Earnings Yield ≈ operating_income / close (rank-based, so proxy is OK).
     """
     repo = repo or Repository()
     rows = scan(as_of, repo=repo)
+    fin_map = cached_fins(as_of, repo=repo)
     enriched: list[dict[str, Any]] = []
     for r in rows:
-        f = ttm_fin(repo, r["symbol"], as_of=as_of)
+        f = fin_map.get(r["symbol"])
         if not f or not f.get("operating_income_ttm") or not f.get("total_assets"):
             continue
         ebit = f["operating_income_ttm"]
@@ -39,11 +39,10 @@ def magic_formula(as_of: str, *, n: int = 30, repo: Repository | None = None) ->
         if total_assets <= 0 or ebit is None:
             continue
         roc = ebit / total_assets
-        # Earnings yield proxy
         close = r.get("close")
         if not close or close <= 0:
             continue
-        ey = ebit / close  # scale-independent via rank
+        ey = ebit / close
         enriched.append({**r, "roc": roc, "earnings_yield": ey, "ebit_ttm": ebit})
     enriched.sort(key=lambda x: x["roc"], reverse=True)
     for i, x in enumerate(enriched):
@@ -65,9 +64,10 @@ def deep_value(as_of: str, *, n: int = 30, repo: Repository | None = None) -> li
     """
     repo = repo or Repository()
     rows = scan(as_of, repo=repo)
+    fin_map = cached_fins(as_of, repo=repo)
     out: list[dict[str, Any]] = []
     for r in rows:
-        f = ttm_fin(repo, r["symbol"], as_of=as_of)
+        f = fin_map.get(r["symbol"])
         if not f or not f.get("total_equity") or not f.get("net_income_ttm"):
             continue
         equity = f["total_equity"]
@@ -75,7 +75,7 @@ def deep_value(as_of: str, *, n: int = 30, repo: Repository | None = None) -> li
         close = r.get("close")
         if not close or close <= 0 or equity <= 0 or ni <= 0:
             continue
-        pb_proxy = close / equity  # lower is cheaper
+        pb_proxy = close / equity
         debt_ratio = (f.get("total_liabilities") or 0.0) / max(f["total_assets"] or 1e9, 1)
         if debt_ratio > 0.7:
             continue
@@ -96,16 +96,21 @@ def fast_growth(as_of: str, *, n: int = 30, repo: Repository | None = None) -> l
     """Top growers by revenue YoY + earnings YoY + price momentum."""
     repo = repo or Repository()
     rows = scan(as_of, repo=repo)
+    fin_map = cached_fins(as_of, repo=repo)
+    symbols = [r["symbol"] for r in rows if r.get("momentum") is not None]
+    prior_as_of = _back_one_year(as_of)
+    # Single bulk PIT read for now+prior — replaces 2xN per-symbol queries.
+    _, prior_map = ttm_fin_pair_bulk(
+        repo, symbols, as_of=as_of, prior_as_of=prior_as_of
+    )
     out: list[dict[str, Any]] = []
     for r in rows:
         if r.get("momentum") is None or r.get("growth") is None:
             continue
-        f_now = ttm_fin(repo, r["symbol"], as_of=as_of)
+        f_now = fin_map.get(r["symbol"])
         if not f_now or not f_now.get("revenue_ttm"):
             continue
-        # YoY comparison: step back roughly 365 days
-        as_of_dt = as_of
-        prior = ttm_fin(repo, r["symbol"], as_of=_back_one_year(as_of_dt))
+        prior = prior_map.get(r["symbol"])
         rev_yoy = None
         if prior and prior.get("revenue_ttm") and prior["revenue_ttm"] > 0:
             rev_yoy = (f_now["revenue_ttm"] / prior["revenue_ttm"]) - 1.0
