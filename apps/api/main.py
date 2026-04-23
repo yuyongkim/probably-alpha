@@ -7,10 +7,15 @@ Or via the root helper:
 """
 from __future__ import annotations
 
+import logging
+import sys
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
+from middleware.auth import TenantAuthMiddleware
 from routers.admin import router as admin_router
 from routers.assistant import router as assistant_router
 from routers.chartist import router as chartist_router
@@ -18,6 +23,24 @@ from routers.execute import router as execute_router
 from routers.quant import router as quant_router
 from routers.research import router as research_router
 from routers.value import router as value_router
+
+# Make packages/core importable for the tenant bootstrap.
+_PKG_CORE = Path(__file__).resolve().parents[2] / "packages" / "core"
+if str(_PKG_CORE) not in sys.path:
+    sys.path.insert(0, str(_PKG_CORE))
+
+logger = logging.getLogger(__name__)
+
+
+def _bootstrap_tenants() -> None:
+    """Ensure the ``self`` tenant exists — required for backwards compatibility
+    with the single-user dev mode."""
+    try:
+        from ky_core.storage.repository import Repository
+
+        Repository().ensure_self_tenant()
+    except Exception:  # pragma: no cover — must not block API start-up
+        logger.exception("tenant bootstrap failed — continuing without seed")
 
 
 def create_app() -> FastAPI:
@@ -27,6 +50,12 @@ def create_app() -> FastAPI:
         description="probably-alpha unified financial platform backend.",
     )
 
+    _bootstrap_tenants()
+
+    # Order matters: Starlette wraps middlewares in LIFO order, so the last
+    # ``add_middleware`` is outermost. CORS wraps TenantAuth so the browser
+    # still sees CORS headers on 401/429 rejections from the auth layer.
+    app.add_middleware(TenantAuthMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,

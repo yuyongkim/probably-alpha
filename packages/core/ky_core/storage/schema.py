@@ -282,6 +282,74 @@ class DividendHistory(Base):
     owner_id: Mapped[str] = mapped_column(String(32), nullable=False, default="self")
 
 
+# --------------------------------------------------------------------------- #
+# Tenant — multi-tenant control plane (API keys, plan, rate limit)            #
+# --------------------------------------------------------------------------- #
+
+
+class Tenant(Base):
+    __tablename__ = "tenants"
+    __table_args__ = (
+        UniqueConstraint("api_key_hash", name="uq_tenants_api_key_hash"),
+        Index("ix_tenants_enabled", "enabled"),
+    )
+
+    # ``tenant_id`` doubles as ``owner_id`` for the data tables. Stored as the
+    # primary key so the relational guarantees follow naturally.
+    tenant_id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    display_name: Mapped[str] = mapped_column(String(128), nullable=False)
+    api_key_hash: Mapped[str] = mapped_column(String(64), nullable=False)   # SHA-256 hex
+    plan: Mapped[str] = mapped_column(String(16), nullable=False, default="self")
+    rate_limit_per_min: Mapped[int] = mapped_column(Integer, nullable=False, default=60)
+    enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False
+    )
+
+
+# --------------------------------------------------------------------------- #
+# ApiUsageLog — per-request latency + status + tenant for billing dashboards  #
+# --------------------------------------------------------------------------- #
+
+
+class ApiUsageLog(Base):
+    __tablename__ = "api_usage_log"
+    __table_args__ = (
+        Index("ix_api_usage_tenant_ts", "tenant_id", "ts"),
+        Index("ix_api_usage_ts", "ts"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    tenant_id: Mapped[str] = mapped_column(String(32), nullable=False)
+    endpoint: Mapped[str] = mapped_column(String(255), nullable=False)
+    latency_ms: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    status_code: Mapped[int] = mapped_column(Integer, nullable=False, default=200)
+    ts: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False
+    )
+
+
+# --------------------------------------------------------------------------- #
+# AuditLog — sensitive action trail (orders, config changes, admin ops)       #
+# --------------------------------------------------------------------------- #
+
+
+class AuditLog(Base):
+    __tablename__ = "audit_log"
+    __table_args__ = (
+        Index("ix_audit_tenant_ts", "tenant_id", "ts"),
+        Index("ix_audit_action", "action"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    tenant_id: Mapped[str] = mapped_column(String(32), nullable=False)
+    action: Mapped[str] = mapped_column(String(64), nullable=False)
+    detail: Mapped[str | None] = mapped_column(Text, nullable=True)   # JSON string
+    ts: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False
+    )
+
+
 class FinancialPIT(Base):
     __tablename__ = "financials_pit"
     __table_args__ = (

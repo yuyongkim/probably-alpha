@@ -16,6 +16,8 @@ from sqlalchemy.orm import Session
 
 from ky_core.storage.db import get_session_factory, init_db
 from ky_core.storage.schema import (
+    ApiUsageLog,
+    AuditLog,
     DividendHistory,
     Filing,
     FinancialPIT,
@@ -24,6 +26,7 @@ from ky_core.storage.schema import (
     FnguideSnapshot,
     Observation,
     OHLCV,
+    Tenant,
     Universe,
 )
 
@@ -827,10 +830,237 @@ class Repository:
                 DividendHistory.owner_id == self.owner_id
             ).scalar() or 0
 
+    # --------- Tenants (control plane — not scoped by owner_id) ------------
+
+    def list_tenants(self, *, enabled_only: bool = False) -> list[dict[str, Any]]:
+        with self.session() as sess:
+            stmt = select(Tenant).order_by(Tenant.created_at.asc())
+            if enabled_only:
+                stmt = stmt.where(Tenant.enabled == True)  # noqa: E712
+            rows = sess.execute(stmt).scalars().all()
+            return [_tenant_to_dict(r) for r in rows]
+
+    def get_tenant(self, tenant_id: str) -> dict[str, Any] | None:
+        with self.session() as sess:
+            row = sess.get(Tenant, tenant_id)
+            return _tenant_to_dict(row) if row else None
+
+    def get_tenant_by_key_hash(self, api_key_hash: str) -> dict[str, Any] | None:
+        with self.session() as sess:
+            stmt = select(Tenant).where(Tenant.api_key_hash == api_key_hash).limit(1)
+            row = sess.execute(stmt).scalars().first()
+            return _tenant_to_dict(row) if row else None
+
+    def upsert_tenant(
+        self,
+        *,
+        tenant_id: str,
+        display_name: str,
+        api_key_hash: str,
+        plan: str = "trial",
+        rate_limit_per_min: int = 60,
+        enabled: bool = True,
+    ) -> dict[str, Any]:
+        with self.session() as sess:
+            existing = sess.get(Tenant, tenant_id)
+            if existing is None:
+                row = Tenant(
+                    tenant_id=tenant_id,
+                    display_name=display_name,
+                    api_key_hash=api_key_hash,
+                    plan=plan,
+                    rate_limit_per_min=rate_limit_per_min,
+                    enabled=enabled,
+                    created_at=datetime.utcnow(),
+                )
+                sess.add(row)
+            else:
+                existing.display_name = display_name
+                existing.api_key_hash = api_key_hash
+                existing.plan = plan
+                existing.rate_limit_per_min = rate_limit_per_min
+                existing.enabled = enabled
+                row = existing
+            sess.flush()
+            return _tenant_to_dict(row)
+
+    def rotate_tenant_api_key(
+        self, tenant_id: str, new_api_key_hash: str
+    ) -> dict[str, Any] | None:
+        with self.session() as sess:
+            row = sess.get(Tenant, tenant_id)
+            if row is None:
+                return None
+            row.api_key_hash = new_api_key_hash
+            sess.flush()
+            return _tenant_to_dict(row)
+
+    def set_tenant_enabled(self, tenant_id: str, enabled: bool) -> dict[str, Any] | None:
+        with self.session() as sess:
+            row = sess.get(Tenant, tenant_id)
+            if row is None:
+                return None
+            row.enabled = bool(enabled)
+            sess.flush()
+            return _tenant_to_dict(row)
+
+    def ensure_self_tenant(self) -> dict[str, Any]:
+        """Idempotent seed: guarantees the ``self`` row exists so legacy code paths
+        (``owner_id='self'``) keep working once the Tenant table ships."""
+        existing = self.get_tenant("self")
+        if existing:
+            return existing
+        return self.upsert_tenant(
+            tenant_id="self",
+            display_name="self",
+            api_key_hash="",              # sentinel — cannot match any API key
+            plan="self",
+            rate_limit_per_min=9999,
+            enabled=True,
+        )
+
+    # --------- API usage log + audit log ----------
+
+    def log_api_usage(
+        self,
+        *,
+        tenant_id: str,
+        endpoint: str,
+        latency_ms: int,
+        status_code: int,
+        ts: datetime | None = None,
+    ) -> int:
+        with self.session() as sess:
+            row = ApiUsageLog(
+                tenant_id=tenant_id,
+                endpoint=endpoint,
+                latency_ms=int(latency_ms),
+                status_code=int(status_code),
+                ts=ts or datetime.utcnow(),
+            )
+            sess.add(row)
+            sess.flush()
+            return row.id
+
+    def count_api_usage_since(self, tenant_id: str, since: datetime) -> int:
+        with self.session() as sess:
+            return (
+                sess.query(ApiUsageLog)
+                .filter(ApiUsageLog.tenant_id == tenant_id, ApiUsageLog.ts >= since)
+                .count()
+            )
+
+    def list_api_usage(
+        self,
+        *,
+        tenant_id: str | None = None,
+        since: datetime | None = None,
+        limit: int = 500,
+    ) -> list[dict[str, Any]]:
+        with self.session() as sess:
+            stmt = select(ApiUsageLog).order_by(desc(ApiUsageLog.ts))
+            if tenant_id:
+                stmt = stmt.where(ApiUsageLog.tenant_id == tenant_id)
+            if since:
+                stmt = stmt.where(ApiUsageLog.ts >= since)
+            stmt = stmt.limit(limit)
+            rows = sess.execute(stmt).scalars().all()
+            return [
+                {
+                    "id": r.id,
+                    "tenant_id": r.tenant_id,
+                    "endpoint": r.endpoint,
+                    "latency_ms": r.latency_ms,
+                    "status_code": r.status_code,
+                    "ts": r.ts.isoformat() if r.ts else None,
+                }
+                for r in rows
+            ]
+
+    def usage_summary_by_tenant(
+        self, *, since: datetime | None = None
+    ) -> list[dict[str, Any]]:
+        from sqlalchemy import func
+        with self.session() as sess:
+            q = sess.query(
+                ApiUsageLog.tenant_id,
+                func.count(ApiUsageLog.id).label("calls"),
+                func.coalesce(func.avg(ApiUsageLog.latency_ms), 0).label("avg_latency_ms"),
+            )
+            if since:
+                q = q.filter(ApiUsageLog.ts >= since)
+            q = q.group_by(ApiUsageLog.tenant_id)
+            out = []
+            for tid, calls, avg_lat in q.all():
+                out.append(
+                    {
+                        "tenant_id": tid,
+                        "calls": int(calls or 0),
+                        "avg_latency_ms": float(avg_lat or 0.0),
+                    }
+                )
+            return out
+
+    def log_audit(
+        self,
+        *,
+        tenant_id: str,
+        action: str,
+        detail: str | None = None,
+        ts: datetime | None = None,
+    ) -> int:
+        with self.session() as sess:
+            row = AuditLog(
+                tenant_id=tenant_id,
+                action=action,
+                detail=detail,
+                ts=ts or datetime.utcnow(),
+            )
+            sess.add(row)
+            sess.flush()
+            return row.id
+
+    def list_audit(
+        self,
+        *,
+        tenant_id: str | None = None,
+        limit: int = 200,
+    ) -> list[dict[str, Any]]:
+        with self.session() as sess:
+            stmt = select(AuditLog).order_by(desc(AuditLog.ts))
+            if tenant_id:
+                stmt = stmt.where(AuditLog.tenant_id == tenant_id)
+            stmt = stmt.limit(limit)
+            rows = sess.execute(stmt).scalars().all()
+            return [
+                {
+                    "id": r.id,
+                    "tenant_id": r.tenant_id,
+                    "action": r.action,
+                    "detail": r.detail,
+                    "ts": r.ts.isoformat() if r.ts else None,
+                }
+                for r in rows
+            ]
+
 
 # --------------------------------------------------------------------------- #
 # Row adapters                                                                #
 # --------------------------------------------------------------------------- #
+
+
+def _tenant_to_dict(row: Tenant | None) -> dict[str, Any]:
+    if row is None:
+        return {}
+    return {
+        "tenant_id": row.tenant_id,
+        "display_name": row.display_name,
+        "api_key_hash": row.api_key_hash,
+        "plan": row.plan,
+        "rate_limit_per_min": row.rate_limit_per_min,
+        "enabled": bool(row.enabled),
+        "created_at": row.created_at.isoformat() if row.created_at else None,
+    }
 
 
 def _obs_to_dict(row: Observation) -> dict[str, Any]:

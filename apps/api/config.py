@@ -58,6 +58,11 @@ class Settings(BaseSettings):
     fred_api_key: str | None = Field(default=None)
     ecos_api_key: str | None = Field(default=None)
 
+    # Tenant control plane — admin token gates create/rotate/disable + mutating
+    # reads. When unset, GET endpoints still work (self-only) but mutations are
+    # forbidden, matching the spec's "admin auth" requirement.
+    ky_admin_token: str | None = Field(default=None)
+
     @property
     def cors_origins(self) -> List[str]:
         return [o.strip() for o in self.cors_origins_raw.split(",") if o.strip()]
