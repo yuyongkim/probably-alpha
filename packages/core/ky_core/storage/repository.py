@@ -16,8 +16,10 @@ from sqlalchemy.orm import Session
 
 from ky_core.storage.db import get_session_factory, init_db
 from ky_core.storage.schema import (
+    DividendHistory,
     Filing,
     FinancialPIT,
+    FinancialSegment,
     FinancialStatementDB,
     FnguideSnapshot,
     Observation,
@@ -608,6 +610,222 @@ class Repository:
             return sess.query(FinancialStatementDB).filter(
                 FinancialStatementDB.owner_id == self.owner_id
             ).count()
+
+    # --------- Financial Segments (DART 사업부문별) ----------
+
+    def upsert_segments(self, rows: Iterable[dict[str, Any]]) -> int:
+        """Bulk-upsert segment rows. Returns count persisted.
+
+        Each row must contain: ``symbol``, ``period_end``, ``segment_name``.
+        Optional: ``corp_code``, ``period_type``, ``revenue``,
+        ``operating_income``, ``revenue_share``, ``source_id``, ``raw``.
+        """
+        rows = list(rows)
+        if not rows:
+            return 0
+        now = datetime.utcnow()
+        payload = []
+        for row in rows:
+            payload.append(
+                {
+                    "symbol": row["symbol"],
+                    "corp_code": row.get("corp_code"),
+                    "period_end": row["period_end"],
+                    "period_type": row.get("period_type", "FY"),
+                    "segment_name": row["segment_name"],
+                    "revenue": row.get("revenue"),
+                    "operating_income": row.get("operating_income"),
+                    "revenue_share": row.get("revenue_share"),
+                    "source_id": row.get("source_id", "dart"),
+                    "raw": row.get("raw"),
+                    "fetched_at": now,
+                    "owner_id": row.get("owner_id", self.owner_id),
+                }
+            )
+        chunk_size = 400
+        total = 0
+        with self.session() as sess:
+            for i in range(0, len(payload), chunk_size):
+                chunk = payload[i : i + chunk_size]
+                stmt = sqlite_insert(FinancialSegment.__table__).values(chunk)
+                stmt = stmt.on_conflict_do_update(
+                    index_elements=[
+                        "owner_id", "symbol", "period_end", "segment_name", "source_id",
+                    ],
+                    set_={
+                        "corp_code": stmt.excluded.corp_code,
+                        "period_type": stmt.excluded.period_type,
+                        "revenue": stmt.excluded.revenue,
+                        "operating_income": stmt.excluded.operating_income,
+                        "revenue_share": stmt.excluded.revenue_share,
+                        "raw": stmt.excluded.raw,
+                        "fetched_at": stmt.excluded.fetched_at,
+                    },
+                )
+                sess.execute(stmt)
+                total += len(chunk)
+        return total
+
+    def get_segments(
+        self,
+        symbol: str,
+        *,
+        period_end: str | None = None,
+    ) -> list[dict[str, Any]]:
+        with self.session() as sess:
+            stmt = select(FinancialSegment).where(
+                FinancialSegment.symbol == symbol,
+                FinancialSegment.owner_id == self.owner_id,
+            )
+            if period_end:
+                stmt = stmt.where(FinancialSegment.period_end == period_end)
+            stmt = stmt.order_by(
+                FinancialSegment.period_end.desc(),
+                desc(FinancialSegment.revenue_share),
+            )
+            rows = sess.execute(stmt).scalars().all()
+            return [
+                {
+                    "symbol": r.symbol,
+                    "corp_code": r.corp_code,
+                    "period_end": r.period_end,
+                    "period_type": r.period_type,
+                    "segment_name": r.segment_name,
+                    "revenue": r.revenue,
+                    "operating_income": r.operating_income,
+                    "revenue_share": r.revenue_share,
+                    "source_id": r.source_id,
+                }
+                for r in rows
+            ]
+
+    def count_segments(self) -> int:
+        with self.session() as sess:
+            return sess.query(FinancialSegment).filter(
+                FinancialSegment.owner_id == self.owner_id
+            ).count()
+
+    def count_segment_symbols(self) -> int:
+        from sqlalchemy import distinct, func
+        with self.session() as sess:
+            return sess.query(func.count(distinct(FinancialSegment.symbol))).filter(
+                FinancialSegment.owner_id == self.owner_id
+            ).scalar() or 0
+
+    # --------- Dividend History (DART-derived DPS) ----------
+
+    def upsert_dividend_history(self, rows: Iterable[dict[str, Any]]) -> int:
+        """Bulk-upsert per-year DPS rows. Returns count persisted."""
+        rows = list(rows)
+        if not rows:
+            return 0
+        now = datetime.utcnow()
+        payload = []
+        for row in rows:
+            payload.append(
+                {
+                    "symbol": row["symbol"],
+                    "corp_code": row.get("corp_code"),
+                    "period_end": row["period_end"],
+                    "share_type": row.get("share_type", "common"),
+                    "dps": row.get("dps"),
+                    "payout_total": row.get("payout_total"),
+                    "payout_ratio": row.get("payout_ratio"),
+                    "dividend_yield": row.get("dividend_yield"),
+                    "source_id": row.get("source_id", "dart"),
+                    "raw": row.get("raw"),
+                    "fetched_at": now,
+                    "owner_id": row.get("owner_id", self.owner_id),
+                }
+            )
+        chunk_size = 400
+        total = 0
+        with self.session() as sess:
+            for i in range(0, len(payload), chunk_size):
+                chunk = payload[i : i + chunk_size]
+                stmt = sqlite_insert(DividendHistory.__table__).values(chunk)
+                stmt = stmt.on_conflict_do_update(
+                    index_elements=[
+                        "owner_id", "symbol", "period_end", "share_type", "source_id",
+                    ],
+                    set_={
+                        "corp_code": stmt.excluded.corp_code,
+                        "dps": stmt.excluded.dps,
+                        "payout_total": stmt.excluded.payout_total,
+                        "payout_ratio": stmt.excluded.payout_ratio,
+                        "dividend_yield": stmt.excluded.dividend_yield,
+                        "raw": stmt.excluded.raw,
+                        "fetched_at": stmt.excluded.fetched_at,
+                    },
+                )
+                sess.execute(stmt)
+                total += len(chunk)
+        return total
+
+    def get_dividend_history(
+        self,
+        symbol: str,
+        *,
+        share_type: str = "common",
+        limit: int | None = None,
+    ) -> list[dict[str, Any]]:
+        with self.session() as sess:
+            stmt = select(DividendHistory).where(
+                DividendHistory.symbol == symbol,
+                DividendHistory.owner_id == self.owner_id,
+                DividendHistory.share_type == share_type,
+            ).order_by(DividendHistory.period_end.asc())
+            if limit:
+                stmt = stmt.limit(limit)
+            rows = sess.execute(stmt).scalars().all()
+            return [
+                {
+                    "symbol": r.symbol,
+                    "period_end": r.period_end,
+                    "share_type": r.share_type,
+                    "dps": r.dps,
+                    "payout_total": r.payout_total,
+                    "payout_ratio": r.payout_ratio,
+                    "dividend_yield": r.dividend_yield,
+                    "source_id": r.source_id,
+                }
+                for r in rows
+            ]
+
+    def get_all_dividend_history(self) -> list[dict[str, Any]]:
+        """Fetch every DPS row for the tenant — used by the dividend screener
+        to compute long-horizon streaks in one SQL."""
+        with self.session() as sess:
+            stmt = select(DividendHistory).where(
+                DividendHistory.owner_id == self.owner_id,
+                DividendHistory.share_type == "common",
+            ).order_by(
+                DividendHistory.symbol.asc(), DividendHistory.period_end.asc()
+            )
+            rows = sess.execute(stmt).scalars().all()
+            return [
+                {
+                    "symbol": r.symbol,
+                    "period_end": r.period_end,
+                    "dps": r.dps,
+                    "payout_total": r.payout_total,
+                    "dividend_yield": r.dividend_yield,
+                }
+                for r in rows
+            ]
+
+    def count_dividend_history(self) -> int:
+        with self.session() as sess:
+            return sess.query(DividendHistory).filter(
+                DividendHistory.owner_id == self.owner_id
+            ).count()
+
+    def count_dividend_symbols(self) -> int:
+        from sqlalchemy import distinct, func
+        with self.session() as sess:
+            return sess.query(func.count(distinct(DividendHistory.symbol))).filter(
+                DividendHistory.owner_id == self.owner_id
+            ).scalar() or 0
 
 
 # --------------------------------------------------------------------------- #

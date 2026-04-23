@@ -1,22 +1,16 @@
-"""Dividend screener — fnguide ``dividend_yield`` + best-effort growth streak.
+"""Dividend screener — combined DART DPS history + fnguide snapshot.
 
-Top-yield ranking sorts ``dividend_yield`` across every cached fnguide
-snapshot. One SQL + one JSON parse per symbol.
+Aristocrat detection has two evaluation paths:
 
-Growth streak (``aristocrat`` flag)
------------------------------------
-Korean filings don't expose dividend-per-share in the per-account Naver
-store, and the fnguide snapshot only holds the current yield. As a proxy we
-look at *net-income growth streaks* from the snapshot's ``financials_annual``
-history and treat a symbol as an aristocrat candidate when:
+1. **Real (preferred)** — when ``dividend_history`` rows are available for a
+   symbol, compute a proper *DPS growth streak*: consecutive fiscal years
+   with positive, non-decreasing dividend-per-share. 10 years is the target
+   aristocrat bar but we emit a configurable minimum.
+2. **Proxy (fallback)** — when there is no DART DPS row, fall back to the
+   old net-income growth streak sourced from the fnguide snapshot's
+   ``financials_annual`` list. These rows carry ``aristocrat_proxy=True``.
 
-    - At least 5 reported annual rows (is_estimate == False) are available.
-    - Net income is positive in every year AND non-decreasing year-on-year.
-    - The current dividend_yield is strictly positive.
-
-A proper DPS-based streak lands once the dividend-history collector is wired
-in; until then every row carries ``aristocrat_proxy=True`` so the UI can
-annotate.
+Top-yield ranking remains sourced from fnguide ``dividend_yield``.
 """
 from __future__ import annotations
 
@@ -33,6 +27,16 @@ log = logging.getLogger(__name__)
 
 _CACHE_TTL_SEC = 3600.0
 _CACHE: dict[str, tuple[float, list[dict[str, Any]]]] = {}
+
+# Calendar years of consecutive DPS growth that earn the "aristocrat" badge.
+ARISTOCRAT_YEARS_REAL = 10   # DART-backed
+ARISTOCRAT_YEARS_PROXY = 3   # net-income fallback
+
+
+# --------------------------------------------------------------------------- #
+# Data loading                                                                #
+# --------------------------------------------------------------------------- #
+
 
 def _load_snapshots(repo: Repository) -> list[dict[str, Any]]:
     q = text(
@@ -74,14 +78,62 @@ def _load_snapshots(repo: Repository) -> list[dict[str, Any]]:
     return out
 
 
-def _ni_growth_streak(annual: list[dict[str, Any]]) -> tuple[int, int]:
-    """Trailing consecutive years with positive, non-decreasing net income.
+def _load_dps_history(repo: Repository) -> dict[str, list[dict[str, Any]]]:
+    """Return a ``{symbol: [{period_end, dps}, …]}`` map sorted ascending."""
+    rows = repo.get_all_dividend_history()
+    by_sym: dict[str, list[dict[str, Any]]] = {}
+    for r in rows:
+        if r.get("dps") is None:
+            continue
+        by_sym.setdefault(r["symbol"], []).append(r)
+    # Already ordered ASC by (symbol, period_end) in the repo query, but be
+    # defensive in case we ever relax that.
+    for sym, lst in by_sym.items():
+        lst.sort(key=lambda x: x.get("period_end") or "")
+    return by_sym
 
-    Only counts ``is_estimate=False`` rows — estimates would poison the streak.
+
+# --------------------------------------------------------------------------- #
+# Streak computation                                                          #
+# --------------------------------------------------------------------------- #
+
+
+def _dps_growth_streak(history: list[dict[str, Any]]) -> tuple[int, int]:
+    """Consecutive trailing years with positive, non-decreasing DPS.
+
     Returns ``(streak, reported_years)``.
     """
+    streak = 0
+    prev: float | None = None
+    reported = 0
+    for row in history:
+        dps = row.get("dps")
+        if dps is None:
+            streak = 0
+            prev = None
+            continue
+        try:
+            v = float(dps)
+        except (TypeError, ValueError):
+            streak = 0
+            prev = None
+            continue
+        reported += 1
+        if v <= 0:
+            streak = 0
+            prev = None
+            continue
+        if prev is None or v >= prev - 1e-6:
+            streak += 1
+        else:
+            streak = 1
+        prev = v
+    return streak, reported
+
+
+def _ni_growth_streak(annual: list[dict[str, Any]]) -> tuple[int, int]:
+    """Fallback net-income streak (original proxy behaviour)."""
     reported = [r for r in annual if not r.get("is_estimate")]
-    # Sort ascending by period string.
     reported.sort(key=lambda r: str(r.get("period") or ""))
     streak = 0
     prev: float | None = None
@@ -109,6 +161,11 @@ def _ni_growth_streak(annual: list[dict[str, Any]]) -> tuple[int, int]:
     return streak, len(reported)
 
 
+# --------------------------------------------------------------------------- #
+# Public                                                                      #
+# --------------------------------------------------------------------------- #
+
+
 def dividend_scan(
     *,
     repo: Repository | None = None,
@@ -122,30 +179,56 @@ def dividend_scan(
             return hit[1]
 
     repo = repo or Repository()
-    rows = _load_snapshots(repo)
+    snapshots = _load_snapshots(repo)
+    dps_history = _load_dps_history(repo)
 
     out: list[dict[str, Any]] = []
-    for r in rows:
-        streak, reported_years = _ni_growth_streak(r["_annual"])
+    for r in snapshots:
+        sym = r["symbol"]
+        dy = r.get("dividend_yield") or 0
+
+        history = dps_history.get(sym)
+        if history:
+            streak, reported_years = _dps_growth_streak(history)
+            aristocrat = (
+                streak >= ARISTOCRAT_YEARS_REAL
+                and reported_years >= ARISTOCRAT_YEARS_REAL
+                and dy > 0
+            )
+            source = "dart"
+            proxy_flag = False
+            latest_dps = history[-1].get("dps") if history else None
+        else:
+            streak, reported_years = _ni_growth_streak(r["_annual"])
+            aristocrat = (
+                streak >= ARISTOCRAT_YEARS_PROXY
+                and reported_years >= ARISTOCRAT_YEARS_PROXY
+                and dy > 0
+            )
+            source = "proxy:ni"
+            proxy_flag = True
+            latest_dps = None
+
         if streak < min_streak:
             continue
-        dy = r.get("dividend_yield") or 0
-        # Reported-year window inside fnguide snapshots is ~5y; ≥3 consecutive
-        # positive-and-growing years is the proxy bar until a proper DPS-based
-        # collector lands.
-        aristocrat = streak >= 3 and reported_years >= 3 and dy > 0
+
         out.append(
             {
                 **{k: v for k, v in r.items() if k != "_annual"},
-                "ni_growth_streak": streak,
+                "dps_streak": streak if not proxy_flag else None,
+                "ni_growth_streak": streak,   # preserved for back-compat
                 "reported_years": reported_years,
+                "latest_dps": latest_dps,
                 "aristocrat": aristocrat,
-                "aristocrat_proxy": True,  # based on net-income streak, not DPS
+                "aristocrat_proxy": proxy_flag,
+                "source": source,
             }
         )
 
     out.sort(
         key=lambda r: (
+            # Real aristocrats first, then by streak depth, then by yield.
+            (r["aristocrat"] and not r["aristocrat_proxy"]),
             r["aristocrat"],
             r.get("ni_growth_streak") or 0,
             r.get("dividend_yield") or 0,
@@ -181,11 +264,15 @@ def dividend_summary(
 ) -> dict[str, Any]:
     rows = dividend_scan(repo=repo, use_cache=use_cache)
     aristocrats = [r for r in rows if r["aristocrat"]]
+    real_aristocrats = [r for r in aristocrats if not r["aristocrat_proxy"]]
     high_yield = [r for r in rows if (r.get("dividend_yield") or 0) >= 5.0]
+    dart_covered = sum(1 for r in rows if r.get("source") == "dart")
     kpi = {
         "with_yield": sum(1 for r in rows if (r.get("dividend_yield") or 0) > 0),
         "aristocrats": len(aristocrats),
+        "real_aristocrats": len(real_aristocrats),
         "yield_gt_5pct": len(high_yield),
+        "dart_dps_covered": dart_covered,
     }
     rows.sort(key=lambda r: r.get("dividend_yield") or 0, reverse=True)
     return {"kpi": kpi, "rows": rows[:50], "aristocrats": aristocrats[:30]}

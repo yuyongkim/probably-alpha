@@ -218,6 +218,70 @@ class FinancialStatementDB(Base):
     owner_id: Mapped[str] = mapped_column(String(32), nullable=False, default="self")
 
 
+# --------------------------------------------------------------------------- #
+# FinancialSegment — DART 사업부문별 매출/이익 breakdown                       #
+# --------------------------------------------------------------------------- #
+
+
+class FinancialSegment(Base):
+    __tablename__ = "financial_segments"
+    __table_args__ = (
+        UniqueConstraint(
+            "owner_id", "symbol", "period_end", "segment_name", "source_id",
+            name="uq_fin_seg_owner_sym_period_name_src",
+        ),
+        Index("ix_fin_seg_symbol_period", "symbol", "period_end"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    symbol: Mapped[str] = mapped_column(String(32), nullable=False)
+    corp_code: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    period_end: Mapped[str] = mapped_column(String(10), nullable=False)  # ISO
+    period_type: Mapped[str] = mapped_column(String(8), nullable=False, default="FY")
+    segment_name: Mapped[str] = mapped_column(String(255), nullable=False)
+    revenue: Mapped[float | None] = mapped_column(Float, nullable=True)
+    operating_income: Mapped[float | None] = mapped_column(Float, nullable=True)
+    revenue_share: Mapped[float | None] = mapped_column(Float, nullable=True)  # 0..1
+    source_id: Mapped[str] = mapped_column(String(32), nullable=False, default="dart")
+    raw: Mapped[str | None] = mapped_column(Text, nullable=True)  # JSON blob
+    fetched_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False
+    )
+    owner_id: Mapped[str] = mapped_column(String(32), nullable=False, default="self")
+
+
+# --------------------------------------------------------------------------- #
+# DividendHistory — DART-derived per-share DPS history                        #
+# --------------------------------------------------------------------------- #
+
+
+class DividendHistory(Base):
+    __tablename__ = "dividend_history"
+    __table_args__ = (
+        UniqueConstraint(
+            "owner_id", "symbol", "period_end", "share_type", "source_id",
+            name="uq_div_hist_owner_sym_period_type_src",
+        ),
+        Index("ix_div_hist_symbol_period", "symbol", "period_end"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    symbol: Mapped[str] = mapped_column(String(32), nullable=False)
+    corp_code: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    period_end: Mapped[str] = mapped_column(String(10), nullable=False)  # ISO year-end
+    share_type: Mapped[str] = mapped_column(String(16), nullable=False, default="common")
+    dps: Mapped[float | None] = mapped_column(Float, nullable=True)            # 주당 배당금 (KRW)
+    payout_total: Mapped[float | None] = mapped_column(Float, nullable=True)   # 총 배당금
+    payout_ratio: Mapped[float | None] = mapped_column(Float, nullable=True)   # 배당성향 (%)
+    dividend_yield: Mapped[float | None] = mapped_column(Float, nullable=True) # 시가배당률 (%)
+    source_id: Mapped[str] = mapped_column(String(32), nullable=False, default="dart")
+    raw: Mapped[str | None] = mapped_column(Text, nullable=True)
+    fetched_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False
+    )
+    owner_id: Mapped[str] = mapped_column(String(32), nullable=False, default="self")
+
+
 class FinancialPIT(Base):
     __tablename__ = "financials_pit"
     __table_args__ = (

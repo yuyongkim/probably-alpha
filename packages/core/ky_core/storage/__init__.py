@@ -15,8 +15,10 @@ from ky_core.storage.db import DEFAULT_DB_PATH, get_engine, get_session_factory,
 from ky_core.storage.repository import Repository
 from ky_core.storage.schema import (
     Base,
+    DividendHistory,
     Filing,
     FinancialPIT,
+    FinancialSegment,
     FinancialStatementDB,
     FnguideSnapshot,
     Observation,
@@ -27,8 +29,10 @@ from ky_core.storage.schema import (
 __all__ = [
     "Base",
     "DEFAULT_DB_PATH",
+    "DividendHistory",
     "Filing",
     "FinancialPIT",
+    "FinancialSegment",
     "FinancialStatementDB",
     "FnguideSnapshot",
     "Observation",

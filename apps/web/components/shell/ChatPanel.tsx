@@ -1,12 +1,16 @@
 // ChatPanel — slide-up assistant panel, 400×560.
-// Displays the current tab/sub-page as context. No backend wired yet;
-// the Ask button echoes a stub assistant reply so the UI shape is real.
+// Wired to POST /api/v1/assistant/chat — returns Claude-backed answers
+// grounded in RAG + page context. Falls back to server-side stub mode when
+// ANTHROPIC_API_KEY is unset.
 "use client";
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useChatFab } from "@/lib/chatFab";
 import { SIDEBAR_MAP, getTabFromPathname } from "@/lib/sidebarMap";
+
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8300";
 
 const EXAMPLE_PROMPTS = [
   "오늘 SEPA 통과 종목 중 EPS 성장률 상위 5개는?",
@@ -16,15 +20,21 @@ const EXAMPLE_PROMPTS = [
   "이번 주 실적 발표 예정 종목 중 Wizard pass 높은 것?",
 ];
 
-function labelForPath(pathname: string): string {
+function pathParts(pathname: string): { tab: string | null; subsection: string | null } {
   const tab = getTabFromPathname(pathname);
-  if (!tab) return "Home";
+  if (!tab) return { tab: null, subsection: null };
   const groups = SIDEBAR_MAP[tab];
   for (const g of groups) {
     const found = g.links.find((l) => l.href === pathname);
-    if (found) return `${capitalize(tab)} / ${found.label}`;
+    if (found) return { tab, subsection: found.label };
   }
-  return capitalize(tab);
+  return { tab, subsection: null };
+}
+
+function labelForPath(pathname: string): string {
+  const { tab, subsection } = pathParts(pathname);
+  if (!tab) return "Home";
+  return subsection ? `${capitalize(tab)} / ${subsection}` : capitalize(tab);
 }
 
 function capitalize(s: string): string {
@@ -36,11 +46,24 @@ interface Msg {
   text: string;
 }
 
+interface ChatApiResponse {
+  ok: boolean;
+  data: {
+    message: string;
+    mode?: string;
+    model?: string | null;
+    sources?: unknown[];
+    reason?: string;
+  } | null;
+  error: { code?: string; message?: string } | null;
+}
+
 export function ChatPanel() {
   const pathname = usePathname() || "/";
   const open = useChatFab((s) => s.open);
   const close = useChatFab((s) => s.closePanel);
   const [input, setInput] = useState("");
+  const [pending, setPending] = useState(false);
   const [msgs, setMsgs] = useState<Msg[]>([
     {
       role: "assistant",
@@ -49,18 +72,50 @@ export function ChatPanel() {
   ]);
   if (!open) return null;
   const context = labelForPath(pathname);
+  const { tab, subsection } = pathParts(pathname);
 
-  function send(text: string) {
-    if (!text.trim()) return;
-    setMsgs((prev) => [
-      ...prev,
-      { role: "user", text },
-      {
-        role: "assistant",
-        text: "(스텁) 실제 LLM 연결은 다음 스프린트에서 배선됩니다.",
-      },
-    ]);
+  async function send(text: string) {
+    const trimmed = text.trim();
+    if (!trimmed || pending) return;
+
+    const nextMsgs: Msg[] = [...msgs, { role: "user", text: trimmed }];
+    setMsgs(nextMsgs);
     setInput("");
+    setPending(true);
+
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/assistant/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: nextMsgs
+            .filter((m) => m.role === "user" || m.role === "assistant")
+            .slice(-8) // cap history
+            .map((m) => ({ role: m.role, content: m.text })),
+          context: { tab, subsection, symbol: null },
+        }),
+      });
+      const body = (await res.json()) as ChatApiResponse;
+      if (!body.ok || !body.data) {
+        throw new Error(body.error?.message ?? "assistant call failed");
+      }
+      const suffix = body.data.mode === "stub" ? " · stub" : "";
+      setMsgs((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          text: body.data!.message + (suffix ? `\n— (${suffix.trim()})` : ""),
+        },
+      ]);
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      setMsgs((prev) => [
+        ...prev,
+        { role: "assistant", text: `(오류) ${msg}` },
+      ]);
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
@@ -83,7 +138,8 @@ export function ChatPanel() {
             {m.text}
           </div>
         ))}
-        {msgs.length <= 1 && (
+        {pending && <div className="chat-msg assistant">…</div>}
+        {msgs.length <= 1 && !pending && (
           <div className="chat-examples">
             {EXAMPLE_PROMPTS.map((p) => (
               <button
@@ -111,8 +167,11 @@ export function ChatPanel() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="질문을 입력하세요…"
           aria-label="Chat input"
+          disabled={pending}
         />
-        <button type="submit">Ask</button>
+        <button type="submit" disabled={pending}>
+          {pending ? "…" : "Ask"}
+        </button>
       </form>
     </div>
   );

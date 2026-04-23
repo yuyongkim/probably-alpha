@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
 from routers.admin import router as admin_router
+from routers.assistant import router as assistant_router
 from routers.chartist import router as chartist_router
 from routers.execute import router as execute_router
 from routers.quant import router as quant_router
@@ -53,6 +54,7 @@ def create_app() -> FastAPI:
     app.include_router(execute_router, prefix="/api/v1/execute", tags=["execute"])
     app.include_router(research_router, prefix="/api/v1/research", tags=["research"])
     app.include_router(admin_router, prefix="/api/v1/admin", tags=["admin"])
+    app.include_router(assistant_router, prefix="/api/v1/assistant", tags=["assistant"])
 
     return app
 
