@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import logging
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, timedelta
 from typing import Any
 
@@ -56,56 +57,85 @@ def _cache_set(key: tuple[int, str], rows: list[dict[str, Any]]) -> None:
     _CACHE[key] = (time.time(), rows)
 
 
+def _classify_insider_row(r: dict[str, Any]) -> bool:
+    nm = (r.get("report_nm") or "").strip()
+    if INSIDER_SELF_TOKEN in nm:
+        r["kind"] = "insider"
+        return True
+    if INSIDER_PLAN_TOKEN in nm:
+        r["kind"] = "insider_plan"
+        return True
+    if BULK_OWNERSHIP_TOKEN in nm:
+        r["kind"] = "bulk_ownership"
+        return True
+    return False
+
+
+def _fetch_insider_page(
+    client: httpx.Client,
+    api_key: str,
+    start: date,
+    end: date,
+    page: int,
+) -> tuple[int, list[dict[str, Any]], bool]:
+    """Fetch one page of pblntf_ty=D. Returns (page, filtered_rows, exhausted)."""
+    try:
+        resp = client.get(
+            DART_LIST_URL,
+            params={
+                "crtfc_key": api_key,
+                "bgn_de": start.strftime("%Y%m%d"),
+                "end_de": end.strftime("%Y%m%d"),
+                "page_no": page,
+                "page_count": 100,
+                "pblntf_ty": "D",
+            },
+        )
+    except httpx.HTTPError as exc:
+        log.warning("DART insider fetch failed page=%s: %s", page, exc)
+        return page, [], True
+    if resp.status_code != 200:
+        return page, [], True
+    body = resp.json()
+    if body.get("status") not in ("000", "013"):
+        return page, [], True
+    rows = body.get("list") or []
+    kept = [r for r in rows if _classify_insider_row(r)]
+    return page, kept, len(rows) < 100
+
+
 def _fetch_insider_filings(
     api_key: str,
     lookback_days: int,
     *,
-    max_pages: int = 5,
+    max_pages: int = 3,
 ) -> list[dict[str, Any]]:
-    """Pull disclosure-type ``D`` (인적·지분 변동) rows over ``lookback_days``.
+    """Pull disclosure-type ``D`` rows over ``lookback_days``.
 
-    Returns raw DART list rows with additional ``kind`` tag.
+    Pages are fetched in parallel to collapse the DART roundtrip tail — the
+    sequential loop was the main contributor to the 6s+ cold latency the QA
+    run flagged.
     """
     end = date.today()
     start = end - timedelta(days=lookback_days)
     out: list[dict[str, Any]] = []
-    with httpx.Client(timeout=12.0) as client:
-        for page in range(1, max_pages + 1):
-            try:
-                resp = client.get(
-                    DART_LIST_URL,
-                    params={
-                        "crtfc_key": api_key,
-                        "bgn_de": start.strftime("%Y%m%d"),
-                        "end_de": end.strftime("%Y%m%d"),
-                        "page_no": page,
-                        "page_count": 100,
-                        "pblntf_ty": "D",
-                    },
-                )
-            except httpx.HTTPError as exc:
-                log.warning("DART insider fetch failed page=%s: %s", page, exc)
-                break
-            if resp.status_code != 200:
-                break
-            body = resp.json()
-            if body.get("status") not in ("000", "013"):
-                break
-            rows = body.get("list") or []
-            for r in rows:
-                nm = (r.get("report_nm") or "").strip()
-                if INSIDER_SELF_TOKEN in nm:
-                    r["kind"] = "insider"
-                elif INSIDER_PLAN_TOKEN in nm:
-                    r["kind"] = "insider_plan"
-                elif BULK_OWNERSHIP_TOKEN in nm:
-                    r["kind"] = "bulk_ownership"
-                else:
+    with httpx.Client(timeout=15.0) as client:
+        with ThreadPoolExecutor(max_workers=min(4, max_pages)) as ex:
+            futures = [
+                ex.submit(_fetch_insider_page, client, api_key, start, end, page)
+                for page in range(1, max_pages + 1)
+            ]
+            pending: list[tuple[int, list[dict[str, Any]]]] = []
+            exhaust_at: int | None = None
+            for fut in as_completed(futures):
+                page, rows, exhausted = fut.result()
+                if exhausted:
+                    exhaust_at = min(page, exhaust_at) if exhaust_at else page
+                pending.append((page, rows))
+            for page, rows in pending:
+                if exhaust_at is not None and page > exhaust_at:
                     continue
-                out.append(r)
-            # Stop once we've exhausted the result set
-            if len(rows) < 100:
-                break
+                out.extend(rows)
     return out
 
 

@@ -692,7 +692,7 @@ def moat_v2_endpoint(
             return _envelope({"mode": mode, **summary})
         rows = ky_m.moat_v2_scan()
         if mode in ("wide", "narrow"):
-            rows = [r for r in rows if r["moat"] == mode]
+            rows = [r for r in rows if r["moat_grade"] == mode]
     except Exception as exc:  # noqa: BLE001
         log.exception("moat_v2 failed")
         return _envelope(None, error={"code": "MOAT_V2_FAILED", "message": str(exc)}, ok=False)

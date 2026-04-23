@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import logging
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, timedelta
 from typing import Any
 
@@ -79,45 +80,87 @@ def _classify(report_nm: str) -> dict[str, str]:
     return {"action": action, "status": status}
 
 
+def _fetch_page(
+    client: httpx.Client,
+    api_key: str,
+    start: date,
+    end: date,
+    ptype: str,
+    page: int,
+) -> tuple[str, int, list[dict[str, Any]], bool]:
+    """Fetch one (ptype, page). Returns (ptype, page, filtered_rows, exhausted).
+
+    ``exhausted`` is True when the page returned <100 rows (no more to fetch).
+    """
+    try:
+        resp = client.get(
+            DART_LIST_URL,
+            params={
+                "crtfc_key": api_key,
+                "bgn_de": start.strftime("%Y%m%d"),
+                "end_de": end.strftime("%Y%m%d"),
+                "page_no": page,
+                "page_count": 100,
+                "pblntf_ty": ptype,
+            },
+        )
+    except httpx.HTTPError as exc:
+        log.warning("DART buyback fetch failed %s page=%s: %s", ptype, page, exc)
+        return ptype, page, [], True
+    if resp.status_code != 200:
+        return ptype, page, [], True
+    body = resp.json()
+    if body.get("status") not in ("000", "013"):
+        return ptype, page, [], True
+    rows = body.get("list") or []
+    kept: list[dict[str, Any]] = []
+    for r in rows:
+        nm = (r.get("report_nm") or "").replace(" ", "")
+        if any(tok.replace(" ", "") in nm for tok in BUYBACK_TOKENS):
+            kept.append(r)
+    return ptype, page, kept, len(rows) < 100
+
+
 def _fetch_buyback_filings(
     api_key: str,
     lookback_days: int,
     *,
-    max_pages: int = 5,
+    max_pages: int = 3,
 ) -> list[dict[str, Any]]:
+    """Fetch buyback filings across ptype=B/E in parallel.
+
+    Cold runs historically took ~35s because 10 httpx roundtrips were issued
+    sequentially. We now submit them to a small thread pool; DART serves each
+    request in roughly 2-4s so 10 concurrent calls collapse to a single
+    roundtrip-worst-case. We also lowered ``max_pages`` from 5 to 3 (a 30-day
+    buyback window virtually never produces 500 hits per ptype).
+    """
     end = date.today()
     start = end - timedelta(days=lookback_days)
     out: list[dict[str, Any]] = []
-    with httpx.Client(timeout=12.0) as client:
-        for ptype in ("B", "E"):
-            for page in range(1, max_pages + 1):
-                try:
-                    resp = client.get(
-                        DART_LIST_URL,
-                        params={
-                            "crtfc_key": api_key,
-                            "bgn_de": start.strftime("%Y%m%d"),
-                            "end_de": end.strftime("%Y%m%d"),
-                            "page_no": page,
-                            "page_count": 100,
-                            "pblntf_ty": ptype,
-                        },
-                    )
-                except httpx.HTTPError as exc:
-                    log.warning("DART buyback fetch failed %s page=%s: %s", ptype, page, exc)
-                    break
-                if resp.status_code != 200:
-                    break
-                body = resp.json()
-                if body.get("status") not in ("000", "013"):
-                    break
-                rows = body.get("list") or []
-                for r in rows:
-                    nm = (r.get("report_nm") or "").replace(" ", "")
-                    if any(tok.replace(" ", "") in nm for tok in BUYBACK_TOKENS):
-                        out.append(r)
-                if len(rows) < 100:
-                    break
+    tasks = [(pt, pg) for pt in ("B", "E") for pg in range(1, max_pages + 1)]
+    with httpx.Client(timeout=15.0) as client:
+        with ThreadPoolExecutor(max_workers=min(8, len(tasks))) as ex:
+            futures = [
+                ex.submit(_fetch_page, client, api_key, start, end, pt, pg)
+                for pt, pg in tasks
+            ]
+            # Track exhaustion per ptype so we stop collecting pages beyond a
+            # short result set (e.g. ptype=B exhausted at page 1 → drop pages
+            # 2..N from result set).
+            exhaust_at: dict[str, int] = {}
+            pending: list[tuple[str, int, list[dict[str, Any]]]] = []
+            for fut in as_completed(futures):
+                ptype, page, rows, exhausted = fut.result()
+                if exhausted:
+                    cur = exhaust_at.get(ptype)
+                    exhaust_at[ptype] = min(page, cur) if cur else page
+                pending.append((ptype, page, rows))
+            for ptype, page, rows in pending:
+                limit = exhaust_at.get(ptype)
+                if limit is not None and page > limit:
+                    continue
+                out.extend(rows)
     return out
 
 

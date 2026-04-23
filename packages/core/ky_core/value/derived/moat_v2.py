@@ -171,7 +171,10 @@ def moat_v2_for(
         "gross_margin_cv": gm_cv,
         "roe_years_above_10pct": roe_years,
         "years_used": len(roic_series),
+        # Dual naming: ``moat`` (legacy) + ``moat_grade`` (explicit, used by
+        # frontend filter controls). Same value, two keys.
         "moat": label,
+        "moat_grade": label,
     }
 
 
@@ -188,7 +191,7 @@ def moat_v2_scan(
             out.append(row)
     out.sort(
         key=lambda r: (
-            0 if r["moat"] == "wide" else 1 if r["moat"] == "narrow" else 2,
+            0 if r["moat_grade"] == "wide" else 1 if r["moat_grade"] == "narrow" else 2,
             -(r.get("roic_mean") or 0),
         )
     )
@@ -199,8 +202,8 @@ def moat_v2_summary(*, repo: Repository | None = None) -> dict[str, Any]:
     rows = moat_v2_scan(repo=repo)
     kpi = {
         "total": len(rows),
-        "wide": sum(1 for r in rows if r["moat"] == "wide"),
-        "narrow": sum(1 for r in rows if r["moat"] == "narrow"),
-        "none": sum(1 for r in rows if r["moat"] == "none"),
+        "wide": sum(1 for r in rows if r["moat_grade"] == "wide"),
+        "narrow": sum(1 for r in rows if r["moat_grade"] == "narrow"),
+        "none": sum(1 for r in rows if r["moat_grade"] == "none"),
     }
-    return {"kpi": kpi, "rows": [r for r in rows if r["moat"] in ("wide", "narrow")][:100]}
+    return {"kpi": kpi, "rows": [r for r in rows if r["moat_grade"] in ("wide", "narrow")][:100]}
