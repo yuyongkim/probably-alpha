@@ -3,72 +3,175 @@ import {
   PageHeader,
   SummaryRow,
   Panel,
-  Stub,
+  Chip,
+  MINI_TABLE_CLS,
+  MINI_TH,
+  MINI_TH_NUM,
+  MINI_TD,
+  MINI_TD_NUM,
+  MINI_ROW_BORDER,
+  toneColorNumber,
 } from "@/components/chartist/common/MockupPrimitives";
-import { KIWOOM_CONDITIONS } from "@/lib/chartist/mockData";
+import { TickerName } from "@/components/shared/TickerName";
+import type {
+  KiwoomCondResponse,
+  KiwoomCondBucket,
+  KiwoomCondHit,
+} from "@/types/chartist";
 
-export function KiwoomCondView() {
-  const totalPass = KIWOOM_CONDITIONS.reduce((s, c) => s + c.pass, 0);
+function fmtSigned(v: number, digits = 2): string {
+  const s = v.toFixed(digits);
+  return v > 0 ? `+${s}` : s;
+}
+
+function HitTable({ rows, title }: { rows: KiwoomCondHit[]; title: string }) {
+  return (
+    <Panel
+      title={title}
+      subtitle={`${rows.length} 종목 · volume × pct_1d 정렬`}
+      bodyPad={false}
+    >
+      <table className={MINI_TABLE_CLS}>
+        <thead>
+          <tr>
+            <th className={MINI_TH}>Ticker</th>
+            <th className={MINI_TH}>Sector</th>
+            <th className={MINI_TH_NUM}>Close</th>
+            <th className={MINI_TH_NUM}>1D%</th>
+            <th className={MINI_TH_NUM}>Vol ×</th>
+            <th className={MINI_TH}>Pass</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.length === 0 && (
+            <tr>
+              <td
+                colSpan={6}
+                className={MINI_TD}
+                style={{ textAlign: "center", color: "var(--fg-muted)" }}
+              >
+                조건을 충족한 종목이 없습니다.
+              </td>
+            </tr>
+          )}
+          {rows.map((h) => (
+            <tr key={h.symbol} style={MINI_ROW_BORDER}>
+              <td className={MINI_TD}>
+                <TickerName symbol={h.symbol} name={h.name} sector={h.sector} />
+              </td>
+              <td className={MINI_TD}>
+                <Chip tone="accent">{h.sector}</Chip>
+              </td>
+              <td className={MINI_TD_NUM}>{h.close.toLocaleString()}</td>
+              <td
+                className={MINI_TD_NUM}
+                style={{ color: toneColorNumber(h.pct_1d) }}
+              >
+                {fmtSigned(h.pct_1d)}
+              </td>
+              <td className={MINI_TD_NUM}>{h.vol_ratio.toFixed(2)}</td>
+              <td className={MINI_TD}>
+                <Chip tone="pos">{h.reason}</Chip>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </Panel>
+  );
+}
+
+export function KiwoomCondView({ data }: { data: KiwoomCondResponse }) {
+  const maxBucket = data.buckets.reduce(
+    (acc, b) => (b.pass_count > acc.pass_count ? b : acc),
+    data.buckets[0] ?? { id: "?", name: "–", pass_count: 0 } as KiwoomCondBucket,
+  );
+
+  const summary = [
+    {
+      label: "조건식",
+      value: `${data.buckets.length}`,
+      delta: "A..G",
+      tone: "neutral" as const,
+    },
+    {
+      label: "총 Pass",
+      value: `${data.total_pass}`,
+      delta: "모든 조건 합산",
+      tone: "pos" as const,
+    },
+    {
+      label: "최대 Pass",
+      value: `${maxBucket.pass_count}`,
+      delta: maxBucket.name,
+      tone: "pos" as const,
+    },
+    {
+      label: "4+ 교집합",
+      value: `${data.intersection_4of7.length}`,
+      delta: "매매 후보",
+      tone: "pos" as const,
+    },
+    {
+      label: "7/7 통과",
+      value: `${data.intersection_all.length}`,
+      delta: "Prime signal",
+      tone: "amber" as const,
+    },
+    {
+      label: "Universe",
+      value: `${data.universe_size.toLocaleString()}`,
+      delta: "KOSPI+KOSDAQ",
+      tone: "neutral" as const,
+    },
+  ];
+
   return (
     <div>
       <Breadcrumb trail={["Chartist", "키움 조건식"]} />
       <PageHeader
         title="키움 조건식 7종"
-        meta="MA 골든크로스 · 거래량 급증 · RSI · 볼린저 · MACD · ..."
+        meta="MA 수렴/GC · 거래량 급증 · 유동성 필터 · QuantPlatform 이식"
+        asOf={data.as_of}
       />
-      <SummaryRow
-        cells={[
-          { label: "조건식 수", value: "7", delta: "활성" },
-          {
-            label: "총 Pass",
-            value: totalPass.toString(),
-            delta: "합산",
-            tone: "pos",
-          },
-          { label: "최대 Pass", value: "48", delta: "거래량 급증 2배+", tone: "pos" },
-          { label: "교집합 (4+)", value: "18", delta: "매매 신호", tone: "pos" },
-          { label: "30D 정확도", value: "62.4%", delta: "8 / 13", tone: "pos" },
-          { label: "소스", value: "QuantPlatform", delta: "이식 예정" },
-        ]}
-      />
+      <SummaryRow cells={summary} />
 
       <Panel
         title="조건식 현황"
-        subtitle="7 / 각 조건식 통과 종목 수"
+        subtitle="A..G · 각 조건 통과 종목 수"
         bodyPad={false}
       >
-        <table className="mini w-full text-[11px] border-collapse">
+        <table className={MINI_TABLE_CLS}>
           <thead>
             <tr>
-              <th className="py-1.5 px-2 text-[9.5px] uppercase tracking-widest font-medium text-[color:var(--muted)] border-b text-left">
-                #
-              </th>
-              <th className="py-1.5 px-2 text-[9.5px] uppercase tracking-widest font-medium text-[color:var(--muted)] border-b text-left">
-                조건식
-              </th>
-              <th className="py-1.5 px-2 text-[9.5px] uppercase tracking-widest font-medium text-[color:var(--muted)] border-b text-left">
-                설명
-              </th>
-              <th className="py-1.5 px-2 text-[9.5px] uppercase tracking-widest font-medium text-[color:var(--muted)] border-b text-right">
-                Pass
-              </th>
+              <th className={MINI_TH}>#</th>
+              <th className={MINI_TH}>조건식</th>
+              <th className={MINI_TH}>설명</th>
+              <th className={MINI_TH_NUM}>Pass</th>
+              <th className={MINI_TH}>Top 1</th>
             </tr>
           </thead>
           <tbody>
-            {KIWOOM_CONDITIONS.map((c) => (
-              <tr
-                key={c.id}
-                style={{ borderBottom: "1px solid var(--border-soft)" }}
-              >
-                <td className="py-1 px-2 mono text-[10.5px] text-[color:var(--fg-muted)]">
-                  {c.id}
+            {data.buckets.map((b) => (
+              <tr key={b.id} style={MINI_ROW_BORDER}>
+                <td className={`${MINI_TD} mono text-[10.5px]`}>{b.id}</td>
+                <td className={MINI_TD}>{b.name}</td>
+                <td className={MINI_TD} style={{ color: "var(--fg-muted)" }}>
+                  {b.desc}
                 </td>
-                <td className="py-1 px-2 text-[12px]">{c.name}</td>
-                <td className="py-1 px-2 text-[11px] text-[color:var(--fg-muted)]">
-                  {c.desc}
+                <td className={MINI_TD_NUM} style={{ fontWeight: 600 }}>
+                  {b.pass_count.toLocaleString()}
                 </td>
-                <td className="py-1 px-2 mono text-[11.5px] text-right tabular-nums">
-                  {c.pass}
+                <td className={MINI_TD}>
+                  {b.top[0] ? (
+                    <TickerName
+                      symbol={b.top[0].symbol}
+                      name={b.top[0].name}
+                      sector={b.top[0].sector}
+                    />
+                  ) : (
+                    <span style={{ color: "var(--fg-muted)" }}>–</span>
+                  )}
                 </td>
               </tr>
             ))}
@@ -76,12 +179,14 @@ export function KiwoomCondView() {
         </table>
       </Panel>
 
-      <div className="mt-3">
-        <Stub
-          icon="Ω"
-          title="7개 중 4개 이상 충족 → 매매 신호"
-          desc="QuantPlatform의 kiwoom_condition_analyzer 이식. MA 골든크로스, 거래량 급증 등 조합으로 매수 신호 생성. SEPA와 교차 검증."
-          chips={["QuantPlatform 흡수"]}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mt-3">
+        <HitTable
+          rows={data.intersection_4of7.slice(0, 20)}
+          title={`4+/7 교집합 · ${data.intersection_4of7.length} 종목`}
+        />
+        <HitTable
+          rows={data.intersection_all.slice(0, 20)}
+          title={`7/7 만점 · ${data.intersection_all.length} 종목`}
         />
       </div>
     </div>
