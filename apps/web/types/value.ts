@@ -112,3 +112,211 @@ export interface AltmanResponse {
   zone: "safe" | "grey" | "distress";
   proxy: boolean;
 }
+
+// --------------------------------------------------------------------------- //
+// Disclosure / quality sub-sections                                           //
+// --------------------------------------------------------------------------- //
+
+export interface InsiderRow {
+  date: string;
+  corp_code: string | null;
+  corp_name: string | null;
+  stock_code: string | null;
+  report_name: string;
+  kind: "insider" | "insider_plan" | "bulk_ownership";
+  filer_name: string | null;
+  receipt_no: string | null;
+  signal: string;
+}
+
+export interface InsiderKpi {
+  total: number;
+  insider: number;
+  bulk_ownership: number;
+  plan: number;
+  lookback_days: number;
+}
+
+export interface InsiderResponse {
+  lookback_days: number;
+  kind: string;
+  kpi: InsiderKpi;
+  rows: InsiderRow[];
+}
+
+export interface BuybackRow {
+  date: string;
+  corp_code: string | null;
+  corp_name: string | null;
+  stock_code: string | null;
+  report_name: string;
+  action: "buyback" | "dispose" | "cancel" | "trust" | "other";
+  status: "decision" | "result";
+  receipt_no: string | null;
+}
+
+export interface BuybackKpi {
+  total: number;
+  buyback_decision: number;
+  buyback_result: number;
+  cancel: number;
+  trust: number;
+  dispose: number;
+  lookback_days: number;
+}
+
+export interface BuybackResponse {
+  lookback_days: number;
+  action: string;
+  kpi: BuybackKpi;
+  rows: BuybackRow[];
+}
+
+export interface ConsensusRow {
+  symbol: string;
+  name: string | null;
+  sector: string | null;
+  market: string | null;
+  close: number | null;
+  opinion: string | null;
+  recomm_score: number | null;
+  consensus_per: number | null;
+  consensus_eps: number | null;
+  forward_eps_estimate: number | null;
+  eps_rev: number | null;
+  target_price: number | null;
+  tp_upside: number | null;
+  sentiment: "positive" | "neutral" | "negative";
+}
+
+export interface ConsensusKpi {
+  total: number;
+  positive: number;
+  neutral: number;
+  negative: number;
+  eps_rev_up: number;
+  eps_rev_down: number;
+}
+
+export interface ConsensusResponse {
+  mode: string;
+  kpi?: ConsensusKpi;
+  rows: ConsensusRow[];
+  n?: number;
+}
+
+export interface MoatRow {
+  symbol: string;
+  name: string | null;
+  sector: string | null;
+  market: string | null;
+  roic_10y_mean: number;
+  roic_10y_std: number;
+  roe_years_above_10pct: number;
+  years_used: number;
+  revenue_cagr: number | null;
+  moat: "wide" | "narrow" | "none";
+}
+
+export interface MoatKpi {
+  total: number;
+  wide: number;
+  narrow: number;
+  none: number;
+}
+
+export interface MoatResponse {
+  mode: string;
+  kpi: MoatKpi;
+  rows: MoatRow[];
+}
+
+export interface SegmentRow {
+  symbol: string;
+  name: string | null;
+  sector: string | null;
+  market: string | null;
+  market_cap: number;
+  sotp_proxy: number;
+  discount: number;
+  pbr: number;
+  sector_median_pbr: number;
+  proxy: boolean;
+}
+
+export interface SegmentKpi {
+  candidates: number;
+  discount_gt_20: number;
+  premium_gt_20: number;
+  proxy_mode: boolean;
+}
+
+export interface SegmentResponse {
+  kpi: SegmentKpi;
+  rows: SegmentRow[];
+}
+
+export interface DividendRow {
+  symbol: string;
+  name: string | null;
+  sector: string | null;
+  market: string | null;
+  dividend_yield: number | null;
+  per: number | null;
+  pbr: number | null;
+  roe: number | null;
+  ni_growth_streak: number;
+  reported_years: number;
+  aristocrat: boolean;
+  aristocrat_proxy: boolean;
+}
+
+export interface DividendKpi {
+  with_yield: number;
+  aristocrats: number;
+  yield_gt_5pct: number;
+}
+
+export interface DividendResponse {
+  mode: string;
+  kpi?: DividendKpi;
+  rows: DividendRow[];
+  aristocrats?: DividendRow[];
+  n?: number;
+}
+
+export interface ComparablesRow {
+  symbol: string;
+  name: string | null;
+  sector: string | null;
+  market: string | null;
+  per: number | null;
+  pbr: number | null;
+  roe: number | null;
+  dividend_yield: number | null;
+  market_cap: number | null;
+  sector_peer_count: number;
+  per_rank_pct: number | null;
+  pbr_rank_pct: number | null;
+  sector_median_per: number | null;
+  sector_median_pbr: number | null;
+  per_vs_median: number | null;
+  pbr_vs_median: number | null;
+  outlier_cheap: boolean;
+}
+
+export interface ComparablesKpi {
+  ranked: number;
+  outlier_cheap: number;
+  sectors_covered: number;
+}
+
+export interface ComparablesResponse {
+  mode: string;
+  kpi?: ComparablesKpi;
+  rows?: ComparablesRow[];
+  outliers?: ComparablesRow[];
+  top_sectors?: { sector: string; count: number }[];
+  sector?: string;
+  n?: number;
+}
