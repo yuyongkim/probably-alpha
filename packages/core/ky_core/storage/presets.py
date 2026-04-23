@@ -116,3 +116,31 @@ MACRO_DAILY_PRESET: dict[str, Any] = {
     "eia": EIA_SERIES,
     "exim": [date.today().isoformat()],
 }
+
+# --------------------------------------------------------------------------- #
+# Legacy archive source_id constants                                          #
+# --------------------------------------------------------------------------- #
+# Used by scripts/import_legacy_macro.py when bulk-importing historical CSV
+# and SQLite snapshots pulled from the pre-ky-platform projects. Keeping
+# source_ids distinct from the live adapter ids (`ecos`, `fred`, `eia`, ...)
+# means fresh collectors never collide with the historical backfill on the
+# observations unique key (source_id, series_id, date, owner_id).
+#
+# All values fit inside the 32-char constraint on Observation.source_id.
+
+LEGACY_SRC_ECOS_QP = "ecos_legacy_qp"          # QuantPlatform ECOS CSVs
+LEGACY_SRC_FRED_QP = "fred_legacy_qp"          # QuantPlatform FRED rows inside ECOS CSVs
+LEGACY_SRC_COMMODITY = "commodity_legacy_qp"   # QuantPlatform commodity CSVs
+LEGACY_SRC_MACRO_DB = "macro_legacy_qdb"       # QuantDB quant_platform_history.db macro_series
+LEGACY_SRC_KOSIS_QP = "kosis_legacy_qp"        # KOSIS rows that surface inside QuantPlatform CSVs
+LEGACY_SRC_UNKNOWN = "legacy_unknown"          # fallback when the source tag is blank
+
+LEGACY_SOURCE_PREFIX_MAP: dict[str, str] = {
+    "ECOS": LEGACY_SRC_ECOS_QP,
+    "FRED": LEGACY_SRC_FRED_QP,
+    "KOSIS": LEGACY_SRC_KOSIS_QP,
+    "FRED_PUBLIC": LEGACY_SRC_FRED_QP,
+    "phase4_FRED": LEGACY_SRC_FRED_QP,
+    "EIA": "eia_legacy_qdb",
+    "QUANTKING_XLSB": "quantking_legacy_qdb",
+}
