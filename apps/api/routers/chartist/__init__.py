@@ -23,9 +23,13 @@ from ky_core.chartist import get_today_bundle  # noqa: E402
 
 from config import settings  # noqa: E402
 
+from routers.chartist.backtest import router as backtest_router  # noqa: E402
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+# Real-data backtest endpoints — list / read / run
+router.include_router(backtest_router, prefix="/backtest")
 
 
 def _envelope(data: Any = None, error: Any = None, ok: bool | None = None) -> dict:
