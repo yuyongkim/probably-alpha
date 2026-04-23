@@ -1,52 +1,95 @@
-// Admin · Pipeline — recent job log listings from runtime_logs/.
+// Admin · Pipeline — real nightly + weekly run history surfaced from
+// ~/.ky-platform/data/ops/ via /api/v1/admin/nightly_runs & /weekly_runs.
 import { fetchEnvelope } from "@/lib/api";
-import type { JobsResponse } from "@/types/admin";
+import type { NightlyRunsResponse } from "@/types/admin";
 import { DensePage } from "@/components/shared/DensePage";
-import { SummaryCards } from "@/components/shared/SummaryCards";
+import { SummaryCards, type RawSummaryCell } from "@/components/shared/SummaryCards";
+import { NightlyHistory } from "@/components/admin/NightlyHistory";
 
 export const revalidate = 60;
 
-const kpis = [
-  { label: "Active Jobs", value: "3", delta: "EOD · Macro · KIS sync", tone: "pos" as const },
-  { label: "Success · 24h", value: "47 / 48", delta: "98%", tone: "pos" as const },
-  { label: "Avg Duration", value: "2m 14s", delta: "EOD 파이프라인" },
-  { label: "Queue", value: "0", delta: "대기 없음", tone: "pos" as const },
-];
+async function loadRuns(path: string): Promise<NightlyRunsResponse> {
+  try {
+    return await fetchEnvelope<NightlyRunsResponse>(path);
+  } catch {
+    // Graceful empty-state when the API is down or the ops/ directory doesn't
+    // exist yet. Surfacing this via `warning` is intentional — users can still
+    // navigate the page and learn what to run.
+    return {
+      root: "~/.ky-platform/data/ops",
+      kind: path.includes("weekly") ? "weekly" : "nightly",
+      limit: 0,
+      runs: [],
+      warning: "API unreachable — showing empty state",
+    };
+  }
+}
 
 export default async function PipelinePage() {
-  const data = await fetchEnvelope<JobsResponse>("/api/v1/admin/jobs?limit=30");
+  const [nightly, weekly] = await Promise.all([
+    loadRuns("/api/v1/admin/nightly_runs?limit=7"),
+    loadRuns("/api/v1/admin/weekly_runs?limit=7"),
+  ]);
+
+  const nRuns = nightly.runs;
+  const wRuns = weekly.runs;
+
+  const nOk = nRuns.filter((r) => !r.error && r.stage_fail === 0 && !r.dry_run).length;
+  const nFail = nRuns.filter((r) => r.stage_fail > 0 || !!r.error).length;
+  const lastNightly = nRuns[0];
+  const rowsLast = lastNightly?.total_rows_added ?? 0;
+  const durationLast =
+    lastNightly && lastNightly.duration_s > 0
+      ? lastNightly.duration_s >= 60
+        ? `${Math.floor(lastNightly.duration_s / 60)}m ${Math.round(lastNightly.duration_s % 60)}s`
+        : `${lastNightly.duration_s.toFixed(1)}s`
+      : "—";
+
+  const kpis: RawSummaryCell[] = [
+    {
+      label: "Nightly · 7일",
+      value: `${nOk}/${nRuns.length}`,
+      delta: `성공 ${nOk} · 실패 ${nFail}`,
+      tone: nFail === 0 ? "pos" : nOk > 0 ? "amber" : "neg",
+    },
+    {
+      label: "Weekly · 7주",
+      value: `${wRuns.filter((r) => r.stage_fail === 0 && !r.error).length}/${wRuns.length}`,
+      delta: wRuns.length > 0 ? `마지막 ${wRuns[0]?.file ?? ""}` : "기록 없음",
+      tone: wRuns.some((r) => r.stage_fail > 0) ? "amber" : "pos",
+    },
+    {
+      label: "최근 Nightly Rows",
+      value: rowsLast.toLocaleString(),
+      delta: lastNightly?.started_at
+        ? new Date(lastNightly.started_at).toISOString().slice(0, 10)
+        : "—",
+    },
+    {
+      label: "최근 Nightly 소요",
+      value: durationLast,
+      delta: lastNightly
+        ? `stage ok ${lastNightly.stage_ok}/${lastNightly.stage_count}`
+        : "—",
+      tone:
+        lastNightly && lastNightly.stage_fail > 0 ? "amber" : "pos",
+    },
+  ];
+
   return (
-    <DensePage tab="Admin" current="파이프라인 Jobs" title="파이프라인 Job 모니터" meta="OPS · RUN HISTORY">
+    <DensePage
+      tab="Admin"
+      current="파이프라인 Runner"
+      title="Nightly · Weekly 파이프라인 운영"
+      meta="OPS · NIGHTLY + WEEKLY RUN HISTORY"
+    >
       <SummaryCards cells={kpis} />
-      <p className="text-sm text-[color:var(--fg-muted)] mb-4">
-        <code className="mono">{data.root}</code> — 최근 {data.jobs.length}개 실행 로그.
-        {data.warning ? ` · ${data.warning}` : ""}
-      </p>
-      <ul className="space-y-2">
-        {data.jobs.map((j) => (
-          <li key={j.name}
-              className="rounded-md border p-3"
-              style={{ background: "var(--surface)", borderColor: "var(--border-soft)" }}>
-            <div className="flex items-baseline justify-between">
-              <div>
-                <span className="text-[10px] uppercase tracking-widest mr-2 px-1.5 py-0.5 rounded"
-                      style={{ background: "var(--surface-2)", color: "var(--accent)" }}>
-                  {j.kind}
-                </span>
-                <span className="mono text-sm">{j.name}</span>
-              </div>
-              <div className="mono text-[11px]" style={{ color: "var(--text-muted)" }}>
-                {j.modified_at} · {(j.size_bytes / 1024).toFixed(1)} KB
-              </div>
-            </div>
-            {j.tail.length > 0 ? (
-              <pre className="mt-2 text-[11px] mono leading-relaxed opacity-70 whitespace-pre-wrap">
-                {j.tail.join("\n")}
-              </pre>
-            ) : null}
-          </li>
-        ))}
-      </ul>
+      <NightlyHistory
+        nightly={nRuns}
+        weekly={wRuns}
+        opsRoot={nightly.root}
+        warning={nightly.warning ?? weekly.warning}
+      />
     </DensePage>
   );
 }
