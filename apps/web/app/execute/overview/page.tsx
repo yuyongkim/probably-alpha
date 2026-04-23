@@ -1,4 +1,6 @@
-// Execute · Overview — full dense mock (KIS keys absent).
+// Execute · Overview — KIS OAuth health + mock balance/positions.
+// As of 2026-04-22 keys are live; balance TR not yet wired so positions
+// remain mocked until inquire-balance lands.
 import { DensePage } from "@/components/shared/DensePage";
 import { SummaryCards } from "@/components/shared/SummaryCards";
 import { MarketStripRaw } from "@/components/execute/MarketStripRaw";
@@ -6,6 +8,7 @@ import { PositionsTable } from "@/components/execute/PositionsTable";
 import { LiveBoardTable } from "@/components/execute/LiveBoardTable";
 import { ActivityLogBlock } from "@/components/execute/ActivityLogBlock";
 import { OverviewLower } from "@/components/execute/OverviewLower";
+import { fetchEnvelope } from "@/lib/api";
 import {
   activityLog,
   liveQuotes,
@@ -16,13 +19,49 @@ import {
 
 export const revalidate = 300;
 
-export default function ExecuteOverviewPage() {
+interface OverviewLive {
+  account_no: string | null;
+  product_code: string;
+  env: string;
+  health: {
+    ok: boolean;
+    source_id: string;
+    latency_ms: number | null;
+    last_error: string | null;
+    token_cached?: boolean;
+  };
+  positions: unknown[];
+  note: string;
+}
+
+async function load(): Promise<OverviewLive | null> {
+  try {
+    return await fetchEnvelope<OverviewLive>("/api/v1/execute/overview", {
+      revalidate: 60,
+    });
+  } catch {
+    return null;
+  }
+}
+
+export default async function ExecuteOverviewPage() {
+  const live = await load();
+  const healthOk = live?.health?.ok === true;
+  const latency = live?.health?.latency_ms;
+  const acctFragment = live?.account_no
+    ? `${live.account_no}-${live.product_code ?? "01"}`
+    : "계좌 미설정";
+  const statusPill = healthOk
+    ? `KIS OAuth OK · ${latency != null ? `${latency.toFixed(0)}ms` : "cached"}`
+    : `KIS OAuth FAIL · ${live?.health?.last_error ?? "unknown"}`;
+  const meta = `KIS OPEN API · ${live?.env ?? "?"} · ${acctFragment} · ${statusPill}`;
+
   return (
     <DensePage
       tab="Execute"
       current="계좌 Overview"
       title="계좌 Overview"
-      meta="KIS OPEN API · 실시간 · 64082742-01 · 2026.04.22 15:30"
+      meta={meta}
       subNav={[
         { label: "실계좌", active: true },
         { label: "모의계좌" }, { label: "국내" }, { label: "해외" }, { label: "파생" },

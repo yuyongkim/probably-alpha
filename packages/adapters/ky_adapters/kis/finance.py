@@ -1,17 +1,13 @@
-"""KIS 국내주식 재무 API skeleton.
+"""KIS 국내주식 재무 API — activated 2026-04-22.
 
 Mirrors ``_tmp_kis_repo/examples_llm/domestic_stock/finance_*/`` — eight
 endpoints that together cover balance sheet, income statement, and six ratio
 families (growth / profit / stability / financial / other-major / ratio
-leaderboard).  We define the URL, TR ID, parameter shape, and output schema
-here so downstream code (``value.fnguide.crosscheck``, ``apps/api`` value
-endpoints, …) can call these as soon as KIS credentials are provisioned.
+leaderboard).
 
-Until ``KIS_APP_KEY`` / ``KIS_APP_SECRET`` are set, every call raises
-``NotImplementedError`` with a clear pointer to ``docs/30_data_contracts``.
 The shape is deliberately compatible with ``FnguideSnapshot`` so the output
 can be merged 1:1 with FnGuide rows (``revenue`` / ``operating_income`` /
-``net_income`` / ``eps`` / ``roe`` / ``debt_ratio`` …).
+``net_income`` / ``eps`` / ``roe`` / ``debt_ratio`` ...).
 
 KIS finance endpoint table (domestic stock, v1):
 
@@ -33,19 +29,19 @@ Common parameters for all ``/finance/*`` endpoints:
   FID_DIV_CLS_CODE           "0" = 연간, "1" = 분기
   fid_cond_mrkt_div_code     "J" (주식)
   fid_input_iscd             6-digit ticker (e.g. "005930")
-
-Output normalisation maps KIS field names to the same snake_case keys
-FnGuide uses.  See :data:`KIS_OUTPUT_MAP` — callers should use the normalised
-keys rather than the raw KIS fields so the UI does not need a second code
-path.
 """
 from __future__ import annotations
 
+import logging
+import threading
+import time
 from dataclasses import dataclass
 from typing import Any, Literal, Optional
 
-from ky_adapters.base import AdapterError, BaseAdapter, HealthStatus
+from ky_adapters.base import AdapterError, AuthError, BaseAdapter, HealthStatus
+from ky_adapters.kis.client import KISAdapter
 
+logger = logging.getLogger(__name__)
 
 # --------------------------------------------------------------------------- #
 # Endpoint catalogue                                                          #
@@ -130,13 +126,10 @@ def _period_code(period: PeriodLiteral) -> str:
 # --------------------------------------------------------------------------- #
 # Output schema mapping                                                       #
 # --------------------------------------------------------------------------- #
-# KIS returns raw Korean field codes (e.g. ``sale_account``, ``bsop_prti``)
-# while FnGuide uses snake_case English.  We normalise to the FnGuide flavour
-# so consumer code (FundamentalsPane / value/trend) needs one vocabulary.
 
 KIS_OUTPUT_MAP: dict[str, dict[str, str]] = {
     "income_statement": {
-        "stac_yymm": "period",            # "202412"
+        "stac_yymm": "period",
         "sale_account": "revenue",
         "sale_cost": "cost_of_sales",
         "sale_totl_prfi": "gross_profit",
@@ -203,12 +196,37 @@ KIS_OUTPUT_MAP: dict[str, dict[str, str]] = {
 
 def _normalise_output(endpoint: str, raw: dict[str, Any]) -> dict[str, Any]:
     mapping = KIS_OUTPUT_MAP.get(endpoint, {})
-    if not mapping:
-        return dict(raw)
     out: dict[str, Any] = {}
     for kis_field, value in raw.items():
         out[mapping.get(kis_field, kis_field)] = value
+    # Keep raw fields too so callers can audit
+    out["_raw"] = dict(raw)
     return out
+
+
+# --------------------------------------------------------------------------- #
+# Rate limiter                                                                #
+# --------------------------------------------------------------------------- #
+# KIS real-env limit is 20 req/s per appkey; we stay conservative at ~2 req/s
+# when doing the 9-endpoint smoke walk so we don't trip the shared limiter.
+
+
+class _RateLimiter:
+    def __init__(self, min_interval: float = 0.5) -> None:
+        self._lock = threading.Lock()
+        self._last = 0.0
+        self._min_interval = min_interval
+
+    def wait(self) -> None:
+        with self._lock:
+            now = time.monotonic()
+            delta = now - self._last
+            if delta < self._min_interval:
+                time.sleep(self._min_interval - delta)
+            self._last = time.monotonic()
+
+
+_LIMITER = _RateLimiter(min_interval=0.5)
 
 
 # --------------------------------------------------------------------------- #
@@ -217,13 +235,7 @@ def _normalise_output(endpoint: str, raw: dict[str, Any]) -> dict[str, Any]:
 
 
 class KISFinanceAdapter(BaseAdapter):
-    """Stub-only adapter — all finance calls raise until KIS creds land.
-
-    The base :class:`ky_adapters.kis.KISAdapter` focuses on quotes/universe
-    and will eventually do token management.  We deliberately keep finance
-    here so (a) ``ky_adapters.kis.client`` stays small and (b) when KIS is
-    enabled we can wire the token plumbing in one place.
-    """
+    """Live KIS finance adapter — 9 endpoints over the shared OAuth client."""
 
     source_id = "kis_finance"
     priority = 2  # FnGuide is P1 for fundamentals; KIS is cross-check.
@@ -235,64 +247,45 @@ class KISFinanceAdapter(BaseAdapter):
         app_secret: str | None = None,
         base_url: str | None = None,
         env: str | None = None,
+        client: Optional[KISAdapter] = None,
     ) -> None:
         super().__init__()
         self.app_key = app_key
         self.app_secret = app_secret
-        self.base_url = base_url or "https://openapi.koreainvestment.com:9443"
-        self.env = env or "prod"
+        self.base_url = (base_url or "https://openapi.koreainvestment.com:9443").rstrip("/")
+        self.env = env or "real"
+        self._kis = client or KISAdapter(
+            app_key=app_key, app_secret=app_secret, base_url=base_url, env=env
+        )
 
     @classmethod
     def from_settings(cls) -> "KISFinanceAdapter":
+        kis = KISAdapter.from_settings()
         return cls(
-            app_key=cls._env("KIS_APP_KEY"),
-            app_secret=cls._env("KIS_APP_SECRET"),
-            base_url=cls._env("KIS_BASE_URL"),
-            env=cls._env("KIS_ENV"),
+            app_key=kis.app_key,
+            app_secret=kis.app_secret,
+            base_url=kis.base_url,
+            env=kis.env,
+            client=kis,
         )
 
     # --------- Contract ---------
 
     def healthcheck(self) -> dict[str, Any]:
-        if not self.app_key or not self.app_secret:
+        if not self._kis.app_key or not self._kis.app_secret:
             return HealthStatus(
                 ok=False,
                 source_id=self.source_id,
                 last_error="KIS_APP_KEY/KIS_APP_SECRET not configured",
-                extra={
-                    "message": (
-                        "KIS finance skeleton — configure KIS credentials in "
-                        ".env to enable real calls. See "
-                        "docs/30_data_contracts/KIWOOM_ENDPOINT_SPEC.md for "
-                        "the endpoint catalogue."
-                    ),
-                    "endpoints": list(KIS_ENDPOINTS.keys()),
-                },
+                extra={"endpoints": list(KIS_ENDPOINTS.keys())},
             ).to_dict()
-        return HealthStatus(
-            ok=False,
-            source_id=self.source_id,
-            last_error="skeleton — real calls disabled",
-            extra={
-                "message": (
-                    "KISFinanceAdapter is currently a no-op scaffold. The "
-                    "URL / TR_ID / parameter table is defined; network plumbing "
-                    "(_issue_token / _signed_request) is pending."
-                ),
-                "endpoints": list(KIS_ENDPOINTS.keys()),
-            },
-        ).to_dict()
+        # Delegate to base KIS healthcheck (token issuance)
+        base = self._kis.healthcheck()
+        base["source_id"] = self.source_id
+        base.setdefault("endpoints", list(KIS_ENDPOINTS.keys()))
+        return base
 
-    # --------- Request helpers (unimplemented) ---------
-
-    def _ensure_credentials(self) -> None:
-        if not self.app_key or not self.app_secret:
-            raise NotImplementedError(
-                "KIS finance endpoints require KIS_APP_KEY / KIS_APP_SECRET — "
-                "configure KIS credentials to enable. "
-                "See _tmp_kis_repo/examples_llm/domestic_stock/finance_* for "
-                "the upstream reference implementation."
-            )
+    # --------- Request plumbing ---------
 
     def _call_endpoint(
         self,
@@ -302,28 +295,30 @@ class KISFinanceAdapter(BaseAdapter):
         period: PeriodLiteral = "annual",
         market: str = "J",
     ) -> list[dict[str, Any]]:
-        """Shared plumbing — builds the request but stops at network boundary.
-
-        When KIS creds are wired this becomes the single place where we
-        ``_signed_request`` + paginate via the ``tr_cont`` header.  For now
-        we raise early so callers see a clear error.
-        """
-        self._ensure_credentials()
         ep = KIS_ENDPOINTS.get(endpoint)
         if ep is None:
             raise AdapterError(f"unknown KIS finance endpoint: {endpoint!r}")
 
         params: dict[str, Any] = {
             "fid_cond_mrkt_div_code": market,
-            "fid_input_iscd": str(symbol).zfill(6),
         }
+        if symbol:
+            params["fid_input_iscd"] = str(symbol).zfill(6)
         if ep.supports_period:
             params["FID_DIV_CLS_CODE"] = _period_code(period)
 
-        raise NotImplementedError(
-            f"KIS endpoint {endpoint!r} (tr_id={ep.tr_id}, url={ep.url}) is a "
-            f"skeleton — network plumbing not implemented yet. params={params}"
-        )
+        _LIMITER.wait()
+        data = self._kis.call("GET", ep.url, tr_id=ep.tr_id, params=params)
+
+        output = data.get("output")
+        if output is None:
+            return []
+        # KIS returns object for single rows, array for multi-period
+        if isinstance(output, dict):
+            return [output]
+        if isinstance(output, list):
+            return list(output)
+        raise AdapterError(f"unexpected KIS output shape for {endpoint}: {type(output).__name__}")
 
     # --------- Public API surface ---------
 
@@ -370,20 +365,15 @@ class KISFinanceAdapter(BaseAdapter):
         return [_normalise_output("other_major_ratios", r) for r in rows]
 
     def get_ranking_finance_ratio(self) -> list[dict[str, Any]]:
+        # Ranking endpoint has a different param shape — but same plumbing.
         rows = self._call_endpoint("ranking_finance_ratio", "", period="annual")
-        return rows  # ranking rows have different shape — no normalisation yet
+        return rows  # no normalisation yet
 
     # --------- Cross-check helper ---------
 
     def crosscheck_fnguide(
         self, symbol: str, *, period: PeriodLiteral = "annual"
     ) -> dict[str, Any]:
-        """Return a dict compatible with the FnGuide fields.
-
-        Intended to let callers do ``{**fnguide_row, **kis_row}`` for a
-        belt-and-suspenders sanity check.  Raises the same
-        ``NotImplementedError`` until KIS is live.
-        """
         rows_is = self.get_income_statement(symbol, period=period)
         rows_bs = self.get_balance_sheet(symbol, period=period)
         rows_fr = self.get_financial_ratio(symbol, period=period)
