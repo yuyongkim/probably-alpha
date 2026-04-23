@@ -87,6 +87,54 @@ def wacc_endpoint(
 
 
 # --------------------------------------------------------------------------- #
+# EPS time-series                                                             #
+# --------------------------------------------------------------------------- #
+
+
+@router.get("/eps/{symbol}")
+def eps_series_endpoint(
+    symbol: str,
+    period: str = Query("Q", description="Q (quarterly) | A (annual) | ALL"),
+    years: int = Query(5, ge=1, le=20),
+    as_of: str | None = Query(None, description="ISO YYYY-MM-DD look-ahead cutoff"),
+) -> dict:
+    """Return the EPS history ported from Company_Credit's financial.db reader.
+
+    Quarterly rows come from NaverComp's cF3002 snapshot (매핑된
+    ``financial_statements_db`` 테이블).  Annual rows are available from 2021
+    onward for most KOSPI constituents.  YoY is filled in automatically when
+    the prior-year same-quarter / prior-year row exists.
+    """
+    try:
+        from ky_core.value import eps_series as ky_eps
+        points = ky_eps.get_eps_series(
+            symbol, period=period, years=years, as_of=as_of
+        )
+    except Exception as exc:  # noqa: BLE001
+        log.exception("eps_series failed")
+        return _envelope(None, error={"code": "EPS_FAILED", "message": str(exc)}, ok=False)
+    if not points:
+        return _envelope(
+            None,
+            error={
+                "code": "NO_DATA",
+                "message": "no EPS rows in financial_statements_db or pit",
+            },
+            ok=False,
+        )
+    return _envelope(
+        {
+            "symbol": symbol,
+            "period": period,
+            "years": years,
+            "as_of": as_of,
+            "n": len(points),
+            "rows": [p.to_dict() for p in points],
+        }
+    )
+
+
+# --------------------------------------------------------------------------- #
 # Financial trend                                                             #
 # --------------------------------------------------------------------------- #
 

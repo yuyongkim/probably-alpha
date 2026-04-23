@@ -6,6 +6,7 @@ import type {
   FnguideFinRow,
   FnguideSnapshot,
 } from "@/types/chartist";
+import { EPSBlock } from "./EPSBlock";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8300";
@@ -63,6 +64,7 @@ export function FundamentalsPane({ symbol }: Props) {
 
   return (
     <div className="flex flex-col gap-4">
+      <EPSBlock symbol={symbol} period="Q" years={5} />
       <QuarterlyBlock rows={fn.financials_quarterly} symbol={symbol} />
       <AnnualBlock rows={fn.financials_annual} />
       <SnapshotStats snap={fn} />
