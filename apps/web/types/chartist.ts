@@ -179,12 +179,95 @@ export interface BreakoutRow52w {
   pct_up: number;
   vol_x: number;
   high52w: number;
+  dist_from_high_pct?: number;
 }
 
 export interface BreakoutsResponse {
   as_of: string;
   count: number;
   rows: BreakoutRow52w[];
+}
+
+// OHLCV candle payload for ChartPane.
+export interface OHLCVCandle {
+  date: string;
+  open: number | null;
+  high: number | null;
+  low: number | null;
+  close: number;
+  volume: number | null;
+  sma50: number | null;
+  sma200: number | null;
+}
+
+export interface OHLCVResponse {
+  symbol: string;
+  market: string | null;
+  as_of: string | null;
+  count: number;
+  candles: OHLCVCandle[];
+}
+
+export interface AsOfInfo {
+  as_of: string;
+  today: string;
+  stale: boolean;
+  universe_size: number;
+}
+
+// FnGuide snapshot (Naver + comp.fnguide.com merged).
+export interface FnguidePeer {
+  symbol: string | null;
+  name: string | null;
+  close: number | null;
+  change_pct: number | null;
+  market_cap: number | null;
+  per: number | null;
+  pbr: number | null;
+  roe: number | null;
+}
+
+export interface FnguideFinRow {
+  period: string | null;
+  revenue: number | null;
+  operating_income: number | null;
+  net_income: number | null;
+  eps: number | null;
+  bps: number | null;
+  roe: number | null;
+  debt_ratio: number | null;
+}
+
+export interface FnguideSnapshot {
+  symbol: string;
+  fetched_at: number;
+  source: string;
+  degraded: boolean;
+  cached?: boolean;
+  stale?: boolean;
+  age_seconds?: number;
+  fetch_error?: string;
+  target_price: number | null;
+  investment_opinion: string | null;
+  per: number | null;
+  pbr: number | null;
+  eps: number | null;
+  bps: number | null;
+  roe: number | null;
+  roa: number | null;
+  debt_ratio: number | null;
+  dividend_yield: number | null;
+  market_cap: number | null;
+  market_cap_raw?: string;
+  foreign_ratio: number | null;
+  high_52w?: number | null;
+  low_52w?: number | null;
+  major_shareholder_name: string | null;
+  major_shareholder_pct: number | null;
+  financials_quarterly: FnguideFinRow[];
+  financials_annual: FnguideFinRow[];
+  peers: FnguidePeer[];
+  summary_notes: string[];
 }
 
 export interface BreadthResponse {

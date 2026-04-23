@@ -15,7 +15,14 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.orm import Session
 
 from ky_core.storage.db import get_session_factory, init_db
-from ky_core.storage.schema import Filing, FinancialPIT, Observation, OHLCV, Universe
+from ky_core.storage.schema import (
+    Filing,
+    FinancialPIT,
+    FnguideSnapshot,
+    Observation,
+    OHLCV,
+    Universe,
+)
 
 
 class Repository:
@@ -393,6 +400,62 @@ class Repository:
             return sess.query(FinancialPIT).filter(
                 FinancialPIT.owner_id == self.owner_id
             ).count()
+
+    # --------- FnGuide snapshots ---------
+
+    def upsert_fnguide_snapshot(
+        self,
+        symbol: str,
+        payload_json: str,
+        *,
+        source: str | None = None,
+        degraded: bool = False,
+    ) -> int:
+        """Upsert a single fnguide snapshot. Returns 1."""
+        now = datetime.utcnow()
+        row = {
+            "symbol": symbol,
+            "payload": payload_json,
+            "source": source,
+            "degraded": bool(degraded),
+            "fetched_at": now,
+            "owner_id": self.owner_id,
+        }
+        stmt = sqlite_insert(FnguideSnapshot.__table__).values([row])
+        stmt = stmt.on_conflict_do_update(
+            index_elements=["symbol", "owner_id"],
+            set_={
+                "payload": stmt.excluded.payload,
+                "source": stmt.excluded.source,
+                "degraded": stmt.excluded.degraded,
+                "fetched_at": stmt.excluded.fetched_at,
+            },
+        )
+        with self.session() as sess:
+            sess.execute(stmt)
+        return 1
+
+    def get_fnguide_snapshot(self, symbol: str) -> dict[str, Any] | None:
+        with self.session() as sess:
+            stmt = (
+                select(FnguideSnapshot)
+                .where(
+                    FnguideSnapshot.symbol == symbol,
+                    FnguideSnapshot.owner_id == self.owner_id,
+                )
+                .limit(1)
+            )
+            row = sess.execute(stmt).scalars().first()
+            if not row:
+                return None
+            return {
+                "symbol": row.symbol,
+                "payload": row.payload,
+                "source": row.source,
+                "degraded": bool(row.degraded),
+                "fetched_at": row.fetched_at.isoformat() if row.fetched_at else None,
+                "owner_id": row.owner_id,
+            }
 
 
 # --------------------------------------------------------------------------- #

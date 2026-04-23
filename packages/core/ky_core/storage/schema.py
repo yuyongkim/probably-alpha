@@ -161,6 +161,29 @@ class OHLCV(Base):
 # --------------------------------------------------------------------------- #
 
 
+# --------------------------------------------------------------------------- #
+# FnguideSnapshot — per-symbol fundamentals snapshot (Naver + FnGuide)        #
+# --------------------------------------------------------------------------- #
+
+
+class FnguideSnapshot(Base):
+    __tablename__ = "fnguide_snapshots"
+    __table_args__ = (
+        UniqueConstraint("symbol", "owner_id", name="uq_fnguide_symbol_owner"),
+        Index("ix_fnguide_symbol", "symbol"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    symbol: Mapped[str] = mapped_column(String(32), nullable=False)
+    payload: Mapped[str] = mapped_column(Text, nullable=False)   # JSON
+    source: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    degraded: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    fetched_at: Mapped[datetime] = mapped_column(
+        DateTime, default=datetime.utcnow, nullable=False
+    )
+    owner_id: Mapped[str] = mapped_column(String(32), nullable=False, default="self")
+
+
 class FinancialPIT(Base):
     __tablename__ = "financials_pit"
     __table_args__ = (

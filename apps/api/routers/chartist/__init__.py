@@ -123,19 +123,167 @@ def sectors(top_n: int = Query(default=40, ge=1, le=60)) -> dict:
 
 @router.get("/breakouts/52w")
 def breakouts_52w(
-    vol_x_min: float = Query(default=1.5, ge=0.5),
+    vol_x_min: float = Query(default=1.0, ge=0.3),
     limit: int = Query(default=100, ge=1, le=500),
+    breakout_tolerance: float = Query(default=0.995, ge=0.95, le=1.0),
 ) -> dict:
+    """Stocks trading at (or within ~0.5 %) of their 252-day high today."""
     mods = _scanning()
     panel = mods["loader"].load_panel()
     rows = mods["breakouts"].scan_breakouts(
-        panel=panel, vol_x_min=vol_x_min, limit=limit
+        panel=panel,
+        vol_x_min=vol_x_min,
+        breakout_tolerance=breakout_tolerance,
+        limit=limit,
     )
     return _envelope({
         "as_of": panel.as_of,
         "count": len(rows),
         "rows": [mods["breakouts"].to_dict(r) for r in rows],
     })
+
+
+@router.get("/breakouts/near_52w")
+def breakouts_near_52w(
+    proximity_pct: float = Query(default=2.0, ge=0.5, le=10.0),
+    vol_x_min: float = Query(default=0.7, ge=0.3),
+    limit: int = Query(default=150, ge=1, le=500),
+) -> dict:
+    """Stocks within ``proximity_pct`` of their 252-day high — breakout watchlist."""
+    mods = _scanning()
+    panel = mods["loader"].load_panel()
+    rows = mods["breakouts"].scan_near_52w(
+        panel=panel,
+        proximity_pct=proximity_pct,
+        vol_x_min=vol_x_min,
+        limit=limit,
+    )
+    return _envelope({
+        "as_of": panel.as_of,
+        "count": len(rows),
+        "rows": [mods["breakouts"].to_dict(r) for r in rows],
+    })
+
+
+@router.get("/ohlcv/{symbol}")
+def ohlcv_series(
+    symbol: str,
+    days: int = Query(default=250, ge=10, le=1000),
+) -> dict:
+    """Daily OHLCV + SMA50 + SMA200 for a single symbol.
+
+    Backs the StockDetailModal ChartPane (and any other real-chart surface).
+    SMAs are computed server-side so the client renderer stays trivial.
+    """
+    from sqlalchemy import text
+    from ky_core.storage.db import get_engine, init_db
+
+    init_db()
+    engine = get_engine()
+    # Pull `days + 200` so SMA200 has enough history before the visible window.
+    lookback_rows = days + 220
+    with engine.connect() as conn:
+        rs = conn.execute(
+            text(
+                """
+                SELECT date, open, high, low, close, volume, market
+                FROM ohlcv
+                WHERE symbol = :sym
+                  AND owner_id = 'self'
+                ORDER BY date DESC
+                LIMIT :lim
+                """
+            ),
+            {"sym": symbol, "lim": lookback_rows},
+        )
+        rows = [
+            {
+                "date": r.date,
+                "open": r.open,
+                "high": r.high,
+                "low": r.low,
+                "close": r.close,
+                "volume": r.volume,
+                "market": r.market,
+            }
+            for r in rs
+        ]
+    if not rows:
+        return _envelope(
+            None,
+            error={"code": "NO_DATA", "message": f"no ohlcv for {symbol}"},
+            ok=False,
+        )
+
+    rows.reverse()  # ascending by date
+
+    closes = [r["close"] for r in rows]
+    sma50 = _sma(closes, 50)
+    sma200 = _sma(closes, 200)
+
+    # Only expose the latest `days` rows but preserve the SMA alignment.
+    visible = rows[-days:]
+    sma50_v = sma50[-days:]
+    sma200_v = sma200[-days:]
+
+    candles = []
+    for i, r in enumerate(visible):
+        candles.append(
+            {
+                "date": r["date"],
+                "open": r["open"],
+                "high": r["high"],
+                "low": r["low"],
+                "close": r["close"],
+                "volume": r["volume"],
+                "sma50": sma50_v[i],
+                "sma200": sma200_v[i],
+            }
+        )
+
+    return _envelope(
+        {
+            "symbol": symbol,
+            "market": visible[-1]["market"] if visible else None,
+            "as_of": visible[-1]["date"] if visible else None,
+            "count": len(candles),
+            "candles": candles,
+        }
+    )
+
+
+def _sma(values: list[float], window: int) -> list[float | None]:
+    out: list[float | None] = []
+    running = 0.0
+    for i, v in enumerate(values):
+        running += v or 0
+        if i >= window:
+            running -= values[i - window] or 0
+        if i >= window - 1:
+            out.append(round(running / window, 4))
+        else:
+            out.append(None)
+    return out
+
+
+@router.get("/as_of")
+def as_of_latest() -> dict:
+    """Latest 'full coverage' trading day in ky.db.
+
+    Used by the web UI to render an "as-of" badge on every page so users can
+    see at a glance whether the data is actually today's close or stale."""
+    mods = _scanning()
+    panel = mods["loader"].load_panel()
+    from datetime import date as _date
+    today = _date.today().isoformat()
+    return _envelope(
+        {
+            "as_of": panel.as_of,
+            "today": today,
+            "stale": panel.as_of < today,
+            "universe_size": len(panel.universe),
+        }
+    )
 
 
 @router.get("/breadth")
