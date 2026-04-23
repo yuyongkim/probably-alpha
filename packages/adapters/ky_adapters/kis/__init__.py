@@ -17,6 +17,19 @@ from ky_adapters.kis.market import (
     KISMarketAdapter,
     KISMarketEndpoint,
 )
+from ky_adapters.kis.websocket import (
+    TR_ORDERBOOK,
+    TR_TICK,
+    WS_URL_DEMO,
+    WS_URL_REAL,
+    KISFrame,
+    KISWebSocketClient,
+    issue_approval_key,
+    normalise_orderbook_record,
+    normalise_tick_record,
+    parse_frame,
+    stream_symbol,
+)
 
 __all__ = [
     "KISAdapter",
@@ -27,4 +40,16 @@ __all__ = [
     "KISMarketAdapter",
     "KISMarketEndpoint",
     "KIS_MARKET_ENDPOINTS",
+    # WebSocket
+    "KISWebSocketClient",
+    "KISFrame",
+    "TR_ORDERBOOK",
+    "TR_TICK",
+    "WS_URL_REAL",
+    "WS_URL_DEMO",
+    "issue_approval_key",
+    "parse_frame",
+    "normalise_orderbook_record",
+    "normalise_tick_record",
+    "stream_symbol",
 ]

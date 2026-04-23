@@ -1,15 +1,49 @@
-"""Execute router — live KIS quote / orderbook / investor / program endpoints."""
+"""Execute router — live KIS quote / orderbook / investor / program endpoints.
+
+2026-04-22: adds Server-Sent Events streaming endpoints that fan out KIS
+WebSocket frames to the browser without exposing KIS credentials.
+"""
 from __future__ import annotations
 
+import asyncio
+import json
 import logging
+import time
+from datetime import datetime
 from functools import lru_cache
+from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi.responses import StreamingResponse
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+# --------------------------------------------------------------------------- #
+# Streaming guardrails                                                        #
+# --------------------------------------------------------------------------- #
+
+# KIS caps total concurrent subscriptions; we clamp per stream type to be safe.
+_MAX_CONCURRENT_STREAMS = 10
+_active_streams: dict[str, int] = {"orderbook": 0, "ticks": 0}
+_streams_lock = asyncio.Lock()
+
+_LOG_DIR = Path(__file__).resolve().parents[4] / "runtime_logs"
+
+
+def _ws_log_path() -> Path:
+    _LOG_DIR.mkdir(parents=True, exist_ok=True)
+    return _LOG_DIR / f"kis_ws_{datetime.now().strftime('%Y%m%d')}.log"
+
+
+def _ws_log(msg: str) -> None:
+    try:
+        with _ws_log_path().open("a", encoding="utf-8") as fh:
+            fh.write(f"{datetime.now().isoformat(timespec='seconds')} {msg}\n")
+    except OSError:  # pragma: no cover
+        pass
 
 
 # --------------------------------------------------------------------------- #
@@ -122,6 +156,150 @@ def execute_program_by_symbol(symbol: str, market: str = "J") -> dict:
     except Exception as exc:
         logger.warning("program fetch failed for %s: %s", symbol, exc)
         return _err("KIS_PROGRAM_FAIL", str(exc), {"symbol": symbol})
+
+
+# --------------------------------------------------------------------------- #
+# Streaming (SSE)                                                             #
+# --------------------------------------------------------------------------- #
+
+
+@lru_cache(maxsize=1)
+def _approval_key() -> str:
+    """Fetch (cached) KIS approval_key for WebSocket subscription."""
+    from ky_adapters.kis import issue_approval_key
+
+    kis = _kis()
+    if not kis.app_key or not kis.app_secret:
+        raise RuntimeError("KIS credentials not configured")
+    return issue_approval_key(
+        app_key=kis.app_key,
+        app_secret=kis.app_secret,
+        base_url=kis.base_url,
+    )
+
+
+async def _sse_stream(
+    request: Request,
+    *,
+    kind: str,
+    tr_id: str,
+    symbol: str,
+):
+    """Core SSE generator for one (tr_id, symbol) subscription."""
+    from ky_adapters.kis import stream_symbol
+
+    async with _streams_lock:
+        if _active_streams[kind] >= _MAX_CONCURRENT_STREAMS:
+            payload = json.dumps({
+                "type": "error",
+                "symbol": symbol,
+                "data": {"code": "STREAM_LIMIT", "limit": _MAX_CONCURRENT_STREAMS},
+            })
+            yield f"event: error\ndata: {payload}\n\n"
+            return
+        _active_streams[kind] += 1
+
+    _ws_log(f"sse-open kind={kind} tr_id={tr_id} symbol={symbol}")
+    try:
+        approval = _approval_key()
+    except Exception as exc:
+        _ws_log(f"sse-auth-fail kind={kind} symbol={symbol} err={exc}")
+        payload = json.dumps({"type": "error", "symbol": symbol,
+                              "data": {"code": "AUTH", "message": str(exc)}})
+        yield f"event: error\ndata: {payload}\n\n"
+        async with _streams_lock:
+            _active_streams[kind] -= 1
+        return
+
+    # Emit a ready handshake so the client can drop its "connecting" state.
+    hello = json.dumps({"type": "ready", "symbol": symbol, "tr_id": tr_id,
+                        "ts": time.time()})
+    yield f"event: ready\ndata: {hello}\n\n"
+
+    count = 0
+    started = time.time()
+    try:
+        async for msg in stream_symbol(approval_key=approval, tr_id=tr_id, symbol=symbol):
+            if await request.is_disconnected():
+                _ws_log(f"sse-disconnect kind={kind} symbol={symbol} count={count}")
+                break
+            payload = json.dumps(msg, ensure_ascii=False)
+            event_name = msg.get("type", "message")
+            yield f"event: {event_name}\ndata: {payload}\n\n"
+            count += 1
+            if count % 50 == 0:
+                _ws_log(f"sse-progress kind={kind} symbol={symbol} count={count} "
+                        f"elapsed={time.time()-started:.1f}s")
+    except asyncio.CancelledError:
+        _ws_log(f"sse-cancel kind={kind} symbol={symbol} count={count}")
+        raise
+    except Exception as exc:  # pragma: no cover
+        _ws_log(f"sse-error kind={kind} symbol={symbol} err={exc}")
+        payload = json.dumps({"type": "error", "symbol": symbol,
+                              "data": {"code": "STREAM", "message": str(exc)}})
+        yield f"event: error\ndata: {payload}\n\n"
+    finally:
+        async with _streams_lock:
+            _active_streams[kind] = max(0, _active_streams[kind] - 1)
+        _ws_log(f"sse-close kind={kind} symbol={symbol} total={count}")
+
+
+def _sse_response(generator) -> StreamingResponse:
+    return StreamingResponse(
+        generator,
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache, no-transform",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
+        },
+    )
+
+
+@router.get("/stream/orderbook")
+async def stream_orderbook(
+    request: Request,
+    symbol: str = Query(..., min_length=4, max_length=8, description="국내주식 단축코드"),
+) -> StreamingResponse:
+    """SSE: real-time 10-level orderbook (H0STASP0)."""
+    from ky_adapters.kis import TR_ORDERBOOK
+
+    gen = _sse_stream(request, kind="orderbook", tr_id=TR_ORDERBOOK,
+                      symbol=symbol.zfill(6))
+    return _sse_response(gen)
+
+
+@router.get("/stream/ticks")
+async def stream_ticks(
+    request: Request,
+    symbol: str = Query(..., min_length=4, max_length=8, description="국내주식 단축코드"),
+) -> StreamingResponse:
+    """SSE: tick-by-tick 체결 stream (H0STCNT0)."""
+    from ky_adapters.kis import TR_TICK
+
+    gen = _sse_stream(request, kind="ticks", tr_id=TR_TICK, symbol=symbol.zfill(6))
+    return _sse_response(gen)
+
+
+@router.get("/stream/status")
+def stream_status() -> dict:
+    """Introspection: how many SSE streams are active + approval-key status."""
+    try:
+        approval = _approval_key()
+        approval_ok = bool(approval)
+        approval_len = len(approval) if approval else 0
+        err = None
+    except Exception as exc:
+        approval_ok = False
+        approval_len = 0
+        err = str(exc)
+    return _ok({
+        "active": dict(_active_streams),
+        "max_per_kind": _MAX_CONCURRENT_STREAMS,
+        "approval_ok": approval_ok,
+        "approval_key_len": approval_len,
+        "error": err,
+    })
 
 
 @router.get("/fluctuation")
