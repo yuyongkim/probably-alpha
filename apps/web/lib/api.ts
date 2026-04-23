@@ -26,3 +26,23 @@ export async function fetchEnvelope<T>(
   }
   return body.data;
 }
+
+/**
+ * Envelope fetcher that never throws — returns the data on success, or
+ * ``fallback`` on any transport / envelope / parse failure. Use this in
+ * Server Components that must render even if an optional backend endpoint
+ * is missing or slow, so the route can hydrate instead of 500ing.
+ */
+export async function fetchEnvelopeSafe<T>(
+  path: string,
+  fallback: T,
+  init?: RequestInit & { revalidate?: number },
+): Promise<{ data: T; error: string | null }> {
+  try {
+    const data = await fetchEnvelope<T>(path, init);
+    return { data, error: null };
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { data: fallback, error: msg };
+  }
+}

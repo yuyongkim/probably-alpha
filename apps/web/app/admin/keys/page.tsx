@@ -1,12 +1,36 @@
 // Admin · Keys — API-key presence (never values).
-import { fetchEnvelope } from "@/lib/api";
-import type { KeysResponse } from "@/types/admin";
+// Derived from /api/v1/admin/status.secrets_present when a dedicated /keys
+// endpoint is unavailable — the information surface is identical.
+import { fetchEnvelopeSafe } from "@/lib/api";
+import type { AdminStatus, KeysResponse } from "@/types/admin";
 import { DensePage } from "@/components/shared/DensePage";
 
 export const revalidate = 120;
 
 export default async function KeysPage() {
-  const data = await fetchEnvelope<KeysResponse>("/api/v1/admin/keys");
+  const direct = await fetchEnvelopeSafe<KeysResponse>(
+    "/api/v1/admin/keys",
+    { keys: [], shared_env_loaded: false },
+  );
+  let data: KeysResponse = direct.data;
+  if (direct.error || data.keys.length === 0) {
+    const status = await fetchEnvelopeSafe<AdminStatus>(
+      "/api/v1/admin/status",
+      {
+        owner_id: "unknown",
+        shared_env_loaded: false,
+        secrets_present: {},
+        feature_flags: {},
+      },
+    );
+    data = {
+      shared_env_loaded: status.data.shared_env_loaded,
+      keys: Object.entries(status.data.secrets_present).map(([name, present]) => ({
+        name,
+        status: present ? "present" : "missing",
+      })),
+    };
+  }
   return (
     <DensePage tab="Admin" current="API 키 관리" title="API 키 관리" meta="~/.ky-platform/shared.env">
       <p className="text-sm text-[color:var(--fg-muted)] mb-4">

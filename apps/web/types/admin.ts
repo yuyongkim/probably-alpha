@@ -20,7 +20,9 @@ export interface AdminStatus {
   shared_env_loaded: boolean;
   secrets_present: Record<string, boolean>;
   feature_flags: Record<string, boolean>;
-  db: AdminDB;
+  // ``db`` is populated by the introspection path; older / lightweight
+  // responses may omit it entirely, so it must be optional.
+  db?: AdminDB;
 }
 
 export interface AdapterHealth {
