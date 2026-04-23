@@ -1,72 +1,178 @@
-// FlowPane — 외인/기관/개인 일별 순매수 (mock).
+// FlowPane — 외인/기관/개인 일별 순매수, fed by the FnGuide full snapshot.
 "use client";
+
+import { useEffect, useMemo, useState } from "react";
+import type { FnguideInvestorTrendRow, FnguideSnapshot } from "@/types/chartist";
+
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8300";
 
 interface Props {
   symbol: string;
 }
 
-interface Row {
-  date: string;
-  foreign: number;
-  inst: number;
-  retail: number;
+export function FlowPane({ symbol }: Props) {
+  const [fn, setFn] = useState<FnguideSnapshot | null>(null);
+  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setStatus("loading");
+    setErr(null);
+    fetch(`${API_BASE}/api/v1/value/fnguide/${symbol}`)
+      .then(async (r) => {
+        const body = await r.json();
+        if (!body.ok || !body.data) {
+          throw new Error(body.error?.message ?? `HTTP ${r.status}`);
+        }
+        return body.data as FnguideSnapshot;
+      })
+      .then((d) => {
+        if (cancelled) return;
+        setFn(d);
+        setStatus("ready");
+      })
+      .catch((e) => {
+        if (cancelled) return;
+        setErr(String(e?.message ?? e));
+        setStatus("error");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [symbol]);
+
+  const rows = useMemo(() => fn?.investor_trend ?? [], [fn]);
+  const totals = useMemo(() => aggregate5d(rows), [rows]);
+
+  if (status === "loading") {
+    return (
+      <div className="text-[11px] text-[color:var(--fg-muted)]">
+        Loading investor trend…
+      </div>
+    );
+  }
+  if (status === "error") {
+    return (
+      <div className="text-[11px] text-[color:var(--neg)]">
+        FnGuide unavailable · {err ?? "no data"}
+      </div>
+    );
+  }
+  if (!rows.length) {
+    return (
+      <div className="text-[11px] text-[color:var(--fg-muted)]">
+        no investor flow data · {symbol}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-3 gap-2">
+        <TotalCard label="외인 · 5d" value={totals.foreign} />
+        <TotalCard label="기관 · 5d" value={totals.inst} />
+        <TotalCard label="개인 · 5d" value={totals.retail} />
+      </div>
+
+      <div>
+        <div className="flex items-baseline justify-between mb-2">
+          <span className="display text-[13px]">투자자별 순매수 (주)</span>
+          <span className="text-[10px] text-[color:var(--fg-muted)]">
+            {symbol} · {rows.length}d
+          </span>
+        </div>
+        <table className="w-full text-[11.5px] border-collapse">
+          <thead>
+            <tr className="text-[9.5px] uppercase tracking-widest text-[color:var(--muted)]">
+              <th className="py-1.5 px-2 text-left font-medium">Date</th>
+              <th className="py-1.5 px-2 text-right font-medium">외인</th>
+              <th className="py-1.5 px-2 text-right font-medium">기관</th>
+              <th className="py-1.5 px-2 text-right font-medium">개인</th>
+              <th className="py-1.5 px-2 text-right font-medium">외인지분</th>
+              <th className="py-1.5 px-2 text-right font-medium">종가</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.date} style={{ borderTop: "1px solid var(--border-soft)" }}>
+                <td className="py-1.5 px-2 mono">{fmtDate(r.date)}</td>
+                <td className="py-1.5 px-2 mono text-right" style={{ color: col(r.foreign_net) }}>
+                  {signed(r.foreign_net)}
+                </td>
+                <td className="py-1.5 px-2 mono text-right" style={{ color: col(r.institution_net) }}>
+                  {signed(r.institution_net)}
+                </td>
+                <td className="py-1.5 px-2 mono text-right" style={{ color: col(r.individual_net) }}>
+                  {signed(r.individual_net)}
+                </td>
+                <td className="py-1.5 px-2 mono text-right">
+                  {r.foreign_hold_ratio == null ? "—" : `${r.foreign_hold_ratio.toFixed(2)}%`}
+                </td>
+                <td className="py-1.5 px-2 mono text-right">
+                  {r.close == null ? "—" : r.close.toLocaleString()}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 }
 
-const SAMPLE: Row[] = [
-  { date: "04-22", foreign: +1247, inst: +412,  retail: -1659 },
-  { date: "04-21", foreign: +982,  inst: -184,  retail: -798 },
-  { date: "04-18", foreign: +641,  inst: +228,  retail: -869 },
-  { date: "04-17", foreign: +512,  inst: -314,  retail: -198 },
-  { date: "04-16", foreign: -312,  inst: +844,  retail: -532 },
-  { date: "04-15", foreign: +128,  inst: +412,  retail: -540 },
-  { date: "04-14", foreign: +484,  inst: -128,  retail: -356 },
-  { date: "04-11", foreign: -84,   inst: +248,  retail: -164 },
-  { date: "04-10", foreign: +322,  inst: +312,  retail: -634 },
-  { date: "04-09", foreign: +114,  inst: -84,   retail: -30 },
-];
-
-function signed(v: number): string {
-  if (v > 0) return `+${v.toLocaleString()}`;
-  return v.toLocaleString();
+function TotalCard({ label, value }: { label: string; value: number | null }) {
+  return (
+    <div
+      className="rounded border px-2.5 py-1.5"
+      style={{ borderColor: "var(--border)", background: "var(--bg)" }}
+    >
+      <div className="text-[9.5px] uppercase tracking-widest text-[color:var(--muted)]">
+        {label}
+      </div>
+      <div className="mono text-[13px] mt-0.5" style={{ color: col(value) }}>
+        {signed(value)}
+      </div>
+    </div>
+  );
 }
-function col(v: number): string {
+
+function aggregate5d(rows: FnguideInvestorTrendRow[]): {
+  foreign: number | null;
+  inst: number | null;
+  retail: number | null;
+} {
+  if (!rows.length) return { foreign: null, inst: null, retail: null };
+  const slice = rows.slice(0, 5);
+  const sum = (f: (r: FnguideInvestorTrendRow) => number | null | undefined) =>
+    slice.reduce((acc, r) => {
+      const v = f(r);
+      return v == null ? acc : acc + v;
+    }, 0);
+  return {
+    foreign: sum((r) => r.foreign_net),
+    inst: sum((r) => r.institution_net),
+    retail: sum((r) => r.individual_net),
+  };
+}
+
+function signed(v: number | null | undefined): string {
+  if (v == null || Number.isNaN(v)) return "—";
+  const sign = v > 0 ? "+" : "";
+  return `${sign}${Math.round(v).toLocaleString()}`;
+}
+
+function col(v: number | null | undefined): string {
+  if (v == null) return "var(--fg-muted)";
   if (v > 0) return "var(--pos)";
   if (v < 0) return "var(--neg)";
   return "var(--neutral)";
 }
 
-export function FlowPane({ symbol }: Props) {
-  return (
-    <div>
-      <div className="text-[11px] text-[color:var(--fg-muted)] mb-2">
-        외인 · 기관 · 개인 순매수 (억원) · {symbol} · mock
-      </div>
-      <table className="w-full text-[11.5px] border-collapse">
-        <thead>
-          <tr className="text-[9.5px] uppercase tracking-widest text-[color:var(--muted)]">
-            <th className="py-1.5 px-2 text-left font-medium">Date</th>
-            <th className="py-1.5 px-2 text-right font-medium">외인</th>
-            <th className="py-1.5 px-2 text-right font-medium">기관</th>
-            <th className="py-1.5 px-2 text-right font-medium">개인</th>
-          </tr>
-        </thead>
-        <tbody>
-          {SAMPLE.map((r) => (
-            <tr key={r.date} style={{ borderTop: "1px solid var(--border-soft)" }}>
-              <td className="py-1.5 px-2 mono">{r.date}</td>
-              <td className="py-1.5 px-2 mono text-right" style={{ color: col(r.foreign) }}>
-                {signed(r.foreign)}
-              </td>
-              <td className="py-1.5 px-2 mono text-right" style={{ color: col(r.inst) }}>
-                {signed(r.inst)}
-              </td>
-              <td className="py-1.5 px-2 mono text-right" style={{ color: col(r.retail) }}>
-                {signed(r.retail)}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+function fmtDate(s: string): string {
+  // "20260422" → "04-22"
+  if (!s) return "—";
+  if (s.length === 8) return `${s.slice(4, 6)}-${s.slice(6, 8)}`;
+  return s;
 }

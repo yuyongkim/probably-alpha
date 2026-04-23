@@ -311,7 +311,9 @@ def fnguide_endpoint(
     try:
         from ky_adapters.naver_fnguide import FnguideAdapter
         adapter = FnguideAdapter.from_settings()
-        snapshot = adapter.get_snapshot(symbol)
+        # Enriched bundle: Mobile (integration + finance + trend) + NaverComp
+        # (cF3002 / cF4002 / cF9001 / ownership). Runs in-parallel internally.
+        snapshot = adapter.get_full_snapshot(symbol)
         adapter.close()
     except Exception as exc:  # noqa: BLE001
         log.exception("fnguide: fetch failed for %s", symbol)
