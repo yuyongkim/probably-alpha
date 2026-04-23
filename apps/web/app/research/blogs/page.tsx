@@ -1,9 +1,18 @@
 import { DensePage } from "@/components/shared/DensePage";
-import { StubBlock } from "@/components/execute/StubBlock";
+import { RagFilterSearch } from "@/components/research/RagFilterSearch";
+
 export default function Page() {
   return (
-    <DensePage tab="Research" current="블로그 아카이브" title="투자 블로그 아카이브" meta="Tistory 자동 크롤링">
-      <StubBlock icon="✎" title="관심 블로거 자동 수집" desc="QuantPlatform의 Tistory 크롤러. 체크포인트 지원. 마크다운 저장 → RAG 인덱스." chips={["QuantPlatform 흡수"]} />
+    <DensePage
+      tab="Research"
+      current="블로그 아카이브"
+      title="투자 블로그 아카이브"
+      meta="TISTORY · NAVER · SUBSTACK — 크롤러 대기"
+    >
+      <RagFilterSearch
+        slug="blogs"
+        emptyCopy="현재 블로그 코퍼스는 비어 있습니다. QuantPlatform Tistory 크롤러를 연결한 뒤 RAG 인덱스를 재빌드하면 같은 검색창이 바로 동작합니다."
+      />
     </DensePage>
   );
 }
