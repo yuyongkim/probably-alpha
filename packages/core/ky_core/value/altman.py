@@ -78,6 +78,35 @@ def altman_bulk(
 def altman_z(
     symbol: str, *, as_of: str | None = None, repo: Repository | None = None
 ) -> dict[str, Any] | None:
+    """Altman Z-Score — prefers the full 5-variable derived calc.
+
+    Delegates to ``ky_core.value.derived.altman_full`` when any of the
+    proxy inputs can be upgraded from real data (retained earnings from
+    pit annual sum, market cap from fnguide). Falls back to the legacy
+    equity-scaling proxy if derived fails (no fnguide snapshot, too few
+    FY rows, etc).
+    """
+    try:
+        from ky_core.value.derived.altman_full import altman_full_for
+        result = altman_full_for(symbol, repo=repo)
+        if result is not None:
+            return {
+                "symbol": result["symbol"],
+                "as_of": as_of,
+                "A_wc_assets": result["X1_wc_assets"],
+                "B_re_assets": result["X2_re_assets"],
+                "C_ebit_assets": result["X3_ebit_assets"],
+                "D_mcap_liab": result["X4_mcap_liab"],
+                "E_sales_assets": result["X5_sales_assets"],
+                "z_score": result["z_score"],
+                "zone": result["zone"],
+                "proxy": any(result.get("proxy", {}).values()),
+                "proxy_detail": result.get("proxy", {}),
+                "period_end": result.get("period_end"),
+                "source": "derived.altman_full",
+            }
+    except Exception:  # noqa: BLE001
+        pass
     repo = repo or Repository()
     fin = ttm_fin(repo, symbol, as_of=as_of)
     if not fin:

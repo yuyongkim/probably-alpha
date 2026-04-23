@@ -16,7 +16,18 @@ export default async function ValuePiotroskiPage({
   searchParams: Promise<{ symbol?: string }>;
 }) {
   const { symbol = "005930" } = await searchParams;
-  const p = await fetchEnvelope<PiotroskiResponse>(`/api/v1/value/piotroski?symbol=${symbol}`);
+  // Prefer the 9/9-flag derived calc; fall back to the legacy 5-flag
+  // endpoint when the derived path returns no data.
+  let p: PiotroskiResponse;
+  try {
+    p = await fetchEnvelope<PiotroskiResponse>(
+      `/api/v1/value/piotroski_full/${symbol}`,
+    );
+  } catch {
+    p = await fetchEnvelope<PiotroskiResponse>(
+      `/api/v1/value/piotroski?symbol=${symbol}`,
+    );
+  }
   return (
     <>
       <PageHeader

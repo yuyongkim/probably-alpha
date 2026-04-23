@@ -8,13 +8,22 @@ import { fetchEnvelope } from "@/lib/api";
 import type { MoatResponse } from "@/types/value";
 
 async function load(): Promise<MoatResponse | null> {
+  // Uses derived moat_v2 which blends ROIC stability + gross-margin CV +
+  // op-margin level. Falls back silently if the derived endpoint errors.
   try {
     return await fetchEnvelope<MoatResponse>(
-      "/api/v1/value/moat?mode=summary",
+      "/api/v1/value/moat_v2?mode=summary",
       { revalidate: 1800 },
     );
   } catch {
-    return null;
+    try {
+      return await fetchEnvelope<MoatResponse>(
+        "/api/v1/value/moat?mode=summary",
+        { revalidate: 1800 },
+      );
+    } catch {
+      return null;
+    }
   }
 }
 

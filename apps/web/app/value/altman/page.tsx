@@ -16,7 +16,32 @@ export default async function ValueAltmanPage({
   searchParams: Promise<{ symbol?: string }>;
 }) {
   const { symbol = "005930" } = await searchParams;
-  const z = await fetchEnvelope<AltmanResponse>(`/api/v1/value/altman?symbol=${symbol}`);
+  // Prefer the 5-variable derived Z-score (real market cap, retained
+  // earnings from pit annual sum). Fall back to the legacy proxy calc.
+  let zRaw: any;
+  try {
+    zRaw = await fetchEnvelope<any>(`/api/v1/value/altman_full/${symbol}`);
+  } catch {
+    zRaw = await fetchEnvelope<AltmanResponse>(
+      `/api/v1/value/altman?symbol=${symbol}`,
+    );
+  }
+  // Normalise derived payload (X1_*) onto the legacy shape (A_*) so the
+  // existing AltmanGauge component keeps working.
+  const z: AltmanResponse = {
+    symbol: zRaw.symbol,
+    as_of: zRaw.as_of ?? zRaw.period_end ?? "",
+    A_wc_assets: zRaw.A_wc_assets ?? zRaw.X1_wc_assets,
+    B_re_assets: zRaw.B_re_assets ?? zRaw.X2_re_assets,
+    C_ebit_assets: zRaw.C_ebit_assets ?? zRaw.X3_ebit_assets,
+    D_mcap_liab: zRaw.D_mcap_liab ?? zRaw.X4_mcap_liab,
+    E_sales_assets: zRaw.E_sales_assets ?? zRaw.X5_sales_assets,
+    z_score: zRaw.z_score,
+    zone: zRaw.zone,
+    proxy: typeof zRaw.proxy === "boolean"
+      ? zRaw.proxy
+      : !!(zRaw.proxy && Object.values(zRaw.proxy).some(Boolean)),
+  };
   return (
     <>
       <PageHeader

@@ -159,8 +159,22 @@ def moat_scan(
     repo: Repository | None = None,
     min_years: int = 5,
     use_cache: bool = True,
+    use_derived: bool = True,
 ) -> list[dict[str, Any]]:
-    """Classify every symbol with ≥ ``min_years`` annual financials."""
+    """Classify every symbol with ≥ ``min_years`` annual financials.
+
+    When ``use_derived`` is True (default) we delegate to
+    ``ky_core.value.derived.moat_v2`` which layers gross-margin
+    stability + op-margin-level into the classification on top of the
+    original ROIC-only rules. Set ``use_derived=False`` to get the
+    legacy behaviour (callers that want the exact 6-Wide baseline).
+    """
+    if use_derived:
+        try:
+            from ky_core.value.derived.moat_v2 import moat_v2_scan
+            return moat_v2_scan(repo=repo)
+        except Exception:  # noqa: BLE001
+            log.exception("moat: derived.moat_v2 failed, falling back")
     cache_key = f"moat|min_years={min_years}"
     if use_cache:
         hit = _CACHE.get(cache_key)

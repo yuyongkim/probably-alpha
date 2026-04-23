@@ -71,7 +71,28 @@ def _score_from_fins(
 def piotroski_score(
     symbol: str, *, as_of: str | None = None, repo: Repository | None = None
 ) -> dict[str, Any] | None:
-    """Compute F-Score for one symbol (legacy per-symbol entrypoint)."""
+    """Compute F-Score for one symbol.
+
+    Prefers ``ky_core.value.derived.piotroski_full`` (9/9 flags) which
+    uses the pit-annual + fnguide combo. Falls back to the legacy
+    5-flag TTM scorer when the derived path can't produce a result
+    (no pit rows or no fnguide snapshot).
+    """
+    try:
+        from ky_core.value.derived.piotroski_full import piotroski_full_for
+        result = piotroski_full_for(symbol, repo=repo)
+        if result is not None:
+            return {
+                "symbol": result["symbol"],
+                "as_of": as_of,
+                "flags": result["flags"],
+                "score": result["score"],
+                "max_possible": result["max_possible"],
+                "source": "derived.piotroski_full",
+                "period_end": result.get("period_end"),
+            }
+    except Exception:  # noqa: BLE001
+        pass
     repo = repo or Repository()
     now = ttm_fin(repo, symbol, as_of=as_of)
     prior = ttm_fin(repo, symbol, as_of=_back_one_year(as_of)) if as_of else None
