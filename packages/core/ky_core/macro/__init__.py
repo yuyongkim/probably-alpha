@@ -19,14 +19,26 @@ from .compass import (
     compute_compass,
     sector_playbook,
 )
+from .pickers import (
+    CoverageReport,
+    Observation,
+    coverage_report,
+    pick_indicator,
+    pick_many,
+)
 from .regime import RegimeResult, classify_regime, regime_timeseries
 
 __all__ = [
     "AXIS_IDS",
     "CompassResult",
+    "CoverageReport",
+    "Observation",
     "RegimeResult",
     "classify_regime",
     "compute_compass",
+    "coverage_report",
+    "pick_indicator",
+    "pick_many",
     "regime_timeseries",
     "sector_playbook",
 ]

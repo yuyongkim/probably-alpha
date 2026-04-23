@@ -316,6 +316,12 @@ def collect_kosis(
                 log.error("KOSIS %s/%s failed: %s", org, tbl, exc)
                 continue
             obs = []
+            # When objL1=ALL each KOSIS row carries a different C1 code (e.g.
+            # total/male/female or sector sub-code). We splice the C1 code
+            # into the series_id so the observations unique key
+            # (source_id, series_id, date, owner_id) doesn't collide across
+            # obj buckets. sid already includes /ALL as a prefix marker —
+            # we replace the trailing ALL with the actual bucket code.
             for row in rows:
                 raw_date = (
                     row.get("PRD_DE")
@@ -331,17 +337,46 @@ def collect_kosis(
                 date_iso = _kosis_date(raw_date)
                 if not date_iso:
                     continue
+                c1 = row.get("C1") or row.get("c1")
+                itm_in_row = row.get("ITM_ID") or row.get("itmId")
+                if sid.endswith("/ALL") and c1:
+                    row_sid = sid[: -len("/ALL")] + f"/{c1}"
+                elif c1:
+                    row_sid = f"{sid}/{c1}"
+                else:
+                    row_sid = sid
+                # Preserve key metadata so downstream consumers can resolve
+                # what C1/OBJ/ITM this row belongs to without re-querying.
+                meta = {
+                    "c1": c1,
+                    "c1_nm": row.get("C1_NM"),
+                    "itm_id": itm_in_row,
+                    "itm_nm": row.get("ITM_NM"),
+                    "obj_nm": row.get("C1_OBJ_NM"),
+                }
                 obs.append(
                     {
                         "source_id": "kosis",
-                        "series_id": sid,
+                        "series_id": row_sid,
                         "date": date_iso,
                         "value": val,
                         "unit": row.get("UNIT_NM") or row.get("unitNm"),
+                        "meta": meta,
                     }
                 )
-            written = repo.upsert_observations(obs)
-            log.info("KOSIS %s/%s (%s): %d rows", org, tbl, sid, written)
+            # Chunk the upsert so tables like DT_1YL1701 (12k+ rows) don't
+            # blow past SQLite's max-SQL-variable cap. Repository.upsert_observations
+            # packs 8 columns per row, so 500 rows/chunk = 4k variables which
+            # is safe on every SQLite driver in the wild.
+            chunk_size = 500
+            written = 0
+            for i in range(0, len(obs), chunk_size):
+                written += repo.upsert_observations(obs[i : i + chunk_size])
+            log.info(
+                "KOSIS %s/%s (%s): %d rows across %d series",
+                org, tbl, sid, written,
+                len({o["series_id"] for o in obs}),
+            )
             fetched += written
     return fetched
 
