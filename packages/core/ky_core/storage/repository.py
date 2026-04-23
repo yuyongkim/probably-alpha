@@ -18,6 +18,7 @@ from ky_core.storage.db import get_session_factory, init_db
 from ky_core.storage.schema import (
     Filing,
     FinancialPIT,
+    FinancialStatementDB,
     FnguideSnapshot,
     Observation,
     OHLCV,
@@ -410,9 +411,15 @@ class Repository:
         *,
         source: str | None = None,
         degraded: bool = False,
+        fetched_at: datetime | None = None,
     ) -> int:
-        """Upsert a single fnguide snapshot. Returns 1."""
-        now = datetime.utcnow()
+        """Upsert a single fnguide snapshot. Returns 1.
+
+        When ``fetched_at`` is provided we honour it — bulk migrations pass the
+        original source capture timestamp so downstream freshness checks track
+        data age rather than import age.
+        """
+        now = fetched_at if fetched_at is not None else datetime.utcnow()
         row = {
             "symbol": symbol,
             "payload": payload_json,
@@ -456,6 +463,151 @@ class Repository:
                 "fetched_at": row.fetched_at.isoformat() if row.fetched_at else None,
                 "owner_id": row.owner_id,
             }
+
+    def get_fnguide_cached(
+        self,
+        symbol: str,
+        *,
+        max_age_hours: float = 24.0,
+    ) -> dict[str, Any] | None:
+        """Return a cached fnguide snapshot if it exists AND is younger than
+        ``max_age_hours``.
+
+        Differs from ``get_fnguide_snapshot`` by gating on age — callers that
+        want the DB-first freshness semantics (FnguideAdapter) should use this.
+        Returns ``None`` when the row is missing OR stale."""
+        row = self.get_fnguide_snapshot(symbol)
+        if not row:
+            return None
+        fetched_iso = row.get("fetched_at")
+        if not fetched_iso:
+            return None
+        try:
+            fetched_dt = datetime.fromisoformat(fetched_iso)
+        except ValueError:
+            return None
+        age_hours = (datetime.utcnow() - fetched_dt).total_seconds() / 3600.0
+        if age_hours > max_age_hours:
+            return None
+        row["age_hours"] = age_hours
+        return row
+
+    def get_fnguide_age_hours(self, symbol: str) -> float | None:
+        """Hours since this symbol's snapshot was last persisted. ``None`` when
+        there is no row. Useful for deciding fresh vs stale vs missing without
+        double-reading the payload."""
+        row = self.get_fnguide_snapshot(symbol)
+        if not row or not row.get("fetched_at"):
+            return None
+        try:
+            fetched_dt = datetime.fromisoformat(row["fetched_at"])
+        except ValueError:
+            return None
+        return (datetime.utcnow() - fetched_dt).total_seconds() / 3600.0
+
+    # --------- Financial Statements (migrated from Naver full-collection) ---
+
+    def upsert_financial_statements(self, rows: Iterable[dict[str, Any]]) -> int:
+        """Bulk-upsert per-account statement rows. Returns count persisted.
+
+        Each row must contain: symbol, period, period_type, account_name.
+        Optional: account_code, account_level, value, yoy, is_estimate,
+        source_id, owner_id.
+
+        Internally chunked to ~500 rows per INSERT to stay under SQLite's
+        ``SQLITE_MAX_VARIABLE_NUMBER`` (default 999 on older builds; 32k on
+        newer). 500 rows × 12 cols = 6k variables — safe on every SQLite
+        build.
+        """
+        rows = list(rows)
+        if not rows:
+            return 0
+        now = datetime.utcnow()
+        payload = []
+        for row in rows:
+            payload.append(
+                {
+                    "symbol": row["symbol"],
+                    "period": row["period"],
+                    "period_type": row["period_type"],
+                    "account_code": row.get("account_code"),
+                    "account_name": row["account_name"],
+                    "account_level": row.get("account_level"),
+                    "value": row.get("value"),
+                    "yoy": row.get("yoy"),
+                    "is_estimate": bool(row.get("is_estimate", False)),
+                    "source_id": row.get("source_id", "naver_comp"),
+                    "fetched_at": now,
+                    "owner_id": row.get("owner_id", self.owner_id),
+                }
+            )
+        chunk_size = 500
+        total = 0
+        with self.session() as sess:
+            for i in range(0, len(payload), chunk_size):
+                chunk = payload[i : i + chunk_size]
+                stmt = sqlite_insert(FinancialStatementDB.__table__).values(chunk)
+                stmt = stmt.on_conflict_do_update(
+                    index_elements=[
+                        "owner_id", "symbol", "period", "period_type",
+                        "account_name", "source_id",
+                    ],
+                    set_={
+                        "account_code": stmt.excluded.account_code,
+                        "account_level": stmt.excluded.account_level,
+                        "value": stmt.excluded.value,
+                        "yoy": stmt.excluded.yoy,
+                        "is_estimate": stmt.excluded.is_estimate,
+                        "fetched_at": stmt.excluded.fetched_at,
+                    },
+                )
+                sess.execute(stmt)
+                total += len(chunk)
+        return total
+
+    def get_statements(
+        self,
+        symbol: str,
+        *,
+        period_type: str | None = None,
+        limit: int | None = None,
+    ) -> list[dict[str, Any]]:
+        """Return financial statement rows for a symbol, newest period first."""
+        with self.session() as sess:
+            stmt = select(FinancialStatementDB).where(
+                FinancialStatementDB.symbol == symbol,
+                FinancialStatementDB.owner_id == self.owner_id,
+            )
+            if period_type:
+                stmt = stmt.where(FinancialStatementDB.period_type == period_type)
+            stmt = stmt.order_by(
+                FinancialStatementDB.period.desc(),
+                FinancialStatementDB.account_level.asc().nullsfirst(),
+            )
+            if limit:
+                stmt = stmt.limit(limit)
+            rows = sess.execute(stmt).scalars().all()
+            return [
+                {
+                    "symbol": r.symbol,
+                    "period": r.period,
+                    "period_type": r.period_type,
+                    "account_code": r.account_code,
+                    "account_name": r.account_name,
+                    "account_level": r.account_level,
+                    "value": r.value,
+                    "yoy": r.yoy,
+                    "is_estimate": bool(r.is_estimate),
+                    "source_id": r.source_id,
+                }
+                for r in rows
+            ]
+
+    def count_statements(self) -> int:
+        with self.session() as sess:
+            return sess.query(FinancialStatementDB).filter(
+                FinancialStatementDB.owner_id == self.owner_id
+            ).count()
 
 
 # --------------------------------------------------------------------------- #

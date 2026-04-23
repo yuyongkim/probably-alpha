@@ -267,10 +267,23 @@ class FnguideAdapter(BaseAdapter):
         )
 
     def get_full_snapshot(self, symbol: str) -> FnguideSnapshot:
-        """Enriched snapshot — Mobile + NaverComp + investor trend in parallel.
+        """Enriched snapshot — DB-first, then Mobile + NaverComp live.
 
-        Returns even when individual sub-sources fail; ``degraded=True`` marks
-        when at least one source was missed. The returned snapshot merges:
+        Lookup order (Company_Credit migration landed a broad cold cache so
+        we always try the DB first):
+
+        1. ``Repository.get_fnguide_cached(max_age_hours=24)`` — return
+           immediately with ``source="db_fresh"``. No network.
+        2. 24h < age <= 7d (stale): return the stale payload AND fire a
+           background refresh. ``source="db_stale"`` and ``degraded=False``
+           because we have coherent data.
+        3. Age > 7d or no row: full live fetch (Mobile + NaverComp),
+           upsert, return as ``source="live_fresh"``.
+        4. Live fetch failed but a stale row exists: return the stale row
+           with ``degraded=True``.
+
+        Returns even when individual sub-sources fail; ``degraded=True``
+        marks when at least one source was missed. The live-path merges:
 
         * Mobile integration (valuation summary + peers)
         * Mobile finance/annual + finance/quarter (headline financials)
@@ -282,6 +295,38 @@ class FnguideAdapter(BaseAdapter):
         """
         if not is_valid_symbol(symbol):
             raise AdapterError(f"invalid KRX symbol: {symbol!r}")
+
+        # --- DB-first fallback ------------------------------------------------
+        # Attempt repository lookup; tolerant of storage failures so tests that
+        # stub the adapter stay green.
+        cached_payload: dict[str, Any] | None = None
+        cached_age_hours: float | None = None
+        try:
+            from ky_core.storage import Repository
+            repo_db = Repository()
+            row = repo_db.get_fnguide_snapshot(symbol)
+            if row:
+                cached_age_hours = repo_db.get_fnguide_age_hours(symbol)
+                try:
+                    import json as _json
+                    cached_payload = _json.loads(row["payload"])
+                except Exception:  # noqa: BLE001
+                    cached_payload = None
+        except Exception:  # noqa: BLE001
+            logger.debug("fnguide: DB-first lookup skipped (storage unavailable)",
+                         exc_info=True)
+
+        if cached_payload and cached_age_hours is not None and cached_age_hours <= 24.0:
+            # Fresh — serve it, zero network.
+            return _payload_to_snapshot(cached_payload, source="db_fresh")
+
+        if cached_payload and cached_age_hours is not None and cached_age_hours <= 24.0 * 7:
+            # Stale but usable — serve AND fire a background refresh. The
+            # refresh is fire-and-forget; the current request stays fast.
+            self._schedule_background_refresh(symbol)
+            return _payload_to_snapshot(cached_payload, source="db_stale")
+
+        # --- Live path --------------------------------------------------------
 
         sources_used: list[str] = []
         errors: list[str] = []
@@ -374,7 +419,7 @@ class FnguideAdapter(BaseAdapter):
                         break
 
         degraded = bool(errors) or not base
-        source = "full" if mobile_result and comp_result else (
+        source = "live_fresh" if (mobile_result and comp_result) else (
             "naver_mobile" if mobile_result else ("fnguide" if base else "none")
         )
 
@@ -383,10 +428,81 @@ class FnguideAdapter(BaseAdapter):
                 "partial: " + ",".join(errors)
             )
 
-        return _as_snapshot(
+        # Live fetch failed entirely *and* we have a stale row → serve stale
+        # degraded rather than returning an empty skeleton.
+        if source == "none" and cached_payload:
+            return _payload_to_snapshot(
+                cached_payload, source="db_stale", degraded=True,
+            )
+
+        snap = _as_snapshot(
             symbol, merged, source=source, degraded=degraded,
             sources_used=sources_used,
         )
+
+        # Persist the fresh payload so subsequent callers hit DB-first. The
+        # caller (REST endpoint) also persists — this is a safety net for
+        # non-REST callers (collect scripts, notebooks).
+        if source in ("live_fresh", "naver_mobile") and not degraded:
+            try:
+                from ky_core.storage import Repository
+                import json as _json
+                Repository().upsert_fnguide_snapshot(
+                    symbol,
+                    _json.dumps(snap.to_dict(), ensure_ascii=False),
+                    source=snap.source,
+                    degraded=snap.degraded,
+                )
+            except Exception:  # noqa: BLE001
+                logger.debug("fnguide: post-fetch persist skipped", exc_info=True)
+
+        return snap
+
+    def _schedule_background_refresh(self, symbol: str) -> None:
+        """Fire-and-forget refresh for stale DB rows. Uses a daemon thread so
+        the response returns immediately; we don't wait on the result.
+        """
+        import threading
+
+        def _refresh() -> None:
+            try:
+                from ky_core.storage import Repository
+                import json as _json
+                # Directly call the live collectors without DB-first to avoid
+                # recursion. We reuse ``_collect_mobile`` + ``_collect_navercomp``
+                # and merge minimally; the full merged snapshot is acceptable.
+                mobile_result = self._collect_mobile(symbol) or {}
+                comp_result = self._collect_navercomp(symbol) or {}
+                base = mobile_result.get("integration") or {}
+                if not base:
+                    return
+                merged = dict(base)
+                if mobile_result.get("financials_quarterly"):
+                    merged["financials_quarterly"] = mobile_result["financials_quarterly"]
+                if mobile_result.get("financials_annual"):
+                    merged["financials_annual"] = mobile_result["financials_annual"]
+                if mobile_result.get("investor_trend"):
+                    merged["investor_trend"] = mobile_result["investor_trend"]
+                if comp_result.get("financial_metrics"):
+                    merged["financial_metrics"] = comp_result["financial_metrics"]
+                if comp_result.get("sector_comparison"):
+                    merged["sector_comparison"] = comp_result["sector_comparison"]
+                snap = _as_snapshot(
+                    symbol, merged, source="live_fresh", degraded=False,
+                    sources_used=(mobile_result.get("sources_used", []) +
+                                  comp_result.get("sources_used", [])),
+                )
+                Repository().upsert_fnguide_snapshot(
+                    symbol,
+                    _json.dumps(snap.to_dict(), ensure_ascii=False),
+                    source=snap.source, degraded=snap.degraded,
+                )
+            except Exception:  # noqa: BLE001
+                logger.debug("fnguide: background refresh failed for %s",
+                             symbol, exc_info=True)
+
+        threading.Thread(target=_refresh, name=f"fnguide-refresh-{symbol}",
+                         daemon=True).start()
 
     # --------- Mobile bundle ---------
 
@@ -754,6 +870,59 @@ def _prefer_richer(
         else:
             by_period[key] = dict(fb)
     return sorted(by_period.values(), key=lambda r: str(r.get("period", "")), reverse=True)
+
+
+def _payload_to_snapshot(
+    payload: dict[str, Any],
+    *,
+    source: str,
+    degraded: bool | None = None,
+) -> FnguideSnapshot:
+    """Rehydrate a stored FnguideSnapshot payload back into the dataclass.
+
+    The stored payload is exactly ``FnguideSnapshot.to_dict()`` — so the
+    constructor accepts the same keys. We override ``source`` so callers can
+    distinguish ``db_fresh`` / ``db_stale`` from the original capture source.
+    """
+    symbol = payload.get("symbol") or ""
+    return FnguideSnapshot(
+        symbol=symbol,
+        fetched_at=float(payload.get("fetched_at") or time.time()),
+        source=source,
+        degraded=bool(payload.get("degraded", False)) if degraded is None else bool(degraded),
+        target_price=payload.get("target_price"),
+        investment_opinion=payload.get("investment_opinion"),
+        consensus_recomm_score=payload.get("consensus_recomm_score"),
+        consensus_per=payload.get("consensus_per"),
+        consensus_eps=payload.get("consensus_eps"),
+        per=payload.get("per"),
+        pbr=payload.get("pbr"),
+        eps=payload.get("eps"),
+        bps=payload.get("bps"),
+        roe=payload.get("roe"),
+        roa=payload.get("roa"),
+        debt_ratio=payload.get("debt_ratio"),
+        dividend_yield=payload.get("dividend_yield"),
+        market_cap=payload.get("market_cap"),
+        market_cap_raw=payload.get("market_cap_raw"),
+        foreign_ratio=payload.get("foreign_ratio"),
+        high_52w=payload.get("high_52w"),
+        low_52w=payload.get("low_52w"),
+        industry_code=payload.get("industry_code"),
+        major_shareholder_name=payload.get("major_shareholder_name"),
+        major_shareholder_pct=payload.get("major_shareholder_pct"),
+        float_ratio=payload.get("float_ratio"),
+        shares_outstanding=payload.get("shares_outstanding"),
+        beta_52w=payload.get("beta_52w"),
+        financials_quarterly=payload.get("financials_quarterly") or [],
+        financials_annual=payload.get("financials_annual") or [],
+        financial_metrics=payload.get("financial_metrics") or [],
+        sector_comparison=payload.get("sector_comparison") or {},
+        investor_trend=payload.get("investor_trend") or [],
+        peers=payload.get("peers") or [],
+        summary_notes=payload.get("summary_notes") or [],
+        sources_used=payload.get("sources_used") or [],
+    )
 
 
 def _as_snapshot(
