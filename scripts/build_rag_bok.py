@@ -240,7 +240,7 @@ def _truncate(t: str) -> str:
     return t[:MAX_CHARS_PER_CHUNK] if len(t) > MAX_CHARS_PER_CHUNK else t
 
 
-def ollama_embed_raw(texts: List[str], model: str = EMBED_MODEL, timeout: int = 180) -> np.ndarray:
+def ollama_embed_raw(texts: List[str], model: str = EMBED_MODEL, timeout: int = 300) -> np.ndarray:
     # BGE-M3 supports 8192 tokens; Ollama defaults to 4096, so we force the context up.
     resp = requests.post(
         OLLAMA_URL,

@@ -41,7 +41,11 @@ SYSTEM_PROMPT = (
     "English if English). Ground every numeric claim in the provided CONTEXT or "
     "KNOWLEDGE BASE sections; cite knowledge chunks inline as [#n]. Never invent "
     "tickers, prices, or ratios. Prefer bullet points when comparing items; be "
-    "thorough when the question warrants it but avoid filler."
+    "thorough when the question warrants it but avoid filler. "
+    "The knowledge base contains two layers: (a) timeless investment books and "
+    "(b) Bank of Korea reports tagged with year — treat dated BOK material as "
+    "historical context, not current opinion, and when relevant distinguish "
+    "'back then' vs 'today' explicitly."
 )
 
 
@@ -86,20 +90,33 @@ def _last_user_message(messages: List[ChatMessage]) -> str:
 
 
 def _gather_rag(query: str, k: int = 5) -> List[Dict[str, Any]]:
+    """Combined retrieval: TF-IDF (investment books) + BGE-M3 (BOK reports).
+
+    Both stores run independently; we return up to ``k`` from each so Claude
+    sees both perspectives. The reranking happens implicitly by citation order
+    in the prompt — the LLM decides which to lean on.
+    """
+    hits: List[Dict[str, Any]] = []
+    # Layer 1: book corpus (TF-IDF)
     try:
         from ky_core.rag import Retriever  # type: ignore
-    except Exception as exc:  # noqa: BLE001
-        log.info("assistant: ky_core.rag unavailable (%s)", exc)
-        return []
-    try:
         r = Retriever()
-        if not r.is_ready():
-            return []
-        hits = r.search(query, top_k=k)
+        if r.is_ready():
+            for h in r.search(query, top_k=k):
+                d = h.to_dict()
+                d.setdefault("source_type", "book")
+                hits.append(d)
     except Exception as exc:  # noqa: BLE001
-        log.warning("assistant: RAG search failed: %s", exc)
-        return []
-    return [h.to_dict() for h in hits]
+        log.info("assistant: book RAG unavailable (%s)", exc)
+    # Layer 2: BOK reports (BGE-M3 vector)
+    try:
+        from ky_core.rag_bok import search_bok  # type: ignore
+        for d in search_bok(query, top_k=k):
+            d.setdefault("source_type", "bok_report")
+            hits.append(d)
+    except Exception as exc:  # noqa: BLE001
+        log.info("assistant: BOK RAG unavailable (%s)", exc)
+    return hits
 
 
 def _gather_symbol_context(symbol: str | None) -> Dict[str, Any]:
@@ -158,13 +175,24 @@ def _format_rag(chunks: List[Dict[str, Any]]) -> str:
         return "(knowledge index empty)"
     out: List[str] = []
     for i, c in enumerate(chunks):
-        work = c.get("estimated_work") or c.get("source_file") or "unknown"
-        page = c.get("page_start")
-        page_s = f" · p.{page}" if page is not None else ""
+        stype = c.get("source_type") or ""
+        if stype == "bok_report":
+            title = c.get("report_title") or c.get("source_file") or "BOK report"
+            year = c.get("year") or ""
+            cat = c.get("category") or ""
+            date = c.get("date") or ""
+            meta_bits = [b for b in (year or date, cat) if b]
+            suffix = f" ({' · '.join(meta_bits)})" if meta_bits else ""
+            label = f"[BOK] {title}{suffix}"
+        else:
+            work = c.get("estimated_work") or c.get("source_file") or "unknown"
+            page = c.get("page_start")
+            page_s = f" · p.{page}" if page is not None else ""
+            label = f"{work}{page_s}"
         text = (c.get("text") or "").strip().replace("\n", " ")
         if len(text) > 500:
             text = text[:500] + "…"
-        out.append(f"[{i}] {work}{page_s}\n{text}")
+        out.append(f"[{i}] {label}\n{text}")
     return "\n\n".join(out)
 
 

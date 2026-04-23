@@ -29,16 +29,39 @@ function sentStyle(s: Headline["sentiment"]): { color: string; bg: string; label
   return { color: "var(--fg-muted)", bg: "var(--bg)", label: "NEU" };
 }
 
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE || "http://127.0.0.1:8300";
+
 export function NewsAIPane({ symbol }: Props) {
   const [q, setQ] = useState("");
   const [a, setA] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  function ask() {
-    if (!q.trim()) return;
-    // TODO: wire to /api/v1/assistant/ask (Gamma agent).
-    setA(
-      `(${symbol}) 샘플 답변 — 최근 뉴스 감성은 강한 긍정. HBM3E 수주 모멘텀이 EPS 상향 주도. 다만 중국 수요 둔화가 잠재 리스크.`,
-    );
+  async function ask() {
+    const question = q.trim();
+    if (!question || loading) return;
+    setLoading(true);
+    setA(null);
+    try {
+      const res = await fetch(`${API_BASE}/api/v1/assistant/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: question }],
+          context: { tab: "value", subsection: "news", symbol },
+        }),
+      });
+      const json = await res.json();
+      const msg =
+        json?.data?.message ||
+        json?.error?.message ||
+        "답변을 가져오지 못했습니다.";
+      setA(msg);
+    } catch (err) {
+      setA(`오류: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -96,10 +119,11 @@ export function NewsAIPane({ symbol }: Props) {
           />
           <button
             onClick={ask}
-            className="px-3 py-1 rounded text-[11px] font-medium"
+            disabled={loading}
+            className="px-3 py-1 rounded text-[11px] font-medium disabled:opacity-50"
             style={{ background: "var(--accent)", color: "var(--bg)" }}
           >
-            Ask
+            {loading ? "..." : "Ask"}
           </button>
         </div>
         {a && (
