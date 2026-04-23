@@ -34,9 +34,20 @@ AXIS_IDS = ("growth", "inflation", "liquidity", "credit")
 _FRED_CANDIDATES: Dict[str, List[str]] = {
     "growth": ["GDPC1", "GDP", "INDPRO", "PAYEMS"],
     "inflation": ["CPILFESL", "CPIAUCSL", "PCEPILFE"],
-    "liquidity": ["M2SL", "WM2NS", "DFF"],       # DFF inverted (higher rate = tighter)
-    "credit": ["BAA10Y", "BAA10YM", "AAA10Y"],   # wider = worse
+    "liquidity": ["M2SL", "WM2NS", "DFF"],        # DFF inverted (higher rate = tighter)
+    # Prefer the monthly BAA10YM (legacy archive) over the daily BAA10Y feed:
+    # the compass reads ~13 obs for a YoY-ish delta, so a monthly series gives
+    # a 12-month window while a daily one only spans ~2 weeks.
+    "credit": ["BAA10YM", "BAA10Y", "AAA10Y"],
 }
+
+# Sources to union together when reading each candidate set. The first entry
+# is the primary / fresh feed; the *_legacy_qp entries carry the deep history
+# migrated from the Quant Platform archive (FRED 1994-, ECOS long series).
+# Using a union means we can answer YoY-ish questions over 30+ years instead
+# of being capped at the 2016+ slice that the current fetcher has collected.
+_FRED_SOURCES = ("fred", "fred_legacy_qp")
+_ECOS_SOURCES = ("ecos", "ecos_legacy_qp")
 
 
 # --------------------------------------------------------------------------- #
@@ -158,12 +169,71 @@ def _classify_composite(composite: float) -> str:
 # --------------------------------------------------------------------------- #
 
 
-def _pick_series(repo: "Repository", candidates: List[str]) -> tuple[Optional[str], List[Dict[str, Any]]]:
-    """Return (series_id, rows) for the first candidate with ≥2 obs."""
+def _fetch_union(
+    repo: "Repository",
+    sources: tuple[str, ...],
+    series_id: str,
+    limit: int = 48,
+) -> List[Dict[str, Any]]:
+    """Read observations for ``series_id`` across multiple sources, merged by date.
+
+    The current-day fetcher writes to e.g. ``source_id='fred'`` while the
+    historic import lives in ``source_id='fred_legacy_qp'``. We union the two
+    so the compass can reason over the full 1994+ window whenever it exists.
+    When both sources report on the same date the *primary* (first in
+    ``sources``) wins because it is considered fresher / revised.
+    """
+    from sqlalchemy import text
+
+    # Build an IN(...) clause safely. Source names are whitelisted module
+    # constants so interpolation is safe, but we still bind via parameters.
+    placeholders = ",".join(f":s{i}" for i in range(len(sources)))
+    sql = text(
+        f"""
+        SELECT source_id, date, value
+        FROM observations
+        WHERE source_id IN ({placeholders})
+          AND series_id = :series_id
+          AND owner_id = :owner_id
+          AND value IS NOT NULL
+        ORDER BY date ASC
+        """
+    )
+    params: Dict[str, Any] = {"series_id": series_id, "owner_id": repo.owner_id}
+    for i, src in enumerate(sources):
+        params[f"s{i}"] = src
+    # Priority per source: lower index = primary/fresh, so it beats a
+    # duplicate legacy row for the same date.
+    priority = {src: i for i, src in enumerate(sources)}
+    best_by_date: Dict[str, Dict[str, Any]] = {}
+    with repo.session() as sess:
+        for row in sess.execute(sql, params):
+            date = row[0] if not hasattr(row, "date") else row.date
+            # Row-mapping access is version dependent; use positional.
+            src, dt, val = row[0], row[1], row[2]
+            incumbent = best_by_date.get(dt)
+            if incumbent is None or priority[src] < priority[incumbent["source_id"]]:
+                best_by_date[dt] = {"source_id": src, "date": dt, "value": val}
+    merged = [best_by_date[d] for d in sorted(best_by_date.keys())]
+    if limit and len(merged) > limit:
+        merged = merged[-limit:]
+    return merged
+
+
+def _pick_series(
+    repo: "Repository",
+    candidates: List[str],
+    sources: tuple[str, ...] = _FRED_SOURCES,
+) -> tuple[Optional[str], List[Dict[str, Any]]]:
+    """Return ``(series_id, rows)`` for the first candidate with >=2 obs.
+
+    ``sources`` is the union of source ids to read from; by default we merge
+    the live FRED feed with the archived ``fred_legacy_qp`` rows so the
+    compass can look back past 2016. Pass ``_ECOS_SOURCES`` for Korean series.
+    """
     for sid in candidates:
-        rows = repo.get_observations("fred", sid, limit=48)
-        # Some legacy series land under ecos; FRED is the primary.
-        if len([r for r in rows if r.get("value") is not None]) >= 2:
+        rows = _fetch_union(repo, sources, sid, limit=48)
+        if len(rows) >= 2:
             return sid, rows
     return None, []
 

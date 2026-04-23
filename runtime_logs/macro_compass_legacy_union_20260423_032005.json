@@ -1,0 +1,195 @@
+{
+  "generated_at": "2026-04-23T03:20:05.691312",
+  "note": "After Compass legacy source union (fred + fred_legacy_qp) + BAA10YM preference",
+  "compass": {
+    "axes": {
+      "growth": {
+        "axis": "growth",
+        "score": 0.39,
+        "series_id": "GDPC1",
+        "latest_value": 24111.83,
+        "prior_value": 22278.345,
+        "change_pct": 0.08229897687642419,
+        "note": "delta +8.23% over ~13 obs"
+      },
+      "inflation": {
+        "axis": "inflation",
+        "score": -0.9,
+        "series_id": "CPILFESL",
+        "latest_value": 332.793,
+        "prior_value": 323.259,
+        "change_pct": 0.02949337837461599,
+        "note": "delta +2.95% over ~13 obs"
+      },
+      "liquidity": {
+        "axis": "liquidity",
+        "score": 0.428,
+        "series_id": "M2SL",
+        "latest_value": 22442.1,
+        "prior_value": 21519.7,
+        "change_pct": 0.04286305106483816,
+        "note": "delta +4.29% over ~13 obs"
+      },
+      "credit": {
+        "axis": "credit",
+        "score": 0.064,
+        "series_id": "BAA10YM",
+        "latest_value": 1.67,
+        "prior_value": 1.45,
+        "change_pct": 0.15172413793103448,
+        "note": "delta +15.17% over ~13 obs"
+      }
+    },
+    "composite": -0.005,
+    "regime_hint": "Slowdown",
+    "regime": "Slowdown",
+    "generated_at": "2026-04-23T03:20:05.670193",
+    "stale": false,
+    "warnings": []
+  },
+  "playbook": [
+    {
+      "sector": "필수소비재",
+      "rationale": "수익 안정성 + 배당"
+    },
+    {
+      "sector": "통신",
+      "rationale": "방어적 성격"
+    },
+    {
+      "sector": "제약",
+      "rationale": "경기 민감도 낮음"
+    }
+  ],
+  "regime": {
+    "current": "Slowdown",
+    "probabilities": {
+      "Expansion": 0.193,
+      "Slowdown": 0.673,
+      "Recession": 0.069,
+      "Recovery": 0.065
+    },
+    "composite": -0.005,
+    "compass": {
+      "axes": {
+        "growth": {
+          "axis": "growth",
+          "score": 0.39,
+          "series_id": "GDPC1",
+          "latest_value": 24111.83,
+          "prior_value": 22278.345,
+          "change_pct": 0.08229897687642419,
+          "note": "delta +8.23% over ~13 obs"
+        },
+        "inflation": {
+          "axis": "inflation",
+          "score": -0.9,
+          "series_id": "CPILFESL",
+          "latest_value": 332.793,
+          "prior_value": 323.259,
+          "change_pct": 0.02949337837461599,
+          "note": "delta +2.95% over ~13 obs"
+        },
+        "liquidity": {
+          "axis": "liquidity",
+          "score": 0.428,
+          "series_id": "M2SL",
+          "latest_value": 22442.1,
+          "prior_value": 21519.7,
+          "change_pct": 0.04286305106483816,
+          "note": "delta +4.29% over ~13 obs"
+        },
+        "credit": {
+          "axis": "credit",
+          "score": 0.064,
+          "series_id": "BAA10YM",
+          "latest_value": 1.67,
+          "prior_value": 1.45,
+          "change_pct": 0.15172413793103448,
+          "note": "delta +15.17% over ~13 obs"
+        }
+      },
+      "composite": -0.005,
+      "regime_hint": "Slowdown",
+      "regime": "Slowdown",
+      "generated_at": "2026-04-23T03:20:05.670193",
+      "stale": false,
+      "warnings": []
+    },
+    "timeseries": [
+      {
+        "month": "2017-01",
+        "fed_funds": 0.56,
+        "label": "Expansion",
+        "delta_bp": null
+      },
+      {
+        "month": "2017-02",
+        "fed_funds": 0.57,
+        "label": "Expansion",
+        "delta_bp": 1.0
+      },
+      {
+        "month": "2017-03",
+        "fed_funds": 0.82,
+        "label": "Slowdown",
+        "delta_bp": 25.0
+      },
+      {
+        "month": "2017-04",
+        "fed_funds": 0.83,
+        "label": "Expansion",
+        "delta_bp": 1.0
+      },
+      {
+        "month": "2017-05",
+        "fed_funds": 0.83,
+        "label": "Expansion",
+        "delta_bp": 0.0
+      },
+      {
+        "month": "2017-06",
+        "fed_funds": 1.06,
+        "label": "Slowdown",
+        "delta_bp": 23.0
+      },
+      {
+        "month": "2017-07",
+        "fed_funds": 1.07,
+        "label": "Expansion",
+        "delta_bp": 1.0
+      },
+      {
+        "month": "2017-08",
+        "fed_funds": 1.07,
+        "label": "Expansion",
+        "delta_bp": 0.0
+      },
+      {
+        "month": "2017-09",
+        "fed_funds": 1.06,
+        "label": "Expansion",
+        "delta_bp": -1.0
+      },
+      {
+        "month": "2017-10",
+        "fed_funds": 1.07,
+        "label": "Expansion",
+        "delta_bp": 1.0
+      },
+      {
+        "month": "2017-11",
+        "fed_funds": 1.07,
+        "label": "Expansion",
+        "delta_bp": 0.0
+      },
+      {
+        "month": "2017-12",
+        "fed_funds": 1.42,
+        "label": "Slowdown",
+        "delta_bp": 35.0
+      }
+    ],
+    "warnings": []
+  }
+}
