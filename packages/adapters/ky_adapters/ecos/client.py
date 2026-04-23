@@ -86,55 +86,79 @@ class ECOSAdapter(BaseAdapter):
             item_code: e.g. "0101000"
             start / end: date string matching ``freq`` (D=YYYYMMDD, M=YYYYMM, Y=YYYY)
             freq: D/M/Q/Y
+
+        ECOS caps each call at roughly ``list_total_count`` but requires an
+        explicit ``start_row``/``end_row`` range. To cover 10-year daily
+        series we page until the response is shorter than ``page_size``.
         """
         if not self.api_key:
             raise AuthError("ECOS_API_KEY not configured")
-        start_row = 1
-        end_row = page_size
-        url = (
-            f"{self.base_url}/StatisticSearch/{self.api_key}/json/kr/"
-            f"{start_row}/{end_row}/{stat_code}/{freq}/{start}/{end}/{item_code}"
-        )
-        resp = self._request("GET", url)
-        if resp.status_code != 200:
-            raise AdapterError(f"ECOS observations → HTTP {resp.status_code}: {resp.text[:200]}")
-        body = resp.json()
-        # success shape: {"StatisticSearch": {"list_total_count": N, "row": [...]}}
-        if "StatisticSearch" not in body:
-            # RESULT error envelope
-            result = body.get("RESULT") or {}
-            code = result.get("CODE")
-            msg = result.get("MESSAGE", "unknown ECOS error")
-            if code in ("INFO-100", "INFO-200"):
-                return []
-            raise AdapterError(f"ECOS error {code}: {msg}")
-        rows = body["StatisticSearch"].get("row", [])
         out: list[ECOSObservation] = []
-        for row in rows:
-            val_raw = row.get("DATA_VALUE")
-            try:
-                val = float(val_raw) if val_raw not in (None, "") else None
-            except ValueError:
-                val = None
-            out.append(
-                ECOSObservation(
-                    stat_code=stat_code,
-                    item_code=item_code,
-                    date=row.get("TIME", ""),
-                    value=val,
-                    unit=row.get("UNIT_NAME"),
-                )
+        start_row = 1
+        while True:
+            end_row = start_row + page_size - 1
+            url = (
+                f"{self.base_url}/StatisticSearch/{self.api_key}/json/kr/"
+                f"{start_row}/{end_row}/{stat_code}/{freq}/{start}/{end}/{item_code}"
             )
-        return out
+            resp = self._request("GET", url)
+            if resp.status_code != 200:
+                raise AdapterError(
+                    f"ECOS observations → HTTP {resp.status_code}: {resp.text[:200]}"
+                )
+            body = resp.json()
+            if "StatisticSearch" not in body:
+                result = body.get("RESULT") or {}
+                code = result.get("CODE")
+                msg = result.get("MESSAGE", "unknown ECOS error")
+                if code in ("INFO-100", "INFO-200"):
+                    return out
+                raise AdapterError(f"ECOS error {code}: {msg}")
+            rows = body["StatisticSearch"].get("row", [])
+            total = body["StatisticSearch"].get("list_total_count")
+            for row in rows:
+                val_raw = row.get("DATA_VALUE")
+                try:
+                    val = float(val_raw) if val_raw not in (None, "") else None
+                except ValueError:
+                    val = None
+                out.append(
+                    ECOSObservation(
+                        stat_code=stat_code,
+                        item_code=item_code,
+                        date=row.get("TIME", ""),
+                        value=val,
+                        unit=row.get("UNIT_NAME"),
+                    )
+                )
+            # Stop when we've read the last page
+            if len(rows) < page_size:
+                return out
+            if isinstance(total, int) and end_row >= total:
+                return out
+            start_row = end_row + 1
 
 
 def _normalise_date(raw: str) -> str:
-    """Normalise ECOS date strings to ISO ``YYYY-MM-DD`` where possible."""
+    """Normalise ECOS date strings to ISO ``YYYY-MM-DD`` where possible.
+
+    Cycle-dependent inputs:
+
+    - ``D`` — ``YYYYMMDD``
+    - ``M`` — ``YYYYMM``
+    - ``Q`` — ``YYYYQn`` (map to first day of the quarter)
+    - ``A`` / ``Y`` — ``YYYY``
+    """
     raw = (raw or "").strip()
     if len(raw) == 8 and raw.isdigit():
         return f"{raw[0:4]}-{raw[4:6]}-{raw[6:8]}"
     if len(raw) == 6 and raw.isdigit():
         return f"{raw[0:4]}-{raw[4:6]}-01"
+    # Quarterly: YYYYQn -> first day of that quarter
+    if len(raw) == 6 and raw[4] in ("Q", "q") and raw[:4].isdigit() and raw[5].isdigit():
+        q = int(raw[5])
+        month = {1: "01", 2: "04", 3: "07", 4: "10"}.get(q, "01")
+        return f"{raw[:4]}-{month}-01"
     if len(raw) == 4 and raw.isdigit():
         return f"{raw}-01-01"
     return raw

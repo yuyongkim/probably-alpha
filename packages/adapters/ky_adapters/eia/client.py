@@ -72,6 +72,13 @@ class EIAAdapter(BaseAdapter):
         end: str | None = None,
         length: int = 5000,
     ) -> list[EIAObservation]:
+        """Fetch a series via ``seriesid/{id}/data``.
+
+        Works for the subset of EIA v2 series that are still exposed through
+        the legacy seriesid endpoint. Many weekly petroleum/natgas series are
+        **not** reachable this way and must be fetched via
+        :meth:`get_path_series` (which is what the daily preset uses).
+        """
         if not self.api_key:
             raise AuthError("EIA_API_KEY not configured")
         params: dict[str, Any] = {
@@ -86,30 +93,45 @@ class EIAAdapter(BaseAdapter):
         resp = self._request("GET", url, params=params)
         if resp.status_code != 200:
             raise AdapterError(f"EIA → HTTP {resp.status_code}: {resp.text[:200]}")
-        payload = resp.json()
-        resp_obj = payload.get("response") or {}
-        rows = resp_obj.get("data") or []
-        unit = None
-        # v2 responses include unit inside response.data[i].unit or response.units
-        if "units" in resp_obj and isinstance(resp_obj["units"], list) and resp_obj["units"]:
-            unit = resp_obj["units"][0]
-        out: list[EIAObservation] = []
-        for row in rows:
-            val_raw = row.get("value")
-            try:
-                val = float(val_raw) if val_raw not in (None, "") else None
-            except (TypeError, ValueError):
-                val = None
-            date_raw = row.get("period") or row.get("date") or ""
-            out.append(
-                EIAObservation(
-                    series_id=series_id,
-                    date=date_raw,
-                    value=val,
-                    unit=row.get("unit") or unit,
-                )
-            )
-        return out
+        return _rows_to_obs(series_id, resp.json())
+
+    def get_path_series(
+        self,
+        path: str,
+        series_code: str,
+        *,
+        start: str | None = None,
+        end: str | None = None,
+        frequency: str = "weekly",
+        length: int = 5000,
+    ) -> list[EIAObservation]:
+        """Fetch a series via a path-based v2 endpoint.
+
+        Example: ``get_path_series("petroleum/stoc/wstk", "WCESTUS1")``
+        fetches U.S. crude-oil ending stocks, the series the old
+        ``seriesid/PET.WCESTUS1.W/data`` endpoint used to carry before v2's
+        reorganisation.
+        """
+        if not self.api_key:
+            raise AuthError("EIA_API_KEY not configured")
+        params: dict[str, Any] = {
+            "api_key": self.api_key,
+            "frequency": frequency,
+            "data[0]": "value",
+            "facets[series][]": series_code,
+            "length": length,
+            "sort[0][column]": "period",
+            "sort[0][direction]": "asc",
+        }
+        if start:
+            params["start"] = start
+        if end:
+            params["end"] = end
+        url = f"{self.base_url}/{path.strip('/')}/data/"
+        resp = self._request("GET", url, params=params)
+        if resp.status_code != 200:
+            raise AdapterError(f"EIA → HTTP {resp.status_code}: {resp.text[:200]}")
+        return _rows_to_obs(series_code, resp.json())
 
 
 def _normalise_date(raw: str) -> str:
@@ -118,3 +140,28 @@ def _normalise_date(raw: str) -> str:
     if len(raw) == 7 and raw[4] == "-":
         return f"{raw}-01"
     return raw
+
+
+def _rows_to_obs(series_id: str, payload: dict[str, Any]) -> list[EIAObservation]:
+    resp_obj = payload.get("response") or {}
+    rows = resp_obj.get("data") or []
+    unit = None
+    if "units" in resp_obj and isinstance(resp_obj["units"], list) and resp_obj["units"]:
+        unit = resp_obj["units"][0]
+    out: list[EIAObservation] = []
+    for row in rows:
+        val_raw = row.get("value")
+        try:
+            val = float(val_raw) if val_raw not in (None, "") else None
+        except (TypeError, ValueError):
+            val = None
+        date_raw = row.get("period") or row.get("date") or ""
+        out.append(
+            EIAObservation(
+                series_id=series_id,
+                date=date_raw,
+                value=val,
+                unit=row.get("unit") or row.get("units") or unit,
+            )
+        )
+    return out

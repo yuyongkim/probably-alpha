@@ -1,0 +1,120 @@
+# ky-platform · 20 Korean market themes
+#
+# Curated static theme → symbol map used by
+# ``packages/core/ky_core/scanning/themes.py``.  Themes are *orthogonal* to the
+# KRX sector taxonomy: AI-semiconductor stocks sit across semis, equipment and
+# IT services, etc.
+#
+# Sources (best-effort, no external call required at runtime):
+#   - KIS  stocks_info/theme_code.py (master file on new.real.download.dws.co.kr)
+#   - FnGuide / 네이버증권 테마페이지 (대표 편입 종목)
+#   - 각 종목의 사업보고서
+#
+# Format:
+#   code    : short stable id (3–5 letters, A-Z)
+#   name    : 한글 표시명
+#   bucket  : logical grouping (tech | energy | mobility | bio | defense | finance | consumer)
+#   symbols : ticker codes present in the ky.db universe table
+#
+# Additions/edits here are picked up automatically on API restart (no code change).
+
+themes:
+  - code: AISEMI
+    name: AI 반도체
+    bucket: tech
+    symbols: ["005930", "000660", "042700", "039030", "058470", "240810", "357780", "095340"]
+
+  - code: HBM
+    name: HBM
+    bucket: tech
+    symbols: ["000660", "005930", "042700", "240810", "403870", "039030", "058470", "036930"]
+
+  - code: FOUNDRY
+    name: 파운드리
+    bucket: tech
+    symbols: ["005930", "000990", "240810", "322000", "137400", "064760"]
+
+  - code: BATT
+    name: 2차전지
+    bucket: energy
+    symbols: ["373220", "247540", "006400", "051910", "066970", "003670", "247660", "361610"]
+
+  - code: BATTMAT
+    name: 2차전지 소재
+    bucket: energy
+    symbols: ["003670", "005490", "086520", "078340", "247660", "450080", "121600", "091990"]
+
+  - code: NUCLR
+    name: 원자력
+    bucket: energy
+    symbols: ["015760", "034020", "051600", "052690", "064350", "298040", "298060", "082740"]
+
+  - code: SOLAR
+    name: 태양광
+    bucket: energy
+    symbols: ["009830", "042660", "096770", "010120", "011790", "064760"]
+
+  - code: WIND
+    name: 풍력
+    bucket: energy
+    symbols: ["112610", "064350", "034020", "298040", "082740", "009540"]
+
+  - code: ROBOT
+    name: 로봇
+    bucket: tech
+    symbols: ["064350", "108320", "222800", "060980", "108860", "195440", "145720", "307950"]
+
+  - code: SPACE
+    name: 우주/위성
+    bucket: defense
+    symbols: ["047810", "272210", "079550", "064350", "012450", "138490", "298830"]
+
+  - code: DEFNS
+    name: 방산
+    bucket: defense
+    symbols: ["047810", "272210", "012450", "079550", "042660", "064350"]
+
+  - code: BIO
+    name: 바이오/제약
+    bucket: bio
+    symbols: ["207940", "068270", "326030", "128940", "145020", "196170", "000100", "009420"]
+
+  - code: HLTH
+    name: 헬스케어 플랫폼
+    bucket: bio
+    symbols: ["068270", "214150", "141080", "145020", "039200", "950160"]
+
+  - code: EV
+    name: 전기차
+    bucket: mobility
+    symbols: ["005380", "000270", "373220", "006400", "051910", "204320", "011210", "307950"]
+
+  - code: HYDRGN
+    name: 수소
+    bucket: energy
+    symbols: ["034020", "072870", "298050", "020560", "064350", "267250"]
+
+  - code: AIPLAT
+    name: AI 플랫폼/서비스
+    bucket: tech
+    symbols: ["035420", "035720", "053800", "376300", "377300", "089030", "100090"]
+
+  - code: GAME
+    name: 게임
+    bucket: tech
+    symbols: ["036570", "251270", "259960", "293490", "263750", "225570", "095660"]
+
+  - code: FIN
+    name: 금융/은행
+    bucket: finance
+    symbols: ["055550", "105560", "086790", "138930", "316140", "024110", "032830", "071050"]
+
+  - code: SHIP
+    name: 조선
+    bucket: mobility
+    symbols: ["009540", "010140", "042660", "329180", "067250", "077970", "097230"]
+
+  - code: FOOD
+    name: 음식료/리오프닝
+    bucket: consumer
+    symbols: ["097950", "271560", "004370", "006280", "049770", "139480", "280360"]
