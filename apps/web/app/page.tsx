@@ -6,18 +6,67 @@ import { useEffect, useState } from "react";
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:31300";
 
+// Exact shape of /api/v1/chartist/today (confirmed from live API 2026-04-24).
+interface KpiPill {
+  label: string;
+  value: string;
+  delta?: string;
+  tone?: "pos" | "neg" | "neutral";
+}
+interface Leader {
+  symbol: string;
+  name?: string;
+  sector?: string;
+  leader_score?: number;
+  trend_template?: string;
+  rs?: number;
+  d1?: number;
+  d5?: number;
+  m1?: number;
+  vol_x?: number;
+  pattern?: string;
+}
+interface SectorRow {
+  rank?: number;
+  name: string;
+  score?: number;
+  d1?: number;
+  d5?: number;
+  sparkline?: number[];
+}
+interface WizardPass {
+  name: string;
+  condition?: string;
+  pass_count?: number;
+  total?: number;
+  delta_vs_yesterday?: number;
+}
+interface StageRow {
+  name: string;
+  count?: number;
+  pct?: number;
+  color_hint?: string;
+}
+interface Breakout {
+  ticker?: string;
+  symbol: string;
+  market?: string;
+  pct_up?: number;
+  vol_x?: number;
+  sector?: string;
+}
 interface TodayBundle {
-  as_of?: string;
-  top_sectors?: Array<{ sector: string; score?: number; pct_chg?: number }>;
-  top_leaders?: Array<{
-    symbol: string;
-    name?: string;
-    sector?: string;
-    leader_score?: number;
-    pct_chg?: number;
-  }>;
-  market?: { kospi?: number; kosdaq?: number; fx_usd_krw?: number };
-  [k: string]: unknown;
+  date?: string;
+  owner_id?: string;
+  universe_size?: number;
+  market: KpiPill[];
+  summary: KpiPill[];
+  leaders: Leader[];
+  sectors: SectorRow[];
+  wizards_pass?: WizardPass[];
+  stage_dist?: StageRow[];
+  breakouts?: Breakout[];
+  last_backtest_cagr?: number | null;
 }
 
 const TABS: Array<{
@@ -48,7 +97,7 @@ const TABS: Array<{
     href: "/execute/overview",
     label: "Execute",
     blurb: "포지션 · 주문 · 리스크",
-    details: "KIS OAuth · 호가/체결 SSE · 백테스트 실행 (일부 ROADMAP)",
+    details: "KIS OAuth · 호가/체결 SSE · 백테스트 실행",
   },
   {
     href: "/research/airesearch",
@@ -64,14 +113,24 @@ const TABS: Array<{
   },
 ];
 
-function fmt(v: number | undefined, digits = 0): string {
-  if (v == null || !isFinite(v)) return "—";
-  return v.toLocaleString(undefined, { maximumFractionDigits: digits });
+function toneColor(tone?: string): string {
+  if (tone === "pos") return "var(--pos)";
+  if (tone === "neg") return "var(--neg)";
+  return "var(--fg-muted)";
 }
-
-function fmtPct(v: number | undefined): { text: string; pos: boolean | null } {
-  if (v == null || !isFinite(v)) return { text: "—", pos: null };
-  return { text: `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`, pos: v >= 0 };
+function pctColor(v: number | undefined): string {
+  if (v == null) return "var(--fg-muted)";
+  return v >= 0 ? "var(--pos)" : "var(--neg)";
+}
+function pctFmt(v: number | undefined): string {
+  if (v == null || !isFinite(v)) return "—";
+  return `${v >= 0 ? "+" : ""}${v.toFixed(2)}%`;
+}
+// Strip UTF-16 lone surrogates that come through from bytes encoded with
+// Python's surrogateescape (ingestion pipeline issue we haven't fully fixed).
+function clean(s: string | undefined | null): string {
+  if (!s) return "";
+  return s.replace(/[\uD800-\uDFFF]/g, "");
 }
 
 export default function HomePage() {
@@ -97,92 +156,107 @@ export default function HomePage() {
     };
   }, []);
 
-  const market = bundle?.market ?? {};
-  const topSectors = (bundle?.top_sectors ?? []).slice(0, 5);
-  const topLeaders = (bundle?.top_leaders ?? []).slice(0, 5);
+  const marketPills = bundle?.market ?? [];
+  const summaryPills = bundle?.summary ?? [];
+  const leaders = bundle?.leaders ?? [];
+  const sectors = bundle?.sectors ?? [];
+  const wizards = bundle?.wizards_pass ?? [];
+  const stages = bundle?.stage_dist ?? [];
+  const breakouts = bundle?.breakouts ?? [];
+
+  const asOf = bundle?.date;
+  const asOfDate = asOf ? new Date(asOf) : null;
+  const ageDays = asOfDate
+    ? Math.floor((today.getTime() - asOfDate.getTime()) / 86400000)
+    : null;
+  const isStale = ageDays !== null && ageDays > 2;
 
   return (
     <div className="max-w-6xl">
+      {/* Header */}
       <div className="flex items-baseline justify-between flex-wrap gap-2 mb-4">
         <h1 className="display text-4xl">probably-alpha</h1>
-        <div className="mono text-[11px] text-[color:var(--fg-muted)]">
-          {todayStr} · {today.toLocaleDateString("ko-KR", { weekday: "long" })}
+        <div className="flex items-baseline gap-3">
+          <span className="mono text-[11px] text-[color:var(--fg-muted)]">
+            {todayStr} · {today.toLocaleDateString("ko-KR", { weekday: "long" })}
+          </span>
+          {asOf && (
+            <span
+              className="mono text-[10px] px-1.5 py-[1px] rounded border"
+              style={{
+                borderColor: isStale ? "var(--neg)" : "var(--border)",
+                color: isStale ? "var(--neg)" : "var(--fg-muted)",
+                background: "var(--bg)",
+              }}
+              title={`data as-of ${asOf}, today is ${todayStr}`}
+            >
+              데이터 as-of {asOf}
+              {isStale ? ` (${ageDays}d stale)` : ""}
+            </span>
+          )}
         </div>
       </div>
-      <p className="text-[color:var(--fg-muted)] mb-8 text-[13px] leading-relaxed max-w-3xl">
+      <p className="text-[color:var(--fg-muted)] mb-6 text-[13px] leading-relaxed max-w-3xl">
         한국 주식 시장용 6-탭 통합 리서치 플랫폼. Chartist로 주도주/섹터를 스캔하고,
         Quant/Value로 팩터·재무를 분석하며, Execute로 KIS를 통해 주문·관찰한다.
         Research 탭의 AI 어시스턴트는 도서 41K · 한은 367K · 증권사 104K 청크의
         3-layer RAG 위에서 Haiku 4.5가 답한다.
       </p>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <SnapshotCard
-          label="KOSPI"
-          value={fmt(market.kospi, 2)}
-          sub={bundle?.as_of ? `as-of ${bundle.as_of}` : "—"}
-        />
-        <SnapshotCard
-          label="KOSDAQ"
-          value={fmt(market.kosdaq, 2)}
-          sub={bundle?.as_of ? `as-of ${bundle.as_of}` : "—"}
-        />
-        <SnapshotCard
-          label="USD/KRW"
-          value={fmt(market.fx_usd_krw, 2)}
-          sub="EXIM / ECOS"
-        />
-        <SnapshotCard
-          label="Top Sector"
-          value={topSectors[0]?.sector ?? "—"}
-          sub={
-            topSectors[0]?.score != null
-              ? `score ${topSectors[0].score.toFixed(2)}`
-              : "—"
-          }
-        />
-      </div>
+      {/* Market pills (universe, KOSPI, KOSDAQ, ETF…) */}
+      {marketPills.length > 0 && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+          {marketPills.map((p) => (
+            <PillCard key={p.label} pill={p} />
+          ))}
+        </div>
+      )}
 
+      {/* Summary pills (Top Sector, Top Leader, wizards, etc) */}
+      {summaryPills.length > 0 && (
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-6">
+          {summaryPills.map((p) => (
+            <PillCard key={p.label} pill={p} compact />
+          ))}
+        </div>
+      )}
+
+      {/* Main two-column: sectors + leaders */}
       <div className="grid md:grid-cols-2 gap-4 mb-6">
         <Panel title="Top Sectors (오늘)" href="/chartist/sectors">
           {err ? (
             <ErrorRow msg={err} />
-          ) : topSectors.length === 0 ? (
+          ) : sectors.length === 0 ? (
             <EmptyRow />
           ) : (
             <ul className="flex flex-col">
-              {topSectors.map((s, i) => {
-                const p = fmtPct(s.pct_chg);
-                return (
-                  <li
-                    key={s.sector}
-                    className="flex items-center justify-between py-1.5 px-1 text-[12px]"
-                    style={{ borderBottom: "1px solid var(--border-soft)" }}
-                  >
-                    <span>
-                      <span className="mono text-[10px] text-[color:var(--fg-muted)] mr-2">
-                        {i + 1}.
+              {sectors.slice(0, 8).map((s) => (
+                <li
+                  key={s.name}
+                  className="flex items-center justify-between py-1.5 px-1 text-[12px]"
+                  style={{ borderBottom: "1px solid var(--border-soft)" }}
+                >
+                  <span className="flex items-baseline gap-2">
+                    <span className="mono text-[10px] text-[color:var(--fg-muted)] w-4 inline-block">
+                      {s.rank}.
+                    </span>
+                    <span>{clean(s.name)}</span>
+                  </span>
+                  <span className="flex items-center gap-3">
+                    {s.score != null && (
+                      <span className="mono text-[11px] text-[color:var(--fg-muted)]">
+                        {s.score.toFixed(2)}
                       </span>
-                      {s.sector}
+                    )}
+                    <span
+                      className="mono text-[11px] w-14 text-right"
+                      style={{ color: pctColor(s.d1) }}
+                    >
+                      {pctFmt(s.d1)}
                     </span>
-                    <span className="flex items-center gap-3">
-                      {s.score != null && (
-                        <span className="mono text-[11px] text-[color:var(--fg-muted)]">
-                          {s.score.toFixed(2)}
-                        </span>
-                      )}
-                      {p.pos !== null && (
-                        <span
-                          className="mono text-[11px]"
-                          style={{ color: p.pos ? "var(--pos)" : "var(--neg)" }}
-                        >
-                          {p.text}
-                        </span>
-                      )}
-                    </span>
-                  </li>
-                );
-              })}
+                  </span>
+                </li>
+              ))}
             </ul>
           )}
         </Panel>
@@ -190,48 +264,149 @@ export default function HomePage() {
         <Panel title="Top Leaders (오늘)" href="/chartist/leaders">
           {err ? (
             <ErrorRow msg={err} />
-          ) : topLeaders.length === 0 ? (
+          ) : leaders.length === 0 ? (
             <EmptyRow />
           ) : (
             <ul className="flex flex-col">
-              {topLeaders.map((l, i) => {
-                const p = fmtPct(l.pct_chg);
-                return (
-                  <li
-                    key={l.symbol}
-                    className="flex items-center justify-between py-1.5 px-1 text-[12px]"
-                    style={{ borderBottom: "1px solid var(--border-soft)" }}
-                  >
-                    <span>
-                      <span className="mono text-[10px] text-[color:var(--fg-muted)] mr-2">
-                        {i + 1}.
+              {leaders.slice(0, 8).map((l, i) => (
+                <li
+                  key={l.symbol}
+                  className="flex items-center justify-between py-1.5 px-1 text-[12px]"
+                  style={{ borderBottom: "1px solid var(--border-soft)" }}
+                >
+                  <span className="flex items-baseline gap-2 truncate">
+                    <span className="mono text-[10px] text-[color:var(--fg-muted)] w-4 inline-block">
+                      {i + 1}.
+                    </span>
+                    <span className="mono">{l.symbol}</span>
+                    <span className="truncate max-w-[14ch]">{clean(l.name)}</span>
+                    {l.trend_template && (
+                      <span className="mono text-[9.5px] text-[color:var(--muted)]">
+                        TT {l.trend_template}
                       </span>
-                      <span className="mono mr-2">{l.symbol}</span>
-                      {l.name ?? ""}
+                    )}
+                  </span>
+                  <span className="flex items-center gap-3">
+                    {l.leader_score != null && (
+                      <span className="mono text-[11px] text-[color:var(--fg-muted)]">
+                        {l.leader_score.toFixed(2)}
+                      </span>
+                    )}
+                    <span
+                      className="mono text-[11px] w-14 text-right"
+                      style={{ color: pctColor(l.d1) }}
+                    >
+                      {pctFmt(l.d1)}
                     </span>
-                    <span className="flex items-center gap-3">
-                      {l.leader_score != null && (
-                        <span className="mono text-[11px] text-[color:var(--fg-muted)]">
-                          {l.leader_score.toFixed(2)}
-                        </span>
-                      )}
-                      {p.pos !== null && (
-                        <span
-                          className="mono text-[11px]"
-                          style={{ color: p.pos ? "var(--pos)" : "var(--neg)" }}
-                        >
-                          {p.text}
-                        </span>
-                      )}
-                    </span>
-                  </li>
-                );
-              })}
+                  </span>
+                </li>
+              ))}
             </ul>
           )}
         </Panel>
       </div>
 
+      {/* Wizards + breakouts + stages */}
+      <div className="grid md:grid-cols-3 gap-4 mb-6">
+        <Panel title="Wizards Pass" href="/chartist/wizards">
+          {wizards.length === 0 ? (
+            <EmptyRow />
+          ) : (
+            <ul className="flex flex-col">
+              {wizards.map((w) => (
+                <li
+                  key={w.name}
+                  className="flex items-center justify-between py-1 px-1 text-[11.5px]"
+                  style={{ borderBottom: "1px solid var(--border-soft)" }}
+                >
+                  <span className="truncate">{w.name}</span>
+                  <span className="flex items-baseline gap-2">
+                    <span className="mono">
+                      {w.pass_count}/{w.total}
+                    </span>
+                    {w.delta_vs_yesterday != null && w.delta_vs_yesterday !== 0 && (
+                      <span
+                        className="mono text-[10px]"
+                        style={{ color: pctColor(w.delta_vs_yesterday) }}
+                      >
+                        {w.delta_vs_yesterday > 0 ? "+" : ""}
+                        {w.delta_vs_yesterday}
+                      </span>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+
+        <Panel title="Breakouts" href="/chartist/breakouts/52w">
+          {breakouts.length === 0 ? (
+            <EmptyRow />
+          ) : (
+            <ul className="flex flex-col">
+              {breakouts.map((b) => (
+                <li
+                  key={b.symbol}
+                  className="flex items-center justify-between py-1 px-1 text-[11.5px]"
+                  style={{ borderBottom: "1px solid var(--border-soft)" }}
+                >
+                  <span className="flex items-baseline gap-2 truncate">
+                    <span className="mono">{b.symbol}</span>
+                    <span className="truncate max-w-[10ch]">
+                      {clean(b.ticker)}
+                    </span>
+                  </span>
+                  <span className="flex items-baseline gap-2">
+                    <span
+                      className="mono text-[11px]"
+                      style={{ color: "var(--pos)" }}
+                    >
+                      {pctFmt(b.pct_up)}
+                    </span>
+                    {b.vol_x != null && (
+                      <span className="mono text-[10px] text-[color:var(--fg-muted)]">
+                        ×{b.vol_x.toFixed(1)}
+                      </span>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+
+        <Panel title="Stage Distribution" href="/chartist/wizards/minervini">
+          {stages.length === 0 ? (
+            <EmptyRow />
+          ) : (
+            <ul className="flex flex-col">
+              {stages.map((s) => (
+                <li
+                  key={s.name}
+                  className="flex items-center justify-between py-1 px-1 text-[11.5px]"
+                  style={{ borderBottom: "1px solid var(--border-soft)" }}
+                >
+                  <span className="flex items-baseline gap-2 truncate">
+                    {s.color_hint && (
+                      <span
+                        className="inline-block w-2.5 h-2.5 rounded"
+                        style={{ background: s.color_hint }}
+                      />
+                    )}
+                    <span className="truncate">{s.name}</span>
+                  </span>
+                  <span className="mono text-[11px]">
+                    {s.count} · {s.pct?.toFixed(1)}%
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Panel>
+      </div>
+
+      {/* Tab directory */}
       <h2 className="display text-lg mb-3 text-[color:var(--fg-muted)]">
         탭 바로가기
       </h2>
@@ -254,6 +429,7 @@ export default function HomePage() {
         ))}
       </div>
 
+      {/* Footer */}
       <div
         className="text-[11px] text-[color:var(--fg-muted)] border-t pt-3 mt-6"
         style={{ borderColor: "var(--border-soft)" }}
@@ -266,41 +442,51 @@ export default function HomePage() {
           <span>
             RAG: <span className="mono">book + 한은 + 증권사</span> (3 layers)
           </span>
-          <span>
-            <Link href={"/research/airesearch" as never} className="underline">
-              AI에게 질문하기
-            </Link>
-          </span>
-          <span>
-            <Link href={"/admin/status" as never} className="underline">
-              시스템 상태
-            </Link>
-          </span>
+          <Link
+            href={"/research/airesearch" as never}
+            className="underline hover:text-[color:var(--fg)]"
+          >
+            AI에게 질문하기
+          </Link>
+          <Link
+            href={"/admin/status" as never}
+            className="underline hover:text-[color:var(--fg)]"
+          >
+            시스템 상태
+          </Link>
+          {bundle?.universe_size != null && (
+            <span className="ml-auto mono">
+              universe {bundle.universe_size.toLocaleString()}
+            </span>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-function SnapshotCard({
-  label,
-  value,
-  sub,
-}: {
-  label: string;
-  value: string;
-  sub: string;
-}) {
+function PillCard({ pill, compact = false }: { pill: KpiPill; compact?: boolean }) {
   return (
     <div
-      className="p-3 rounded-md border"
+      className={`rounded-md border ${compact ? "p-2" : "p-3"}`}
       style={{ borderColor: "var(--border-soft)", background: "var(--bg)" }}
     >
-      <div className="text-[10.5px] uppercase tracking-widest text-[color:var(--muted)] mb-1">
-        {label}
+      <div
+        className={`text-[10px] uppercase tracking-widest text-[color:var(--muted)] ${compact ? "mb-0.5" : "mb-1"}`}
+      >
+        {pill.label}
       </div>
-      <div className="mono text-lg">{value}</div>
-      <div className="text-[10px] text-[color:var(--fg-muted)] mt-1">{sub}</div>
+      <div className={`mono ${compact ? "text-[13px]" : "text-lg"}`}>
+        {pill.value}
+      </div>
+      {pill.delta && (
+        <div
+          className="text-[10px] mt-1"
+          style={{ color: toneColor(pill.tone) }}
+        >
+          {pill.delta}
+        </div>
+      )}
     </div>
   );
 }
@@ -336,7 +522,7 @@ function Panel({
 function EmptyRow() {
   return (
     <div className="text-[11px] text-[color:var(--fg-muted)] py-3 text-center">
-      아직 데이터가 준비되지 않았습니다 (nightly 파이프라인 실행 필요).
+      데이터 없음 (nightly 파이프라인 대기).
     </div>
   );
 }
@@ -344,7 +530,7 @@ function EmptyRow() {
 function ErrorRow({ msg }: { msg: string }) {
   return (
     <div className="text-[11px] text-[color:var(--neg)] py-3">
-      데이터를 불러오지 못했습니다: {msg}
+      불러오지 못했습니다: {msg}
     </div>
   );
 }
