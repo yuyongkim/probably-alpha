@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { apiBase } from "@/lib/apiBase";
 
 type Level = {
   level: number;
@@ -23,13 +24,6 @@ type OrderbookMsg = {
 };
 
 type ConnState = "connecting" | "open" | "error" | "closed";
-
-function apiBase() {
-  return (
-    process.env.NEXT_PUBLIC_API_BASE_URL ??
-    (typeof window !== "undefined" ? window.location.origin : "http://127.0.0.1:8300")
-  );
-}
 
 function fmtNum(v: string | undefined): string {
   if (!v) return "—";

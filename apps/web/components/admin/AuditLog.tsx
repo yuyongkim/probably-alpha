@@ -3,10 +3,9 @@
 // AuditLog — table of sensitive-action events. Admins see everyone; otherwise
 // scoped to the 'self' tenant.
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { apiBase } from "@/lib/apiBase";
 import type { AuditResponse } from "@/types/admin";
 
-const BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8300";
 const TOKEN_KEY = "ky_admin_token";
 
 export function AuditLog() {
@@ -29,7 +28,7 @@ export function AuditLog() {
   const refresh = useCallback(async () => {
     setError(null);
     try {
-      const res = await fetch(`${BASE}/api/v1/admin/audit?limit=500`, {
+      const res = await fetch(`${apiBase()}/api/v1/admin/audit?limit=500`, {
         headers,
         cache: "no-store",
       });

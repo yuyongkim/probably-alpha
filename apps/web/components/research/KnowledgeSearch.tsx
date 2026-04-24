@@ -1,14 +1,12 @@
 "use client";
 // KnowledgeSearch — client component; debounced search against /knowledge/search.
 import { useEffect, useState } from "react";
+import { apiBase } from "@/lib/apiBase";
 import type {
   KnowledgeSearchResponse,
   KnowledgeSearchResult,
   KnowledgeStatus,
 } from "@/types/research";
-
-const BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8300";
 
 interface Props {
   initialQuery?: string;
@@ -32,7 +30,7 @@ export function KnowledgeSearch({ initialQuery = "", initialStatus }: Props) {
       setLoading(true);
       setError(null);
       try {
-        const url = `${BASE}/api/v1/research/knowledge/search?q=${encodeURIComponent(q)}&top_k=8`;
+        const url = `${apiBase()}/api/v1/research/knowledge/search?q=${encodeURIComponent(q)}&top_k=8`;
         const res = await fetch(url, { signal: ctrl.signal });
         const body = (await res.json()) as {
           ok: boolean;

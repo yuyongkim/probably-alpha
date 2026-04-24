@@ -4,10 +4,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { apiBase } from "@/lib/apiBase";
 import type { OHLCVResponse } from "@/types/chartist";
-
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:31300";
 
 interface Props {
   symbol: string;
@@ -91,7 +89,7 @@ export function ChartPane({ symbol }: Props) {
     let cancelled = false;
     setStatus("loading");
     setErr(null);
-    fetch(`${API_BASE}/api/v1/chartist/ohlcv/${symbol}?days=${rangeDays}`)
+    fetch(`${apiBase()}/api/v1/chartist/ohlcv/${symbol}?days=${rangeDays}`)
       .then(async (r) => {
         const body = await r.json();
         if (!body.ok || !body.data) {

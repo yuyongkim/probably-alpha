@@ -3,10 +3,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { apiBase } from "@/lib/apiBase";
 import { fmtNum, fmtPct } from "@/lib/format";
-
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8300";
 
 export interface EPSPoint {
   period: string;
@@ -40,7 +38,7 @@ export function EPSBlock({ symbol, period = "Q", years = 5 }: Props) {
     let cancelled = false;
     setPayload(null);
     setLoaded(false);
-    fetch(`${API_BASE}/api/v1/value/eps/${symbol}?period=${period}&years=${years}`)
+    fetch(`${apiBase()}/api/v1/value/eps/${symbol}?period=${period}&years=${years}`)
       .then((r) => r.json())
       .then((body) => {
         if (cancelled) return;

@@ -1,10 +1,8 @@
 "use client";
 // NewsPanel — keyword sentiment over Naver search news.
 import { useEffect, useState } from "react";
+import { apiBase } from "@/lib/apiBase";
 import type { NewsSearchResponse } from "@/types/research";
-
-const BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8300";
 
 const DEFAULT_PRESETS = ["삼성전자", "SK하이닉스", "코스피", "현대차", "카카오"];
 
@@ -24,7 +22,7 @@ export function NewsPanel() {
       setLoading(true);
       setError(null);
       try {
-        const url = `${BASE}/api/v1/research/news/search?q=${encodeURIComponent(q)}&display=12`;
+        const url = `${apiBase()}/api/v1/research/news/search?q=${encodeURIComponent(q)}&display=12`;
         const res = await fetch(url, { signal: ctrl.signal });
         const body = (await res.json()) as {
           ok: boolean;

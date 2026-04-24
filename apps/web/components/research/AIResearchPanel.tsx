@@ -1,10 +1,8 @@
 "use client";
 // AIResearchPanel — Claude-backed Q&A with RAG citations (or stub fallback).
 import { useState } from "react";
+import { apiBase } from "@/lib/apiBase";
 import type { AIAgentResponse } from "@/types/research";
-
-const BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8300";
 
 export function AIResearchPanel() {
   const [q, setQ] = useState("");
@@ -17,7 +15,7 @@ export function AIResearchPanel() {
     setLoading(true);
     setError(null);
     try {
-      const url = `${BASE}/api/v1/research/airesearch/ask?q=${encodeURIComponent(q)}&k=6`;
+      const url = `${apiBase()}/api/v1/research/airesearch/ask?q=${encodeURIComponent(q)}&k=6`;
       const res = await fetch(url);
       const body = (await res.json()) as {
         ok: boolean;

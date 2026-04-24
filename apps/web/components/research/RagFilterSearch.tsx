@@ -2,14 +2,12 @@
 // RagFilterSearch — topic-filtered RAG search (interviews / psychology /
 // cycles / blogs).  Mirrors BuffettSearch shape; one component, four slugs.
 import { useEffect, useState } from "react";
+import { apiBase } from "@/lib/apiBase";
 import type {
   KnowledgeSearchResult,
   RagFilterIndex,
   RagFilterSearchResponse,
 } from "@/types/research";
-
-const BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8300";
 
 interface Props {
   slug: "interviews" | "psychology" | "cycles" | "blogs";
@@ -35,7 +33,7 @@ export function RagFilterSearch({
     let cancelled = false;
     (async () => {
       try {
-        const r = await fetch(`${BASE}/api/v1/research/${slug}/index`);
+        const r = await fetch(`${apiBase()}/api/v1/research/${slug}/index`);
         const body = (await r.json()) as {
           ok: boolean;
           data?: RagFilterIndex;
@@ -61,7 +59,7 @@ export function RagFilterSearch({
       setLoading(true);
       setError(null);
       try {
-        const url = `${BASE}/api/v1/research/${slug}/search?q=${encodeURIComponent(q)}&top_k=6`;
+        const url = `${apiBase()}/api/v1/research/${slug}/search?q=${encodeURIComponent(q)}&top_k=6`;
         const res = await fetch(url, { signal: ctrl.signal });
         const body = (await res.json()) as {
           ok: boolean;

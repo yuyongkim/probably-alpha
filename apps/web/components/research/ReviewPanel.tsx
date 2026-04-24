@@ -1,10 +1,8 @@
 "use client";
 // ReviewPanel — renders /research/review/latest on-demand.
 import { useEffect, useState } from "react";
+import { apiBase } from "@/lib/apiBase";
 import type { ReviewResponse } from "@/types/research";
-
-const BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8300";
 
 export function ReviewPanel() {
   const [period, setPeriod] = useState<"weekly" | "monthly">("weekly");
@@ -19,7 +17,7 @@ export function ReviewPanel() {
       setLoading(true);
       setError(null);
       try {
-        const url = `${BASE}/api/v1/research/review/latest?period=${period}`;
+        const url = `${apiBase()}/api/v1/research/review/latest?period=${period}`;
         const res = await fetch(url, { signal: ctrl.signal });
         const body = (await res.json()) as {
           ok: boolean;

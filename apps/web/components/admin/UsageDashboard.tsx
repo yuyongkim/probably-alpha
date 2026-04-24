@@ -2,10 +2,9 @@
 
 // UsageDashboard — per-tenant call count + avg latency + dummy pricing.
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { apiBase } from "@/lib/apiBase";
 import type { UsageResponse } from "@/types/admin";
 
-const BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8300";
 const TOKEN_KEY = "ky_admin_token";
 
 export function UsageDashboard() {
@@ -30,7 +29,7 @@ export function UsageDashboard() {
     setError(null);
     try {
       const res = await fetch(
-        `${BASE}/api/v1/admin/usage?since_hours=${sinceHours}&limit=300`,
+        `${apiBase()}/api/v1/admin/usage?since_hours=${sinceHours}&limit=300`,
         { headers, cache: "no-store" },
       );
       const body = await res.json();

@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import { apiBase } from "@/lib/apiBase";
 
 interface Props {
   symbol: string;
@@ -29,9 +30,6 @@ function sentStyle(s: Headline["sentiment"]): { color: string; bg: string; label
   return { color: "var(--fg-muted)", bg: "var(--bg)", label: "NEU" };
 }
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE || "http://127.0.0.1:8300";
-
 export function NewsAIPane({ symbol }: Props) {
   const [q, setQ] = useState("");
   const [a, setA] = useState<string | null>(null);
@@ -43,7 +41,7 @@ export function NewsAIPane({ symbol }: Props) {
     setLoading(true);
     setA(null);
     try {
-      const res = await fetch(`${API_BASE}/api/v1/assistant/chat`, {
+      const res = await fetch(`${apiBase()}/api/v1/assistant/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify({

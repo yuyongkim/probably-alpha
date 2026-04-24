@@ -14,10 +14,10 @@ const config: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  env: {
-    NEXT_PUBLIC_API_BASE_URL:
-      process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:31300",
-  },
+  // NEXT_PUBLIC_API_BASE_URL is intentionally not defaulted here — see
+  // apps/web/lib/apiBase.ts for runtime resolution. Baking a default here
+  // breaks loopback vs public origin separation (Chrome's Private Network
+  // Access blocks loopback fetches from https://gazua.yule.pics).
 };
 
 export default config;

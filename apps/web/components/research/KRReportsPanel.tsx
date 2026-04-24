@@ -1,10 +1,8 @@
 "use client";
 // KRReportsPanel — Naver Finance research reports by category.
 import { useEffect, useState } from "react";
+import { apiBase } from "@/lib/apiBase";
 import type { KRReportsResponse } from "@/types/research";
-
-const BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8300";
 
 const CATEGORIES: { slug: string; label: string }[] = [
   { slug: "company", label: "종목" },
@@ -26,7 +24,7 @@ export function KRReportsPanel() {
       setLoading(true);
       setError(null);
       try {
-        const url = `${BASE}/api/v1/research/krreports/list?category=${cat}&limit=25`;
+        const url = `${apiBase()}/api/v1/research/krreports/list?category=${cat}&limit=25`;
         const res = await fetch(url, { signal: ctrl.signal });
         const body = (await res.json()) as {
           ok: boolean;

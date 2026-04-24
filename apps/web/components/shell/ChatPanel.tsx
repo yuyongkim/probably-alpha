@@ -6,11 +6,9 @@
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
+import { apiBase } from "@/lib/apiBase";
 import { useChatFab } from "@/lib/chatFab";
 import { SIDEBAR_MAP, getTabFromPathname } from "@/lib/sidebarMap";
-
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8300";
 
 const EXAMPLE_PROMPTS = [
   "오늘 SEPA 통과 종목 중 EPS 성장률 상위 5개는?",
@@ -84,7 +82,7 @@ export function ChatPanel() {
     setPending(true);
 
     try {
-      const res = await fetch(`${API_BASE}/api/v1/assistant/chat`, {
+      const res = await fetch(`${apiBase()}/api/v1/assistant/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

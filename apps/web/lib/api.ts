@@ -1,8 +1,7 @@
 // Tiny fetch helper that unwraps the {ok, data, error} envelope.
 // Server Components pass absolute URLs; `next` fetch cache is fine.
 
-const BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8300";
+import { apiBase } from "./apiBase";
 
 interface Envelope<T> {
   ok: boolean;
@@ -14,7 +13,7 @@ export async function fetchEnvelope<T>(
   path: string,
   init?: RequestInit & { revalidate?: number },
 ): Promise<T> {
-  const url = path.startsWith("http") ? path : `${BASE}${path}`;
+  const url = path.startsWith("http") ? path : `${apiBase()}${path}`;
   const res = await fetch(url, {
     ...init,
     next: { revalidate: init?.revalidate ?? 60 },

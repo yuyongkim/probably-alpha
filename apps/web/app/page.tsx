@@ -12,10 +12,8 @@ import { TabDirectory } from "@/components/home/TabDirectory";
 import { TopLeadersList } from "@/components/home/TopLeadersList";
 import { TopSectorsList } from "@/components/home/TopSectorsList";
 import { WizardsList } from "@/components/home/WizardsList";
+import { apiBase } from "@/lib/apiBase";
 import type { TodayBundle } from "@/types/today";
-
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:31300";
 
 export default function HomePage() {
   const [bundle, setBundle] = useState<TodayBundle | null>(null);
@@ -23,7 +21,7 @@ export default function HomePage() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`${API_BASE}/api/v1/chartist/today`)
+    fetch(`${apiBase()}/api/v1/chartist/today`)
       .then((r) => r.json())
       .then((body) => {
         if (cancelled) return;

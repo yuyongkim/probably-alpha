@@ -1,10 +1,8 @@
 "use client";
 // BuffettSearch — Buffett-scoped RAG search (client component).
 import { useEffect, useState } from "react";
+import { apiBase } from "@/lib/apiBase";
 import type { BuffettSearchResponse, KnowledgeSearchResult } from "@/types/research";
-
-const BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8300";
 
 export function BuffettSearch() {
   const [q, setQ] = useState("circle of competence");
@@ -17,7 +15,7 @@ export function BuffettSearch() {
     const t = setTimeout(async () => {
       setLoading(true);
       try {
-        const url = `${BASE}/api/v1/research/buffett/search?q=${encodeURIComponent(q)}&top_k=6`;
+        const url = `${apiBase()}/api/v1/research/buffett/search?q=${encodeURIComponent(q)}&top_k=6`;
         const res = await fetch(url, { signal: ctrl.signal });
         const body = (await res.json()) as {
           ok: boolean;

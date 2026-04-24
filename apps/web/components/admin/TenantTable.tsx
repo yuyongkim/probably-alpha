@@ -4,10 +4,9 @@
 // Admin token lives in localStorage (key: ky_admin_token) so this page can
 // show mutating controls without a full auth system. GET always works.
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { apiBase } from "@/lib/apiBase";
 import type { TenantListResponse, TenantRow } from "@/types/admin";
 
-const BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8300";
 const TOKEN_KEY = "ky_admin_token";
 
 type CreatedKey = { tenant_id: string; api_key: string } | null;
@@ -41,7 +40,7 @@ export function TenantTable() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${BASE}/api/v1/admin/tenants`, { headers, cache: "no-store" });
+      const res = await fetch(`${apiBase()}/api/v1/admin/tenants`, { headers, cache: "no-store" });
       const body = await res.json();
       if (!body.ok) throw new Error(body.error?.message ?? "fetch failed");
       setTenants((body.data as TenantListResponse).tenants);
@@ -71,7 +70,7 @@ export function TenantTable() {
     }
     setError(null);
     try {
-      const res = await fetch(`${BASE}/api/v1/admin/tenants`, {
+      const res = await fetch(`${apiBase()}/api/v1/admin/tenants`, {
         method: "POST",
         headers,
         body: JSON.stringify(form),
@@ -90,7 +89,7 @@ export function TenantTable() {
     if (!adminToken) return;
     if (!confirm(`Rotate API key for '${tenantId}'? The old key will stop working.`)) return;
     try {
-      const res = await fetch(`${BASE}/api/v1/admin/tenants/${tenantId}/rotate`, {
+      const res = await fetch(`${apiBase()}/api/v1/admin/tenants/${tenantId}/rotate`, {
         method: "POST",
         headers,
       });
@@ -107,7 +106,7 @@ export function TenantTable() {
     if (!adminToken) return;
     if (!confirm(`Disable '${tenantId}'? All API calls from this tenant will be rejected.`)) return;
     try {
-      const res = await fetch(`${BASE}/api/v1/admin/tenants/${tenantId}`, {
+      const res = await fetch(`${apiBase()}/api/v1/admin/tenants/${tenantId}`, {
         method: "DELETE",
         headers,
       });
