@@ -56,11 +56,16 @@ export function EPSBlock({ symbol, period = "Q", years = 5 }: Props) {
     };
   }, [symbol, period, years]);
 
-  // silent when no data — EPS section is secondary to FnGuide bundle
-  if (!loaded || !payload || payload.rows.length === 0) return null;
+  // Hooks MUST run on every render in the same order — compute before any
+  // early return. When payload is null we pass an empty array through.
+  const points = useMemo(
+    () => (payload?.rows?.length ? payload.rows.slice().reverse() : []),
+    [payload?.rows],
+  );
 
-  // rows are newest-first; chart needs chronological left-to-right
-  const points = useMemo(() => payload.rows.slice().reverse(), [payload.rows]);
+  // silent when no data — EPS section is secondary to FnGuide bundle
+  if (!loaded || !payload || points.length === 0) return null;
+
   const values = points.map((p) => p.eps);
   const min = Math.min(...values);
   const max = Math.max(...values);

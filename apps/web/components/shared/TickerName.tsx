@@ -12,20 +12,15 @@ interface Props extends TickerRef {
 
 export function TickerName({ symbol, name, sector, className, children }: Props) {
   const openModal = useStockModal((s) => s.openModal);
+  // Native <button> — not <span role=button> — avoids the browser long-press /
+  // accessibility "allow" hint that appears on non-native interactive elements.
   return (
-    <span
+    <button
+      type="button"
       className={`ticker-name ${className ?? ""}`}
       onClick={() => openModal({ symbol, name, sector })}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          openModal({ symbol, name, sector });
-        }
-      }}
-      role="button"
-      tabIndex={0}
     >
       {children ?? name}
-    </span>
+    </button>
   );
 }
