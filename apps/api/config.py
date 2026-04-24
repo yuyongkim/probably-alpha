@@ -31,11 +31,11 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=None, case_sensitive=False, extra="ignore")
 
-    # Local services
+    # Local services (uncommon ports — user runs many projects on 3xxx/5xxx/8xxx)
     api_host: str = Field(default="127.0.0.1")
-    api_port: int = Field(default=8300)
+    api_port: int = Field(default=31300)
     web_host: str = Field(default="127.0.0.1")
-    web_port: int = Field(default=8380)
+    web_port: int = Field(default=31380)
 
     # Tenancy + flags
     platform_owner_id: str = Field(default="self")
@@ -44,10 +44,16 @@ class Settings(BaseSettings):
 
     # Backend
     log_level: str = Field(default="INFO")
-    cors_origins_raw: str = Field(default="http://127.0.0.1:8380,http://localhost:8380", alias="CORS_ORIGINS")
+    cors_origins_raw: str = Field(
+        default=(
+            "http://127.0.0.1:31380,http://localhost:31380,"
+            "https://gazua.yule.pics,https://alpha.yule.pics"
+        ),
+        alias="CORS_ORIGINS",
+    )
 
     # Frontend base (exposed for diagnostics only)
-    next_public_api_base_url: str = Field(default="http://127.0.0.1:8300")
+    next_public_api_base_url: str = Field(default="http://127.0.0.1:31300")
 
     # Secrets (optional, from shared.env). Code MUST check for None.
     kis_app_key: str | None = Field(default=None)

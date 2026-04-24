@@ -16,7 +16,7 @@ const config: NextConfig = {
   },
   env: {
     NEXT_PUBLIC_API_BASE_URL:
-      process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8300",
+      process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:31300",
   },
 };
 
