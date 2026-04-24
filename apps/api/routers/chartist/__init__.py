@@ -20,6 +20,8 @@ diagnostics (/as_of, /breadth, /ohlcv/{symbol}).
 from __future__ import annotations
 
 import logging
+import threading
+import time
 from typing import Any
 
 from fastapi import APIRouter, Query
@@ -39,6 +41,13 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+# /today bundle cache — compute is ~20s cold. Data only flips after nightly,
+# so a 10-minute TTL is a huge win without risking staleness users would notice.
+# Keyed by owner_id so multi-tenant bundles don't collide.
+_TODAY_TTL_SEC = 600
+_today_cache: dict[str, tuple[float, dict]] = {}
+_today_lock = threading.Lock()
+
 # Real-data sub-routers — paths unchanged.
 router.include_router(backtest_router, prefix="/backtest")
 router.include_router(leaders_router)      # /leaders, /sectors, /breakouts/*
@@ -53,27 +62,69 @@ router.include_router(korea_router)        # /flow, /themes, /themes/{code}, /sh
 
 
 @router.get("/today")
-def today_summary(mock: bool = Query(default=False)) -> dict:
+def today_summary(
+    mock: bool = Query(default=False),
+    no_cache: bool = Query(default=False, description="bypass the 10-min TTL cache"),
+) -> dict:
     """Return the Chartist > 오늘의 주도주 bundle.
 
     Real mode (default): assembled from ky.db via ``ky_core.scanning``.
     Mock mode (``?mock=true``): returns the legacy fixture shipped in
     ``ky_core.chartist`` — kept for parity while new pages roll out.
+
+    The real build is ~20s cold. We cache the result for 10 minutes keyed by
+    owner_id; ``?no_cache=true`` forces a rebuild. On compute failure we
+    serve the previously-cached bundle when available (flagged ``_stale``),
+    otherwise fall back to the mock fixture.
     """
     if mock:
         bundle = get_today_bundle(owner_id=settings.platform_owner_id)
         return _envelope(bundle.model_dump())
 
-    try:
-        data = _build_today_bundle()
-    except Exception as exc:  # fallback → mock so the page never 500s
-        logger.exception("today_summary real build failed, falling back to mock")
-        bundle = get_today_bundle(owner_id=settings.platform_owner_id)
-        bundle_dict = bundle.model_dump()
-        bundle_dict["_stale"] = True
-        bundle_dict["_error"] = f"{type(exc).__name__}: {exc}"
-        return _envelope(bundle_dict)
-    return _envelope(data)
+    owner = settings.platform_owner_id
+    now = time.time()
+
+    # Fast path: cache hit.
+    if not no_cache:
+        cached = _today_cache.get(owner)
+        if cached and (now - cached[0]) < _TODAY_TTL_SEC:
+            data = dict(cached[1])
+            data["_cached_at"] = int(cached[0])
+            data["_cache_age_s"] = int(now - cached[0])
+            return _envelope(data)
+
+    # Slow path: rebuild (single-flight guard so we don't pay the 20s N times
+    # when a burst of requests arrives on a cold cache).
+    with _today_lock:
+        # Re-check after acquiring the lock — another thread may have filled it.
+        if not no_cache:
+            cached = _today_cache.get(owner)
+            if cached and (now - cached[0]) < _TODAY_TTL_SEC:
+                data = dict(cached[1])
+                data["_cached_at"] = int(cached[0])
+                data["_cache_age_s"] = int(now - cached[0])
+                return _envelope(data)
+
+        try:
+            data = _build_today_bundle()
+            _today_cache[owner] = (time.time(), data)
+            return _envelope(data)
+        except Exception as exc:
+            logger.exception("today_summary real build failed")
+            # Prefer a stale cached value if we have one — better than the mock.
+            cached = _today_cache.get(owner)
+            if cached:
+                data = dict(cached[1])
+                data["_stale"] = True
+                data["_error"] = f"{type(exc).__name__}: {exc}"
+                data["_cache_age_s"] = int(now - cached[0])
+                return _envelope(data)
+            # No cache yet — fall back to the mock fixture.
+            bundle = get_today_bundle(owner_id=owner)
+            bundle_dict = bundle.model_dump()
+            bundle_dict["_stale"] = True
+            bundle_dict["_error"] = f"{type(exc).__name__}: {exc}"
+            return _envelope(bundle_dict)
 
 
 # --------------------------------------------------------------------------- #
