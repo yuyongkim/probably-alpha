@@ -1,4 +1,4 @@
-"""News / KR broker reports / review / AI agent / generic page shell."""
+"""News / KR broker reports / review / AI agent / reproduce / generic page shell."""
 from __future__ import annotations
 
 from typing import Any, Dict
@@ -73,6 +73,97 @@ def airesearch_ask(
         logger.exception("ai_agent ask failed")
         return envelope(None, error={"code": "AGENT_FAILED", "message": str(exc)}, ok=False)
     return envelope(answer.to_dict())
+
+
+@router.get("/reproduce")
+def reproduce_list() -> dict:
+    """Catalogue of academic papers the platform aims to reproduce. Phase 4
+    will attach backtest runs + replication confidence scores; for now this
+    returns the curated list so the /research/reproduce page renders
+    something useful instead of a 404."""
+    papers = [
+        {
+            "slug": "fama_french_3f_1993",
+            "title": "Fama & French (1993) — Common risk factors in the returns on stocks and bonds",
+            "venue": "Journal of Financial Economics",
+            "year": 1993,
+            "strategy": "3-Factor (MKT, SMB, HML)",
+            "status": "implemented",
+            "link": "/research/ffactor",
+        },
+        {
+            "slug": "carhart_4f_1997",
+            "title": "Carhart (1997) — On Persistence in Mutual Fund Performance",
+            "venue": "Journal of Finance",
+            "year": 1997,
+            "strategy": "4-Factor (adds momentum)",
+            "status": "planned",
+            "link": None,
+        },
+        {
+            "slug": "fama_french_5f_2015",
+            "title": "Fama & French (2015) — A five-factor asset pricing model",
+            "venue": "Journal of Financial Economics",
+            "year": 2015,
+            "strategy": "5-Factor (adds RMW, CMA)",
+            "status": "planned",
+            "link": None,
+        },
+        {
+            "slug": "greenblatt_magic_1997",
+            "title": "Greenblatt — The Little Book That Beats the Market",
+            "venue": "Gotham Capital (book, 2005 / method 1997)",
+            "year": 2005,
+            "strategy": "Magic Formula (EY + ROIC composite)",
+            "status": "implemented",
+            "link": "/value/magic",
+        },
+        {
+            "slug": "piotroski_fscore_2000",
+            "title": "Piotroski (2000) — Value Investing: The Use of Historical Financial Statement Information",
+            "venue": "Journal of Accounting Research",
+            "year": 2000,
+            "strategy": "F-Score (9 signals)",
+            "status": "implemented",
+            "link": "/value/piotroski",
+        },
+        {
+            "slug": "altman_z_1968",
+            "title": "Altman (1968) — Financial Ratios, Discriminant Analysis and the Prediction of Corporate Bankruptcy",
+            "venue": "Journal of Finance",
+            "year": 1968,
+            "strategy": "Z-Score (bankruptcy predictor)",
+            "status": "implemented",
+            "link": "/value/altman",
+        },
+        {
+            "slug": "asness_qmj_2013",
+            "title": "Asness, Frazzini & Pedersen (2013) — Quality Minus Junk",
+            "venue": "AQR Working Paper",
+            "year": 2013,
+            "strategy": "QMJ factor",
+            "status": "implemented",
+            "link": "/quant/factors",
+        },
+        {
+            "slug": "minervini_sepa_2013",
+            "title": "Minervini — Trade Like a Stock Market Wizard (SEPA)",
+            "venue": "McGraw-Hill (book)",
+            "year": 2013,
+            "strategy": "Trend Template + VCP",
+            "status": "implemented",
+            "link": "/chartist/wizards/minervini",
+        },
+    ]
+    implemented = sum(1 for p in papers if p["status"] == "implemented")
+    return envelope(
+        {
+            "count": len(papers),
+            "implemented": implemented,
+            "planned": len(papers) - implemented,
+            "papers": papers,
+        }
+    )
 
 
 @router.get("/shell/{slug}")

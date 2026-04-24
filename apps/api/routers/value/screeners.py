@@ -1,4 +1,4 @@
-"""Screener endpoints — MoS / Deep Value / EV-EBITDA / ROIC / Piotroski / Altman."""
+"""Screener endpoints — MoS / Deep Value / EV-EBITDA / ROIC / Piotroski / Altman / Magic."""
 from __future__ import annotations
 
 from typing import Any
@@ -21,6 +21,27 @@ def mos_endpoint(
     except Exception as exc:  # noqa: BLE001
         log.exception("mos failed")
         return envelope(None, error={"code": "MOS_FAILED", "message": str(exc)}, ok=False)
+    return envelope({"as_of": as_of, "n": len(rows), "rows": rows})
+
+
+@router.get("/magic")
+def magic_formula_endpoint(
+    as_of: str = Query(DEFAULT_AS_OF),
+    n: int = Query(30, ge=1, le=200),
+) -> dict:
+    """Greenblatt's Magic Formula — rank by composite of earnings yield + ROIC.
+    Thin wrapper over ``ky_core.academic.magic_formula`` so the /value/magic
+    sidebar entry hits the same ranker as /quant/academic/magic_formula."""
+    try:
+        from ky_core.quant import academic as ky_academic
+        rows = ky_academic.magic_formula(as_of, n=n)
+    except Exception as exc:  # noqa: BLE001
+        log.exception("magic_formula failed")
+        return envelope(
+            None,
+            error={"code": "MAGIC_FORMULA_FAILED", "message": str(exc)},
+            ok=False,
+        )
     return envelope({"as_of": as_of, "n": len(rows), "rows": rows})
 
 
