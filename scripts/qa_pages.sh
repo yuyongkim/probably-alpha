@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Page smoke — test all Next.js routes
-BASE="http://127.0.0.1:8380"
+BASE="${KY_WEB_BASE:-http://127.0.0.1:31380}"
 OUT="/tmp/qa_pages_results.csv"
 echo "route,http,time_ms,bytes" > "$OUT"
 

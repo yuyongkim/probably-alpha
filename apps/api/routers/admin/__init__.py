@@ -49,35 +49,38 @@ def admin_status() -> dict:
 def admin_keys() -> dict:
     """Enumerate which external-service keys are configured. Never returns
     the values — only presence + length + last-4-chars for operator
-    verification. Used by the /admin/keys frontend page."""
-    def _probe(val: str | None) -> dict:
+    verification. Shape matches the frontend KeysResponse contract in
+    apps/web/types/admin.ts: ``keys`` is an array of {name, status, …}."""
+    def _entry(name: str, val: str | None) -> dict:
         if not val:
-            return {"configured": False, "length": 0, "last4": None}
+            return {"name": name, "status": "missing", "length": 0, "last4": None}
         v = val.strip()
         return {
-            "configured": True,
+            "name": name,
+            "status": "present",
             "length": len(v),
             "last4": v[-4:] if len(v) >= 4 else None,
         }
 
+    keys = [
+        _entry("KIS_APP_KEY", settings.kis_app_key),
+        _entry("KIS_APP_SECRET", settings.kis_app_secret),
+        _entry("KIWOOM_APP_KEY", settings.kiwoom_app_key),
+        _entry("KIWOOM_SECRET_KEY", settings.kiwoom_secret_key),
+        _entry("DART_API_KEY", settings.dart_api_key),
+        _entry("FRED_API_KEY", settings.fred_api_key),
+        _entry("ECOS_API_KEY", settings.ecos_api_key),
+        _entry("KOSIS_API_KEY", getattr(settings, "kosis_api_key", None)),
+        _entry("EIA_API_KEY", getattr(settings, "eia_api_key", None)),
+        _entry("EXIM_API_KEY", getattr(settings, "exim_api_key", None)),
+        _entry("ANTHROPIC_API_KEY", getattr(settings, "anthropic_api_key", None)),
+    ]
+
     return {
         "ok": True,
         "data": {
-            "keys": {
-                "KIS_APP_KEY": _probe(settings.kis_app_key),
-                "KIS_APP_SECRET": _probe(settings.kis_app_secret),
-                "KIWOOM_APP_KEY": _probe(settings.kiwoom_app_key),
-                "KIWOOM_SECRET_KEY": _probe(settings.kiwoom_secret_key),
-                "DART_API_KEY": _probe(settings.dart_api_key),
-                "FRED_API_KEY": _probe(settings.fred_api_key),
-                "ECOS_API_KEY": _probe(settings.ecos_api_key),
-                "KOSIS_API_KEY": _probe(getattr(settings, "kosis_api_key", None)),
-                "EIA_API_KEY": _probe(getattr(settings, "eia_api_key", None)),
-                "EXIM_API_KEY": _probe(getattr(settings, "exim_api_key", None)),
-                "ANTHROPIC_API_KEY": _probe(
-                    getattr(settings, "anthropic_api_key", None),
-                ),
-            },
+            "keys": keys,
+            "shared_env_loaded": settings.shared_env_present,
             "shared_env_path": "~/.ky-platform/shared.env",
             "note": "Values are never returned. Last-4-chars shown for operator identification only.",
         },
@@ -87,69 +90,68 @@ def admin_keys() -> dict:
 
 @router.get("/data_health")
 def admin_data_health() -> dict:
-    """Aggregate health probe for every registered data adapter. Lightweight
-    wrapper over each adapter's BaseAdapter.healthcheck() so the ops page
-    can show a single green/red column per source."""
+    """Aggregate health probe for every registered data adapter. Response
+    shape matches the frontend DataHealth contract: ``adapters`` is an
+    array of {source_id, ok, latency_ms, last_error, configured, import_error}.
+    """
     import time
 
-    results: list[dict] = []
+    adapters: list[dict] = []
 
     def _probe(name: str, factory):
         t0 = time.time()
         try:
             with factory() as a:
                 hc = a.healthcheck()
-            results.append({
+            adapters.append({
                 "source_id": getattr(a, "source_id", name),
-                "name": name,
                 "ok": bool(hc.get("ok")),
                 "latency_ms": round((time.time() - t0) * 1000, 1),
                 "last_error": hc.get("last_error"),
-                "note": hc.get("note"),
+                "configured": True,
             })
         except Exception as exc:  # noqa: BLE001
-            results.append({
+            adapters.append({
                 "source_id": name,
-                "name": name,
                 "ok": False,
                 "latency_ms": round((time.time() - t0) * 1000, 1),
                 "last_error": f"{type(exc).__name__}: {exc}",
-                "note": None,
+                "configured": True,
             })
 
-    for mod_name, cls_name in [
-        ("ky_adapters.kis", "KISAdapter"),
-        ("ky_adapters.dart", "DARTAdapter"),
-        ("ky_adapters.fred", "FREDAdapter"),
-        ("ky_adapters.ecos", "ECOSAdapter"),
-        ("ky_adapters.kosis", "KOSISAdapter"),
-        ("ky_adapters.eia", "EIAAdapter"),
-        ("ky_adapters.exim", "EXIMAdapter"),
+    for mod_name, cls_name, src_id in [
+        ("ky_adapters.kis", "KISAdapter", "kis"),
+        ("ky_adapters.dart", "DARTAdapter", "dart"),
+        ("ky_adapters.fred", "FREDAdapter", "fred"),
+        ("ky_adapters.ecos", "ECOSAdapter", "ecos"),
+        ("ky_adapters.kosis", "KOSISAdapter", "kosis"),
+        ("ky_adapters.eia", "EIAAdapter", "eia"),
+        ("ky_adapters.exim", "EXIMAdapter", "exim"),
     ]:
         try:
             import importlib
 
             mod = importlib.import_module(mod_name)
             cls = getattr(mod, cls_name)
-            _probe(cls_name.replace("Adapter", "").lower(), cls.from_settings)
+            _probe(src_id, cls.from_settings)
         except Exception as exc:  # noqa: BLE001
-            results.append({
-                "source_id": cls_name,
-                "name": cls_name,
+            adapters.append({
+                "source_id": src_id,
                 "ok": False,
                 "latency_ms": 0,
-                "last_error": f"import failed: {exc}",
-                "note": None,
+                "last_error": None,
+                "configured": False,
+                "import_error": str(exc),
             })
 
-    ok_count = sum(1 for r in results if r["ok"])
+    ok_count = sum(1 for r in adapters if r["ok"])
     return {
         "ok": True,
         "data": {
-            "count": len(results),
+            "adapters": adapters,
+            "count": len(adapters),
             "ok_count": ok_count,
-            "fail_count": len(results) - ok_count,
-            "results": results,
+            "fail_count": len(adapters) - ok_count,
         },
         "error": None,
     }

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # QA smoke — test API endpoints, record status + latency
-BASE="http://127.0.0.1:8300"
+BASE="${KY_API_BASE:-http://127.0.0.1:31300}"
 OUT="/tmp/qa_api_results.csv"
 echo "category,endpoint,http,time_ms,bytes" > "$OUT"
 
