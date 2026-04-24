@@ -160,12 +160,22 @@ def _reason(tt: TrendTemplate, vcp: VCPStatus, sec: float, eps: float) -> str:
     return " · ".join(bits)
 
 
+# Memoise the EPS-signal table keyed by as_of. The SQL is a full-table scan
+# over financials_pit; the /today build calls it from scan_leaders AND again
+# from the O'Neil wizard — 2 queries → 1.
+_eps_cache: dict[str, dict[str, float]] = {}
+
+
 def _load_eps_signals(as_of: str) -> dict[str, float]:
     """EPS YoY proxy from financials_pit.net_income.
 
     Returns a sigmoid-normalized 0..1 score per symbol, where 1.0 means
     "latest annual net income > 2 × prior year". Missing → 0.5.
     """
+    cached = _eps_cache.get(as_of)
+    if cached is not None:
+        return cached
+
     engine = get_engine()
     out: dict[str, float] = {}
     stmt = text(
@@ -191,4 +201,9 @@ def _load_eps_signals(as_of: str) -> dict[str, float]:
         # map growth to 0..1: -100% → 0, 0% → 0.5, +100% → 0.75, +200% → ~0.9
         score = max(0.0, min(1.0, 0.5 + growth * 0.25))
         out[sym] = score
+    _eps_cache[as_of] = out
     return out
+
+
+def clear_eps_cache() -> None:
+    _eps_cache.clear()

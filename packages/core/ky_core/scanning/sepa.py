@@ -57,6 +57,14 @@ def count_passes(tt: TrendTemplate) -> int:
     ])
 
 
+# Panel-scoped memo cache for evaluate(). Key: (panel.as_of, symbol).
+# ``scan_leaders`` and every wizard (minervini/oneil/livermore/...) each call
+# evaluate() over the full universe; without memoisation the same work is done
+# 4-6 times per /today build.
+_eval_cache: dict[tuple[str, str], "TrendTemplate | None"] = {}
+_eval_cache_key_as_of: str | None = None
+
+
 def evaluate(
     symbol: str,
     as_of: _date | str | None = None,
@@ -70,13 +78,27 @@ def evaluate(
     when scoring many symbols.
     """
     panel = panel or load_panel(as_of)
+
+    # Panel-scoped memoisation. When the panel's as_of changes (e.g. a new
+    # trading day), flush the cache so we don't serve yesterday's template.
+    global _eval_cache_key_as_of
+    if _eval_cache_key_as_of != panel.as_of:
+        _eval_cache.clear()
+        _eval_cache_key_as_of = panel.as_of
+    cache_key = (panel.as_of, symbol)
+    if cache_key in _eval_cache:
+        return _eval_cache[cache_key]
+
     rows = panel.series.get(symbol)
     if not rows or len(rows) < 200:
+        _eval_cache[cache_key] = None
         return None
     closes = [r["close"] for r in rows]
     highs = [r["high"] or r["close"] for r in rows]
     lows = [r["low"] or r["close"] for r in rows]
-    return _eval_from_arrays(symbol, panel.as_of, closes, highs, lows, panel)
+    tt = _eval_from_arrays(symbol, panel.as_of, closes, highs, lows, panel)
+    _eval_cache[cache_key] = tt
+    return tt
 
 
 def _eval_from_arrays(
@@ -141,7 +163,16 @@ def _six_month_rs(closes: list[float]) -> float:
     return closes[-1] / closes[-126] - 1.0
 
 
+import bisect as _bisect
+
+# _rs_cache: per panel.as_of store two parallel structures —
+#   - the legacy list[(sym, value)] (kept for API compat if anyone imports it)
+#   - a sorted list of ``values`` used for O(log n) percentile via bisect.
+# Before the sorted array we did a linear ``sum(1 for _, v in table if v <= value)``
+# which is O(n²) across a full-universe leader scan (≈ 6M ops on a 2500-symbol
+# panel). bisect_right collapses that to O(log n) per call.
 _rs_cache: dict[str, list[tuple[str, float]]] = {}
+_rs_sorted_values: dict[str, list[float]] = {}
 
 
 def _rs_percentile(symbol: str, panel: Panel, value: float) -> float:
@@ -158,12 +189,15 @@ def _rs_percentile(symbol: str, panel: Panel, value: float) -> float:
             table.append((sym, cs[-1] / cs[-126] - 1.0))
         table.sort(key=lambda x: x[1])
         _rs_cache[key] = table
-    if not table:
+        _rs_sorted_values[key] = [v for _, v in table]
+    sorted_vals = _rs_sorted_values.get(key) or [v for _, v in table]
+    n = len(sorted_vals)
+    if not n:
         return 0.0
-    # binary-ish search by scan (tables are small enough, ~2500 entries)
-    below = sum(1 for _, v in table if v <= value)
-    return 100.0 * below / len(table)
+    below = _bisect.bisect_right(sorted_vals, value)
+    return 100.0 * below / n
 
 
 def clear_rs_cache() -> None:
     _rs_cache.clear()
+    _rs_sorted_values.clear()

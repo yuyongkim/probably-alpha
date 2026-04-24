@@ -45,14 +45,31 @@ class VCPStatus:
     label: str                 # 'VCP' | 'Base' | 'B.out' | '—'
 
 
+# Panel-scoped memo cache. scan_leaders + minervini both call detect_vcp on
+# every symbol; memoising collapses those two passes into one compute.
+_vcp_cache: dict[tuple[str, str], "VCPStatus"] = {}
+_vcp_cache_key_as_of: str | None = None
+
+
 def detect_vcp(
     symbol: str,
     *,
     panel: Panel,
 ) -> VCPStatus:
+    global _vcp_cache_key_as_of
+    if _vcp_cache_key_as_of != panel.as_of:
+        _vcp_cache.clear()
+        _vcp_cache_key_as_of = panel.as_of
+    cache_key = (panel.as_of, symbol)
+    cached = _vcp_cache.get(cache_key)
+    if cached is not None:
+        return cached
+
     rows = panel.series.get(symbol) or []
     if len(rows) < 80:
-        return _empty(symbol)
+        out = _empty(symbol)
+        _vcp_cache[cache_key] = out
+        return out
 
     closes = [r["close"] for r in rows]
     highs = [r["high"] or r["close"] for r in rows]
@@ -103,7 +120,7 @@ def detect_vcp(
 
     score = min(1.0, 0.25 * contractions + 0.25 * pct_hi + (0.25 if volume_dry_up else 0.0))
     label = _label_for(stage, pct_hi)
-    return VCPStatus(
+    out = VCPStatus(
         symbol=symbol,
         stage=stage,
         contractions=contractions,
@@ -113,6 +130,8 @@ def detect_vcp(
         score=score,
         label=label,
     )
+    _vcp_cache[cache_key] = out
+    return out
 
 
 def _label_for(stage: int, pct_hi: float) -> str:

@@ -359,6 +359,10 @@ class FinancialPIT(Base):
         ),
         Index("ix_fin_pit_symbol_period", "symbol", "period_end"),
         Index("ix_fin_pit_report_date", "report_date"),
+        # _load_eps_signals filters WHERE period_type IN ('FY','Q4') AND period_end <= ?.
+        # A leading period_type index lets SQLite seek instead of scanning the
+        # whole table (~100k rows).
+        Index("ix_fin_pit_period_type_end", "period_type", "period_end"),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
