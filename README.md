@@ -74,6 +74,7 @@ C:/Users/USER/Desktop/_integration_backup_20260422/
 ## Knowledge base
 
 - **BOK RAG** — 한국은행 보고서 ~40K 청크를 Ollama `bge-m3` (1024-dim) 로 임베딩한 벡터 인덱스. 저장: `~/.ky-platform/data/rag_bok/` (`vectors.npy` + `chunks.jsonl` + `meta.json`). 빌드 스크립트: `scripts/build_rag_bok.py`.
+- **Broker Report RAG (Drive-first)** — Google Drive에 모아둔 증권사/리서치 보고서가 primary source. 로컬 export/mirror를 `scripts/build_rag_broker.py --source-path <dir>`로 인덱싱해 `~/.ky-platform/data/rag_broker/`에 저장한다. CSV manifest의 `pdf_direct_url`은 `--download-pdfs --pdf-cache-dir ~/.ky-platform/data/broker_pdf_cache`로 본문 캐시/추출까지 확장한다. 3060 Ti/CUDA dense vector 인덱스는 `scripts/build_rag_broker_vec.py --device cuda`로 `~/.ky-platform/data/rag_broker_vec/`에 만든다. Naver Finance는 fallback/listing 용도다.
 - **Buffett RAG (TF-IDF)** — `packages/core/ky_core/research/buffett.py`. 기존 QuantPlatform 포팅분, 로컬 기동만으로 동작.
 
 ## 상태

@@ -158,6 +158,8 @@ def list_reports(category: str = "company", limit: int = 20) -> Dict[str, Any]:
     if not path:
         return {
             "category": category,
+            "source": "naver_finance_fallback",
+            "source_policy": "Google Drive broker-report RAG is primary; Naver Finance is fallback/listing only.",
             "items": [],
             "stale": True,
             "reason": f"unknown category: {category}",
@@ -177,6 +179,8 @@ def list_reports(category: str = "company", limit: int = 20) -> Dict[str, Any]:
     brokers = sorted({it.broker for it in items if it.broker})
     return {
         "category": category,
+        "source": "naver_finance_fallback",
+        "source_policy": "Google Drive broker-report RAG is primary; Naver Finance is fallback/listing only.",
         "items": [asdict(it) for it in items],
         "count": len(items),
         "stale": not items,

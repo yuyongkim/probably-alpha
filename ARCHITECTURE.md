@@ -146,7 +146,12 @@ shared.env  →  apps/api/.env  →  실행 셸의 env
 | 인덱스 | 임베딩 | 저장 위치 | 빌드 |
 |---|---|---|---|
 | **BOK (한국은행 보고서)** | Ollama `bge-m3` (1024-dim) | `~/.ky-platform/data/rag_bok/vectors.npy` + `chunks.jsonl` | `scripts/build_rag_bok.py` (~40K 청크) |
+| **Broker Reports (Google Drive)** | TF-IDF (sklearn) + dense vectors (SentenceTransformer/CUDA) | `~/.ky-platform/data/rag_broker/` + `~/.ky-platform/data/rag_broker_vec/` | `scripts/build_rag_broker.py`, `scripts/build_rag_broker_vec.py` |
 | **Buffett Q&A** | TF-IDF (sklearn) | `packages/core/ky_core/research/buffett.py` 내장 | 포트 완료 (QuantPlatform 기반) |
 
 - BGE-M3 경로는 Ollama가 로컬에서 `http://localhost:11434`에서 돌고 있어야 함 (`OLLAMA_URL` 상수).
+- 증권사/리서치 보고서는 Google Drive 폴더 `1EsI54xFmHaL_wn5ebA-V3q6iIDbMKy6R`가 primary corpus다.
+- Drive `raw_data` CSV는 manifest로 사용하며, `pdf_direct_url`이 있는 행은 `scripts/build_rag_broker.py --download-pdfs`로 PDF를 `~/.ky-platform/data/broker_pdf_cache/`에 캐시한 뒤 본문 청크까지 인덱싱한다.
+- Broker dense vector index는 RTX 3060 Ti/CUDA에서 `scripts/build_rag_broker_vec.py --device cuda`로 생성한다. TF-IDF는 정확 키워드/종목/증권사 검색, dense vector는 의미 기반 질의에 사용한다.
+- Naver Finance는 Drive corpus가 없거나 최신 메타데이터가 부족할 때의 fallback/listing 소스다. 대량 인덱싱의 primary로 쓰지 않는다.
 - 두 인덱스는 독립적이며, 라우터에서 용도에 따라 선택 호출: 거시/정책 질의 → BOK, 가치투자 Q&A → Buffett.

@@ -5,8 +5,10 @@ Accepts a short multi-turn conversation plus page-level context
 answer grounded in:
 
 1. Top-5 chunks from the knowledge RAG index (when built).
-2. The caller's current page context (which tab, subsection, symbol).
-3. The symbol's FnGuide snapshot + latest OHLCV when a symbol is selected.
+2. Broker/research reports mirrored from the user's Google Drive corpus.
+3. Bank of Korea report chunks when the BOK index is built.
+4. The caller's current page context (which tab, subsection, symbol).
+5. The symbol's FnGuide snapshot + latest OHLCV when a symbol is selected.
 
 When ``ANTHROPIC_API_KEY`` is absent or the anthropic SDK is not installed,
 we degrade to a deterministic stub that returns the retrieved passages and
@@ -42,10 +44,10 @@ SYSTEM_PROMPT = (
     "KNOWLEDGE BASE sections; cite knowledge chunks inline as [#n]. Never invent "
     "tickers, prices, or ratios. Prefer bullet points when comparing items; be "
     "thorough when the question warrants it but avoid filler. "
-    "The knowledge base contains two layers: (a) timeless investment books and "
-    "(b) Bank of Korea reports tagged with year — treat dated BOK material as "
-    "historical context, not current opinion, and when relevant distinguish "
-    "'back then' vs 'today' explicitly."
+    "The knowledge base contains three layers: (a) timeless investment books, "
+    "(b) Google Drive broker/research reports, and (c) Bank of Korea reports "
+    "tagged with year — treat dated BOK material as historical context, not "
+    "current opinion, and when relevant distinguish 'back then' vs 'today' explicitly."
 )
 
 
@@ -90,7 +92,7 @@ def _last_user_message(messages: List[ChatMessage]) -> str:
 
 
 def _gather_rag(query: str, k: int = 5) -> List[Dict[str, Any]]:
-    """Combined retrieval: TF-IDF (investment books) + BGE-M3 (BOK reports).
+    """Combined retrieval: books + broker reports + BOK reports.
 
     Both stores run independently; we return up to ``k`` from each so Claude
     sees both perspectives. The reranking happens implicitly by citation order
@@ -108,7 +110,24 @@ def _gather_rag(query: str, k: int = 5) -> List[Dict[str, Any]]:
                 hits.append(d)
     except Exception as exc:  # noqa: BLE001
         log.info("assistant: book RAG unavailable (%s)", exc)
-    # Layer 2: BOK reports (BGE-M3 vector)
+    # Layer 2: broker reports (Google Drive primary corpus)
+    try:
+        from ky_core.rag_broker import search_broker_report_vectors, search_broker_reports  # type: ignore
+        seen = set()
+        for d in search_broker_reports(query, top_k=k):
+            d.setdefault("source_type", "broker_report")
+            d.setdefault("retrieval", "tfidf")
+            seen.add(d.get("chunk_id"))
+            hits.append(d)
+        for d in search_broker_report_vectors(query, top_k=k):
+            if d.get("chunk_id") in seen:
+                continue
+            d.setdefault("source_type", "broker_report")
+            d.setdefault("retrieval", "dense")
+            hits.append(d)
+    except Exception as exc:  # noqa: BLE001
+        log.info("assistant: broker RAG unavailable (%s)", exc)
+    # Layer 3: BOK reports (BGE-M3 vector)
     try:
         from ky_core.rag_bok import search_bok  # type: ignore
         for d in search_bok(query, top_k=k):
@@ -176,7 +195,15 @@ def _format_rag(chunks: List[Dict[str, Any]]) -> str:
     out: List[str] = []
     for i, c in enumerate(chunks):
         stype = c.get("source_type") or ""
-        if stype == "bok_report":
+        if stype == "broker_report":
+            title = c.get("estimated_work") or c.get("source_file") or "broker report"
+            broker = c.get("broker") or ""
+            cat = c.get("report_category") or ""
+            published = c.get("published") or ""
+            meta_bits = [b for b in (broker, cat, published) if b]
+            suffix = f" ({' / '.join(meta_bits)})" if meta_bits else ""
+            label = f"[Broker] {title}{suffix}"
+        elif stype == "bok_report":
             title = c.get("report_title") or c.get("source_file") or "BOK report"
             year = c.get("year") or ""
             cat = c.get("category") or ""
@@ -397,12 +424,21 @@ def health() -> dict:
         ready = Retriever().is_ready()
     except Exception:  # noqa: BLE001
         ready = False
+    try:
+        from ky_core.rag_broker import BrokerReportRetriever, BrokerReportVectorRetriever  # type: ignore
+        broker_ready = BrokerReportRetriever().is_ready()
+        broker_vec_ready = BrokerReportVectorRetriever().is_ready()
+    except Exception:  # noqa: BLE001
+        broker_ready = False
+        broker_vec_ready = False
     return _envelope(
         {
             "mode": "claude" if (has_key and sdk_ok) else "stub",
             "anthropic_api_key": has_key,
             "anthropic_sdk": sdk_ok,
             "rag_ready": ready,
+            "broker_rag_ready": broker_ready,
+            "broker_vector_rag_ready": broker_vec_ready,
             "model": os.getenv("KY_CLAUDE_MODEL", DEFAULT_MODEL),
         }
     )
