@@ -1,0 +1,418 @@
+{
+  "started_at": "2026-04-25T15:03:03.218097+00:00",
+  "finished_at": "2026-04-25T15:03:03.332786+00:00",
+  "total": 41,
+  "source_root": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw",
+  "entries": [
+    {
+      "spec": "ECOS_20년만기국채금리",
+      "source": "imported_ecos",
+      "sector": "macro",
+      "name": "ECOS_20년만기국채금리",
+      "rows": 4,
+      "ok": true,
+      "path": "imported\\ecos\\ECOS_20년만기국채금리.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\ECOS_20년만기국채금리_20251108_194319.csv"
+    },
+    {
+      "spec": "ECOS_30년만기국채금리",
+      "source": "imported_ecos",
+      "sector": "macro",
+      "name": "ECOS_30년만기국채금리",
+      "rows": 152,
+      "ok": true,
+      "path": "imported\\ecos\\ECOS_30년만기국채금리.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\ECOS_30년만기국채금리_20251108_194320.csv"
+    },
+    {
+      "spec": "ECOS_3년만기국채금리",
+      "source": "imported_ecos",
+      "sector": "macro",
+      "name": "ECOS_3년만기국채금리",
+      "rows": 382,
+      "ok": true,
+      "path": "imported\\ecos\\ECOS_3년만기국채금리.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\ECOS_3년만기국채금리_20251108_194318.csv"
+    },
+    {
+      "spec": "ECOS_CD91일물",
+      "source": "imported_ecos",
+      "sector": "macro",
+      "name": "ECOS_CD91일물",
+      "rows": 212,
+      "ok": true,
+      "path": "imported\\ecos\\ECOS_CD91일물.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\ECOS_CD91일물_20251108_194321.csv"
+    },
+    {
+      "spec": "ECOS_M2통화량",
+      "source": "imported_ecos",
+      "sector": "macro",
+      "name": "ECOS_M2통화량",
+      "rows": 3230,
+      "ok": true,
+      "path": "imported\\ecos\\ECOS_M2통화량.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\ECOS_M2통화량_20251108_194334.csv"
+    },
+    {
+      "spec": "ECOS_고용률",
+      "source": "imported_ecos",
+      "sector": "macro",
+      "name": "ECOS_고용률",
+      "rows": 6252,
+      "ok": true,
+      "path": "imported\\ecos\\ECOS_고용률.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\ECOS_고용률_20251108_194331.csv"
+    },
+    {
+      "spec": "ECOS_근원소비자물가지수",
+      "source": "imported_ecos",
+      "sector": "macro",
+      "name": "ECOS_근원소비자물가지수",
+      "rows": 24,
+      "ok": true,
+      "path": "imported\\ecos\\ECOS_근원소비자물가지수.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\ECOS_근원소비자물가지수_20251108_194327.csv"
+    },
+    {
+      "spec": "ECOS_기업경기실사지수",
+      "source": "imported_ecos",
+      "sector": "macro",
+      "name": "ECOS_기업경기실사지수",
+      "rows": 2292,
+      "ok": true,
+      "path": "imported\\ecos\\ECOS_기업경기실사지수.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\ECOS_기업경기실사지수_20251108_194327.csv"
+    },
+    {
+      "spec": "ECOS_기준금리",
+      "source": "imported_ecos",
+      "sector": "macro",
+      "name": "ECOS_기준금리",
+      "rows": 318,
+      "ok": true,
+      "path": "imported\\ecos\\ECOS_기준금리.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\ECOS_기준금리_20251108_194317.csv"
+    },
+    {
+      "spec": "ECOS_소비자물가지수",
+      "source": "imported_ecos",
+      "sector": "macro",
+      "name": "ECOS_소비자물가지수",
+      "rows": 9988,
+      "ok": true,
+      "path": "imported\\ecos\\ECOS_소비자물가지수.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\ECOS_소비자물가지수_20251108_194324.csv"
+    },
+    {
+      "spec": "ECOS_소비자심리지수",
+      "source": "imported_ecos",
+      "sector": "macro",
+      "name": "ECOS_소비자심리지수",
+      "rows": 4374,
+      "ok": true,
+      "path": "imported\\ecos\\ECOS_소비자심리지수.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\ECOS_소비자심리지수_20251108_194328.csv"
+    },
+    {
+      "spec": "ECOS_실업률",
+      "source": "imported_ecos",
+      "sector": "macro",
+      "name": "ECOS_실업률",
+      "rows": 9971,
+      "ok": true,
+      "path": "imported\\ecos\\ECOS_실업률.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\ECOS_실업률_20251108_194330.csv"
+    },
+    {
+      "spec": "ECOS_코스닥지수",
+      "source": "imported_ecos",
+      "sector": "market",
+      "name": "ECOS_코스닥지수",
+      "rows": 8997,
+      "ok": true,
+      "path": "imported\\ecos\\ECOS_코스닥지수.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\ECOS_코스닥지수_20251108_194401.csv"
+    },
+    {
+      "spec": "ECOS_코스피지수",
+      "source": "imported_ecos",
+      "sector": "market",
+      "name": "ECOS_코스피지수",
+      "rows": 8577,
+      "ok": true,
+      "path": "imported\\ecos\\ECOS_코스피지수.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\ECOS_코스피지수_20251108_194359.csv"
+    },
+    {
+      "spec": "ECOS_회사채3년",
+      "source": "imported_ecos",
+      "sector": "macro",
+      "name": "ECOS_회사채3년",
+      "rows": 212,
+      "ok": true,
+      "path": "imported\\ecos\\ECOS_회사채3년.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\ECOS_회사채3년_20251108_194322.csv"
+    },
+    {
+      "spec": "FRED_US_CONSUMER_SENTIMENT",
+      "source": "imported_fred",
+      "sector": "macro",
+      "name": "FRED_US_CONSUMER_SENTIMENT",
+      "rows": 381,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_CONSUMER_SENTIMENT.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_CONSUMER_SENTIMENT_20251108_194424.csv"
+    },
+    {
+      "spec": "FRED_US_CPI",
+      "source": "imported_fred",
+      "sector": "macro",
+      "name": "FRED_US_CPI",
+      "rows": 381,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_CPI.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_CPI_20251108_194410.csv"
+    },
+    {
+      "spec": "FRED_US_CPI_CORE",
+      "source": "imported_fred",
+      "sector": "macro",
+      "name": "FRED_US_CPI_CORE",
+      "rows": 381,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_CPI_CORE.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_CPI_CORE_20251108_194410.csv"
+    },
+    {
+      "spec": "FRED_US_DOLLAR_INDEX",
+      "source": "imported_fred",
+      "sector": "macro",
+      "name": "FRED_US_DOLLAR_INDEX",
+      "rows": 4973,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_DOLLAR_INDEX.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_DOLLAR_INDEX_20251108_194420.csv"
+    },
+    {
+      "spec": "FRED_US_DOW_JONES",
+      "source": "imported_fred",
+      "sector": "market",
+      "name": "FRED_US_DOW_JONES",
+      "rows": 2515,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_DOW_JONES.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_DOW_JONES_20251108_194419.csv"
+    },
+    {
+      "spec": "FRED_US_FED_FUNDS_RATE",
+      "source": "imported_fred",
+      "sector": "macro",
+      "name": "FRED_US_FED_FUNDS_RATE",
+      "rows": 382,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_FED_FUNDS_RATE.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_FED_FUNDS_RATE_20251108_194414.csv"
+    },
+    {
+      "spec": "FRED_US_GDP",
+      "source": "imported_fred",
+      "sector": "macro",
+      "name": "FRED_US_GDP",
+      "rows": 126,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_GDP.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_GDP_20251108_194407.csv"
+    },
+    {
+      "spec": "FRED_US_GDP_GROWTH",
+      "source": "imported_fred",
+      "sector": "macro",
+      "name": "FRED_US_GDP_GROWTH",
+      "rows": 126,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_GDP_GROWTH.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_GDP_GROWTH_20251108_194409.csv"
+    },
+    {
+      "spec": "FRED_US_GDP_NOMINAL",
+      "source": "imported_fred",
+      "sector": "macro",
+      "name": "FRED_US_GDP_NOMINAL",
+      "rows": 31,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_GDP_NOMINAL.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_GDP_NOMINAL_20251108_194408.csv"
+    },
+    {
+      "spec": "FRED_US_INDUSTRIAL_PRODUCTION",
+      "source": "imported_fred",
+      "sector": "manufacturing",
+      "name": "FRED_US_INDUSTRIAL_PRODUCTION",
+      "rows": 380,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_INDUSTRIAL_PRODUCTION.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_INDUSTRIAL_PRODUCTION_20251108_194423.csv"
+    },
+    {
+      "spec": "FRED_US_LABOR_PARTICIPATION",
+      "source": "imported_fred",
+      "sector": "macro",
+      "name": "FRED_US_LABOR_PARTICIPATION",
+      "rows": 380,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_LABOR_PARTICIPATION.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_LABOR_PARTICIPATION_20251108_194413.csv"
+    },
+    {
+      "spec": "FRED_US_NASDAQ",
+      "source": "imported_fred",
+      "sector": "market",
+      "name": "FRED_US_NASDAQ",
+      "rows": 8019,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_NASDAQ.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_NASDAQ_20251108_194418.csv"
+    },
+    {
+      "spec": "FRED_US_NONFARM_PAYROLLS",
+      "source": "imported_fred",
+      "sector": "macro",
+      "name": "FRED_US_NONFARM_PAYROLLS",
+      "rows": 380,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_NONFARM_PAYROLLS.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_NONFARM_PAYROLLS_20251108_194413.csv"
+    },
+    {
+      "spec": "FRED_US_OIL_PRICE",
+      "source": "imported_fred",
+      "sector": "oil",
+      "name": "FRED_US_OIL_PRICE",
+      "rows": 7991,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_OIL_PRICE.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_OIL_PRICE_20251108_194421.csv"
+    },
+    {
+      "spec": "FRED_US_PCE",
+      "source": "imported_fred",
+      "sector": "macro",
+      "name": "FRED_US_PCE",
+      "rows": 380,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_PCE.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_PCE_20251108_194411.csv"
+    },
+    {
+      "spec": "FRED_US_PERSONAL_CONSUMPTION",
+      "source": "imported_fred",
+      "sector": "macro",
+      "name": "FRED_US_PERSONAL_CONSUMPTION",
+      "rows": 380,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_PERSONAL_CONSUMPTION.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_PERSONAL_CONSUMPTION_20251108_194423.csv"
+    },
+    {
+      "spec": "FRED_US_RETAIL_SALES",
+      "source": "imported_fred",
+      "sector": "retail",
+      "name": "FRED_US_RETAIL_SALES",
+      "rows": 380,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_RETAIL_SALES.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_RETAIL_SALES_20251108_194422.csv"
+    },
+    {
+      "spec": "FRED_US_SP500",
+      "source": "imported_fred",
+      "sector": "market",
+      "name": "FRED_US_SP500",
+      "rows": 2515,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_SP500.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_SP500_20251108_194417.csv"
+    },
+    {
+      "spec": "FRED_US_TREASURY_10Y",
+      "source": "imported_fred",
+      "sector": "macro",
+      "name": "FRED_US_TREASURY_10Y",
+      "rows": 382,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_TREASURY_10Y.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_TREASURY_10Y_20251108_194415.csv"
+    },
+    {
+      "spec": "FRED_US_TREASURY_2Y",
+      "source": "imported_fred",
+      "sector": "macro",
+      "name": "FRED_US_TREASURY_2Y",
+      "rows": 382,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_TREASURY_2Y.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_TREASURY_2Y_20251108_194416.csv"
+    },
+    {
+      "spec": "FRED_US_TREASURY_30Y",
+      "source": "imported_fred",
+      "sector": "macro",
+      "name": "FRED_US_TREASURY_30Y",
+      "rows": 382,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_TREASURY_30Y.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_TREASURY_30Y_20251108_194416.csv"
+    },
+    {
+      "spec": "FRED_US_UNEMPLOYMENT",
+      "source": "imported_fred",
+      "sector": "macro",
+      "name": "FRED_US_UNEMPLOYMENT",
+      "rows": 380,
+      "ok": true,
+      "path": "imported\\fred\\FRED_US_UNEMPLOYMENT.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\FRED_US_UNEMPLOYMENT_20251108_194412.csv"
+    },
+    {
+      "spec": "KRX_코스닥지수_재수집",
+      "source": "imported_krx",
+      "sector": "market",
+      "name": "KRX_코스닥지수_재수집",
+      "rows": 353,
+      "ok": true,
+      "path": "imported\\krx\\KRX_코스닥지수_재수집.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\KRX_코스닥지수_재수집.csv"
+    },
+    {
+      "spec": "KRX_코스닥지수_재수집_duplicate_1",
+      "source": "imported_krx",
+      "sector": "market",
+      "name": "KRX_코스닥지수_재수집_duplicate_1",
+      "rows": 356,
+      "ok": true,
+      "path": "imported\\krx\\KRX_코스닥지수_재수집_duplicate_1.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\KRX_코스닥지수_재수집_duplicate_1.csv"
+    },
+    {
+      "spec": "KRX_코스피지수_재수집",
+      "source": "imported_krx",
+      "sector": "market",
+      "name": "KRX_코스피지수_재수집",
+      "rows": 383,
+      "ok": true,
+      "path": "imported\\krx\\KRX_코스피지수_재수집.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\KRX_코스피지수_재수집.csv"
+    },
+    {
+      "spec": "KRX_코스피지수_재수집_duplicate_1",
+      "source": "imported_krx",
+      "sector": "market",
+      "name": "KRX_코스피지수_재수집_duplicate_1",
+      "rows": 386,
+      "ok": true,
+      "path": "imported\\krx\\KRX_코스피지수_재수집_duplicate_1.csv",
+      "imported_from": "C:\\Users\\USER\\Desktop\\Economic_analysis\\economic_indicator\\data\\raw\\KRX_코스피지수_재수집_duplicate_1.csv"
+    }
+  ]
+}
