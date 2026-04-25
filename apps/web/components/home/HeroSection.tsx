@@ -52,12 +52,11 @@ export function HeroSection({ asOf, universeSize, bundle }: Props) {
         {/* LEFT — pitch + CTA */}
         <div>
           <h1
-            className="display leading-[1.04] tracking-tight mb-3"
-            style={{ fontSize: "clamp(2.5rem, 5.4vw, 4.5rem)" }}
+            className="display leading-[1.05] tracking-tight mb-3"
+            style={{ fontSize: "clamp(2.4rem, 5.2vw, 4.4rem)" }}
           >
-            감 말고 데이터로,
-            <br />
-            <span style={{ color: "var(--accent)" }}>가즈아.</span>
+            <span style={{ color: "var(--accent)" }}>가즈아</span>,
+            근거는 챙기고.
           </h1>
           <p
             className="text-[12.5px] mono uppercase tracking-widest mb-7"

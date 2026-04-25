@@ -17,6 +17,8 @@ interface TabEntry {
   /** "처음이라면" entry-point link + label. */
   startHref: string;
   startLabel: string;
+  /** Notable practitioners associated with this tab's methodology. */
+  practitioners: string[];
 }
 
 const TABS: TabEntry[] = [
@@ -49,6 +51,14 @@ const TABS: TabEntry[] = [
     ],
     startHref: "/chartist/today",
     startLabel: "오늘의 주도주",
+    practitioners: [
+      "Mark Minervini",
+      "William O'Neil",
+      "Nicolas Darvas",
+      "Stan Weinstein",
+      "Jesse Livermore",
+      "Dan Zanger",
+    ],
   },
   {
     href: "/quant/factors",
@@ -78,6 +88,14 @@ const TABS: TabEntry[] = [
     ],
     startHref: "/quant/factors",
     startLabel: "팩터 화면",
+    practitioners: [
+      "Eugene Fama",
+      "Joel Greenblatt",
+      "Cliff Asness",
+      "Joseph Piotroski",
+      "Edward Altman",
+      "Edward Thorp",
+    ],
   },
   {
     href: "/value/dcf",
@@ -110,6 +128,14 @@ const TABS: TabEntry[] = [
     ],
     startHref: "/value/dcf",
     startLabel: "DCF 모델",
+    practitioners: [
+      "Warren Buffett",
+      "Charlie Munger",
+      "Benjamin Graham",
+      "Peter Lynch",
+      "Howard Marks",
+      "Phil Fisher",
+    ],
   },
   {
     href: "/execute/overview",
@@ -139,6 +165,14 @@ const TABS: TabEntry[] = [
     ],
     startHref: "/execute/overview",
     startLabel: "Overview",
+    practitioners: [
+      "Stanley Druckenmiller",
+      "Paul Tudor Jones",
+      "George Soros",
+      "Jim Simons",
+      "Bruce Kovner",
+      "Michael Marcus",
+    ],
   },
   {
     href: "/research/airesearch",
@@ -168,6 +202,14 @@ const TABS: TabEntry[] = [
     ],
     startHref: "/research/airesearch",
     startLabel: "AI Research",
+    practitioners: [
+      "Daniel Kahneman",
+      "Nassim Taleb",
+      "Benoit Mandelbrot",
+      "Robert Shiller",
+      "Howard Marks",
+      "Aswath Damodaran",
+    ],
   },
   {
     href: "/admin/status",
@@ -196,6 +238,7 @@ const TABS: TabEntry[] = [
     ],
     startHref: "/admin/status",
     startLabel: "Status",
+    practitioners: ["당신", "DevOps", "데이터 엔지니어"],
   },
 ];
 
@@ -281,6 +324,34 @@ export function TabDirectory() {
                     </li>
                   ))}
                 </ul>
+              </div>
+
+              {/* Practitioners — who's known for this style */}
+              <div
+                className="border-t pt-3"
+                style={{ borderColor: "var(--border-soft)" }}
+              >
+                <div
+                  className="text-[9.5px] uppercase tracking-widest mono mb-2"
+                  style={{ color: "var(--muted)" }}
+                >
+                  유명 실천자
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {t.practitioners.map((p) => (
+                    <span
+                      key={p}
+                      className="inline-block px-2 py-0.5 rounded-full text-[10.5px] border"
+                      style={{
+                        borderColor: "var(--border-soft)",
+                        color: "var(--fg-muted)",
+                        background: "var(--bg)",
+                      }}
+                    >
+                      {p}
+                    </span>
+                  ))}
+                </div>
               </div>
             </Link>
 
