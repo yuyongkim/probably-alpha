@@ -64,6 +64,12 @@ KIS_MARKET_ENDPOINTS: dict[str, KISMarketEndpoint] = {
         tr_id="FHPPG04650101",
         description="종목별 프로그램매매추이(체결) (v1_국내주식-044)",
     ),
+    "index_daily_price": KISMarketEndpoint(
+        name="index_daily_price",
+        url="/uapi/domestic-stock/v1/quotations/inquire-daily-indexchartprice",
+        tr_id="FHKUP03500100",
+        description="국내업종 일자별 지수 (v1_국내주식-068)",
+    ),
 }
 
 
@@ -257,6 +263,41 @@ class KISMarketAdapter(BaseAdapter):
         if isinstance(output, dict):
             output = [output]
         return list(output)
+
+    def get_index_daily(
+        self,
+        sector_code: str,
+        date_from: str,
+        date_to: str,
+        *,
+        period: str = "D",
+    ) -> list[dict[str, Any]]:
+        """Daily OHLCV history for a sector / market index.
+
+        sector_code examples (FID_INPUT_ISCD):
+          - 0001  KOSPI 종합
+          - 1001  KOSDAQ 종합
+          - 2001  KOSPI 200
+          - 코스피 업종 indices: 4-digit codes per KRX (e.g. 0010 종합, 0011 대형주,
+            0012 중형주, 0013 소형주, 0021 음식료품, 0022 섬유의복, ...)
+        date_from/date_to: YYYYMMDD strings.
+        period: 'D' daily, 'W' weekly, 'M' monthly, 'Y' annual.
+        """
+        ep = KIS_MARKET_ENDPOINTS["index_daily_price"]
+        params = {
+            "FID_COND_MRKT_DIV_CODE": "U",  # 'U' for index/sector
+            "FID_INPUT_ISCD": str(sector_code).zfill(4),
+            "FID_INPUT_DATE_1": date_from,
+            "FID_INPUT_DATE_2": date_to,
+            "FID_PERIOD_DIV_CODE": period,
+        }
+        _LIMITER.wait()
+        data = self._kis.call("GET", ep.url, tr_id=ep.tr_id, params=params)
+        # output1 = current/summary, output2 = list of daily rows
+        output2 = data.get("output2") or []
+        if isinstance(output2, dict):
+            output2 = [output2]
+        return list(output2)
 
 
 __all__ = ["KISMarketAdapter", "KISMarketEndpoint", "KIS_MARKET_ENDPOINTS"]

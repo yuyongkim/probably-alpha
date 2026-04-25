@@ -65,6 +65,9 @@ def _load_adapter(source: str):
     if source == "dart":
         from ky_adapters.dart.client import DARTAdapter
         return DARTAdapter.from_settings()
+    if source == "kis_index":
+        from ky_adapters.kis.market import KISMarketAdapter
+        return KISMarketAdapter.from_settings()
     if source == "eia":
         from ky_adapters.eia import EIAAdapter
         return EIAAdapter.from_settings()

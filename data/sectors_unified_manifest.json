@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-04-25T14:25:49.542549+00:00",
+  "generated_at": "2026-04-25T14:48:42.572209+00:00",
   "data_root": "C:\\Users\\USER\\.ky-platform\\data\\sectors",
-  "total_files": 164,
-  "total_rows": 327611,
-  "total_bytes": 50869799,
+  "total_files": 179,
+  "total_rows": 337396,
+  "total_bytes": 52285661,
   "per_source": {
     "cftc": {
       "files": 5,
@@ -17,13 +17,18 @@
     },
     "dart": {
       "files": 36,
-      "rows": 4826,
-      "bytes": 1244341
+      "rows": 9751,
+      "bytes": 2480147
     },
     "ecos": {
       "files": 7,
       "rows": 14211,
       "bytes": 641526
+    },
+    "eia": {
+      "files": 9,
+      "rows": 4560,
+      "bytes": 162399
     },
     "fred": {
       "files": 19,
@@ -44,6 +49,11 @@
       "files": 4,
       "rows": 1478,
       "bytes": 117296
+    },
+    "kis_index": {
+      "files": 6,
+      "rows": 300,
+      "bytes": 17657
     },
     "kosis": {
       "files": 1,
@@ -279,15 +289,15 @@
       "source": "dart",
       "slug": "auto__기아_사업보고서_2024",
       "path": "dart/auto__기아_사업보고서_2024.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 266,
+      "size_bytes": 67295
     },
     {
       "source": "dart",
       "slug": "auto__기아_사업보고서_2025",
       "path": "dart/auto__기아_사업보고서_2025.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 260,
+      "size_bytes": 65795
     },
     {
       "source": "dart",
@@ -349,113 +359,113 @@
       "source": "dart",
       "slug": "chemical__SK이노베이션_사업보고서_2024",
       "path": "dart/chemical__SK이노베이션_사업보고서_2024.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 371,
+      "size_bytes": 95643
     },
     {
       "source": "dart",
       "slug": "chemical__SK이노베이션_사업보고서_2025",
       "path": "dart/chemical__SK이노베이션_사업보고서_2025.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 406,
+      "size_bytes": 107532
     },
     {
       "source": "dart",
       "slug": "cosmetic__LG생활건강_사업보고서_2024",
       "path": "dart/cosmetic__LG생활건강_사업보고서_2024.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 244,
+      "size_bytes": 57632
     },
     {
       "source": "dart",
       "slug": "cosmetic__LG생활건강_사업보고서_2025",
       "path": "dart/cosmetic__LG생활건강_사업보고서_2025.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 251,
+      "size_bytes": 59615
     },
     {
       "source": "dart",
       "slug": "defense__한화에어로스페이스_사업보고서_2024",
       "path": "dart/defense__한화에어로스페이스_사업보고서_2024.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 282,
+      "size_bytes": 72729
     },
     {
       "source": "dart",
       "slug": "defense__한화에어로스페이스_사업보고서_2025",
       "path": "dart/defense__한화에어로스페이스_사업보고서_2025.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 296,
+      "size_bytes": 74508
     },
     {
       "source": "dart",
       "slug": "display__LG디스플레이_사업보고서_2024",
       "path": "dart/display__LG디스플레이_사업보고서_2024.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 243,
+      "size_bytes": 63211
     },
     {
       "source": "dart",
       "slug": "display__LG디스플레이_사업보고서_2025",
       "path": "dart/display__LG디스플레이_사업보고서_2025.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 234,
+      "size_bytes": 61237
     },
     {
       "source": "dart",
       "slug": "food__CJ제일제당_사업보고서_2024",
       "path": "dart/food__CJ제일제당_사업보고서_2024.csv",
-      "rows": 194,
-      "size_bytes": 46253
+      "rows": 277,
+      "size_bytes": 70599
     },
     {
       "source": "dart",
       "slug": "food__CJ제일제당_사업보고서_2025",
       "path": "dart/food__CJ제일제당_사업보고서_2025.csv",
-      "rows": 239,
-      "size_bytes": 59823
+      "rows": 280,
+      "size_bytes": 75668
     },
     {
       "source": "dart",
       "slug": "media__JYP_Ent._사업보고서_2024",
       "path": "dart/media__JYP_Ent._사업보고서_2024.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 202,
+      "size_bytes": 44975
     },
     {
       "source": "dart",
       "slug": "media__JYP_Ent._사업보고서_2025",
       "path": "dart/media__JYP_Ent._사업보고서_2025.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 271,
+      "size_bytes": 66357
     },
     {
       "source": "dart",
       "slug": "pharma__셀트리온_사업보고서_2024",
       "path": "dart/pharma__셀트리온_사업보고서_2024.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 270,
+      "size_bytes": 68439
     },
     {
       "source": "dart",
       "slug": "pharma__셀트리온_사업보고서_2025",
       "path": "dart/pharma__셀트리온_사업보고서_2025.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 278,
+      "size_bytes": 71339
     },
     {
       "source": "dart",
       "slug": "retail__이마트_사업보고서_2024",
       "path": "dart/retail__이마트_사업보고서_2024.csv",
-      "rows": 233,
-      "size_bytes": 60377
+      "rows": 232,
+      "size_bytes": 55405
     },
     {
       "source": "dart",
       "slug": "retail__이마트_사업보고서_2025",
       "path": "dart/retail__이마트_사업보고서_2025.csv",
-      "rows": 234,
-      "size_bytes": 60548
+      "rows": 232,
+      "size_bytes": 55583
     },
     {
       "source": "dart",
@@ -489,29 +499,29 @@
       "source": "dart",
       "slug": "ship__HD현대중공업_사업보고서_2024",
       "path": "dart/ship__HD현대중공업_사업보고서_2024.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 218,
+      "size_bytes": 52748
     },
     {
       "source": "dart",
       "slug": "ship__HD현대중공업_사업보고서_2025",
       "path": "dart/ship__HD현대중공업_사업보고서_2025.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 262,
+      "size_bytes": 65001
     },
     {
       "source": "dart",
       "slug": "ship__삼성중공업_사업보고서_2024",
       "path": "dart/ship__삼성중공업_사업보고서_2024.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 212,
+      "size_bytes": 52034
     },
     {
       "source": "dart",
       "slug": "ship__삼성중공업_사업보고서_2025",
       "path": "dart/ship__삼성중공업_사업보고서_2025.csv",
-      "rows": 0,
-      "size_bytes": 0
+      "rows": 238,
+      "size_bytes": 59462
     },
     {
       "source": "dart",
@@ -575,6 +585,69 @@
       "path": "ecos/macro__회사채_AA-_3Y.csv",
       "rows": 2788,
       "size_bytes": 128434
+    },
+    {
+      "source": "eia",
+      "slug": "auto__미국_휘발유_소매가",
+      "path": "eia/auto__미국_휘발유_소매가.csv",
+      "rows": 520,
+      "size_bytes": 25445
+    },
+    {
+      "source": "eia",
+      "slug": "chemical__Heating_Oil_(#2_NY)",
+      "path": "eia/chemical__Heating_Oil_(#2_NY).csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "eia",
+      "slug": "chemical__Naphtha_가격_(US_Gulf)",
+      "path": "eia/chemical__Naphtha_가격_(US_Gulf).csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "eia",
+      "slug": "energy__Brent_원유_(현물)",
+      "path": "eia/energy__Brent_원유_(현물).csv",
+      "rows": 1500,
+      "size_bytes": 50595
+    },
+    {
+      "source": "eia",
+      "slug": "energy__WTI_원유_(현물)",
+      "path": "eia/energy__WTI_원유_(현물).csv",
+      "rows": 1500,
+      "size_bytes": 49363
+    },
+    {
+      "source": "eia",
+      "slug": "energy__미국_원유_재고_(Crude_Stocks)",
+      "path": "eia/energy__미국_원유_재고_(Crude_Stocks).csv",
+      "rows": 520,
+      "size_bytes": 20317
+    },
+    {
+      "source": "eia",
+      "slug": "energy__미국_정제시설_가동률",
+      "path": "eia/energy__미국_정제시설_가동률.csv",
+      "rows": 520,
+      "size_bytes": 16679
+    },
+    {
+      "source": "eia",
+      "slug": "oil__천연가스_(Henry_Hub)_월별",
+      "path": "eia/oil__천연가스_(Henry_Hub)_월별.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "eia",
+      "slug": "transport__미국_디젤_도매가",
+      "path": "eia/transport__미국_디젤_도매가.csv",
+      "rows": 0,
+      "size_bytes": 0
     },
     {
       "source": "fred",
@@ -995,6 +1068,48 @@
       "path": "imported/krx/KRX_코스피지수_재수집_duplicate_1.csv",
       "rows": 386,
       "size_bytes": 30772
+    },
+    {
+      "source": "kis_index",
+      "slug": "food__KOSPI_음식료품",
+      "path": "kis_index/food__KOSPI_음식료품.csv",
+      "rows": 50,
+      "size_bytes": 2871
+    },
+    {
+      "source": "kis_index",
+      "slug": "market__KOSDAQ_종합",
+      "path": "kis_index/market__KOSDAQ_종합.csv",
+      "rows": 50,
+      "size_bytes": 3148
+    },
+    {
+      "source": "kis_index",
+      "slug": "market__KOSPI_200",
+      "path": "kis_index/market__KOSPI_200.csv",
+      "rows": 50,
+      "size_bytes": 2905
+    },
+    {
+      "source": "kis_index",
+      "slug": "market__KOSPI_종합",
+      "path": "kis_index/market__KOSPI_종합.csv",
+      "rows": 50,
+      "size_bytes": 3134
+    },
+    {
+      "source": "kis_index",
+      "slug": "paper__KOSPI_섬유의복",
+      "path": "kis_index/paper__KOSPI_섬유의복.csv",
+      "rows": 50,
+      "size_bytes": 2707
+    },
+    {
+      "source": "kis_index",
+      "slug": "paper__KOSPI_종이목재",
+      "path": "kis_index/paper__KOSPI_종이목재.csv",
+      "rows": 50,
+      "size_bytes": 2892
     },
     {
       "source": "kosis",

@@ -35,17 +35,22 @@ python scripts/summarize_data.py
 
 ---
 
-## 무엇이 이미 있고 무엇이 없는가 (2026-04-25 스냅샷)
+## 무엇이 이미 있고 무엇이 없는가 (2026-04-25 후반 스냅샷)
 
-164 파일 / 327K 행 / 48.5MB 수집 완료. 다음은 다시 호출 금지:
+**WICS 34섹터 매트릭스 커버리지: 292 / 340 셀 = 85.9%**
+(`python scripts/sector_coverage.py` 로 언제든 재계산)
+
+180+ 파일 수집 완료. 다음은 다시 호출 금지:
 
 | 출처 | 셀 수 | 비고 |
 |---|---|---|
 | customs | 24 | HS×국가 12개월 (2025-05~2026-04) |
-| dart | 36 | 18 섹터 대표 × 2년 사업보고서 |
+| dart | 36 | 18 섹터 대표 × 2년 사업보고서 (CORPCODE.xml로 정정 완료) |
 | fred / imported_fred | 41 | 매크로 시리즈 합계 |
 | ecos / imported_ecos | 22 | 한국 금리·환율·심리 |
+| eia | 8 | WTI·Brent·정제가동률·휘발유·재고 등 |
 | kosis | 1 | GDP by 경제활동 (분기) |
+| kis_index | 6 | KOSPI 종합·KOSDAQ·200·음식료·섬유의복·종이목재 일별 50일 |
 | oecd | 5 | CLI 5개국 |
 | worldbank | 6 | 25년 장기지표 |
 | pytrends | 16 | 검색관심도 |
@@ -56,9 +61,9 @@ python scripts/summarize_data.py
 **아직 안 된 것** (재시도/추가 작업 필요):
 - customs 5/6 endpoint — data.go.kr 활용신청 자동승인 lag
 - KOSIS 광공업 동향조사 산업별 — 정확한 tblId 미확보
-- KIS 업종지수 일별 OHLCV — 새 TR call 필요
-- BDI/SCFI/클락슨 — 안정 크롤링 소스 부재
-- DART 일부 종목 (LG디스플레이/SK이노베이션/기아 등) — corp_code 정정 필요
+- KIS 업종지수 0040+ 코드 (화학/철강/전기전자 등 17개 sub-index) — KIS 업종 코드 시스템 별도 lookup 필요
+- KIS 업종지수 페이지네이션 (1콜=50일 한계, 12개월 만들려면 5-6콜 필요)
+- BDI/SCFI/클락슨/DRAMeXchange — 안정 크롤링 소스 부재 (63셀 영향)
 
 ---
 

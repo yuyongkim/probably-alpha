@@ -1,28 +1,111 @@
 {
-  "started_at": "2026-04-25T14:25:44.429759+00:00",
-  "finished_at": "2026-04-25T14:25:45.619104+00:00",
-  "total_specs": 1,
-  "succeeded": 1,
+  "started_at": "2026-04-25T14:47:42.823563+00:00",
+  "finished_at": "2026-04-25T14:47:46.354270+00:00",
+  "total_specs": 6,
+  "succeeded": 6,
   "failed": 0,
   "entries": [
     {
-      "spec": "macro__GDP_by_경제활동_(분기)",
-      "source": "kosis",
-      "sector": "macro",
-      "name": "GDP by 경제활동 (분기)",
-      "rows": 2200,
-      "ms": 657.3,
+      "spec": "market__KOSPI_종합",
+      "source": "kis_index",
+      "sector": "market",
+      "name": "KOSPI 종합",
+      "rows": 50,
+      "ms": 284.0,
       "ok": true,
-      "path": "kosis\\macro__GDP_by_경제활동_(분기).csv",
+      "path": "kis_index\\market__KOSPI_종합.csv",
       "params": {
-        "org_id": "301",
-        "tbl_id": "DT_200Y105",
-        "item_code": "ALL",
-        "obj_l1": "ALL",
-        "prd_se": "Q",
-        "last_n_periods": 40
+        "sector_code": "0001",
+        "date_from": "20250425",
+        "date_to": "20260425",
+        "period": "D"
       },
-      "note": "301/DT_200Y105/ALL/ALL"
+      "note": "KRX 0001"
+    },
+    {
+      "spec": "market__KOSDAQ_종합",
+      "source": "kis_index",
+      "sector": "market",
+      "name": "KOSDAQ 종합",
+      "rows": 50,
+      "ms": 490.6,
+      "ok": true,
+      "path": "kis_index\\market__KOSDAQ_종합.csv",
+      "params": {
+        "sector_code": "1001",
+        "date_from": "20250425",
+        "date_to": "20260425",
+        "period": "D"
+      },
+      "note": "KRX 1001"
+    },
+    {
+      "spec": "market__KOSPI_200",
+      "source": "kis_index",
+      "sector": "market",
+      "name": "KOSPI 200",
+      "rows": 50,
+      "ms": 499.4,
+      "ok": true,
+      "path": "kis_index\\market__KOSPI_200.csv",
+      "params": {
+        "sector_code": "2001",
+        "date_from": "20250425",
+        "date_to": "20260425",
+        "period": "D"
+      },
+      "note": "KRX 2001"
+    },
+    {
+      "spec": "food__KOSPI_음식료품",
+      "source": "kis_index",
+      "sector": "food",
+      "name": "KOSPI 음식료품",
+      "rows": 50,
+      "ms": 508.2,
+      "ok": true,
+      "path": "kis_index\\food__KOSPI_음식료품.csv",
+      "params": {
+        "sector_code": "0010",
+        "date_from": "20250425",
+        "date_to": "20260425",
+        "period": "D"
+      },
+      "note": "KRX 0010"
+    },
+    {
+      "spec": "paper__KOSPI_섬유의복",
+      "source": "kis_index",
+      "sector": "paper",
+      "name": "KOSPI 섬유의복",
+      "rows": 50,
+      "ms": 483.4,
+      "ok": true,
+      "path": "kis_index\\paper__KOSPI_섬유의복.csv",
+      "params": {
+        "sector_code": "0020",
+        "date_from": "20250425",
+        "date_to": "20260425",
+        "period": "D"
+      },
+      "note": "KRX 0020"
+    },
+    {
+      "spec": "paper__KOSPI_종이목재",
+      "source": "kis_index",
+      "sector": "paper",
+      "name": "KOSPI 종이목재",
+      "rows": 50,
+      "ms": 513.5,
+      "ok": true,
+      "path": "kis_index\\paper__KOSPI_종이목재.csv",
+      "params": {
+        "sector_code": "0030",
+        "date_from": "20250425",
+        "date_to": "20260425",
+        "period": "D"
+      },
+      "note": "KRX 0030"
     }
   ]
 }

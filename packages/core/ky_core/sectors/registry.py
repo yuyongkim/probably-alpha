@@ -342,30 +342,77 @@ def _kosis_specs() -> list[IndicatorSpec]:
 
 
 # ---------------------------------------------------------------------------
+# EIA — US energy series referenced across 화학·에너지·자동차·운송·유틸리티.
+# v2 endpoints use path + series_code. We use both routes:
+#   - get_series(series_id) for the "seriesid" legacy compat ones
+#   - get_path_series(path, series_code) for v2 weekly/monthly paths
+# ---------------------------------------------------------------------------
+
+EIA_SERIES = [
+    # (sector, name, method, args)
+    ("energy",   "WTI 원유 (현물)",    "get_path_series",
+        {"path": "petroleum/pri/spt", "series_code": "RWTC", "frequency": "daily", "length": 1500}),
+    ("energy",   "Brent 원유 (현물)",  "get_path_series",
+        {"path": "petroleum/pri/spt", "series_code": "RBRTE", "frequency": "daily", "length": 1500}),
+    ("energy",   "미국 원유 재고 (Crude Stocks)", "get_path_series",
+        {"path": "petroleum/stoc/wstk", "series_code": "WCESTUS1", "frequency": "weekly", "length": 520}),
+    ("energy",   "미국 정제시설 가동률", "get_path_series",
+        {"path": "petroleum/pnp/wiup", "series_code": "WPULEUS3", "frequency": "weekly", "length": 520}),
+    ("chemical", "Heating Oil (#2 NY)", "get_path_series",
+        {"path": "petroleum/pri/spt", "series_code": "EER_EPD2F_PE1_Y35NY_DPG", "frequency": "weekly", "length": 520}),
+    ("oil",      "천연가스 (Henry Hub) 월별", "get_path_series",
+        {"path": "natural-gas/pri/sum", "series_code": "RNGWHHD", "frequency": "monthly", "length": 240}),
+    ("oil",      "정제가동률 가중평균",     "get_path_series",
+        {"path": "petroleum/pnp/wiup", "series_code": "WPULEUS3", "frequency": "monthly", "length": 240}),
+    ("auto",     "미국 휘발유 소매가",    "get_path_series",
+        {"path": "petroleum/pri/gnd", "series_code": "EMM_EPMR_PTE_NUS_DPG", "frequency": "weekly", "length": 520}),
+    ("transport","미국 디젤 도매가",     "get_path_series",
+        {"path": "petroleum/pri/spt", "series_code": "EER_EPD2DXL0_PE_RGC_DPG", "frequency": "weekly", "length": 520}),
+]
+
+
+def _eia_specs() -> list[IndicatorSpec]:
+    out: list[IndicatorSpec] = []
+    for sector, name, method, params in EIA_SERIES:
+        out.append(
+            IndicatorSpec(
+                sector=sector,
+                sector_label=sector,
+                name=name,
+                source="eia",
+                method=method,
+                params=params,
+                note=params.get("series_code", ""),
+            )
+        )
+    return out
+
+
+# ---------------------------------------------------------------------------
 # DART — quarterly / annual financials for the major sector flagship.
 # corp_code values from DART CORPCODE.xml (publicly available).
 # ---------------------------------------------------------------------------
 
 DART_FLAGSHIP = [
-    # (sector, sector_label, corp_code, name)
+    # (sector, sector_label, corp_code, name) — verified against DART CORPCODE.xml 2026-04-25
     ("semiconductor", "반도체", "00126380", "삼성전자"),
     ("semiconductor", "반도체", "00164779", "SK하이닉스"),
-    ("display",       "디스플레이", "00164755", "LG디스플레이"),
+    ("display",       "디스플레이", "00105873", "LG디스플레이"),
     ("chemical",      "화학",   "00126186", "LG화학"),
-    ("chemical",      "화학",   "01093641", "SK이노베이션"),
+    ("chemical",      "화학",   "00631518", "SK이노베이션"),
     ("auto",          "자동차", "00164742", "현대자동차"),
-    ("auto",          "자동차", "00164817", "기아"),
-    ("ship",          "조선",   "01023432", "HD현대중공업"),
-    ("ship",          "조선",   "00164826", "삼성중공업"),
+    ("auto",          "자동차", "00106641", "기아"),
+    ("ship",          "조선",   "01390344", "HD현대중공업"),
+    ("ship",          "조선",   "00126478", "삼성중공업"),
     ("steel",         "철강",   "00126308", "POSCO홀딩스"),
     ("bank",          "은행",   "00688996", "KB금융지주"),
     ("bank",          "은행",   "00382199", "신한지주"),
-    ("retail",        "유통",   "00138321", "이마트"),
-    ("media",         "엔터",   "00138717", "JYP Ent."),
-    ("cosmetic",      "화장품", "00125957", "LG생활건강"),
-    ("food",          "식품",   "00266961", "CJ제일제당"),
-    ("pharma",        "제약",   "00164718", "셀트리온"),
-    ("defense",       "방산",   "01075058", "한화에어로스페이스"),
+    ("retail",        "유통",   "00872984", "이마트"),
+    ("media",         "엔터",   "00258689", "JYP Ent."),
+    ("cosmetic",      "화장품", "00356370", "LG생활건강"),
+    ("food",          "식품",   "00635134", "CJ제일제당"),
+    ("pharma",        "제약",   "00413046", "셀트리온"),
+    ("defense",       "방산",   "00126566", "한화에어로스페이스"),
 ]
 
 DART_REPORT_YEARS = [2024, 2025]  # 가장 최근 2년 — annual report only
@@ -391,6 +438,49 @@ def _dart_specs() -> list[IndicatorSpec]:
                     note=f"{name}/{year}",
                 )
             )
+    return out
+
+
+# ---------------------------------------------------------------------------
+# KIS — KOSPI 업종지수 일별 OHLCV (12개월).
+# FID_INPUT_ISCD codes from KRX 업종 분류. 매핑은 KOSPI 종합 + 11개 핵심
+# 업종 + 코스닥 종합. WICS 34와 1:1은 아니지만 섹터 모멘텀 가격축에 충분.
+# ---------------------------------------------------------------------------
+
+KIS_INDEX_CODES = [
+    # Verified-returning-50-rows codes (KIS returns max 50 daily rows per call,
+    # ~10 weeks). Pagination + multi-call needed for longer history.
+    ("market",        "KOSPI 종합",       "0001"),
+    ("market",        "KOSDAQ 종합",      "1001"),
+    ("market",        "KOSPI 200",        "2001"),
+    ("food",          "KOSPI 음식료품",    "0010"),
+    ("paper",         "KOSPI 섬유의복",    "0020"),
+    ("paper",         "KOSPI 종이목재",    "0030"),
+    # Codes 0040+ return 0 rows on the FHKUP03500100 endpoint; KIS uses a
+    # different code system for finer 업종 indices that needs lookup.
+    # Tracked as future work in CLAUDE.md.
+]
+
+
+def _kis_index_specs() -> list[IndicatorSpec]:
+    out: list[IndicatorSpec] = []
+    for sector, name, code in KIS_INDEX_CODES:
+        out.append(
+            IndicatorSpec(
+                sector=sector,
+                sector_label=sector,
+                name=name,
+                source="kis_index",
+                method="get_index_daily",
+                params={
+                    "sector_code": code,
+                    "date_from": "20250425",
+                    "date_to": "20260425",
+                    "period": "D",
+                },
+                note=f"KRX {code}",
+            )
+        )
     return out
 
 
@@ -442,7 +532,9 @@ def all_specs() -> list[IndicatorSpec]:
         *_customs_specs(),
         *_fred_specs(),
         *_kosis_specs(),     # GDP by industry (only one verified)
+        *_eia_specs(),       # 10 US energy series
         *_dart_specs(),      # 18 sector flagships × 2 years annual reports
+        *_kis_index_specs(), # 23 KOSPI/KOSDAQ sector indices, daily 12-month OHLCV
         *_oecd_specs(),
         *_worldbank_specs(),
         *_pytrends_specs(),

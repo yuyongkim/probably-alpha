@@ -1,0 +1,5620 @@
+{
+  "total_cells": 340,
+  "total_filled": 292,
+  "pct_filled": 85.9,
+  "per_sector": {
+    "01": {
+      "total": 10,
+      "filled": 9,
+      "name": "에너지"
+    },
+    "02": {
+      "total": 10,
+      "filled": 10,
+      "name": "화학"
+    },
+    "03": {
+      "total": 10,
+      "filled": 6,
+      "name": "비철금속"
+    },
+    "04": {
+      "total": 10,
+      "filled": 8,
+      "name": "철강"
+    },
+    "05": {
+      "total": 10,
+      "filled": 9,
+      "name": "건설"
+    },
+    "06": {
+      "total": 10,
+      "filled": 10,
+      "name": "기계"
+    },
+    "07": {
+      "total": 10,
+      "filled": 6,
+      "name": "조선"
+    },
+    "08": {
+      "total": 10,
+      "filled": 9,
+      "name": "상사·자본재"
+    },
+    "09": {
+      "total": 10,
+      "filled": 6,
+      "name": "운송"
+    },
+    "10": {
+      "total": 10,
+      "filled": 9,
+      "name": "자동차·부품"
+    },
+    "11": {
+      "total": 10,
+      "filled": 10,
+      "name": "화장품·의류"
+    },
+    "12": {
+      "total": 10,
+      "filled": 9,
+      "name": "호텔·레저"
+    },
+    "13": {
+      "total": 10,
+      "filled": 7,
+      "name": "미디어·교육"
+    },
+    "14": {
+      "total": 10,
+      "filled": 10,
+      "name": "유통 (소매)"
+    },
+    "15": {
+      "total": 10,
+      "filled": 10,
+      "name": "필수소비재"
+    },
+    "16": {
+      "total": 10,
+      "filled": 10,
+      "name": "식품·담배"
+    },
+    "17": {
+      "total": 10,
+      "filled": 8,
+      "name": "제약·바이오"
+    },
+    "18": {
+      "total": 10,
+      "filled": 10,
+      "name": "은행"
+    },
+    "19": {
+      "total": 10,
+      "filled": 9,
+      "name": "증권"
+    },
+    "20": {
+      "total": 10,
+      "filled": 9,
+      "name": "보험"
+    },
+    "21": {
+      "total": 10,
+      "filled": 9,
+      "name": "다각화된 금융 (캐피탈·카드·자산운용)"
+    },
+    "22": {
+      "total": 10,
+      "filled": 8,
+      "name": "소프트웨어"
+    },
+    "23": {
+      "total": 10,
+      "filled": 8,
+      "name": "IT 서비스"
+    },
+    "24": {
+      "total": 10,
+      "filled": 7,
+      "name": "디스플레이"
+    },
+    "25": {
+      "total": 10,
+      "filled": 8,
+      "name": "핸드셋 (휴대폰)"
+    },
+    "26": {
+      "total": 10,
+      "filled": 6,
+      "name": "반도체"
+    },
+    "27": {
+      "total": 10,
+      "filled": 9,
+      "name": "IT 가전"
+    },
+    "28": {
+      "total": 10,
+      "filled": 9,
+      "name": "전기장비"
+    },
+    "29": {
+      "total": 10,
+      "filled": 8,
+      "name": "통신 서비스"
+    },
+    "30": {
+      "total": 10,
+      "filled": 9,
+      "name": "유틸리티 (전기·가스)"
+    },
+    "31": {
+      "total": 10,
+      "filled": 10,
+      "name": "부동산"
+    },
+    "32": {
+      "total": 10,
+      "filled": 9,
+      "name": "우주항공·방위"
+    },
+    "33": {
+      "total": 10,
+      "filled": 9,
+      "name": "종이·목재"
+    },
+    "34": {
+      "total": 10,
+      "filled": 9,
+      "name": "일반 전기전자"
+    }
+  },
+  "per_source": {
+    "EIA": {
+      "referenced": 10,
+      "filled": 10
+    },
+    "Crawl": {
+      "referenced": 63,
+      "filled": 0
+    },
+    "TRASS": {
+      "referenced": 17,
+      "filled": 17
+    },
+    "OECD": {
+      "referenced": 6,
+      "filled": 6
+    },
+    "KOSIS": {
+      "referenced": 81,
+      "filled": 81
+    },
+    "DART": {
+      "referenced": 34,
+      "filled": 34
+    },
+    "KIS": {
+      "referenced": 35,
+      "filled": 35
+    },
+    "FRED": {
+      "referenced": 31,
+      "filled": 31
+    },
+    "ECOS": {
+      "referenced": 55,
+      "filled": 55
+    },
+    "WB": {
+      "referenced": 8,
+      "filled": 8
+    },
+    "pytrends": {
+      "referenced": 16,
+      "filled": 16
+    },
+    "yfinance": {
+      "referenced": 2,
+      "filled": 0
+    },
+    "Comtrade": {
+      "referenced": 1,
+      "filled": 1
+    },
+    "IMF": {
+      "referenced": 1,
+      "filled": 0
+    }
+  },
+  "disk_inventory": {
+    "cftc": 5,
+    "customs": 24,
+    "dart": 36,
+    "ecos": 7,
+    "eia": 9,
+    "fred": 19,
+    "imported_ecos": 15,
+    "imported_fred": 22,
+    "imported_krx": 4,
+    "kis_index": 6,
+    "kosis": 1,
+    "oecd": 5,
+    "pytrends": 16,
+    "un_comtrade": 4,
+    "worldbank": 6
+  },
+  "cells": [
+    {
+      "sector_num": "01",
+      "sector_name": "에너지",
+      "cell_num": 1,
+      "indicator": "WTI 원유 가격",
+      "source_raw": "**EIA✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "EIA"
+      ],
+      "tokens_filled": [
+        "EIA"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "01",
+      "sector_name": "에너지",
+      "cell_num": 2,
+      "indicator": "두바이유 가격",
+      "source_raw": "**EIA✓** / Crawl⚠",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "EIA",
+        "Crawl"
+      ],
+      "tokens_filled": [
+        "EIA"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "01",
+      "sector_name": "에너지",
+      "cell_num": 3,
+      "indicator": "미국 원유 재고 (Crude Stocks)",
+      "source_raw": "**EIA✓**",
+      "category": "실물",
+      "leadlag": "선행 (역신호)",
+      "tokens_in_source": [
+        "EIA"
+      ],
+      "tokens_filled": [
+        "EIA"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "01",
+      "sector_name": "에너지",
+      "cell_num": 4,
+      "indicator": "OPEC+ 감산 발표 모멘텀",
+      "source_raw": "Crawl⚠ (뉴스)",
+      "category": "펀더",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "01",
+      "sector_name": "에너지",
+      "cell_num": 5,
+      "indicator": "미국 정제가동률 (Refinery Util)",
+      "source_raw": "**EIA✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "EIA"
+      ],
+      "tokens_filled": [
+        "EIA"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "01",
+      "sector_name": "에너지",
+      "cell_num": 6,
+      "indicator": "한국 정유사 수출 (HS 2710)",
+      "source_raw": "TRASS☐",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "TRASS"
+      ],
+      "tokens_filled": [
+        "TRASS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "01",
+      "sector_name": "에너지",
+      "cell_num": 7,
+      "indicator": "글로벌 원유 수요 전망 (IEA/OECD)",
+      "source_raw": "OECD☐ / Crawl⚠",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "OECD",
+        "Crawl"
+      ],
+      "tokens_filled": [
+        "OECD"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "01",
+      "sector_name": "에너지",
+      "cell_num": 8,
+      "indicator": "한국 에너지수입 (KOSIS)",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "01",
+      "sector_name": "에너지",
+      "cell_num": 9,
+      "indicator": "DART 정유 4사 (SK이노/S-Oil/GS칼텍스/현대오일뱅크) 분기 실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "01",
+      "sector_name": "에너지",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 에너지 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "02",
+      "sector_name": "화학",
+      "cell_num": 1,
+      "indicator": "미국 정제시설 가동률 (`WPULEUS3`)",
+      "source_raw": "**EIA✓**",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "EIA"
+      ],
+      "tokens_filled": [
+        "EIA"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "02",
+      "sector_name": "화학",
+      "cell_num": 2,
+      "indicator": "에틸렌·프로필렌 생산량",
+      "source_raw": "**EIA✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "EIA"
+      ],
+      "tokens_filled": [
+        "EIA"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "02",
+      "sector_name": "화학",
+      "cell_num": 3,
+      "indicator": "나프타-WTI 스프레드",
+      "source_raw": "**EIA✓ + FRED✓**",
+      "category": "가격",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED",
+        "EIA"
+      ],
+      "tokens_filled": [
+        "FRED",
+        "EIA"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "02",
+      "sector_name": "화학",
+      "cell_num": 4,
+      "indicator": "한국 석유화학 수출 (HS 3901-3926)",
+      "source_raw": "TRASS☐",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "TRASS"
+      ],
+      "tokens_filled": [
+        "TRASS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "02",
+      "sector_name": "화학",
+      "cell_num": 5,
+      "indicator": "한국 화학공업 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "02",
+      "sector_name": "화학",
+      "cell_num": 6,
+      "indicator": "한국 화학공업 출하지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "02",
+      "sector_name": "화학",
+      "cell_num": 7,
+      "indicator": "한국 화학공업 재고지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "선행 (역)",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "02",
+      "sector_name": "화학",
+      "cell_num": 8,
+      "indicator": "글로벌 PMI 제조업 (OECD)",
+      "source_raw": "OECD☐",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "OECD"
+      ],
+      "tokens_filled": [
+        "OECD"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "02",
+      "sector_name": "화학",
+      "cell_num": 9,
+      "indicator": "위안화/달러 환율 (CNY/USD)",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "02",
+      "sector_name": "화학",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 화학 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "03",
+      "sector_name": "비철금속",
+      "cell_num": 1,
+      "indicator": "LME 구리 가격",
+      "source_raw": "Crawl⚠ (LME)",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "03",
+      "sector_name": "비철금속",
+      "cell_num": 2,
+      "indicator": "LME 알루미늄 가격",
+      "source_raw": "Crawl⚠",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "03",
+      "sector_name": "비철금속",
+      "cell_num": 3,
+      "indicator": "LME 아연 가격",
+      "source_raw": "Crawl⚠",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "03",
+      "sector_name": "비철금속",
+      "cell_num": 4,
+      "indicator": "글로벌 구리 재고 (LME 창고)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "03",
+      "sector_name": "비철금속",
+      "cell_num": 5,
+      "indicator": "한국 비철금속 수출 (HS 74·76·79)",
+      "source_raw": "TRASS☐",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "TRASS"
+      ],
+      "tokens_filled": [
+        "TRASS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "03",
+      "sector_name": "비철금속",
+      "cell_num": 6,
+      "indicator": "한국 1차금속 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "03",
+      "sector_name": "비철금속",
+      "cell_num": 7,
+      "indicator": "중국 산업생산지수 (WB/Crawl)",
+      "source_raw": "WB☐ / Crawl⚠",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "WB",
+        "Crawl"
+      ],
+      "tokens_filled": [
+        "WB"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "03",
+      "sector_name": "비철금속",
+      "cell_num": 8,
+      "indicator": "미국 ISM 제조업 PMI",
+      "source_raw": "**FRED✓** (`ISM`)",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "03",
+      "sector_name": "비철금속",
+      "cell_num": 9,
+      "indicator": "DART 풍산·고려아연 분기 실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "03",
+      "sector_name": "비철금속",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 비철금속 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "04",
+      "sector_name": "철강",
+      "cell_num": 1,
+      "indicator": "중국 철광석 가격 (62% Fe)",
+      "source_raw": "Crawl⚠",
+      "category": "가격",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "04",
+      "sector_name": "철강",
+      "cell_num": 2,
+      "indicator": "글로벌 조강생산량 (worldsteel)",
+      "source_raw": "Crawl⚠ / WB☐",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "WB",
+        "Crawl"
+      ],
+      "tokens_filled": [
+        "WB"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "04",
+      "sector_name": "철강",
+      "cell_num": 3,
+      "indicator": "한국 철강 수출 (HS 72·73)",
+      "source_raw": "TRASS☐",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "TRASS"
+      ],
+      "tokens_filled": [
+        "TRASS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "04",
+      "sector_name": "철강",
+      "cell_num": 4,
+      "indicator": "한국 1차금속 출하지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "04",
+      "sector_name": "철강",
+      "cell_num": 5,
+      "indicator": "한국 1차금속 재고지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "선행 (역)",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "04",
+      "sector_name": "철강",
+      "cell_num": 6,
+      "indicator": "미국 핫롤드 코일 가격",
+      "source_raw": "Crawl⚠",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "04",
+      "sector_name": "철강",
+      "cell_num": 7,
+      "indicator": "중국 부동산 신규착공 면적",
+      "source_raw": "WB☐ / Crawl⚠",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "WB",
+        "Crawl"
+      ],
+      "tokens_filled": [
+        "WB"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "04",
+      "sector_name": "철강",
+      "cell_num": 8,
+      "indicator": "글로벌 자동차 생산량",
+      "source_raw": "OECD☐",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "OECD"
+      ],
+      "tokens_filled": [
+        "OECD"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "04",
+      "sector_name": "철강",
+      "cell_num": 9,
+      "indicator": "DART 포스코·현대제철 수주잔고",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "04",
+      "sector_name": "철강",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 철강 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "05",
+      "sector_name": "건설",
+      "cell_num": 1,
+      "indicator": "한국 건설기성액",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "05",
+      "sector_name": "건설",
+      "cell_num": 2,
+      "indicator": "한국 건설수주액",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "05",
+      "sector_name": "건설",
+      "cell_num": 3,
+      "indicator": "한국 주택매매가격지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "05",
+      "sector_name": "건설",
+      "cell_num": 4,
+      "indicator": "한국 미분양 주택수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "후행 (역)",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "05",
+      "sector_name": "건설",
+      "cell_num": 5,
+      "indicator": "한국 기준금리",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행 (역)",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "05",
+      "sector_name": "건설",
+      "cell_num": 6,
+      "indicator": "한국 가계대출 잔액",
+      "source_raw": "**ECOS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "05",
+      "sector_name": "건설",
+      "cell_num": 7,
+      "indicator": "시멘트·레미콘 출하량",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "05",
+      "sector_name": "건설",
+      "cell_num": 8,
+      "indicator": "해외건설 수주액 (해외건설협회)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "05",
+      "sector_name": "건설",
+      "cell_num": 9,
+      "indicator": "DART 5대 건설사 수주잔고",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "05",
+      "sector_name": "건설",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 건설 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "06",
+      "sector_name": "기계",
+      "cell_num": 1,
+      "indicator": "한국 기계류 수출 (HS 84)",
+      "source_raw": "TRASS☐",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "TRASS"
+      ],
+      "tokens_filled": [
+        "TRASS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "06",
+      "sector_name": "기계",
+      "cell_num": 2,
+      "indicator": "한국 기계장비 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "06",
+      "sector_name": "기계",
+      "cell_num": 3,
+      "indicator": "한국 설비투자지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "06",
+      "sector_name": "기계",
+      "cell_num": 4,
+      "indicator": "미국 비국방 자본재 수주 (Capex Order)",
+      "source_raw": "**FRED✓** (`NEWORDER`)",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "06",
+      "sector_name": "기계",
+      "cell_num": 5,
+      "indicator": "글로벌 PMI 제조업 신규수주",
+      "source_raw": "OECD☐",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "OECD"
+      ],
+      "tokens_filled": [
+        "OECD"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "06",
+      "sector_name": "기계",
+      "cell_num": 6,
+      "indicator": "한국 기업 BSI - 시설투자",
+      "source_raw": "**ECOS✓**",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "06",
+      "sector_name": "기계",
+      "cell_num": 7,
+      "indicator": "'capex' Google Trends",
+      "source_raw": "pytrends☐",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "pytrends"
+      ],
+      "tokens_filled": [
+        "pytrends"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "06",
+      "sector_name": "기계",
+      "cell_num": 8,
+      "indicator": "위안화/달러 환율",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "06",
+      "sector_name": "기계",
+      "cell_num": 9,
+      "indicator": "DART 두산밥캣·현대건설기계 등 분기실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "06",
+      "sector_name": "기계",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 기계 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "07",
+      "sector_name": "조선",
+      "cell_num": 1,
+      "indicator": "클락슨 신조선가지수 (Newbuilding Price)",
+      "source_raw": "Crawl⚠",
+      "category": "가격",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "07",
+      "sector_name": "조선",
+      "cell_num": 2,
+      "indicator": "BDI (Baltic Dry Index)",
+      "source_raw": "Crawl⚠ / yfinance(글로벌)",
+      "category": "가격",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl",
+        "yfinance"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "07",
+      "sector_name": "조선",
+      "cell_num": 3,
+      "indicator": "한국 신규수주 (CGT)",
+      "source_raw": "Crawl⚠ (한국조선해양)",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "07",
+      "sector_name": "조선",
+      "cell_num": 4,
+      "indicator": "한국 건조량",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "07",
+      "sector_name": "조선",
+      "cell_num": 5,
+      "indicator": "글로벌 LNG 무역량",
+      "source_raw": "Comtrade☐",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Comtrade"
+      ],
+      "tokens_filled": [
+        "Comtrade"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "07",
+      "sector_name": "조선",
+      "cell_num": 6,
+      "indicator": "후판(steel plate) 가격",
+      "source_raw": "Crawl⚠",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "07",
+      "sector_name": "조선",
+      "cell_num": 7,
+      "indicator": "한국 조선부품 수출 (HS 8906)",
+      "source_raw": "TRASS☐",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "TRASS"
+      ],
+      "tokens_filled": [
+        "TRASS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "07",
+      "sector_name": "조선",
+      "cell_num": 8,
+      "indicator": "DART HD현대중공업·삼성중공업·한화오션 수주잔고",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "07",
+      "sector_name": "조선",
+      "cell_num": 9,
+      "indicator": "원/달러 환율",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "07",
+      "sector_name": "조선",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 조선 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "08",
+      "sector_name": "상사·자본재",
+      "cell_num": 1,
+      "indicator": "한국 총수출액 (월별)",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "08",
+      "sector_name": "상사·자본재",
+      "cell_num": 2,
+      "indicator": "한국 총수입액",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "08",
+      "sector_name": "상사·자본재",
+      "cell_num": 3,
+      "indicator": "무역수지",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "08",
+      "sector_name": "상사·자본재",
+      "cell_num": 4,
+      "indicator": "미국 ISM 제조업 PMI",
+      "source_raw": "**FRED✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "08",
+      "sector_name": "상사·자본재",
+      "cell_num": 5,
+      "indicator": "글로벌 컨테이너 운임 (SCFI)",
+      "source_raw": "Crawl⚠",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "08",
+      "sector_name": "상사·자본재",
+      "cell_num": 6,
+      "indicator": "원/달러 환율",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "08",
+      "sector_name": "상사·자본재",
+      "cell_num": 7,
+      "indicator": "글로벌 GDP 성장률 (WB)",
+      "source_raw": "WB☐",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "WB"
+      ],
+      "tokens_filled": [
+        "WB"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "08",
+      "sector_name": "상사·자본재",
+      "cell_num": 8,
+      "indicator": "한국 BSI - 무역업",
+      "source_raw": "**ECOS✓**",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "08",
+      "sector_name": "상사·자본재",
+      "cell_num": 9,
+      "indicator": "DART 종합상사 4사 분기실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "08",
+      "sector_name": "상사·자본재",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 유통/상사 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "09",
+      "sector_name": "운송",
+      "cell_num": 1,
+      "indicator": "글로벌 컨테이너 운임 (SCFI/CCFI)",
+      "source_raw": "Crawl⚠",
+      "category": "가격",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "09",
+      "sector_name": "운송",
+      "cell_num": 2,
+      "indicator": "BDI",
+      "source_raw": "Crawl⚠",
+      "category": "가격",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "09",
+      "sector_name": "운송",
+      "cell_num": 3,
+      "indicator": "항공 화물량 (인천공항)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "09",
+      "sector_name": "운송",
+      "cell_num": 4,
+      "indicator": "글로벌 항공여객수 (IATA)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "09",
+      "sector_name": "운송",
+      "cell_num": 5,
+      "indicator": "미국 트럭운송 톤지수 (ATA Tonnage)",
+      "source_raw": "**FRED✓** (`TRUCKD11`)",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "09",
+      "sector_name": "운송",
+      "cell_num": 6,
+      "indicator": "한국 운수업 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "09",
+      "sector_name": "운송",
+      "cell_num": 7,
+      "indicator": "WTI 원유 가격 (연료비 영향)",
+      "source_raw": "**EIA✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "EIA"
+      ],
+      "tokens_filled": [
+        "EIA"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "09",
+      "sector_name": "운송",
+      "cell_num": 8,
+      "indicator": "원/달러 환율",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "09",
+      "sector_name": "운송",
+      "cell_num": 9,
+      "indicator": "DART HMM·팬오션·대한항공 분기실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "09",
+      "sector_name": "운송",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 운수창고 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "10",
+      "sector_name": "자동차·부품",
+      "cell_num": 1,
+      "indicator": "한국 자동차 수출대수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "10",
+      "sector_name": "자동차·부품",
+      "cell_num": 2,
+      "indicator": "자동차 부품 수출 (HS 8708)",
+      "source_raw": "TRASS☐",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "TRASS"
+      ],
+      "tokens_filled": [
+        "TRASS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "10",
+      "sector_name": "자동차·부품",
+      "cell_num": 3,
+      "indicator": "미국 신차 판매 SAAR (`TOTALSA`)",
+      "source_raw": "**FRED✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "10",
+      "sector_name": "자동차·부품",
+      "cell_num": 4,
+      "indicator": "미국 자동차 재고비율",
+      "source_raw": "**FRED✓**",
+      "category": "실물",
+      "leadlag": "선행 (역)",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "10",
+      "sector_name": "자동차·부품",
+      "cell_num": 5,
+      "indicator": "한국 신차 등록대수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "10",
+      "sector_name": "자동차·부품",
+      "cell_num": 6,
+      "indicator": "리튬 가격 (배터리 원가)",
+      "source_raw": "Crawl⚠",
+      "category": "가격",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "10",
+      "sector_name": "자동차·부품",
+      "cell_num": 7,
+      "indicator": "'EV' Google Trends",
+      "source_raw": "pytrends☐",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "pytrends"
+      ],
+      "tokens_filled": [
+        "pytrends"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "10",
+      "sector_name": "자동차·부품",
+      "cell_num": 8,
+      "indicator": "한국 자동차 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "10",
+      "sector_name": "자동차·부품",
+      "cell_num": 9,
+      "indicator": "DART 현대차·기아·현대모비스 분기실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "10",
+      "sector_name": "자동차·부품",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 운수장비 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "11",
+      "sector_name": "화장품·의류",
+      "cell_num": 1,
+      "indicator": "한국 화장품 수출 (HS 3304)",
+      "source_raw": "TRASS☐",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "TRASS"
+      ],
+      "tokens_filled": [
+        "TRASS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "11",
+      "sector_name": "화장품·의류",
+      "cell_num": 2,
+      "indicator": "한국 면세점 매출",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "11",
+      "sector_name": "화장품·의류",
+      "cell_num": 3,
+      "indicator": "중국 방한 관광객 수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "11",
+      "sector_name": "화장품·의류",
+      "cell_num": 4,
+      "indicator": "한국 의류제조업 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "11",
+      "sector_name": "화장품·의류",
+      "cell_num": 5,
+      "indicator": "'K-beauty' Google Trends",
+      "source_raw": "pytrends☐",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "pytrends"
+      ],
+      "tokens_filled": [
+        "pytrends"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "11",
+      "sector_name": "화장품·의류",
+      "cell_num": 6,
+      "indicator": "위안화/원 환율",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "11",
+      "sector_name": "화장품·의류",
+      "cell_num": 7,
+      "indicator": "한국 백화점 매출",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "11",
+      "sector_name": "화장품·의류",
+      "cell_num": 8,
+      "indicator": "글로벌 럭셔리 PMI / 소비자신뢰지수",
+      "source_raw": "OECD☐ / **FRED✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED",
+        "OECD"
+      ],
+      "tokens_filled": [
+        "FRED",
+        "OECD"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "11",
+      "sector_name": "화장품·의류",
+      "cell_num": 9,
+      "indicator": "DART 아모레퍼시픽·LG생활건강·F&F 분기실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "11",
+      "sector_name": "화장품·의류",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 화학·유통 (관련 업종)",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "12",
+      "sector_name": "호텔·레저",
+      "cell_num": 1,
+      "indicator": "방한 외국인 관광객 수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "12",
+      "sector_name": "호텔·레저",
+      "cell_num": 2,
+      "indicator": "한국 출국자 수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "12",
+      "sector_name": "호텔·레저",
+      "cell_num": 3,
+      "indicator": "한국 숙박·음식점 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "12",
+      "sector_name": "호텔·레저",
+      "cell_num": 4,
+      "indicator": "면세점 매출",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "12",
+      "sector_name": "호텔·레저",
+      "cell_num": 5,
+      "indicator": "한국 신용카드 사용액 (서비스업)",
+      "source_raw": "**ECOS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "12",
+      "sector_name": "호텔·레저",
+      "cell_num": 6,
+      "indicator": "한국 소비자심리지수 (CSI)",
+      "source_raw": "**ECOS✓**",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "12",
+      "sector_name": "호텔·레저",
+      "cell_num": 7,
+      "indicator": "항공 여객수 (인천공항)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "12",
+      "sector_name": "호텔·레저",
+      "cell_num": 8,
+      "indicator": "WTI 가격 (여행 비용 영향)",
+      "source_raw": "**EIA✓**",
+      "category": "가격",
+      "leadlag": "동행 (역)",
+      "tokens_in_source": [
+        "EIA"
+      ],
+      "tokens_filled": [
+        "EIA"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "12",
+      "sector_name": "호텔·레저",
+      "cell_num": 9,
+      "indicator": "DART 호텔신라·강원랜드·파라다이스 분기실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "12",
+      "sector_name": "호텔·레저",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 서비스 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "13",
+      "sector_name": "미디어·교육",
+      "cell_num": 1,
+      "indicator": "한국 OTT/콘텐츠 수출 (방통위 발표)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "13",
+      "sector_name": "미디어·교육",
+      "cell_num": 2,
+      "indicator": "한국 광고시장 규모 (제일기획)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "13",
+      "sector_name": "미디어·교육",
+      "cell_num": 3,
+      "indicator": "한국 출판·콘텐츠 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "13",
+      "sector_name": "미디어·교육",
+      "cell_num": 4,
+      "indicator": "'K-drama' / 'K-pop' Google Trends",
+      "source_raw": "pytrends☐",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "pytrends"
+      ],
+      "tokens_filled": [
+        "pytrends"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "13",
+      "sector_name": "미디어·교육",
+      "cell_num": 5,
+      "indicator": "한국 교육 서비스업 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "13",
+      "sector_name": "미디어·교육",
+      "cell_num": 6,
+      "indicator": "인구 - 학령인구 추계",
+      "source_raw": "**KOSIS✓**",
+      "category": "매크로",
+      "leadlag": "선행 (역)",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "13",
+      "sector_name": "미디어·교육",
+      "cell_num": 7,
+      "indicator": "한국 BSI - 미디어/엔터",
+      "source_raw": "**ECOS✓**",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "13",
+      "sector_name": "미디어·교육",
+      "cell_num": 8,
+      "indicator": "글로벌 OTT 가입자 추이 (Netflix/Disney+)",
+      "source_raw": "yfinance(해외)/Crawl⚠",
+      "category": "펀더",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl",
+        "yfinance"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "13",
+      "sector_name": "미디어·교육",
+      "cell_num": 9,
+      "indicator": "DART JYP·HYBE·SM·CJ ENM 분기실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "13",
+      "sector_name": "미디어·교육",
+      "cell_num": 10,
+      "indicator": "KIS 코스닥 미디어·엔터 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "14",
+      "sector_name": "유통 (소매)",
+      "cell_num": 1,
+      "indicator": "한국 소매판매액 지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "14",
+      "sector_name": "유통 (소매)",
+      "cell_num": 2,
+      "indicator": "한국 백화점 매출",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "14",
+      "sector_name": "유통 (소매)",
+      "cell_num": 3,
+      "indicator": "한국 대형마트 매출",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "14",
+      "sector_name": "유통 (소매)",
+      "cell_num": 4,
+      "indicator": "한국 온라인쇼핑 거래액",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "14",
+      "sector_name": "유통 (소매)",
+      "cell_num": 5,
+      "indicator": "한국 소비자심리지수 (CSI)",
+      "source_raw": "**ECOS✓**",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "14",
+      "sector_name": "유통 (소매)",
+      "cell_num": 6,
+      "indicator": "한국 신용카드 사용액",
+      "source_raw": "**ECOS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "14",
+      "sector_name": "유통 (소매)",
+      "cell_num": 7,
+      "indicator": "한국 가계 가처분소득",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "14",
+      "sector_name": "유통 (소매)",
+      "cell_num": 8,
+      "indicator": "미국 소비자신뢰지수 (UMich)",
+      "source_raw": "**FRED✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "14",
+      "sector_name": "유통 (소매)",
+      "cell_num": 9,
+      "indicator": "DART 이마트·롯데쇼핑·쿠팡(해외) 분기실적",
+      "source_raw": "**DART✓** + Crawl⚠",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART",
+        "Crawl"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "14",
+      "sector_name": "유통 (소매)",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 유통 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "15",
+      "sector_name": "필수소비재",
+      "cell_num": 1,
+      "indicator": "한국 식료품 소매판매",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "15",
+      "sector_name": "필수소비재",
+      "cell_num": 2,
+      "indicator": "한국 가계지출 - 생활필수품",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "15",
+      "sector_name": "필수소비재",
+      "cell_num": 3,
+      "indicator": "한국 인구수 (총·연령별)",
+      "source_raw": "**KOSIS✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "15",
+      "sector_name": "필수소비재",
+      "cell_num": 4,
+      "indicator": "CPI - 식료품",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "15",
+      "sector_name": "필수소비재",
+      "cell_num": 5,
+      "indicator": "한국 가계 가처분소득",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "15",
+      "sector_name": "필수소비재",
+      "cell_num": 6,
+      "indicator": "위안화 환율 (수입원가)",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "15",
+      "sector_name": "필수소비재",
+      "cell_num": 7,
+      "indicator": "미국 CPI - 식음료",
+      "source_raw": "**FRED✓**",
+      "category": "매크로",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "15",
+      "sector_name": "필수소비재",
+      "cell_num": 8,
+      "indicator": "글로벌 농산물 가격 (UN/FAO)",
+      "source_raw": "WB☐ / Crawl⚠",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "WB",
+        "Crawl"
+      ],
+      "tokens_filled": [
+        "WB"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "15",
+      "sector_name": "필수소비재",
+      "cell_num": 9,
+      "indicator": "DART CJ제일제당·농심·롯데칠성 분기실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "15",
+      "sector_name": "필수소비재",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 음식료 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "16",
+      "sector_name": "식품·담배",
+      "cell_num": 1,
+      "indicator": "한국 식음료 출하지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "16",
+      "sector_name": "식품·담배",
+      "cell_num": 2,
+      "indicator": "한국 식품 수출 (HS 16-22)",
+      "source_raw": "TRASS☐",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "TRASS"
+      ],
+      "tokens_filled": [
+        "TRASS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "16",
+      "sector_name": "식품·담배",
+      "cell_num": 3,
+      "indicator": "글로벌 옥수수·밀·콩 가격",
+      "source_raw": "**FRED✓** + Crawl⚠",
+      "category": "가격",
+      "leadlag": "선행 (원가)",
+      "tokens_in_source": [
+        "FRED",
+        "Crawl"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "16",
+      "sector_name": "식품·담배",
+      "cell_num": 4,
+      "indicator": "한국 가공식품 CPI",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "16",
+      "sector_name": "식품·담배",
+      "cell_num": 5,
+      "indicator": "한국 외식물가지수",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "16",
+      "sector_name": "식품·담배",
+      "cell_num": 6,
+      "indicator": "'K-food' / '라면' Google Trends",
+      "source_raw": "pytrends☐",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "pytrends"
+      ],
+      "tokens_filled": [
+        "pytrends"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "16",
+      "sector_name": "식품·담배",
+      "cell_num": 7,
+      "indicator": "한국 담배 출하량",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "16",
+      "sector_name": "식품·담배",
+      "cell_num": 8,
+      "indicator": "한국 인구 1인당 가처분소득",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "16",
+      "sector_name": "식품·담배",
+      "cell_num": 9,
+      "indicator": "DART 농심·오뚜기·하림·KT&G 분기실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "16",
+      "sector_name": "식품·담배",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 음식료 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "17",
+      "sector_name": "제약·바이오",
+      "cell_num": 1,
+      "indicator": "한국 의약품 수출 (HS 30)",
+      "source_raw": "TRASS☐",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "TRASS"
+      ],
+      "tokens_filled": [
+        "TRASS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "17",
+      "sector_name": "제약·바이오",
+      "cell_num": 2,
+      "indicator": "한국 의약품 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "17",
+      "sector_name": "제약·바이오",
+      "cell_num": 3,
+      "indicator": "글로벌 임상 단계 진행 (clinicaltrials.gov)",
+      "source_raw": "Crawl⚠",
+      "category": "펀더",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "17",
+      "sector_name": "제약·바이오",
+      "cell_num": 4,
+      "indicator": "FDA 승인 건수",
+      "source_raw": "Crawl⚠",
+      "category": "펀더",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "17",
+      "sector_name": "제약·바이오",
+      "cell_num": 5,
+      "indicator": "한국 인구 - 65세 이상 비율",
+      "source_raw": "**KOSIS✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "17",
+      "sector_name": "제약·바이오",
+      "cell_num": 6,
+      "indicator": "한국 건강보험 진료비 추이",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "17",
+      "sector_name": "제약·바이오",
+      "cell_num": 7,
+      "indicator": "'biosimilar' / 'GLP-1' Google Trends",
+      "source_raw": "pytrends☐",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "pytrends"
+      ],
+      "tokens_filled": [
+        "pytrends"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "17",
+      "sector_name": "제약·바이오",
+      "cell_num": 8,
+      "indicator": "미국 NIH 예산 (R&D 환경)",
+      "source_raw": "**FRED✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "17",
+      "sector_name": "제약·바이오",
+      "cell_num": 9,
+      "indicator": "DART 셀트리온·삼바이오·한미·유한 분기실적 + R&D 비용",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "17",
+      "sector_name": "제약·바이오",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 의약품 / 코스닥 제약 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "18",
+      "sector_name": "은행",
+      "cell_num": 1,
+      "indicator": "한은 기준금리",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "18",
+      "sector_name": "은행",
+      "cell_num": 2,
+      "indicator": "미국 Fed Funds Rate",
+      "source_raw": "**FRED✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "18",
+      "sector_name": "은행",
+      "cell_num": 3,
+      "indicator": "한국 가계대출 잔액",
+      "source_raw": "**ECOS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "18",
+      "sector_name": "은행",
+      "cell_num": 4,
+      "indicator": "한국 가계대출 연체율",
+      "source_raw": "**ECOS✓**",
+      "category": "실물",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "18",
+      "sector_name": "은행",
+      "cell_num": 5,
+      "indicator": "미국 10Y-2Y 스프레드 (`T10Y2Y`)",
+      "source_raw": "**FRED✓**",
+      "category": "매크로",
+      "leadlag": "선행 (경기)",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "18",
+      "sector_name": "은행",
+      "cell_num": 6,
+      "indicator": "한국 회사채 3Y 신용스프레드",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "18",
+      "sector_name": "은행",
+      "cell_num": 7,
+      "indicator": "한국 부동산가격지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "18",
+      "sector_name": "은행",
+      "cell_num": 8,
+      "indicator": "한국 BSI/CSI",
+      "source_raw": "**ECOS✓**",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "18",
+      "sector_name": "은행",
+      "cell_num": 9,
+      "indicator": "DART 4대 금융지주 NIM·NPL",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "18",
+      "sector_name": "은행",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 금융 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "19",
+      "sector_name": "증권",
+      "cell_num": 1,
+      "indicator": "한국 일평균 거래대금 (KOSPI+KOSDAQ)",
+      "source_raw": "**KIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "19",
+      "sector_name": "증권",
+      "cell_num": 2,
+      "indicator": "한국 신용잔고",
+      "source_raw": "**ECOS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "19",
+      "sector_name": "증권",
+      "cell_num": 3,
+      "indicator": "한국 IPO 공모금액 (월별)",
+      "source_raw": "Crawl⚠ (KRX)",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "19",
+      "sector_name": "증권",
+      "cell_num": 4,
+      "indicator": "한국 가계 금융자산 - 주식비중",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "19",
+      "sector_name": "증권",
+      "cell_num": 5,
+      "indicator": "한국 기준금리",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행 (역)",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "19",
+      "sector_name": "증권",
+      "cell_num": 6,
+      "indicator": "한국 회사채 발행액",
+      "source_raw": "**ECOS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "19",
+      "sector_name": "증권",
+      "cell_num": 7,
+      "indicator": "VIX (미국 변동성지수)",
+      "source_raw": "**FRED✓** (`VIXCLS`)",
+      "category": "매크로",
+      "leadlag": "선행 (역)",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "19",
+      "sector_name": "증권",
+      "cell_num": 8,
+      "indicator": "'IPO' / '청약' Google Trends",
+      "source_raw": "pytrends☐",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "pytrends"
+      ],
+      "tokens_filled": [
+        "pytrends"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "19",
+      "sector_name": "증권",
+      "cell_num": 9,
+      "indicator": "DART 증권사 분기 영업수익",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "19",
+      "sector_name": "증권",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 증권 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "20",
+      "sector_name": "보험",
+      "cell_num": 1,
+      "indicator": "한국 10Y 국채금리",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행 (운용수익률)",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "20",
+      "sector_name": "보험",
+      "cell_num": 2,
+      "indicator": "한국 30Y 국채금리",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "20",
+      "sector_name": "보험",
+      "cell_num": 3,
+      "indicator": "한국 보험료 수입",
+      "source_raw": "**ECOS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "20",
+      "sector_name": "보험",
+      "cell_num": 4,
+      "indicator": "한국 인구 - 고령화율",
+      "source_raw": "**KOSIS✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "20",
+      "sector_name": "보험",
+      "cell_num": 5,
+      "indicator": "한국 자동차 등록대수 (자동차보험 base)",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "20",
+      "sector_name": "보험",
+      "cell_num": 6,
+      "indicator": "한국 가계 가처분소득",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "20",
+      "sector_name": "보험",
+      "cell_num": 7,
+      "indicator": "미국 10Y Treasury (글로벌 듀레이션)",
+      "source_raw": "**FRED✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "20",
+      "sector_name": "보험",
+      "cell_num": 8,
+      "indicator": "한국 손해율·사업비율 (금감원)",
+      "source_raw": "Crawl⚠",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "20",
+      "sector_name": "보험",
+      "cell_num": 9,
+      "indicator": "DART 삼성생명·삼성화재·DB손보 분기실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "20",
+      "sector_name": "보험",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 보험 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "21",
+      "sector_name": "다각화된 금융 (캐피탈·카드·자산운용)",
+      "cell_num": 1,
+      "indicator": "한국 신용카드 사용액",
+      "source_raw": "**ECOS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "21",
+      "sector_name": "다각화된 금융 (캐피탈·카드·자산운용)",
+      "cell_num": 2,
+      "indicator": "한국 카드 연체율",
+      "source_raw": "**ECOS✓**",
+      "category": "실물",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "21",
+      "sector_name": "다각화된 금융 (캐피탈·카드·자산운용)",
+      "cell_num": 3,
+      "indicator": "한국 가계 신규대출 (캐피탈 포함)",
+      "source_raw": "**ECOS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "21",
+      "sector_name": "다각화된 금융 (캐피탈·카드·자산운용)",
+      "cell_num": 4,
+      "indicator": "한국 자산운용업 AUM",
+      "source_raw": "Crawl⚠ (금투협)",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "21",
+      "sector_name": "다각화된 금융 (캐피탈·카드·자산운용)",
+      "cell_num": 5,
+      "indicator": "한국 가계 가처분소득",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "21",
+      "sector_name": "다각화된 금융 (캐피탈·카드·자산운용)",
+      "cell_num": 6,
+      "indicator": "한국 기준금리",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "21",
+      "sector_name": "다각화된 금융 (캐피탈·카드·자산운용)",
+      "cell_num": 7,
+      "indicator": "한국 회사채 신용스프레드",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "21",
+      "sector_name": "다각화된 금융 (캐피탈·카드·자산운용)",
+      "cell_num": 8,
+      "indicator": "미국 신용카드 연체율 (참고)",
+      "source_raw": "**FRED✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "21",
+      "sector_name": "다각화된 금융 (캐피탈·카드·자산운용)",
+      "cell_num": 9,
+      "indicator": "DART 삼성카드·KB캐피탈 등 분기실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "21",
+      "sector_name": "다각화된 금융 (캐피탈·카드·자산운용)",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 금융 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "22",
+      "sector_name": "소프트웨어",
+      "cell_num": 1,
+      "indicator": "글로벌 SaaS 매출 추정 (Gartner/IDC)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "22",
+      "sector_name": "소프트웨어",
+      "cell_num": 2,
+      "indicator": "한국 소프트웨어 수출",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "22",
+      "sector_name": "소프트웨어",
+      "cell_num": 3,
+      "indicator": "'AI' / 'LLM' / 'ChatGPT' Google Trends",
+      "source_raw": "pytrends☐",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "pytrends"
+      ],
+      "tokens_filled": [
+        "pytrends"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "22",
+      "sector_name": "소프트웨어",
+      "cell_num": 4,
+      "indicator": "미국 빅테크 capex 가이던스",
+      "source_raw": "DART✓(국내) + Crawl⚠",
+      "category": "펀더",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "DART",
+        "Crawl"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "22",
+      "sector_name": "소프트웨어",
+      "cell_num": 5,
+      "indicator": "한국 정보서비스 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "22",
+      "sector_name": "소프트웨어",
+      "cell_num": 6,
+      "indicator": "미국 ICT 투자 GDP 비중",
+      "source_raw": "**FRED✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "22",
+      "sector_name": "소프트웨어",
+      "cell_num": 7,
+      "indicator": "NASDAQ 종합지수",
+      "source_raw": "**FRED✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "22",
+      "sector_name": "소프트웨어",
+      "cell_num": 8,
+      "indicator": "DART 카카오·네이버·NHN 분기실적·MAU",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "22",
+      "sector_name": "소프트웨어",
+      "cell_num": 9,
+      "indicator": "한국 디지털 광고비",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "22",
+      "sector_name": "소프트웨어",
+      "cell_num": 10,
+      "indicator": "KIS 코스닥 IT/SW 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "23",
+      "sector_name": "IT 서비스",
+      "cell_num": 1,
+      "indicator": "한국 IT서비스 시장 규모 (NIPA)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "23",
+      "sector_name": "IT 서비스",
+      "cell_num": 2,
+      "indicator": "한국 정부 SI 예산 집행",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "23",
+      "sector_name": "IT 서비스",
+      "cell_num": 3,
+      "indicator": "글로벌 클라우드 IaaS 매출 (Gartner)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "23",
+      "sector_name": "IT 서비스",
+      "cell_num": 4,
+      "indicator": "한국 정보서비스 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "23",
+      "sector_name": "IT 서비스",
+      "cell_num": 5,
+      "indicator": "미국 비국방 자본재 수주 (IT 포함)",
+      "source_raw": "**FRED✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "23",
+      "sector_name": "IT 서비스",
+      "cell_num": 6,
+      "indicator": "'cloud migration' Google Trends",
+      "source_raw": "pytrends☐",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "pytrends"
+      ],
+      "tokens_filled": [
+        "pytrends"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "23",
+      "sector_name": "IT 서비스",
+      "cell_num": 7,
+      "indicator": "한국 BSI - IT서비스",
+      "source_raw": "**ECOS✓**",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "23",
+      "sector_name": "IT 서비스",
+      "cell_num": 8,
+      "indicator": "DART 삼성SDS·LG CNS·포스코ICT 분기실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "23",
+      "sector_name": "IT 서비스",
+      "cell_num": 9,
+      "indicator": "한국 ICT 수출",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "23",
+      "sector_name": "IT 서비스",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 IT 서비스 / 코스닥 IT 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "24",
+      "sector_name": "디스플레이",
+      "cell_num": 1,
+      "indicator": "LCD/OLED 패널 가격 (DSCC/IHS)",
+      "source_raw": "Crawl⚠",
+      "category": "가격",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "24",
+      "sector_name": "디스플레이",
+      "cell_num": 2,
+      "indicator": "한국 디스플레이 수출 (HS 8528)",
+      "source_raw": "TRASS☐",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "TRASS"
+      ],
+      "tokens_filled": [
+        "TRASS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "24",
+      "sector_name": "디스플레이",
+      "cell_num": 3,
+      "indicator": "글로벌 TV 출하량 (Omdia)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "24",
+      "sector_name": "디스플레이",
+      "cell_num": 4,
+      "indicator": "글로벌 스마트폰 출하량 (IDC)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "24",
+      "sector_name": "디스플레이",
+      "cell_num": 5,
+      "indicator": "한국 영상·음향기기 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "24",
+      "sector_name": "디스플레이",
+      "cell_num": 6,
+      "indicator": "'OLED iPhone' Google Trends",
+      "source_raw": "pytrends☐",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "pytrends"
+      ],
+      "tokens_filled": [
+        "pytrends"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "24",
+      "sector_name": "디스플레이",
+      "cell_num": 7,
+      "indicator": "위안화 환율 (BOE 경쟁)",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "24",
+      "sector_name": "디스플레이",
+      "cell_num": 8,
+      "indicator": "미국 ISM 제조업 신규수주",
+      "source_raw": "**FRED✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "24",
+      "sector_name": "디스플레이",
+      "cell_num": 9,
+      "indicator": "DART LG디스플레이·삼성디스플레이(상장사 매출분)",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "24",
+      "sector_name": "디스플레이",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 전기·전자 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "25",
+      "sector_name": "핸드셋 (휴대폰)",
+      "cell_num": 1,
+      "indicator": "글로벌 스마트폰 출하량 (IDC/Counterpoint)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "25",
+      "sector_name": "핸드셋 (휴대폰)",
+      "cell_num": 2,
+      "indicator": "한국 휴대폰 수출 (HS 8517)",
+      "source_raw": "TRASS☐",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "TRASS"
+      ],
+      "tokens_filled": [
+        "TRASS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "25",
+      "sector_name": "핸드셋 (휴대폰)",
+      "cell_num": 3,
+      "indicator": "한국 통신기기 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "25",
+      "sector_name": "핸드셋 (휴대폰)",
+      "cell_num": 4,
+      "indicator": "'iPhone 17' / 'Galaxy S25' Google Trends",
+      "source_raw": "pytrends☐",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "pytrends"
+      ],
+      "tokens_filled": [
+        "pytrends"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "25",
+      "sector_name": "핸드셋 (휴대폰)",
+      "cell_num": 5,
+      "indicator": "미국 소비자신뢰지수",
+      "source_raw": "**FRED✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "25",
+      "sector_name": "핸드셋 (휴대폰)",
+      "cell_num": 6,
+      "indicator": "위안화 환율",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "25",
+      "sector_name": "핸드셋 (휴대폰)",
+      "cell_num": 7,
+      "indicator": "글로벌 5G 가입자수 (Ericsson Mobility)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "25",
+      "sector_name": "핸드셋 (휴대폰)",
+      "cell_num": 8,
+      "indicator": "인도 스마트폰 시장 (성장축)",
+      "source_raw": "WB☐ + Crawl⚠",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "WB",
+        "Crawl"
+      ],
+      "tokens_filled": [
+        "WB"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "25",
+      "sector_name": "핸드셋 (휴대폰)",
+      "cell_num": 9,
+      "indicator": "DART 삼성전자 IM부문·LG전자 MC부문",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "25",
+      "sector_name": "핸드셋 (휴대폰)",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 전기·전자 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "26",
+      "sector_name": "반도체",
+      "cell_num": 1,
+      "indicator": "DRAM 현물가격 (DDR5 8Gb)",
+      "source_raw": "Crawl⚠ (DRAMeXchange)",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "26",
+      "sector_name": "반도체",
+      "cell_num": 2,
+      "indicator": "NAND 현물가격",
+      "source_raw": "Crawl⚠",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "26",
+      "sector_name": "반도체",
+      "cell_num": 3,
+      "indicator": "한국 메모리 수출 (HS 8542)",
+      "source_raw": "TRASS☐",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "TRASS"
+      ],
+      "tokens_filled": [
+        "TRASS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "26",
+      "sector_name": "반도체",
+      "cell_num": 4,
+      "indicator": "미국 반도체 출하-재고비율",
+      "source_raw": "**FRED✓** (`A36SNO`)",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "26",
+      "sector_name": "반도체",
+      "cell_num": 5,
+      "indicator": "한국 반도체 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "26",
+      "sector_name": "반도체",
+      "cell_num": 6,
+      "indicator": "글로벌 반도체 출하액 (WSTS)",
+      "source_raw": "Crawl⚠ / IMF☐",
+      "category": "실물",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "IMF",
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "26",
+      "sector_name": "반도체",
+      "cell_num": 7,
+      "indicator": "빅테크 capex 가이던스 (MAGMA)",
+      "source_raw": "Crawl⚠",
+      "category": "펀더",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "26",
+      "sector_name": "반도체",
+      "cell_num": 8,
+      "indicator": "'GPU' / 'HBM' Google Trends",
+      "source_raw": "pytrends☐",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "pytrends"
+      ],
+      "tokens_filled": [
+        "pytrends"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "26",
+      "sector_name": "반도체",
+      "cell_num": 9,
+      "indicator": "필라델피아 SOX 지수",
+      "source_raw": "**FRED✓** + Crawl⚠",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "FRED",
+        "Crawl"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "26",
+      "sector_name": "반도체",
+      "cell_num": 10,
+      "indicator": "KIS 코스피200 반도체 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "27",
+      "sector_name": "IT 가전",
+      "cell_num": 1,
+      "indicator": "한국 가전 수출 (HS 8418·8516)",
+      "source_raw": "TRASS☐",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "TRASS"
+      ],
+      "tokens_filled": [
+        "TRASS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "27",
+      "sector_name": "IT 가전",
+      "cell_num": 2,
+      "indicator": "한국 가전 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "27",
+      "sector_name": "IT 가전",
+      "cell_num": 3,
+      "indicator": "글로벌 가전시장 규모 (Statista)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "27",
+      "sector_name": "IT 가전",
+      "cell_num": 4,
+      "indicator": "미국 신규주택착공 (가전 수요 선행)",
+      "source_raw": "**FRED✓** (`HOUST`)",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "27",
+      "sector_name": "IT 가전",
+      "cell_num": 5,
+      "indicator": "미국 소매판매 - 가전 카테고리",
+      "source_raw": "**FRED✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "27",
+      "sector_name": "IT 가전",
+      "cell_num": 6,
+      "indicator": "위안화 환율",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "27",
+      "sector_name": "IT 가전",
+      "cell_num": 7,
+      "indicator": "한국 BSI - 가전제조",
+      "source_raw": "**ECOS✓**",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "27",
+      "sector_name": "IT 가전",
+      "cell_num": 8,
+      "indicator": "'air conditioner' / 'AI TV' Google Trends",
+      "source_raw": "pytrends☐",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "pytrends"
+      ],
+      "tokens_filled": [
+        "pytrends"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "27",
+      "sector_name": "IT 가전",
+      "cell_num": 9,
+      "indicator": "DART LG전자 H&A부문·삼성전자 CE부문",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "27",
+      "sector_name": "IT 가전",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 전기·전자 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "28",
+      "sector_name": "전기장비",
+      "cell_num": 1,
+      "indicator": "한국 전기장비 수출 (HS 85)",
+      "source_raw": "TRASS☐",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "TRASS"
+      ],
+      "tokens_filled": [
+        "TRASS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "28",
+      "sector_name": "전기장비",
+      "cell_num": 2,
+      "indicator": "한국 전기장비 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "28",
+      "sector_name": "전기장비",
+      "cell_num": 3,
+      "indicator": "글로벌 전력투자 (IEA)",
+      "source_raw": "OECD☐ + Crawl⚠",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "OECD",
+        "Crawl"
+      ],
+      "tokens_filled": [
+        "OECD"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "28",
+      "sector_name": "전기장비",
+      "cell_num": 4,
+      "indicator": "미국 비국방 자본재 수주",
+      "source_raw": "**FRED✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "28",
+      "sector_name": "전기장비",
+      "cell_num": 5,
+      "indicator": "한국 전력 소비량",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "28",
+      "sector_name": "전기장비",
+      "cell_num": 6,
+      "indicator": "구리 가격 (전선 원가)",
+      "source_raw": "Crawl⚠",
+      "category": "가격",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "28",
+      "sector_name": "전기장비",
+      "cell_num": 7,
+      "indicator": "한국 신재생에너지 발전량",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "28",
+      "sector_name": "전기장비",
+      "cell_num": 8,
+      "indicator": "'data center' / 'transformer' Google Trends",
+      "source_raw": "pytrends☐",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "pytrends"
+      ],
+      "tokens_filled": [
+        "pytrends"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "28",
+      "sector_name": "전기장비",
+      "cell_num": 9,
+      "indicator": "DART HD현대일렉트릭·LS일렉트릭·효성중공업",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "28",
+      "sector_name": "전기장비",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 전기·전자 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "29",
+      "sector_name": "통신 서비스",
+      "cell_num": 1,
+      "indicator": "한국 무선통신 가입자수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "29",
+      "sector_name": "통신 서비스",
+      "cell_num": 2,
+      "indicator": "한국 5G 가입자 비중",
+      "source_raw": "**KOSIS✓** + Crawl⚠",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS",
+        "Crawl"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "29",
+      "sector_name": "통신 서비스",
+      "cell_num": 3,
+      "indicator": "한국 통신서비스 매출",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "29",
+      "sector_name": "통신 서비스",
+      "cell_num": 4,
+      "indicator": "한국 ARPU (가입자당 매출)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "29",
+      "sector_name": "통신 서비스",
+      "cell_num": 5,
+      "indicator": "한국 가구 데이터 트래픽",
+      "source_raw": "Crawl⚠ (과기정통부)",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "29",
+      "sector_name": "통신 서비스",
+      "cell_num": 6,
+      "indicator": "한국 기준금리 (배당주 매력)",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행 (역)",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "29",
+      "sector_name": "통신 서비스",
+      "cell_num": 7,
+      "indicator": "한국 10Y 국채금리",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행 (역)",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "29",
+      "sector_name": "통신 서비스",
+      "cell_num": 8,
+      "indicator": "한국 BSI - 통신업",
+      "source_raw": "**ECOS✓**",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "29",
+      "sector_name": "통신 서비스",
+      "cell_num": 9,
+      "indicator": "DART SKT·KT·LG U+ 분기실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "29",
+      "sector_name": "통신 서비스",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 통신 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "30",
+      "sector_name": "유틸리티 (전기·가스)",
+      "cell_num": 1,
+      "indicator": "한국 전력 소비량",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "30",
+      "sector_name": "유틸리티 (전기·가스)",
+      "cell_num": 2,
+      "indicator": "한국 도시가스 소비량",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "30",
+      "sector_name": "유틸리티 (전기·가스)",
+      "cell_num": 3,
+      "indicator": "한국 SMP (계통한계가격)",
+      "source_raw": "Crawl⚠ (전력거래소)",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "30",
+      "sector_name": "유틸리티 (전기·가스)",
+      "cell_num": 4,
+      "indicator": "두바이유 가격 (LNG 도입원가)",
+      "source_raw": "**EIA✓**",
+      "category": "가격",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "EIA"
+      ],
+      "tokens_filled": [
+        "EIA"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "30",
+      "sector_name": "유틸리티 (전기·가스)",
+      "cell_num": 5,
+      "indicator": "한국 전기요금 추이",
+      "source_raw": "**KOSIS✓**",
+      "category": "가격",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "30",
+      "sector_name": "유틸리티 (전기·가스)",
+      "cell_num": 6,
+      "indicator": "한국 신재생 발전 비중",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "30",
+      "sector_name": "유틸리티 (전기·가스)",
+      "cell_num": 7,
+      "indicator": "한국 BSI - 전기가스업",
+      "source_raw": "**ECOS✓**",
+      "category": "심리",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "30",
+      "sector_name": "유틸리티 (전기·가스)",
+      "cell_num": 8,
+      "indicator": "한국 10Y 국채금리",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행 (역)",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "30",
+      "sector_name": "유틸리티 (전기·가스)",
+      "cell_num": 9,
+      "indicator": "DART 한전·가스공사·지역난방공사 분기실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "30",
+      "sector_name": "유틸리티 (전기·가스)",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 전기가스 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "31",
+      "sector_name": "부동산",
+      "cell_num": 1,
+      "indicator": "한국 주택매매가격지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "31",
+      "sector_name": "부동산",
+      "cell_num": 2,
+      "indicator": "한국 주택거래량",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "31",
+      "sector_name": "부동산",
+      "cell_num": 3,
+      "indicator": "한국 신규 분양 물량",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "31",
+      "sector_name": "부동산",
+      "cell_num": 4,
+      "indicator": "한국 미분양 주택수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "후행 (역)",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "31",
+      "sector_name": "부동산",
+      "cell_num": 5,
+      "indicator": "한국 기준금리",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "31",
+      "sector_name": "부동산",
+      "cell_num": 6,
+      "indicator": "한국 가계 주택담보대출",
+      "source_raw": "**ECOS✓**",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "31",
+      "sector_name": "부동산",
+      "cell_num": 7,
+      "indicator": "한국 전세가율",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "31",
+      "sector_name": "부동산",
+      "cell_num": 8,
+      "indicator": "미국 30년 모기지 금리 (참고)",
+      "source_raw": "**FRED✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "31",
+      "sector_name": "부동산",
+      "cell_num": 9,
+      "indicator": "DART REITs 상장사 분기 NOI",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "31",
+      "sector_name": "부동산",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 부동산/REITs 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "32",
+      "sector_name": "우주항공·방위",
+      "cell_num": 1,
+      "indicator": "한국 방산 수출 (방사청 발표)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "32",
+      "sector_name": "우주항공·방위",
+      "cell_num": 2,
+      "indicator": "한국 항공·우주제조 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "32",
+      "sector_name": "우주항공·방위",
+      "cell_num": 3,
+      "indicator": "글로벌 국방예산 (SIPRI)",
+      "source_raw": "Crawl⚠ / WB☐",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "WB",
+        "Crawl"
+      ],
+      "tokens_filled": [
+        "WB"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "32",
+      "sector_name": "우주항공·방위",
+      "cell_num": 4,
+      "indicator": "미국 국방예산 (DoD Budget)",
+      "source_raw": "**FRED✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "32",
+      "sector_name": "우주항공·방위",
+      "cell_num": 5,
+      "indicator": "한국 국방예산",
+      "source_raw": "**KOSIS✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "32",
+      "sector_name": "우주항공·방위",
+      "cell_num": 6,
+      "indicator": "한국 방산 수주잔고",
+      "source_raw": "Crawl⚠ + DART✓",
+      "category": "펀더",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "DART",
+        "Crawl"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "32",
+      "sector_name": "우주항공·방위",
+      "cell_num": 7,
+      "indicator": "NATO 회원국 GDP 대비 국방비",
+      "source_raw": "WB☐",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "WB"
+      ],
+      "tokens_filled": [
+        "WB"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "32",
+      "sector_name": "우주항공·방위",
+      "cell_num": 8,
+      "indicator": "'defense spending' Google Trends",
+      "source_raw": "pytrends☐",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "pytrends"
+      ],
+      "tokens_filled": [
+        "pytrends"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "32",
+      "sector_name": "우주항공·방위",
+      "cell_num": 9,
+      "indicator": "DART 한화에어로·LIG넥스원·KAI·현대로템 수주잔고",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "32",
+      "sector_name": "우주항공·방위",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 운수장비/기계 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "33",
+      "sector_name": "종이·목재",
+      "cell_num": 1,
+      "indicator": "한국 종이·목재 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "33",
+      "sector_name": "종이·목재",
+      "cell_num": 2,
+      "indicator": "한국 종이·목재 출하지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "33",
+      "sector_name": "종이·목재",
+      "cell_num": 3,
+      "indicator": "한국 펄프·종이 수출 (HS 47·48)",
+      "source_raw": "TRASS☐",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "TRASS"
+      ],
+      "tokens_filled": [
+        "TRASS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "33",
+      "sector_name": "종이·목재",
+      "cell_num": 4,
+      "indicator": "글로벌 펄프 가격 (BHKP)",
+      "source_raw": "Crawl⚠",
+      "category": "가격",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "33",
+      "sector_name": "종이·목재",
+      "cell_num": 5,
+      "indicator": "한국 골판지 출하량 (택배 수요)",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "33",
+      "sector_name": "종이·목재",
+      "cell_num": 6,
+      "indicator": "한국 온라인쇼핑 거래액 (포장재 수요)",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "33",
+      "sector_name": "종이·목재",
+      "cell_num": 7,
+      "indicator": "한국 건축허가 면적 (목재 수요)",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "33",
+      "sector_name": "종이·목재",
+      "cell_num": 8,
+      "indicator": "미국 신규주택착공",
+      "source_raw": "**FRED✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "33",
+      "sector_name": "종이·목재",
+      "cell_num": 9,
+      "indicator": "DART 무림·한솔·아세아제지 분기실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "33",
+      "sector_name": "종이·목재",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 종이·목재 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "34",
+      "sector_name": "일반 전기전자",
+      "cell_num": 1,
+      "indicator": "한국 전기·전자제품 수출 (HS 85)",
+      "source_raw": "TRASS☐",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "TRASS"
+      ],
+      "tokens_filled": [
+        "TRASS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "34",
+      "sector_name": "일반 전기전자",
+      "cell_num": 2,
+      "indicator": "한국 전기·전자 생산지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "34",
+      "sector_name": "일반 전기전자",
+      "cell_num": 3,
+      "indicator": "한국 전기·전자 재고지수",
+      "source_raw": "**KOSIS✓**",
+      "category": "실물",
+      "leadlag": "선행 (역)",
+      "tokens_in_source": [
+        "KOSIS"
+      ],
+      "tokens_filled": [
+        "KOSIS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "34",
+      "sector_name": "일반 전기전자",
+      "cell_num": 4,
+      "indicator": "글로벌 전자부품 시장 (Bloomberg/IDC)",
+      "source_raw": "Crawl⚠",
+      "category": "실물",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "Crawl"
+      ],
+      "tokens_filled": [],
+      "filled": false
+    },
+    {
+      "sector_num": "34",
+      "sector_name": "일반 전기전자",
+      "cell_num": 5,
+      "indicator": "미국 ISM 제조업 신규수주",
+      "source_raw": "**FRED✓**",
+      "category": "매크로",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "FRED"
+      ],
+      "tokens_filled": [
+        "FRED"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "34",
+      "sector_name": "일반 전기전자",
+      "cell_num": 6,
+      "indicator": "한국 BSI - 전기·전자",
+      "source_raw": "**ECOS✓**",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "34",
+      "sector_name": "일반 전기전자",
+      "cell_num": 7,
+      "indicator": "위안화 환율",
+      "source_raw": "**ECOS✓**",
+      "category": "매크로",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "ECOS"
+      ],
+      "tokens_filled": [
+        "ECOS"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "34",
+      "sector_name": "일반 전기전자",
+      "cell_num": 8,
+      "indicator": "'PCB' / 'MLCC' Google Trends",
+      "source_raw": "pytrends☐",
+      "category": "심리",
+      "leadlag": "선행",
+      "tokens_in_source": [
+        "pytrends"
+      ],
+      "tokens_filled": [
+        "pytrends"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "34",
+      "sector_name": "일반 전기전자",
+      "cell_num": 9,
+      "indicator": "DART 삼성전기·LG이노텍·자화전자 분기실적",
+      "source_raw": "**DART✓**",
+      "category": "펀더",
+      "leadlag": "후행",
+      "tokens_in_source": [
+        "DART"
+      ],
+      "tokens_filled": [
+        "DART"
+      ],
+      "filled": true
+    },
+    {
+      "sector_num": "34",
+      "sector_name": "일반 전기전자",
+      "cell_num": 10,
+      "indicator": "KIS 코스피 전기·전자 업종",
+      "source_raw": "**KIS✓**",
+      "category": "가격",
+      "leadlag": "동행",
+      "tokens_in_source": [
+        "KIS"
+      ],
+      "tokens_filled": [
+        "KIS"
+      ],
+      "filled": true
+    }
+  ]
+}
