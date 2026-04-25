@@ -53,19 +53,27 @@ export function HeroSection({ asOf, universeSize, bundle }: Props) {
         <div>
           <h1
             className="display leading-[1.04] tracking-tight mb-2"
-            style={{ fontSize: "clamp(2.4rem, 5.2vw, 4.4rem)" }}
+            style={{ fontSize: "clamp(2rem, 4.4vw, 3.6rem)" }}
           >
-            한강 말고,{" "}
-            <span style={{ color: "var(--accent)" }}>가즈아</span>.
+            한강 말고 어디 가지?
           </h1>
-          <p
-            className="display italic leading-tight mb-5"
+          <div
+            className="display leading-[0.95] tracking-tight mb-5"
             style={{
-              fontSize: "clamp(1.1rem, 2vw, 1.6rem)",
+              fontSize: "clamp(2.8rem, 6.4vw, 5.4rem)",
+              color: "var(--accent)",
+            }}
+          >
+            가즈아.
+          </div>
+          <p
+            className="display italic leading-tight mb-4"
+            style={{
+              fontSize: "clamp(1.05rem, 1.7vw, 1.4rem)",
               color: "var(--fg-muted)",
             }}
           >
-            단, 근거는 챙기고. 손절선도 두고.
+            근거는 동생이 봐드릴게요. 형님들은 가즈아.
           </p>
           <p
             className="text-[12px] mono uppercase tracking-widest mb-7"
