@@ -128,46 +128,63 @@ class OECDAdapter(BaseAdapter):
 
     @staticmethod
     def _parse_sdmx_json(payload: dict, *, series_id: str) -> list[OECDObservation]:
-        """SDMX-JSON 1.0.0 nests observations 4 levels deep. We extract just
-        the (period, value) pairs from the first series."""
-        data = payload.get("data") or payload  # newer responses wrap under 'data'
-        datasets = data.get("dataSets") or []
-        if not datasets:
-            return []
-        series = datasets[0].get("series", {})
-        if not series:
-            # observation-flat form
-            obs_flat = datasets[0].get("observations", {})
-            time_dim = (
-                data.get("structure", {})
-                .get("dimensions", {})
-                .get("observation", [{}])[0]
-                .get("values", [])
-            )
-            out = []
-            for k, v in obs_flat.items():
-                idx = int(k.split(":")[0])
-                period = time_dim[idx]["id"] if idx < len(time_dim) else str(idx)
-                value = v[0] if v else None
-                out.append(OECDObservation(series_id=series_id, period=period, value=value))
-            return out
+        """SDMX-JSON 2.0 (current OECD) wraps everything under ``data``,
+        time values live at ``data.structures[0].dimensions.observation[0].values``.
+        We also handle the older 1.0 ``data.structure.dimensions.observation``
+        path for backward-compat."""
+        data = payload.get("data") or payload
 
-        # Series-keyed form
+        # 2.0 path uses plural `structures`; 1.0 uses singular `structure`.
+        structures = data.get("structures")
+        if isinstance(structures, list) and structures:
+            obs_dim_root = structures[0]
+        else:
+            obs_dim_root = data.get("structure", {})
         time_values = (
-            data.get("structure", {})
-            .get("dimensions", {})
+            obs_dim_root.get("dimensions", {})
             .get("observation", [{}])[0]
             .get("values", [])
         )
+
+        datasets = data.get("dataSets") or []
+        if not datasets:
+            return []
+
+        def _period_for(idx: int) -> str:
+            if 0 <= idx < len(time_values):
+                v = time_values[idx]
+                return v.get("id") or v.get("name") or str(idx)
+            return str(idx)
+
+        # Series-keyed form
+        series = datasets[0].get("series", {})
         out: list[OECDObservation] = []
-        first_key = next(iter(series))
-        observations = series[first_key].get("observations", {})
-        for k, v in observations.items():
-            try:
-                idx = int(k)
-            except ValueError:
-                idx = int(k.split(":")[0])
-            period = time_values[idx]["id"] if idx < len(time_values) else str(idx)
-            value = v[0] if v else None
-            out.append(OECDObservation(series_id=series_id, period=period, value=value))
+        if series:
+            first_key = next(iter(series))
+            observations = series[first_key].get("observations", {})
+            for k, v in observations.items():
+                try:
+                    idx = int(k)
+                except ValueError:
+                    idx = int(k.split(":")[0])
+                out.append(
+                    OECDObservation(
+                        series_id=series_id,
+                        period=_period_for(idx),
+                        value=v[0] if v else None,
+                    )
+                )
+            return out
+
+        # Observation-flat form
+        obs_flat = datasets[0].get("observations", {})
+        for k, v in obs_flat.items():
+            idx = int(k.split(":")[0])
+            out.append(
+                OECDObservation(
+                    series_id=series_id,
+                    period=_period_for(idx),
+                    value=v[0] if v else None,
+                )
+            )
         return out
