@@ -48,35 +48,35 @@ export function HeroSection({ asOf, universeSize, bundle }: Props) {
       </div>
 
       {/* Two-column hero — text left, live data right */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-10 lg:gap-14">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-8 md:gap-10 lg:gap-14">
         {/* LEFT — pitch + CTA */}
         <div>
           <h1
             className="display leading-[1.04] tracking-tight mb-2"
-            style={{ fontSize: "clamp(2rem, 4.4vw, 3.6rem)" }}
+            style={{ fontSize: "clamp(1.6rem, 4.4vw, 3.6rem)" }}
           >
             한강 말고 어디 가지?
           </h1>
           <div
-            className="display leading-[0.95] tracking-tight mb-5"
+            className="display leading-[0.95] tracking-tight mb-4 md:mb-5"
             style={{
-              fontSize: "clamp(2.8rem, 6.4vw, 5.4rem)",
+              fontSize: "clamp(2.2rem, 6.4vw, 5.4rem)",
               color: "var(--accent)",
             }}
           >
             가즈아.
           </div>
           <p
-            className="display italic leading-tight mb-4"
+            className="display italic leading-tight mb-3 md:mb-4"
             style={{
-              fontSize: "clamp(1.05rem, 1.7vw, 1.4rem)",
+              fontSize: "clamp(0.98rem, 1.7vw, 1.4rem)",
               color: "var(--fg-muted)",
             }}
           >
             근거는 동생이 봐드릴게요. 형님들은 가즈아.
           </p>
           <p
-            className="text-[12px] mono uppercase tracking-widest mb-7"
+            className="text-[11px] md:text-[12px] mono uppercase tracking-widest mb-6 md:mb-7"
             style={{ color: "var(--muted)" }}
           >
             동학개미를 위한 두 번째 의견 · 4,516 종목 매일 재검증
@@ -85,7 +85,7 @@ export function HeroSection({ asOf, universeSize, bundle }: Props) {
           <p
             className="leading-relaxed mb-4"
             style={{
-              fontSize: "clamp(1rem, 1.4vw, 1.15rem)",
+              fontSize: "clamp(0.95rem, 1.4vw, 1.15rem)",
               color: "var(--fg)",
             }}
           >
@@ -189,7 +189,7 @@ function LiveSnapshot({ bundle }: { bundle?: TodayBundle | null }) {
 
   return (
     <aside
-      className="rounded-xl border p-5 md:p-6 self-start"
+      className="rounded-xl border p-4 md:p-6 self-start w-full min-w-0"
       style={{
         background: "var(--surface)",
         borderColor: "var(--border-soft)",
