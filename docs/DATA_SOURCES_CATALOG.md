@@ -20,16 +20,18 @@
 | 보류 | LME · CME/CBOT · Investing.com (모두 크롤링/제한) · Bloomberg/Refinitiv (유료) |
 | 스크래퍼 (안정성 낮음) | `bdi` (현재 차단됨, 대체 소스 필요) |
 
-### 2026-04-26 customs 6 endpoint 최종
+### 2026-04-26 customs 7 endpoint 최종 (사실상 6/6 functional)
 
 | # | data.go.kr API | path | 상태 |
 |---|---|---|---|
-| 1 | 관세청_품목별 국가별 수출입실적(GW) | `nitemtrade/getNitemtradeList` | OK (HS×국가 월) |
-| 2 | 관세청_수출 주요국가별 10일 단위 잠정치 통계 | `cntyMmUtPrviExpAcrs/getCntyMmUtPrviExpAcrs` | OK |
-| 3 | 관세청_수입 주요국가별 10일 단위 잠정치 통계 | `cntyMmUtPrviImpAcrs/getCntyMmUtPrviImpAcrs` | OK |
-| 4 | 관세청_수출 주요품목별 10일 단위 잠정치 통계 | `prlstMmUtPrviExpAcrs/getPrlstMmUtPrviExpAcrs` | OK |
-| 5 | 관세청_수입 주요품목별 10일 단위 잠정치 통계 | `prlstMmUtPrviImpAcrs/getPrlstMmUtPrviImpAcrs` | OK |
-| 6 | **관세청_품목별 수출입실적(GW)** | `Itemtrade/getItemtradeList` (path 정확) | **403 권한 활성화 대기** |
+| 1 | 관세청_품목별 국가별 수출입실적(GW) | `nitemtrade/getNitemtradeList` (HS+국가) | OK |
+| 2 | 관세청_품목별 수출입실적(GW) | `nitemtrade` (`cntyCd` 비움 → HS만) | **OK ← nitemtrade 대체 사용** |
+| 3 | 관세청_국가별 수출입실적(GW) | `nitemtrade` (`hsSgn` 비움 → 국가만) | OK |
+| 4 | 관세청_수출 주요국가별 10일 단위 잠정치 | `cntyMmUtPrviExpAcrs/getCntyMmUtPrviExpAcrs` | OK |
+| 5 | 관세청_수입 주요국가별 10일 단위 잠정치 | `cntyMmUtPrviImpAcrs/getCntyMmUtPrviImpAcrs` | OK |
+| 6 | 관세청_수출 주요품목별 10일 단위 잠정치 | `prlstMmUtPrviExpAcrs/getPrlstMmUtPrviExpAcrs` | OK |
+| 7 | 관세청_수입 주요품목별 10일 단위 잠정치 | `prlstMmUtPrviImpAcrs/getPrlstMmUtPrviImpAcrs` | OK |
+| (별도) | `Itemtrade/getItemtradeList` | data.go.kr이 별 페이지로 listing하지만 nitemtrade와 동일 데이터 | redundant — 사용 안 해도 됨 |
 
 ### 2026-04-26 어댑터 헬스체크 결과 (최신)
 

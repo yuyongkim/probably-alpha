@@ -92,7 +92,7 @@ def _customs_specs() -> list[IndicatorSpec]:
         ("country", "국가별", "export", "get_10day_export_by_country"),
         ("country", "국가별", "import", "get_10day_import_by_country"),
         ("item",    "주요품목", "export", "get_10day_export_by_item"),
-        ("item",    "주요품목", "import", "get_10day_import_by_item"),
+        ("item",    "주요품목", "import", "get_10day_import_by_import_by_item" if False else "get_10day_import_by_item"),
     ):
         out.append(
             IndicatorSpec(
@@ -107,6 +107,27 @@ def _customs_specs() -> list[IndicatorSpec]:
                     "num_rows": 200,
                 },
                 note=f"{flow} 10-day {dim} provisional",
+            )
+        )
+    # 국가별 월 누적 — 주요 5개 무역국 (US/CN/JP/VN/DE) 12개월
+    for cnty, name in [
+        ("US", "미국"), ("CN", "중국"), ("JP", "일본"),
+        ("VN", "베트남"), ("DE", "독일"),
+    ]:
+        out.append(
+            IndicatorSpec(
+                sector="trade",
+                sector_label="무역",
+                name=f"국가별 월 — {name}({cnty})",
+                source="customs",
+                method="get_country_monthly",
+                params={
+                    "country_code": cnty,
+                    "year_month_start": "202505",
+                    "year_month_end":   "202604",
+                    "num_rows": 1000,
+                },
+                note=f"country={cnty}",
             )
         )
     return out

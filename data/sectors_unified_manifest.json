@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-04-25T15:37:18.845218+00:00",
+  "generated_at": "2026-04-25T16:05:10.607843+00:00",
   "data_root": "C:\\Users\\USER\\.ky-platform\\data\\sectors",
-  "total_files": 183,
-  "total_rows": 337404,
-  "total_bytes": 26062400,
+  "total_files": 188,
+  "total_rows": 662383,
+  "total_bytes": 50293235,
   "per_source": {
     "cftc": {
       "files": 5,
@@ -11,9 +11,9 @@
       "bytes": 21061
     },
     "customs": {
-      "files": 28,
-      "rows": 188633,
-      "bytes": 13760595
+      "files": 33,
+      "rows": 513612,
+      "bytes": 37991430
     },
     "dart": {
       "files": 36,
@@ -298,6 +298,41 @@
       "path": "customs/trade__국가별_10일_잠정_IMPORT.csv",
       "rows": 2,
       "size_bytes": 222
+    },
+    {
+      "source": "customs",
+      "slug": "trade__국가별_월_—_독일(DE)",
+      "path": "customs/trade__국가별_월_—_독일(DE).csv",
+      "rows": 45663,
+      "size_bytes": 3278468
+    },
+    {
+      "source": "customs",
+      "slug": "trade__국가별_월_—_미국(US)",
+      "path": "customs/trade__국가별_월_—_미국(US).csv",
+      "rows": 71002,
+      "size_bytes": 5228705
+    },
+    {
+      "source": "customs",
+      "slug": "trade__국가별_월_—_베트남(VN)",
+      "path": "customs/trade__국가별_월_—_베트남(VN).csv",
+      "rows": 54799,
+      "size_bytes": 4176716
+    },
+    {
+      "source": "customs",
+      "slug": "trade__국가별_월_—_일본(JP)",
+      "path": "customs/trade__국가별_월_—_일본(JP).csv",
+      "rows": 66546,
+      "size_bytes": 4920997
+    },
+    {
+      "source": "customs",
+      "slug": "trade__국가별_월_—_중국(CN)",
+      "path": "customs/trade__국가별_월_—_중국(CN).csv",
+      "rows": 86969,
+      "size_bytes": 6625949
     },
     {
       "source": "customs",

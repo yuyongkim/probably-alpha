@@ -161,8 +161,10 @@ python scripts/collect_sectors.py --dry-run
 
 ## 알려진 한계 (2026-04-26 갱신)
 
-1. **customs 1/6 endpoint 비활성화 (`Itemtrade/getItemtradeList` = 관세청_품목별 수출입실적 GW)** — path는 data.go.kr swagger metadata에서 확인된 정확한 값. 응답 403은 사장님 API 키에 대한 활성화 lag. 자동 활성화 시 코드 수정 없이 동작.
-   - 검증된 5개: `nitemtrade`, `cntyMmUtPrviExpAcrs/ImpAcrs`, `prlstMmUtPrviExpAcrs/ImpAcrs`
+1. **customs**: 사실상 모든 케이스 functional. 2026-04-26 시점:
+   - ✓ `nitemtrade/getNitemtradeList` 한 endpoint가 HS×국가 + HS만 + 국가만 모든 모드 처리
+   - ✓ 4 종 10일 잠정 (cntyMmUtPrviExp/Imp + prlstMmUtPrviExp/Imp)
+   - ` Itemtrade/getItemtradeList` 는 data.go.kr이 별도 page로 listing하지만 nitemtrade(cntyCd 미지정)와 동일 데이터 — 사용 안 해도 됨
 2. **pytrends Google rate-limit** — 같은 세션에서 재실행 시 차단됨. 새 세션 또는 30분-1시간 대기 후 회복. 디스크의 16 CSVs는 첫 실행에서 이미 확보.
 3. **un_comtrade preview tier** — 최신 6개월 lag.
 4. **KOSIS 산업별 생산지수 미수집** — 광공업 동향조사 tbl_id 미공개. 한은 GDP by 경제활동(DT_200Y105) 1건만 동작. 추후 KOSIS 사이트에서 정확한 tblId 확인 필요.

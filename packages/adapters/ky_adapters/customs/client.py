@@ -33,8 +33,11 @@ CUSTOMS_BASE = "https://apis.data.go.kr/1220000"
 # Per-API endpoint registry. The first tuple element is the URL path; the
 # second is whether the API is verified-working (True) or candidate (False).
 ENDPOINTS: dict[str, tuple[str, bool]] = {
-    "hs_country_monthly":   ("/nitemtrade/getNitemtradeList",                                  True),
-    "hs_monthly":           ("/Itemtrade/getItemtradeList",                                    False),  # path verified, API key 권한 활성화 대기 (403)
+    # nitemtrade 한 endpoint가 (HS×국가), (HS만), (국가만) 세 케이스 모두 처리.
+    # data.go.kr이 데이터 페이지를 여러 제목으로 listing하지만 실제는 동일 endpoint.
+    "hs_country_monthly":   ("/nitemtrade/getNitemtradeList",                                  True),  # hsSgn + cntyCd 모두 지정
+    "hs_monthly":           ("/nitemtrade/getNitemtradeList",                                  True),  # hsSgn만 (cntyCd 없음 → 품목별 전체 국가 분해)
+    "country_monthly":      ("/nitemtrade/getNitemtradeList",                                  True),  # cntyCd만 (hsSgn 없음 → 국가 단위 모든 HS)
     "10day_export_country": ("/cntyMmUtPrviExpAcrs/getCntyMmUtPrviExpAcrs",                    True),   # verified 2026-04-26
     "10day_import_country": ("/cntyMmUtPrviImpAcrs/getCntyMmUtPrviImpAcrs",                    True),   # verified 2026-04-26
     "10day_export_item":    ("/prlstMmUtPrviExpAcrs/getPrlstMmUtPrviExpAcrs",                  True),   # verified 2026-04-26 (prlst = 주요품목)
@@ -185,13 +188,30 @@ class CustomsAdapter(BaseAdapter):
         year_month_start: Optional[str] = None,
         year_month_end: Optional[str] = None,
         page_no: int = 1,
-        num_rows: int = 100,
+        num_rows: int = 200,
     ) -> list[CustomsObservation]:
+        """품목별 수출입실적 — HS만 지정, cntyCd 비우면 nitemtrade가 해당
+        HS의 모든 거래 국가 분해를 반환한다 (총합 1행 + 국가 N행)."""
         params = self._period_params(year_month_start, year_month_end, decade=False)
         params["hsSgn"] = hs_code
         params["pageNo"] = page_no
         params["numOfRows"] = num_rows
         return self._call("hs_monthly", params)
+
+    def get_country_monthly(
+        self,
+        country_code: str,
+        year_month_start: Optional[str] = None,
+        year_month_end: Optional[str] = None,
+        page_no: int = 1,
+        num_rows: int = 200,
+    ) -> list[CustomsObservation]:
+        """국가별 수출입실적 — cntyCd만 지정, 해당 국가의 모든 HS 분해."""
+        params = self._period_params(year_month_start, year_month_end, decade=False)
+        params["cntyCd"] = country_code
+        params["pageNo"] = page_no
+        params["numOfRows"] = num_rows
+        return self._call("country_monthly", params)
 
     def get_10day_export_by_item(
         self,
