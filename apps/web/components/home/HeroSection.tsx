@@ -52,13 +52,19 @@ export function HeroSection({ asOf, universeSize, bundle }: Props) {
         {/* LEFT — pitch + CTA */}
         <div>
           <h1
-            className="display leading-[1.04] tracking-tight mb-7"
+            className="display leading-[1.04] tracking-tight mb-3"
             style={{ fontSize: "clamp(2.5rem, 5.4vw, 4.5rem)" }}
           >
-            한국 주식 시장,
+            감 말고 데이터로,
             <br />
-            <span style={{ color: "var(--accent)" }}>세 렌즈</span>로 본다.
+            <span style={{ color: "var(--accent)" }}>가즈아.</span>
           </h1>
+          <p
+            className="text-[12.5px] mono uppercase tracking-widest mb-7"
+            style={{ color: "var(--fg-muted)" }}
+          >
+            한국 주식 시장을 세 렌즈로 검증하는 리서치 플랫폼
+          </p>
 
           <p
             className="leading-relaxed mb-4"
