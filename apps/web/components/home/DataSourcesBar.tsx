@@ -54,7 +54,10 @@ export function DataSourcesBar() {
               background: "var(--bg)",
             }}
           >
-            <div className="display text-[13px]">
+            <div
+              className="text-[13px] font-bold tracking-tight"
+              style={{ color: "var(--fg)" }}
+            >
               <Term k={s.termKey}>{s.label}</Term>
             </div>
             <div

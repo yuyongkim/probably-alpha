@@ -227,7 +227,10 @@ export function TabDirectory() {
             >
               {/* Header */}
               <div className="flex items-baseline justify-between mb-2">
-                <span className="display text-xl md:text-[22px] tracking-tight">
+                <span
+                  className="text-xl md:text-[22px] font-bold tracking-tight"
+                  style={{ color: "var(--fg)", letterSpacing: "-0.02em" }}
+                >
                   {t.label}
                 </span>
                 <span

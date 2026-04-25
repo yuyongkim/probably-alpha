@@ -181,7 +181,10 @@ function LiveSnapshot({ bundle }: { bundle?: TodayBundle | null }) {
       }}
     >
       <div className="flex items-baseline justify-between mb-4">
-        <span className="display text-[14px] tracking-tight">
+        <span
+          className="text-[13px] font-semibold tracking-tight"
+          style={{ color: "var(--fg)" }}
+        >
           지금 시장은
         </span>
         <span

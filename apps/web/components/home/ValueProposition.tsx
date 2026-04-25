@@ -137,7 +137,10 @@ export function ValueProposition() {
               </div>
 
               {/* Title */}
-              <h3 className="display text-xl md:text-[22px] leading-snug tracking-tight mb-3">
+              <h3
+                className="text-xl md:text-[22px] font-bold leading-snug tracking-tight mb-3"
+                style={{ color: "var(--fg)", letterSpacing: "-0.02em" }}
+              >
                 {l.title}
               </h3>
 
