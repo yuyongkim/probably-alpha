@@ -1,9 +1,9 @@
 {
-  "started_at": "2026-04-25T15:03:09.028014+00:00",
-  "finished_at": "2026-04-25T15:06:47.687529+00:00",
-  "total_specs": 131,
-  "succeeded": 114,
-  "failed": 17,
+  "started_at": "2026-04-25T15:16:23.607817+00:00",
+  "finished_at": "2026-04-25T15:17:31.358998+00:00",
+  "total_specs": 26,
+  "succeeded": 26,
+  "failed": 0,
   "entries": [
     {
       "spec": "semiconductor__메모리·반도체_수출_(HS_8542)",
@@ -11,7 +11,7 @@
       "sector": "semiconductor",
       "name": "메모리·반도체 수출 (HS 8542)",
       "rows": 2439,
-      "ms": 1779.0,
+      "ms": 2967.8,
       "ok": true,
       "path": "customs\\semiconductor__메모리·반도체_수출_(HS_8542).csv",
       "params": {
@@ -28,7 +28,7 @@
       "sector": "display",
       "name": "디스플레이 모듈 수출 (HS 8528)",
       "rows": 2720,
-      "ms": 2575.9,
+      "ms": 2883.4,
       "ok": true,
       "path": "customs\\display__디스플레이_모듈_수출_(HS_8528).csv",
       "params": {
@@ -45,7 +45,7 @@
       "sector": "handset",
       "name": "휴대폰 수출 (HS 8517)",
       "rows": 4717,
-      "ms": 1963.6,
+      "ms": 2614.5,
       "ok": true,
       "path": "customs\\handset__휴대폰_수출_(HS_8517).csv",
       "params": {
@@ -62,7 +62,7 @@
       "sector": "auto",
       "name": "자동차 부품 수출 (HS 8708)",
       "rows": 14211,
-      "ms": 2856.3,
+      "ms": 3984.7,
       "ok": true,
       "path": "customs\\auto__자동차_부품_수출_(HS_8708).csv",
       "params": {
@@ -79,7 +79,7 @@
       "sector": "auto",
       "name": "자동차 완성차 수출 (HS 8703)",
       "rows": 8768,
-      "ms": 3063.4,
+      "ms": 4788.3,
       "ok": true,
       "path": "customs\\auto__자동차_완성차_수출_(HS_8703).csv",
       "params": {
@@ -96,7 +96,7 @@
       "sector": "chemical",
       "name": "기초 폴리머 수출 (HS 3901)",
       "rows": 3000,
-      "ms": 2250.2,
+      "ms": 2366.7,
       "ok": true,
       "path": "customs\\chemical__기초_폴리머_수출_(HS_3901).csv",
       "params": {
@@ -113,7 +113,7 @@
       "sector": "chemical",
       "name": "PE/PP 수출 (HS 3902)",
       "rows": 2438,
-      "ms": 1918.0,
+      "ms": 2425.1,
       "ok": true,
       "path": "customs\\chemical__PE_PP_수출_(HS_3902).csv",
       "params": {
@@ -130,7 +130,7 @@
       "sector": "chemical",
       "name": "기타 폴리머 수출 (HS 3907)",
       "rows": 4373,
-      "ms": 2370.6,
+      "ms": 2767.5,
       "ok": true,
       "path": "customs\\chemical__기타_폴리머_수출_(HS_3907).csv",
       "params": {
@@ -147,7 +147,7 @@
       "sector": "chemical",
       "name": "플라스틱 제품 수출 (HS 3923)",
       "rows": 5125,
-      "ms": 2458.3,
+      "ms": 2469.0,
       "ok": true,
       "path": "customs\\chemical__플라스틱_제품_수출_(HS_3923).csv",
       "params": {
@@ -164,7 +164,7 @@
       "sector": "steel",
       "name": "철강제품 수출 (HS 7208-7229 대표 HS72)",
       "rows": 8858,
-      "ms": 1107.3,
+      "ms": 1068.2,
       "ok": true,
       "path": "customs\\steel__철강제품_수출_(HS_7208-7229_대표_HS72).csv",
       "params": {
@@ -181,7 +181,7 @@
       "sector": "nonferrous",
       "name": "구리 (HS 74)",
       "rows": 6009,
-      "ms": 856.0,
+      "ms": 1411.1,
       "ok": true,
       "path": "customs\\nonferrous__구리_(HS_74).csv",
       "params": {
@@ -198,7 +198,7 @@
       "sector": "nonferrous",
       "name": "알루미늄 (HS 76)",
       "rows": 6514,
-      "ms": 1422.4,
+      "ms": 2328.4,
       "ok": true,
       "path": "customs\\nonferrous__알루미늄_(HS_76).csv",
       "params": {
@@ -215,7 +215,7 @@
       "sector": "nonferrous",
       "name": "아연 (HS 79)",
       "rows": 1279,
-      "ms": 550.7,
+      "ms": 2569.8,
       "ok": true,
       "path": "customs\\nonferrous__아연_(HS_79).csv",
       "params": {
@@ -232,7 +232,7 @@
       "sector": "ship",
       "name": "선박 부품 (HS 8906)",
       "rows": 66,
-      "ms": 1936.6,
+      "ms": 3357.7,
       "ok": true,
       "path": "customs\\ship__선박_부품_(HS_8906).csv",
       "params": {
@@ -249,7 +249,7 @@
       "sector": "ship",
       "name": "선박 완성품 (HS 8901)",
       "rows": 221,
-      "ms": 1882.7,
+      "ms": 4559.6,
       "ok": true,
       "path": "customs\\ship__선박_완성품_(HS_8901).csv",
       "params": {
@@ -266,7 +266,7 @@
       "sector": "machinery",
       "name": "일반기계 (HS 84)",
       "rows": 51400,
-      "ms": 7520.1,
+      "ms": 5620.7,
       "ok": true,
       "path": "customs\\machinery__일반기계_(HS_84).csv",
       "params": {
@@ -283,7 +283,7 @@
       "sector": "electric",
       "name": "전기장비 (HS 85 — 8542 제외 추정)",
       "rows": 39069,
-      "ms": 4617.0,
+      "ms": 5538.1,
       "ok": true,
       "path": "customs\\electric__전기장비_(HS_85_—_8542_제외_추정).csv",
       "params": {
@@ -300,7 +300,7 @@
       "sector": "paper",
       "name": "펄프 (HS 47)",
       "rows": 769,
-      "ms": 1211.8,
+      "ms": 672.8,
       "ok": true,
       "path": "customs\\paper__펄프_(HS_47).csv",
       "params": {
@@ -317,7 +317,7 @@
       "sector": "paper",
       "name": "종이 (HS 48)",
       "rows": 10713,
-      "ms": 1329.8,
+      "ms": 1347.2,
       "ok": true,
       "path": "customs\\paper__종이_(HS_48).csv",
       "params": {
@@ -334,7 +334,7 @@
       "sector": "food",
       "name": "농수산식품 (HS 16-22 대표 HS16)",
       "rows": 1869,
-      "ms": 1313.2,
+      "ms": 436.7,
       "ok": true,
       "path": "customs\\food__농수산식품_(HS_16-22_대표_HS16).csv",
       "params": {
@@ -351,7 +351,7 @@
       "sector": "pharma",
       "name": "의약품 (HS 30)",
       "rows": 5806,
-      "ms": 806.9,
+      "ms": 1740.3,
       "ok": true,
       "path": "customs\\pharma__의약품_(HS_30).csv",
       "params": {
@@ -368,7 +368,7 @@
       "sector": "cosmetic",
       "name": "화장품 (HS 3304)",
       "rows": 6059,
-      "ms": 2181.1,
+      "ms": 2766.9,
       "ok": true,
       "path": "customs\\cosmetic__화장품_(HS_3304).csv",
       "params": {
@@ -385,7 +385,7 @@
       "sector": "energy",
       "name": "석유제품 (HS 2710)",
       "rows": 2009,
-      "ms": 1826.2,
+      "ms": 2459.3,
       "ok": true,
       "path": "customs\\energy__석유제품_(HS_2710).csv",
       "params": {
@@ -402,7 +402,7 @@
       "sector": "energy",
       "name": "원유 수입 (HS 2709)",
       "rows": 193,
-      "ms": 1857.4,
+      "ms": 2498.4,
       "ok": true,
       "path": "customs\\energy__원유_수입_(HS_2709).csv",
       "params": {
@@ -414,1747 +414,36 @@
       "note": "HS 2709"
     },
     {
-      "spec": "macro__FED_기준금리",
-      "source": "fred",
-      "sector": "macro",
-      "name": "FED 기준금리",
-      "rows": 147,
-      "ms": 672.1,
-      "ok": true,
-      "path": "fred\\macro__FED_기준금리.csv",
-      "params": {
-        "series_id": "FEDFUNDS",
-        "start": "2014-01-01"
-      },
-      "note": "FEDFUNDS"
-    },
-    {
-      "spec": "macro__10Y_Treasury",
-      "source": "fred",
-      "sector": "macro",
-      "name": "10Y Treasury",
-      "rows": 3212,
-      "ms": 676.7,
-      "ok": true,
-      "path": "fred\\macro__10Y_Treasury.csv",
-      "params": {
-        "series_id": "DGS10",
-        "start": "2014-01-01"
-      },
-      "note": "DGS10"
-    },
-    {
-      "spec": "macro__2Y_Treasury",
-      "source": "fred",
-      "sector": "macro",
-      "name": "2Y Treasury",
-      "rows": 3212,
-      "ms": 577.1,
-      "ok": true,
-      "path": "fred\\macro__2Y_Treasury.csv",
-      "params": {
-        "series_id": "DGS2",
-        "start": "2014-01-01"
-      },
-      "note": "DGS2"
-    },
-    {
-      "spec": "macro__10Y-2Y_스프레드",
-      "source": "fred",
-      "sector": "macro",
-      "name": "10Y-2Y 스프레드",
-      "rows": 3213,
-      "ms": 635.0,
-      "ok": true,
-      "path": "fred\\macro__10Y-2Y_스프레드.csv",
-      "params": {
-        "series_id": "T10Y2Y",
-        "start": "2014-01-01"
-      },
-      "note": "T10Y2Y"
-    },
-    {
-      "spec": "macro__10Y-3M_스프레드",
-      "source": "fred",
-      "sector": "macro",
-      "name": "10Y-3M 스프레드",
-      "rows": 3213,
-      "ms": 630.7,
-      "ok": true,
-      "path": "fred\\macro__10Y-3M_스프레드.csv",
-      "params": {
-        "series_id": "T10Y3M",
-        "start": "2014-01-01"
-      },
-      "note": "T10Y3M"
-    },
-    {
-      "spec": "macro__30Y_Mortgage_Rate",
-      "source": "fred",
-      "sector": "macro",
-      "name": "30Y Mortgage Rate",
-      "rows": 643,
-      "ms": 541.5,
-      "ok": true,
-      "path": "fred\\macro__30Y_Mortgage_Rate.csv",
-      "params": {
-        "series_id": "MORTGAGE30US",
-        "start": "2014-01-01"
-      },
-      "note": "MORTGAGE30US"
-    },
-    {
-      "spec": "macro__Dollar_Index_(DXY)",
-      "source": "fred",
-      "sector": "macro",
-      "name": "Dollar Index (DXY)",
-      "rows": 3208,
-      "ms": 605.5,
-      "ok": true,
-      "path": "fred\\macro__Dollar_Index_(DXY).csv",
-      "params": {
-        "series_id": "DTWEXBGS",
-        "start": "2014-01-01"
-      },
-      "note": "DTWEXBGS"
-    },
-    {
-      "spec": "macro__VIX_변동성지수",
-      "source": "fred",
-      "sector": "macro",
-      "name": "VIX 변동성지수",
-      "rows": 3212,
-      "ms": 710.5,
-      "ok": true,
-      "path": "fred\\macro__VIX_변동성지수.csv",
-      "params": {
-        "series_id": "VIXCLS",
-        "start": "2014-01-01"
-      },
-      "note": "VIXCLS"
-    },
-    {
-      "spec": "macro__Industrial_Production",
-      "source": "fred",
-      "sector": "macro",
-      "name": "Industrial Production",
-      "rows": 147,
-      "ms": 652.4,
-      "ok": true,
-      "path": "fred\\macro__Industrial_Production.csv",
-      "params": {
-        "series_id": "INDPRO",
-        "start": "2014-01-01"
-      },
-      "note": "INDPRO"
-    },
-    {
-      "spec": "macro__Capacity_Utilization",
-      "source": "fred",
-      "sector": "macro",
-      "name": "Capacity Utilization",
-      "rows": 147,
-      "ms": 502.1,
-      "ok": true,
-      "path": "fred\\macro__Capacity_Utilization.csv",
-      "params": {
-        "series_id": "TCU",
-        "start": "2014-01-01"
-      },
-      "note": "TCU"
-    },
-    {
-      "spec": "auto__미국_신차_SAAR_(TOTALSA)",
-      "source": "fred",
-      "sector": "auto",
-      "name": "미국 신차 SAAR (TOTALSA)",
-      "rows": 147,
-      "ms": 613.8,
-      "ok": true,
-      "path": "fred\\auto__미국_신차_SAAR_(TOTALSA).csv",
-      "params": {
-        "series_id": "TOTALSA",
-        "start": "2014-01-01"
-      },
-      "note": "TOTALSA"
-    },
-    {
-      "spec": "retail__미국_소매판매",
-      "source": "fred",
-      "sector": "retail",
-      "name": "미국 소매판매",
-      "rows": 147,
-      "ms": 563.8,
-      "ok": true,
-      "path": "fred\\retail__미국_소매판매.csv",
-      "params": {
-        "series_id": "RSAFS",
-        "start": "2014-01-01"
-      },
-      "note": "RSAFS"
-    },
-    {
-      "spec": "retail__미국_소비자신뢰지수",
-      "source": "fred",
-      "sector": "retail",
-      "name": "미국 소비자신뢰지수",
-      "rows": 147,
-      "ms": 514.7,
-      "ok": true,
-      "path": "fred\\retail__미국_소비자신뢰지수.csv",
-      "params": {
-        "series_id": "UMCSENT",
-        "start": "2014-01-01"
-      },
-      "note": "UMCSENT"
-    },
-    {
-      "spec": "construction__미국_신규주택착공",
-      "source": "fred",
-      "sector": "construction",
-      "name": "미국 신규주택착공",
-      "rows": 145,
-      "ms": 532.8,
-      "ok": true,
-      "path": "fred\\construction__미국_신규주택착공.csv",
-      "params": {
-        "series_id": "HOUST",
-        "start": "2014-01-01"
-      },
-      "note": "HOUST"
-    },
-    {
-      "spec": "oil__WTI_원유",
-      "source": "fred",
-      "sector": "oil",
-      "name": "WTI 원유",
-      "rows": 3209,
-      "ms": 540.5,
-      "ok": true,
-      "path": "fred\\oil__WTI_원유.csv",
-      "params": {
-        "series_id": "DCOILWTICO",
-        "start": "2014-01-01"
-      },
-      "note": "DCOILWTICO"
-    },
-    {
-      "spec": "oil__Brent_원유",
-      "source": "fred",
-      "sector": "oil",
-      "name": "Brent 원유",
-      "rows": 3209,
-      "ms": 647.4,
-      "ok": true,
-      "path": "fred\\oil__Brent_원유.csv",
-      "params": {
-        "series_id": "DCOILBRENTEU",
-        "start": "2014-01-01"
-      },
-      "note": "DCOILBRENTEU"
-    },
-    {
-      "spec": "macro__미국_ISM_제조업_신규수주",
-      "source": "fred",
-      "sector": "macro",
-      "name": "미국 ISM 제조업 신규수주",
-      "rows": 146,
-      "ms": 730.0,
-      "ok": true,
-      "path": "fred\\macro__미국_ISM_제조업_신규수주.csv",
-      "params": {
-        "series_id": "NEWORDER",
-        "start": "2014-01-01"
-      },
-      "note": "NEWORDER"
-    },
-    {
-      "spec": "macro__PCE_Inflation",
-      "source": "fred",
-      "sector": "macro",
-      "name": "PCE Inflation",
-      "rows": 146,
-      "ms": 512.7,
-      "ok": true,
-      "path": "fred\\macro__PCE_Inflation.csv",
-      "params": {
-        "series_id": "PCEPI",
-        "start": "2014-01-01"
-      },
-      "note": "PCEPI"
-    },
-    {
-      "spec": "macro__Core_CPI",
-      "source": "fred",
-      "sector": "macro",
-      "name": "Core CPI",
-      "rows": 147,
-      "ms": 574.2,
-      "ok": true,
-      "path": "fred\\macro__Core_CPI.csv",
-      "params": {
-        "series_id": "CPILFESL",
-        "start": "2014-01-01"
-      },
-      "note": "CPILFESL"
-    },
-    {
-      "spec": "macro__GDP_by_경제활동_(분기)",
-      "source": "kosis",
-      "sector": "macro",
-      "name": "GDP by 경제활동 (분기)",
-      "rows": 2200,
-      "ms": 627.3,
-      "ok": true,
-      "path": "kosis\\macro__GDP_by_경제활동_(분기).csv",
-      "params": {
-        "org_id": "301",
-        "tbl_id": "DT_200Y105",
-        "item_code": "ALL",
-        "obj_l1": "ALL",
-        "prd_se": "Q",
-        "last_n_periods": 40
-      },
-      "note": "301/DT_200Y105/ALL/ALL"
-    },
-    {
-      "spec": "energy__WTI_원유_(현물)",
-      "source": "eia",
-      "sector": "energy",
-      "name": "WTI 원유 (현물)",
-      "rows": 1500,
-      "ms": 2137.8,
-      "ok": true,
-      "path": "eia\\energy__WTI_원유_(현물).csv",
-      "params": {
-        "path": "petroleum/pri/spt",
-        "series_code": "RWTC",
-        "frequency": "daily",
-        "length": 1500
-      },
-      "note": "RWTC"
-    },
-    {
-      "spec": "energy__Brent_원유_(현물)",
-      "source": "eia",
-      "sector": "energy",
-      "name": "Brent 원유 (현물)",
-      "rows": 1500,
-      "ms": 1990.7,
-      "ok": true,
-      "path": "eia\\energy__Brent_원유_(현물).csv",
-      "params": {
-        "path": "petroleum/pri/spt",
-        "series_code": "RBRTE",
-        "frequency": "daily",
-        "length": 1500
-      },
-      "note": "RBRTE"
-    },
-    {
-      "spec": "energy__미국_원유_재고_(Crude_Stocks)",
-      "source": "eia",
-      "sector": "energy",
-      "name": "미국 원유 재고 (Crude Stocks)",
-      "rows": 520,
-      "ms": 1675.5,
-      "ok": true,
-      "path": "eia\\energy__미국_원유_재고_(Crude_Stocks).csv",
-      "params": {
-        "path": "petroleum/stoc/wstk",
-        "series_code": "WCESTUS1",
-        "frequency": "weekly",
-        "length": 520
-      },
-      "note": "WCESTUS1"
-    },
-    {
-      "spec": "energy__미국_정제시설_가동률",
-      "source": "eia",
-      "sector": "energy",
-      "name": "미국 정제시설 가동률",
-      "rows": 520,
-      "ms": 1409.9,
-      "ok": true,
-      "path": "eia\\energy__미국_정제시설_가동률.csv",
-      "params": {
-        "path": "petroleum/pnp/wiup",
-        "series_code": "WPULEUS3",
-        "frequency": "weekly",
-        "length": 520
-      },
-      "note": "WPULEUS3"
-    },
-    {
-      "spec": "chemical__Heating_Oil_(#2_NY)",
-      "source": "eia",
-      "sector": "chemical",
-      "name": "Heating Oil (#2 NY)",
-      "rows": 0,
-      "ms": 1484.8,
-      "ok": true,
-      "path": "eia\\chemical__Heating_Oil_(#2_NY).csv",
-      "params": {
-        "path": "petroleum/pri/spt",
-        "series_code": "EER_EPD2F_PE1_Y35NY_DPG",
-        "frequency": "weekly",
-        "length": 520
-      },
-      "note": "EER_EPD2F_PE1_Y35NY_DPG"
-    },
-    {
-      "spec": "oil__천연가스_(Henry_Hub)_월별",
-      "source": "eia",
-      "sector": "oil",
-      "name": "천연가스 (Henry Hub) 월별",
-      "rows": 0,
-      "ms": 1709.0,
-      "ok": true,
-      "path": "eia\\oil__천연가스_(Henry_Hub)_월별.csv",
-      "params": {
-        "path": "natural-gas/pri/sum",
-        "series_code": "RNGWHHD",
-        "frequency": "monthly",
-        "length": 240
-      },
-      "note": "RNGWHHD"
-    },
-    {
-      "spec": "oil__정제가동률_가중평균",
-      "source": "eia",
-      "sector": "oil",
-      "name": "정제가동률 가중평균",
-      "ok": false,
-      "error": "EIA → HTTP 400: {\"error\":\"Invalid frequency 'monthly' provided. The only valid frequencies are 'weekly', and 'four-week-average'.\",\"code\":400}",
-      "params": {
-        "path": "petroleum/pnp/wiup",
-        "series_code": "WPULEUS3",
-        "frequency": "monthly",
-        "length": 240
-      },
-      "note": "WPULEUS3"
-    },
-    {
-      "spec": "auto__미국_휘발유_소매가",
-      "source": "eia",
-      "sector": "auto",
-      "name": "미국 휘발유 소매가",
-      "rows": 520,
-      "ms": 3641.0,
-      "ok": true,
-      "path": "eia\\auto__미국_휘발유_소매가.csv",
-      "params": {
-        "path": "petroleum/pri/gnd",
-        "series_code": "EMM_EPMR_PTE_NUS_DPG",
-        "frequency": "weekly",
-        "length": 520
-      },
-      "note": "EMM_EPMR_PTE_NUS_DPG"
-    },
-    {
-      "spec": "transport__미국_디젤_도매가",
-      "source": "eia",
-      "sector": "transport",
-      "name": "미국 디젤 도매가",
-      "rows": 0,
-      "ms": 2632.0,
-      "ok": true,
-      "path": "eia\\transport__미국_디젤_도매가.csv",
-      "params": {
-        "path": "petroleum/pri/spt",
-        "series_code": "EER_EPD2DXL0_PE_RGC_DPG",
-        "frequency": "weekly",
-        "length": 520
-      },
-      "note": "EER_EPD2DXL0_PE_RGC_DPG"
-    },
-    {
-      "spec": "semiconductor__삼성전자_사업보고서_2024",
-      "source": "dart",
-      "sector": "semiconductor",
-      "name": "삼성전자 사업보고서 2024",
-      "rows": 213,
-      "ms": 99.9,
-      "ok": true,
-      "path": "dart\\semiconductor__삼성전자_사업보고서_2024.csv",
-      "params": {
-        "corp_code": "00126380",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "삼성전자/2024"
-    },
-    {
-      "spec": "semiconductor__삼성전자_사업보고서_2025",
-      "source": "dart",
-      "sector": "semiconductor",
-      "name": "삼성전자 사업보고서 2025",
-      "rows": 229,
-      "ms": 64.3,
-      "ok": true,
-      "path": "dart\\semiconductor__삼성전자_사업보고서_2025.csv",
-      "params": {
-        "corp_code": "00126380",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "삼성전자/2025"
-    },
-    {
-      "spec": "semiconductor__SK하이닉스_사업보고서_2024",
-      "source": "dart",
-      "sector": "semiconductor",
-      "name": "SK하이닉스 사업보고서 2024",
-      "rows": 236,
-      "ms": 63.8,
-      "ok": true,
-      "path": "dart\\semiconductor__SK하이닉스_사업보고서_2024.csv",
-      "params": {
-        "corp_code": "00164779",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "SK하이닉스/2024"
-    },
-    {
-      "spec": "semiconductor__SK하이닉스_사업보고서_2025",
-      "source": "dart",
-      "sector": "semiconductor",
-      "name": "SK하이닉스 사업보고서 2025",
-      "rows": 230,
-      "ms": 67.8,
-      "ok": true,
-      "path": "dart\\semiconductor__SK하이닉스_사업보고서_2025.csv",
-      "params": {
-        "corp_code": "00164779",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "SK하이닉스/2025"
-    },
-    {
-      "spec": "display__LG디스플레이_사업보고서_2024",
-      "source": "dart",
-      "sector": "display",
-      "name": "LG디스플레이 사업보고서 2024",
-      "rows": 243,
-      "ms": 57.5,
-      "ok": true,
-      "path": "dart\\display__LG디스플레이_사업보고서_2024.csv",
-      "params": {
-        "corp_code": "00105873",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "LG디스플레이/2024"
-    },
-    {
-      "spec": "display__LG디스플레이_사업보고서_2025",
-      "source": "dart",
-      "sector": "display",
-      "name": "LG디스플레이 사업보고서 2025",
-      "rows": 234,
-      "ms": 54.2,
-      "ok": true,
-      "path": "dart\\display__LG디스플레이_사업보고서_2025.csv",
-      "params": {
-        "corp_code": "00105873",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "LG디스플레이/2025"
-    },
-    {
-      "spec": "chemical__LG화학_사업보고서_2024",
-      "source": "dart",
-      "sector": "chemical",
-      "name": "LG화학 사업보고서 2024",
-      "rows": 200,
-      "ms": 53.3,
-      "ok": true,
-      "path": "dart\\chemical__LG화학_사업보고서_2024.csv",
-      "params": {
-        "corp_code": "00126186",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "LG화학/2024"
-    },
-    {
-      "spec": "chemical__LG화학_사업보고서_2025",
-      "source": "dart",
-      "sector": "chemical",
-      "name": "LG화학 사업보고서 2025",
-      "rows": 207,
-      "ms": 49.8,
-      "ok": true,
-      "path": "dart\\chemical__LG화학_사업보고서_2025.csv",
-      "params": {
-        "corp_code": "00126186",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "LG화학/2025"
-    },
-    {
-      "spec": "chemical__SK이노베이션_사업보고서_2024",
-      "source": "dart",
-      "sector": "chemical",
-      "name": "SK이노베이션 사업보고서 2024",
-      "rows": 371,
-      "ms": 65.6,
-      "ok": true,
-      "path": "dart\\chemical__SK이노베이션_사업보고서_2024.csv",
-      "params": {
-        "corp_code": "00631518",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "SK이노베이션/2024"
-    },
-    {
-      "spec": "chemical__SK이노베이션_사업보고서_2025",
-      "source": "dart",
-      "sector": "chemical",
-      "name": "SK이노베이션 사업보고서 2025",
-      "rows": 406,
-      "ms": 71.0,
-      "ok": true,
-      "path": "dart\\chemical__SK이노베이션_사업보고서_2025.csv",
-      "params": {
-        "corp_code": "00631518",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "SK이노베이션/2025"
-    },
-    {
-      "spec": "auto__현대자동차_사업보고서_2024",
-      "source": "dart",
-      "sector": "auto",
-      "name": "현대자동차 사업보고서 2024",
-      "rows": 320,
-      "ms": 59.9,
-      "ok": true,
-      "path": "dart\\auto__현대자동차_사업보고서_2024.csv",
-      "params": {
-        "corp_code": "00164742",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "현대자동차/2024"
-    },
-    {
-      "spec": "auto__현대자동차_사업보고서_2025",
-      "source": "dart",
-      "sector": "auto",
-      "name": "현대자동차 사업보고서 2025",
-      "rows": 312,
-      "ms": 59.7,
-      "ok": true,
-      "path": "dart\\auto__현대자동차_사업보고서_2025.csv",
-      "params": {
-        "corp_code": "00164742",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "현대자동차/2025"
-    },
-    {
-      "spec": "auto__기아_사업보고서_2024",
-      "source": "dart",
-      "sector": "auto",
-      "name": "기아 사업보고서 2024",
-      "rows": 266,
-      "ms": 57.8,
-      "ok": true,
-      "path": "dart\\auto__기아_사업보고서_2024.csv",
-      "params": {
-        "corp_code": "00106641",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "기아/2024"
-    },
-    {
-      "spec": "auto__기아_사업보고서_2025",
-      "source": "dart",
-      "sector": "auto",
-      "name": "기아 사업보고서 2025",
-      "rows": 260,
-      "ms": 50.8,
-      "ok": true,
-      "path": "dart\\auto__기아_사업보고서_2025.csv",
-      "params": {
-        "corp_code": "00106641",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "기아/2025"
-    },
-    {
-      "spec": "ship__HD현대중공업_사업보고서_2024",
-      "source": "dart",
-      "sector": "ship",
-      "name": "HD현대중공업 사업보고서 2024",
-      "rows": 218,
-      "ms": 56.9,
-      "ok": true,
-      "path": "dart\\ship__HD현대중공업_사업보고서_2024.csv",
-      "params": {
-        "corp_code": "01390344",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "HD현대중공업/2024"
-    },
-    {
-      "spec": "ship__HD현대중공업_사업보고서_2025",
-      "source": "dart",
-      "sector": "ship",
-      "name": "HD현대중공업 사업보고서 2025",
-      "rows": 262,
-      "ms": 51.0,
-      "ok": true,
-      "path": "dart\\ship__HD현대중공업_사업보고서_2025.csv",
-      "params": {
-        "corp_code": "01390344",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "HD현대중공업/2025"
-    },
-    {
-      "spec": "ship__삼성중공업_사업보고서_2024",
-      "source": "dart",
-      "sector": "ship",
-      "name": "삼성중공업 사업보고서 2024",
-      "rows": 212,
-      "ms": 57.5,
-      "ok": true,
-      "path": "dart\\ship__삼성중공업_사업보고서_2024.csv",
-      "params": {
-        "corp_code": "00126478",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "삼성중공업/2024"
-    },
-    {
-      "spec": "ship__삼성중공업_사업보고서_2025",
-      "source": "dart",
-      "sector": "ship",
-      "name": "삼성중공업 사업보고서 2025",
-      "rows": 238,
-      "ms": 66.3,
-      "ok": true,
-      "path": "dart\\ship__삼성중공업_사업보고서_2025.csv",
-      "params": {
-        "corp_code": "00126478",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "삼성중공업/2025"
-    },
-    {
-      "spec": "steel__POSCO홀딩스_사업보고서_2024",
-      "source": "dart",
-      "sector": "steel",
-      "name": "POSCO홀딩스 사업보고서 2024",
-      "rows": 182,
-      "ms": 46.6,
-      "ok": true,
-      "path": "dart\\steel__POSCO홀딩스_사업보고서_2024.csv",
-      "params": {
-        "corp_code": "00126308",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "POSCO홀딩스/2024"
-    },
-    {
-      "spec": "steel__POSCO홀딩스_사업보고서_2025",
-      "source": "dart",
-      "sector": "steel",
-      "name": "POSCO홀딩스 사업보고서 2025",
-      "rows": 191,
-      "ms": 49.5,
-      "ok": true,
-      "path": "dart\\steel__POSCO홀딩스_사업보고서_2025.csv",
-      "params": {
-        "corp_code": "00126308",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "POSCO홀딩스/2025"
-    },
-    {
-      "spec": "bank__KB금융지주_사업보고서_2024",
-      "source": "dart",
-      "sector": "bank",
-      "name": "KB금융지주 사업보고서 2024",
-      "rows": 390,
-      "ms": 78.9,
-      "ok": true,
-      "path": "dart\\bank__KB금융지주_사업보고서_2024.csv",
-      "params": {
-        "corp_code": "00688996",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "KB금융지주/2024"
-    },
-    {
-      "spec": "bank__KB금융지주_사업보고서_2025",
-      "source": "dart",
-      "sector": "bank",
-      "name": "KB금융지주 사업보고서 2025",
-      "rows": 349,
-      "ms": 87.7,
-      "ok": true,
-      "path": "dart\\bank__KB금융지주_사업보고서_2025.csv",
-      "params": {
-        "corp_code": "00688996",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "KB금융지주/2025"
-    },
-    {
-      "spec": "bank__신한지주_사업보고서_2024",
-      "source": "dart",
-      "sector": "bank",
-      "name": "신한지주 사업보고서 2024",
-      "rows": 440,
-      "ms": 75.3,
-      "ok": true,
-      "path": "dart\\bank__신한지주_사업보고서_2024.csv",
-      "params": {
-        "corp_code": "00382199",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "신한지주/2024"
-    },
-    {
-      "spec": "bank__신한지주_사업보고서_2025",
-      "source": "dart",
-      "sector": "bank",
-      "name": "신한지주 사업보고서 2025",
-      "rows": 427,
-      "ms": 65.5,
-      "ok": true,
-      "path": "dart\\bank__신한지주_사업보고서_2025.csv",
-      "params": {
-        "corp_code": "00382199",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "신한지주/2025"
-    },
-    {
-      "spec": "retail__이마트_사업보고서_2024",
-      "source": "dart",
-      "sector": "retail",
-      "name": "이마트 사업보고서 2024",
-      "rows": 232,
-      "ms": 52.9,
-      "ok": true,
-      "path": "dart\\retail__이마트_사업보고서_2024.csv",
-      "params": {
-        "corp_code": "00872984",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "이마트/2024"
-    },
-    {
-      "spec": "retail__이마트_사업보고서_2025",
-      "source": "dart",
-      "sector": "retail",
-      "name": "이마트 사업보고서 2025",
-      "rows": 232,
-      "ms": 53.6,
-      "ok": true,
-      "path": "dart\\retail__이마트_사업보고서_2025.csv",
-      "params": {
-        "corp_code": "00872984",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "이마트/2025"
-    },
-    {
-      "spec": "media__JYP_Ent._사업보고서_2024",
-      "source": "dart",
-      "sector": "media",
-      "name": "JYP Ent. 사업보고서 2024",
-      "rows": 202,
-      "ms": 53.1,
-      "ok": true,
-      "path": "dart\\media__JYP_Ent._사업보고서_2024.csv",
-      "params": {
-        "corp_code": "00258689",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "JYP Ent./2024"
-    },
-    {
-      "spec": "media__JYP_Ent._사업보고서_2025",
-      "source": "dart",
-      "sector": "media",
-      "name": "JYP Ent. 사업보고서 2025",
-      "rows": 271,
-      "ms": 50.1,
-      "ok": true,
-      "path": "dart\\media__JYP_Ent._사업보고서_2025.csv",
-      "params": {
-        "corp_code": "00258689",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "JYP Ent./2025"
-    },
-    {
-      "spec": "cosmetic__LG생활건강_사업보고서_2024",
-      "source": "dart",
-      "sector": "cosmetic",
-      "name": "LG생활건강 사업보고서 2024",
-      "rows": 244,
-      "ms": 53.6,
-      "ok": true,
-      "path": "dart\\cosmetic__LG생활건강_사업보고서_2024.csv",
-      "params": {
-        "corp_code": "00356370",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "LG생활건강/2024"
-    },
-    {
-      "spec": "cosmetic__LG생활건강_사업보고서_2025",
-      "source": "dart",
-      "sector": "cosmetic",
-      "name": "LG생활건강 사업보고서 2025",
-      "rows": 251,
-      "ms": 85.3,
-      "ok": true,
-      "path": "dart\\cosmetic__LG생활건강_사업보고서_2025.csv",
-      "params": {
-        "corp_code": "00356370",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "LG생활건강/2025"
-    },
-    {
-      "spec": "food__CJ제일제당_사업보고서_2024",
-      "source": "dart",
-      "sector": "food",
-      "name": "CJ제일제당 사업보고서 2024",
-      "rows": 277,
-      "ms": 65.1,
-      "ok": true,
-      "path": "dart\\food__CJ제일제당_사업보고서_2024.csv",
-      "params": {
-        "corp_code": "00635134",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "CJ제일제당/2024"
-    },
-    {
-      "spec": "food__CJ제일제당_사업보고서_2025",
-      "source": "dart",
-      "sector": "food",
-      "name": "CJ제일제당 사업보고서 2025",
-      "rows": 280,
-      "ms": 66.3,
-      "ok": true,
-      "path": "dart\\food__CJ제일제당_사업보고서_2025.csv",
-      "params": {
-        "corp_code": "00635134",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "CJ제일제당/2025"
-    },
-    {
-      "spec": "pharma__셀트리온_사업보고서_2024",
-      "source": "dart",
-      "sector": "pharma",
-      "name": "셀트리온 사업보고서 2024",
-      "rows": 270,
-      "ms": 62.7,
-      "ok": true,
-      "path": "dart\\pharma__셀트리온_사업보고서_2024.csv",
-      "params": {
-        "corp_code": "00413046",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "셀트리온/2024"
-    },
-    {
-      "spec": "pharma__셀트리온_사업보고서_2025",
-      "source": "dart",
-      "sector": "pharma",
-      "name": "셀트리온 사업보고서 2025",
-      "rows": 278,
-      "ms": 53.5,
-      "ok": true,
-      "path": "dart\\pharma__셀트리온_사업보고서_2025.csv",
-      "params": {
-        "corp_code": "00413046",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "셀트리온/2025"
-    },
-    {
-      "spec": "defense__한화에어로스페이스_사업보고서_2024",
-      "source": "dart",
-      "sector": "defense",
-      "name": "한화에어로스페이스 사업보고서 2024",
-      "rows": 282,
-      "ms": 72.0,
-      "ok": true,
-      "path": "dart\\defense__한화에어로스페이스_사업보고서_2024.csv",
-      "params": {
-        "corp_code": "00126566",
-        "year": 2024,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "한화에어로스페이스/2024"
-    },
-    {
-      "spec": "defense__한화에어로스페이스_사업보고서_2025",
-      "source": "dart",
-      "sector": "defense",
-      "name": "한화에어로스페이스 사업보고서 2025",
-      "rows": 296,
-      "ms": 71.3,
-      "ok": true,
-      "path": "dart\\defense__한화에어로스페이스_사업보고서_2025.csv",
-      "params": {
-        "corp_code": "00126566",
-        "year": 2025,
-        "report_code": "11011",
-        "fs_div": "CFS"
-      },
-      "note": "한화에어로스페이스/2025"
-    },
-    {
-      "spec": "market__KOSPI_종합",
-      "source": "kis_index",
-      "sector": "market",
-      "name": "KOSPI 종합",
-      "rows": 50,
-      "ms": 298.2,
-      "ok": true,
-      "path": "kis_index\\market__KOSPI_종합.csv",
-      "params": {
-        "sector_code": "0001",
-        "date_from": "20250425",
-        "date_to": "20260425",
-        "period": "D"
-      },
-      "note": "KRX 0001"
-    },
-    {
-      "spec": "market__KOSDAQ_종합",
-      "source": "kis_index",
-      "sector": "market",
-      "name": "KOSDAQ 종합",
-      "rows": 50,
-      "ms": 495.8,
-      "ok": true,
-      "path": "kis_index\\market__KOSDAQ_종합.csv",
-      "params": {
-        "sector_code": "1001",
-        "date_from": "20250425",
-        "date_to": "20260425",
-        "period": "D"
-      },
-      "note": "KRX 1001"
-    },
-    {
-      "spec": "market__KOSPI_200",
-      "source": "kis_index",
-      "sector": "market",
-      "name": "KOSPI 200",
-      "rows": 50,
-      "ms": 539.3,
-      "ok": true,
-      "path": "kis_index\\market__KOSPI_200.csv",
-      "params": {
-        "sector_code": "2001",
-        "date_from": "20250425",
-        "date_to": "20260425",
-        "period": "D"
-      },
-      "note": "KRX 2001"
-    },
-    {
-      "spec": "food__KOSPI_음식료품",
-      "source": "kis_index",
-      "sector": "food",
-      "name": "KOSPI 음식료품",
-      "rows": 50,
-      "ms": 467.3,
-      "ok": true,
-      "path": "kis_index\\food__KOSPI_음식료품.csv",
-      "params": {
-        "sector_code": "0010",
-        "date_from": "20250425",
-        "date_to": "20260425",
-        "period": "D"
-      },
-      "note": "KRX 0010"
-    },
-    {
-      "spec": "paper__KOSPI_섬유의복",
-      "source": "kis_index",
-      "sector": "paper",
-      "name": "KOSPI 섬유의복",
-      "rows": 50,
-      "ms": 490.6,
-      "ok": true,
-      "path": "kis_index\\paper__KOSPI_섬유의복.csv",
-      "params": {
-        "sector_code": "0020",
-        "date_from": "20250425",
-        "date_to": "20260425",
-        "period": "D"
-      },
-      "note": "KRX 0020"
-    },
-    {
-      "spec": "paper__KOSPI_종이목재",
-      "source": "kis_index",
-      "sector": "paper",
-      "name": "KOSPI 종이목재",
-      "rows": 50,
-      "ms": 495.5,
-      "ok": true,
-      "path": "kis_index\\paper__KOSPI_종이목재.csv",
-      "params": {
-        "sector_code": "0030",
-        "date_from": "20250425",
-        "date_to": "20260425",
-        "period": "D"
-      },
-      "note": "KRX 0030"
-    },
-    {
-      "spec": "macro__OECD_CLI_KOR",
-      "source": "oecd",
-      "sector": "macro",
-      "name": "OECD CLI KOR",
-      "rows": 120,
-      "ms": 48.9,
-      "ok": true,
-      "path": "oecd\\macro__OECD_CLI_KOR.csv",
-      "params": {
-        "country_iso": "KOR",
-        "recent": 120
-      },
-      "note": "Composite Leading Indicator — KOR"
-    },
-    {
-      "spec": "macro__OECD_CLI_USA",
-      "source": "oecd",
-      "sector": "macro",
-      "name": "OECD CLI USA",
-      "rows": 120,
-      "ms": 15.3,
-      "ok": true,
-      "path": "oecd\\macro__OECD_CLI_USA.csv",
-      "params": {
-        "country_iso": "USA",
-        "recent": 120
-      },
-      "note": "Composite Leading Indicator — USA"
-    },
-    {
-      "spec": "macro__OECD_CLI_CHN",
-      "source": "oecd",
-      "sector": "macro",
-      "name": "OECD CLI CHN",
-      "rows": 120,
-      "ms": 13.7,
-      "ok": true,
-      "path": "oecd\\macro__OECD_CLI_CHN.csv",
-      "params": {
-        "country_iso": "CHN",
-        "recent": 120
-      },
-      "note": "Composite Leading Indicator — CHN"
-    },
-    {
-      "spec": "macro__OECD_CLI_JPN",
-      "source": "oecd",
-      "sector": "macro",
-      "name": "OECD CLI JPN",
-      "rows": 120,
-      "ms": 14.9,
-      "ok": true,
-      "path": "oecd\\macro__OECD_CLI_JPN.csv",
-      "params": {
-        "country_iso": "JPN",
-        "recent": 120
-      },
-      "note": "Composite Leading Indicator — JPN"
-    },
-    {
-      "spec": "macro__OECD_CLI_DEU",
-      "source": "oecd",
-      "sector": "macro",
-      "name": "OECD CLI DEU",
-      "rows": 120,
-      "ms": 16.5,
-      "ok": true,
-      "path": "oecd\\macro__OECD_CLI_DEU.csv",
-      "params": {
-        "country_iso": "DEU",
-        "recent": 120
-      },
-      "note": "Composite Leading Indicator — DEU"
-    },
-    {
-      "spec": "macro__한국_명목_GDP_(USD)",
-      "source": "worldbank",
-      "sector": "macro",
-      "name": "한국 명목 GDP (USD)",
-      "rows": 25,
-      "ms": 290.6,
-      "ok": true,
-      "path": "worldbank\\macro__한국_명목_GDP_(USD).csv",
-      "params": {
-        "country_iso": "KOR",
-        "indicator": "NY.GDP.MKTP.CD",
-        "date_range": "2000:2024"
-      },
-      "note": "NY.GDP.MKTP.CD"
-    },
-    {
-      "spec": "macro__한국_제조업_GDP_비중_(%)",
-      "source": "worldbank",
-      "sector": "macro",
-      "name": "한국 제조업 GDP 비중 (%)",
-      "rows": 25,
-      "ms": 243.4,
-      "ok": true,
-      "path": "worldbank\\macro__한국_제조업_GDP_비중_(%).csv",
-      "params": {
-        "country_iso": "KOR",
-        "indicator": "NV.IND.MANF.ZS",
-        "date_range": "2000:2024"
-      },
-      "note": "NV.IND.MANF.ZS"
-    },
-    {
-      "spec": "macro__중국_GDP_성장률",
-      "source": "worldbank",
-      "sector": "macro",
-      "name": "중국 GDP 성장률",
-      "rows": 25,
-      "ms": 1493.9,
-      "ok": true,
-      "path": "worldbank\\macro__중국_GDP_성장률.csv",
-      "params": {
-        "country_iso": "CHN",
-        "indicator": "NY.GDP.MKTP.KD.ZG",
-        "date_range": "2000:2024"
-      },
-      "note": "NY.GDP.MKTP.KD.ZG"
-    },
-    {
-      "spec": "macro__미국_GDP_성장률",
-      "source": "worldbank",
-      "sector": "macro",
-      "name": "미국 GDP 성장률",
-      "rows": 25,
-      "ms": 403.9,
-      "ok": true,
-      "path": "worldbank\\macro__미국_GDP_성장률.csv",
-      "params": {
-        "country_iso": "USA",
-        "indicator": "NY.GDP.MKTP.KD.ZG",
-        "date_range": "2000:2024"
-      },
-      "note": "NY.GDP.MKTP.KD.ZG"
-    },
-    {
-      "spec": "macro__한국_인구",
-      "source": "worldbank",
-      "sector": "macro",
-      "name": "한국 인구",
-      "rows": 25,
-      "ms": 401.4,
-      "ok": true,
-      "path": "worldbank\\macro__한국_인구.csv",
-      "params": {
-        "country_iso": "KOR",
-        "indicator": "SP.POP.TOTL",
-        "date_range": "2000:2024"
-      },
-      "note": "SP.POP.TOTL"
-    },
-    {
-      "spec": "macro__한국_65세_이상_비중",
-      "source": "worldbank",
-      "sector": "macro",
-      "name": "한국 65세 이상 비중",
-      "rows": 25,
-      "ms": 234.0,
-      "ok": true,
-      "path": "worldbank\\macro__한국_65세_이상_비중.csv",
-      "params": {
-        "country_iso": "KOR",
-        "indicator": "SP.POP.65UP.TO.ZS",
-        "date_range": "2000:2024"
-      },
-      "note": "SP.POP.65UP.TO.ZS"
-    },
-    {
-      "spec": "semiconductor__검색관심도_'GPU'",
-      "source": "pytrends",
-      "sector": "semiconductor",
-      "name": "검색관심도 'GPU'",
-      "ok": false,
-      "error": "pytrends call failed: HTTPSConnectionPool(host='www.google.com', port=443): Max retries exceeded with url: /sorry/index?continue=https://trends.google.com/trends/api/explore%3Fhl%3Dko-KR%26tz%3D540%26req%3D%257B%2522comparisonItem%2522%253A%2B%255B%257B%2522keyword%2522%253A%2B%2522GPU%2522%252C%2B%",
-      "params": {
-        "keywords": [
-          "GPU"
-        ],
-        "geo": "KR",
-        "timeframe": "today 12-m"
-      },
-      "note": "GPU"
-    },
-    {
-      "spec": "semiconductor__검색관심도_'HBM'",
-      "source": "pytrends",
-      "sector": "semiconductor",
-      "name": "검색관심도 'HBM'",
-      "ok": false,
-      "error": "pytrends call failed: HTTPSConnectionPool(host='www.google.com', port=443): Max retries exceeded with url: /sorry/index?continue=https://trends.google.com/trends/api/explore%3Fhl%3Dko-KR%26tz%3D540%26req%3D%257B%2522comparisonItem%2522%253A%2B%255B%257B%2522keyword%2522%253A%2B%2522HBM%2522%252C%2B%",
-      "params": {
-        "keywords": [
-          "HBM"
-        ],
-        "geo": "KR",
-        "timeframe": "today 12-m"
-      },
-      "note": "HBM"
-    },
-    {
-      "spec": "semiconductor__검색관심도_'메모리_반도체'",
-      "source": "pytrends",
-      "sector": "semiconductor",
-      "name": "검색관심도 '메모리 반도체'",
-      "ok": false,
-      "error": "pytrends call failed: HTTPSConnectionPool(host='www.google.com', port=443): Max retries exceeded with url: /sorry/index?continue=https://trends.google.com/trends/api/explore%3Fhl%3Dko-KR%26tz%3D540%26req%3D%257B%2522comparisonItem%2522%253A%2B%255B%257B%2522keyword%2522%253A%2B%2522%255Cuba54%255Cub",
-      "params": {
-        "keywords": [
-          "메모리 반도체"
-        ],
-        "geo": "KR",
-        "timeframe": "today 12-m"
-      },
-      "note": "메모리 반도체"
-    },
-    {
-      "spec": "display__검색관심도_'OLED'",
-      "source": "pytrends",
-      "sector": "display",
-      "name": "검색관심도 'OLED'",
-      "ok": false,
-      "error": "pytrends call failed: HTTPSConnectionPool(host='www.google.com', port=443): Max retries exceeded with url: /sorry/index?continue=https://trends.google.com/trends/api/explore%3Fhl%3Dko-KR%26tz%3D540%26req%3D%257B%2522comparisonItem%2522%253A%2B%255B%257B%2522keyword%2522%253A%2B%2522OLED%2522%252C%2B",
-      "params": {
-        "keywords": [
-          "OLED"
-        ],
-        "geo": "KR",
-        "timeframe": "today 12-m"
-      },
-      "note": "OLED"
-    },
-    {
-      "spec": "handset__검색관심도_'iPhone'",
-      "source": "pytrends",
-      "sector": "handset",
-      "name": "검색관심도 'iPhone'",
-      "ok": false,
-      "error": "pytrends call failed: HTTPSConnectionPool(host='www.google.com', port=443): Max retries exceeded with url: /sorry/index?continue=https://trends.google.com/trends/api/explore%3Fhl%3Dko-KR%26tz%3D540%26req%3D%257B%2522comparisonItem%2522%253A%2B%255B%257B%2522keyword%2522%253A%2B%2522iPhone%2522%252C%",
-      "params": {
-        "keywords": [
-          "iPhone"
-        ],
-        "geo": "KR",
-        "timeframe": "today 12-m"
-      },
-      "note": "iPhone"
-    },
-    {
-      "spec": "handset__검색관심도_'Galaxy'",
-      "source": "pytrends",
-      "sector": "handset",
-      "name": "검색관심도 'Galaxy'",
-      "ok": false,
-      "error": "pytrends call failed: HTTPSConnectionPool(host='www.google.com', port=443): Max retries exceeded with url: /sorry/index?continue=https://trends.google.com/trends/api/explore%3Fhl%3Dko-KR%26tz%3D540%26req%3D%257B%2522comparisonItem%2522%253A%2B%255B%257B%2522keyword%2522%253A%2B%2522Galaxy%2522%252C%",
-      "params": {
-        "keywords": [
-          "Galaxy"
-        ],
-        "geo": "KR",
-        "timeframe": "today 12-m"
-      },
-      "note": "Galaxy"
-    },
-    {
-      "spec": "auto__검색관심도_'전기차'",
-      "source": "pytrends",
-      "sector": "auto",
-      "name": "검색관심도 '전기차'",
-      "ok": false,
-      "error": "pytrends call failed: HTTPSConnectionPool(host='www.google.com', port=443): Max retries exceeded with url: /sorry/index?continue=https://trends.google.com/trends/api/explore%3Fhl%3Dko-KR%26tz%3D540%26req%3D%257B%2522comparisonItem%2522%253A%2B%255B%257B%2522keyword%2522%253A%2B%2522%255Cuc804%255Cua",
-      "params": {
-        "keywords": [
-          "전기차"
-        ],
-        "geo": "KR",
-        "timeframe": "today 12-m"
-      },
-      "note": "전기차"
-    },
-    {
-      "spec": "auto__검색관심도_'EV'",
-      "source": "pytrends",
-      "sector": "auto",
-      "name": "검색관심도 'EV'",
-      "ok": false,
-      "error": "pytrends call failed: HTTPSConnectionPool(host='www.google.com', port=443): Max retries exceeded with url: /sorry/index?continue=https://trends.google.com/trends/api/explore%3Fhl%3Dko-KR%26tz%3D540%26req%3D%257B%2522comparisonItem%2522%253A%2B%255B%257B%2522keyword%2522%253A%2B%2522EV%2522%252C%2B%2",
-      "params": {
-        "keywords": [
-          "EV"
-        ],
-        "geo": "KR",
-        "timeframe": "today 12-m"
-      },
-      "note": "EV"
-    },
-    {
-      "spec": "retail__검색관심도_'쿠팡'",
-      "source": "pytrends",
-      "sector": "retail",
-      "name": "검색관심도 '쿠팡'",
-      "ok": false,
-      "error": "pytrends call failed: HTTPSConnectionPool(host='www.google.com', port=443): Max retries exceeded with url: /sorry/index?continue=https://trends.google.com/trends/api/explore%3Fhl%3Dko-KR%26tz%3D540%26req%3D%257B%2522comparisonItem%2522%253A%2B%255B%257B%2522keyword%2522%253A%2B%2522%255Cucfe0%255Cud",
-      "params": {
-        "keywords": [
-          "쿠팡"
-        ],
-        "geo": "KR",
-        "timeframe": "today 12-m"
-      },
-      "note": "쿠팡"
-    },
-    {
-      "spec": "media__검색관심도_'K-pop'",
-      "source": "pytrends",
-      "sector": "media",
-      "name": "검색관심도 'K-pop'",
-      "ok": false,
-      "error": "pytrends call failed: HTTPSConnectionPool(host='www.google.com', port=443): Max retries exceeded with url: /sorry/index?continue=https://trends.google.com/trends/api/explore%3Fhl%3Dko-KR%26tz%3D540%26req%3D%257B%2522comparisonItem%2522%253A%2B%255B%257B%2522keyword%2522%253A%2B%2522K-pop%2522%252C%2",
-      "params": {
-        "keywords": [
-          "K-pop"
-        ],
-        "geo": "KR",
-        "timeframe": "today 12-m"
-      },
-      "note": "K-pop"
-    },
-    {
-      "spec": "media__검색관심도_'K-drama'",
-      "source": "pytrends",
-      "sector": "media",
-      "name": "검색관심도 'K-drama'",
-      "ok": false,
-      "error": "pytrends call failed: HTTPSConnectionPool(host='www.google.com', port=443): Max retries exceeded with url: /sorry/index?continue=https://trends.google.com/trends/api/explore%3Fhl%3Dko-KR%26tz%3D540%26req%3D%257B%2522comparisonItem%2522%253A%2B%255B%257B%2522keyword%2522%253A%2B%2522K-drama%2522%252C",
-      "params": {
-        "keywords": [
-          "K-drama"
-        ],
-        "geo": "KR",
-        "timeframe": "today 12-m"
-      },
-      "note": "K-drama"
-    },
-    {
-      "spec": "cosmetic__검색관심도_'K-beauty'",
-      "source": "pytrends",
-      "sector": "cosmetic",
-      "name": "검색관심도 'K-beauty'",
-      "ok": false,
-      "error": "pytrends call failed: HTTPSConnectionPool(host='www.google.com', port=443): Max retries exceeded with url: /sorry/index?continue=https://trends.google.com/trends/api/explore%3Fhl%3Dko-KR%26tz%3D540%26req%3D%257B%2522comparisonItem%2522%253A%2B%255B%257B%2522keyword%2522%253A%2B%2522K-beauty%2522%252",
-      "params": {
-        "keywords": [
-          "K-beauty"
-        ],
-        "geo": "KR",
-        "timeframe": "today 12-m"
-      },
-      "note": "K-beauty"
-    },
-    {
-      "spec": "food__검색관심도_'라면'",
-      "source": "pytrends",
-      "sector": "food",
-      "name": "검색관심도 '라면'",
-      "ok": false,
-      "error": "pytrends call failed: HTTPSConnectionPool(host='www.google.com', port=443): Max retries exceeded with url: /sorry/index?continue=https://trends.google.com/trends/api/explore%3Fhl%3Dko-KR%26tz%3D540%26req%3D%257B%2522comparisonItem%2522%253A%2B%255B%257B%2522keyword%2522%253A%2B%2522%255Cub77c%255Cub",
-      "params": {
-        "keywords": [
-          "라면"
-        ],
-        "geo": "KR",
-        "timeframe": "today 12-m"
-      },
-      "note": "라면"
-    },
-    {
-      "spec": "pharma__검색관심도_'GLP-1'",
-      "source": "pytrends",
-      "sector": "pharma",
-      "name": "검색관심도 'GLP-1'",
-      "ok": false,
-      "error": "pytrends call failed: HTTPSConnectionPool(host='www.google.com', port=443): Max retries exceeded with url: /sorry/index?continue=https://trends.google.com/trends/api/explore%3Fhl%3Dko-KR%26tz%3D540%26req%3D%257B%2522comparisonItem%2522%253A%2B%255B%257B%2522keyword%2522%253A%2B%2522GLP-1%2522%252C%2",
-      "params": {
-        "keywords": [
-          "GLP-1"
-        ],
-        "geo": "KR",
-        "timeframe": "today 12-m"
-      },
-      "note": "GLP-1"
-    },
-    {
-      "spec": "ship__검색관심도_'조선'",
-      "source": "pytrends",
-      "sector": "ship",
-      "name": "검색관심도 '조선'",
-      "ok": false,
-      "error": "pytrends call failed: HTTPSConnectionPool(host='www.google.com', port=443): Max retries exceeded with url: /sorry/index?continue=https://trends.google.com/trends/api/explore%3Fhl%3Dko-KR%26tz%3D540%26req%3D%257B%2522comparisonItem%2522%253A%2B%255B%257B%2522keyword%2522%253A%2B%2522%255Cuc870%255Cuc",
-      "params": {
-        "keywords": [
-          "조선"
-        ],
-        "geo": "KR",
-        "timeframe": "today 12-m"
-      },
-      "note": "조선"
-    },
-    {
-      "spec": "defense__검색관심도_'방산'",
-      "source": "pytrends",
-      "sector": "defense",
-      "name": "검색관심도 '방산'",
-      "ok": false,
-      "error": "pytrends call failed: HTTPSConnectionPool(host='www.google.com', port=443): Max retries exceeded with url: /sorry/index?continue=https://trends.google.com/trends/api/explore%3Fhl%3Dko-KR%26tz%3D540%26req%3D%257B%2522comparisonItem%2522%253A%2B%255B%257B%2522keyword%2522%253A%2B%2522%255Cubc29%255Cuc",
-      "params": {
-        "keywords": [
-          "방산"
-        ],
-        "geo": "KR",
-        "timeframe": "today 12-m"
-      },
-      "note": "방산"
-    },
-    {
-      "spec": "macro__COT_—_CRUDE_OIL",
-      "source": "cftc",
-      "sector": "macro",
-      "name": "COT — CRUDE OIL",
-      "rows": 52,
-      "ms": 1293.9,
-      "ok": true,
-      "path": "cftc\\macro__COT_—_CRUDE_OIL.csv",
-      "params": {
-        "market_keyword": "CRUDE OIL",
-        "limit": 52
-      },
-      "note": "CRUDE OIL"
-    },
-    {
-      "spec": "macro__COT_—_GOLD",
-      "source": "cftc",
-      "sector": "macro",
-      "name": "COT — GOLD",
-      "rows": 52,
-      "ms": 422.4,
-      "ok": true,
-      "path": "cftc\\macro__COT_—_GOLD.csv",
-      "params": {
-        "market_keyword": "GOLD",
-        "limit": 52
-      },
-      "note": "GOLD"
-    },
-    {
-      "spec": "macro__COT_—_COPPER",
-      "source": "cftc",
-      "sector": "macro",
-      "name": "COT — COPPER",
-      "rows": 52,
-      "ms": 398.0,
-      "ok": true,
-      "path": "cftc\\macro__COT_—_COPPER.csv",
-      "params": {
-        "market_keyword": "COPPER",
-        "limit": 52
-      },
-      "note": "COPPER"
-    },
-    {
-      "spec": "macro__COT_—_JAPANESE_YEN",
-      "source": "cftc",
-      "sector": "macro",
-      "name": "COT — JAPANESE YEN",
-      "rows": 52,
-      "ms": 347.6,
-      "ok": true,
-      "path": "cftc\\macro__COT_—_JAPANESE_YEN.csv",
-      "params": {
-        "market_keyword": "JAPANESE YEN",
-        "limit": 52
-      },
-      "note": "JAPANESE YEN"
-    },
-    {
-      "spec": "macro__COT_—_EURO_FX",
-      "source": "cftc",
-      "sector": "macro",
-      "name": "COT — EURO FX",
-      "rows": 52,
-      "ms": 447.8,
-      "ok": true,
-      "path": "cftc\\macro__COT_—_EURO_FX.csv",
-      "params": {
-        "market_keyword": "EURO FX",
-        "limit": 52
-      },
-      "note": "EURO FX"
-    },
-    {
-      "spec": "trade__Korea→World_HS_8542",
-      "source": "un_comtrade",
+      "spec": "trade__국가별_10일_잠정_EXPORT",
+      "source": "customs",
       "sector": "trade",
-      "name": "Korea→World HS 8542",
-      "rows": 1,
-      "ms": 1803.5,
+      "name": "국가별 10일 잠정 EXPORT",
+      "rows": 2,
+      "ms": 28.1,
       "ok": true,
-      "path": "un_comtrade\\trade__Korea→World_HS_8542.csv",
+      "path": "customs\\trade__국가별_10일_잠정_EXPORT.csv",
       "params": {
-        "reporter_iso3": "KOR",
-        "partner_iso3": "WLD",
-        "hs_code": "8542",
-        "period": "202312",
-        "flow": "X"
+        "year_month_start": "202604",
+        "year_month_end": "202604",
+        "num_rows": 200
       },
-      "note": "8542"
+      "note": "export 10-day country provisional"
     },
     {
-      "spec": "trade__Korea→World_HS_8703",
-      "source": "un_comtrade",
+      "spec": "trade__국가별_10일_잠정_IMPORT",
+      "source": "customs",
       "sector": "trade",
-      "name": "Korea→World HS 8703",
-      "rows": 1,
-      "ms": 581.6,
+      "name": "국가별 10일 잠정 IMPORT",
+      "rows": 2,
+      "ms": 30.2,
       "ok": true,
-      "path": "un_comtrade\\trade__Korea→World_HS_8703.csv",
+      "path": "customs\\trade__국가별_10일_잠정_IMPORT.csv",
       "params": {
-        "reporter_iso3": "KOR",
-        "partner_iso3": "WLD",
-        "hs_code": "8703",
-        "period": "202312",
-        "flow": "X"
+        "year_month_start": "202604",
+        "year_month_end": "202604",
+        "num_rows": 200
       },
-      "note": "8703"
-    },
-    {
-      "spec": "trade__Korea→World_HS_3901",
-      "source": "un_comtrade",
-      "sector": "trade",
-      "name": "Korea→World HS 3901",
-      "rows": 1,
-      "ms": 793.4,
-      "ok": true,
-      "path": "un_comtrade\\trade__Korea→World_HS_3901.csv",
-      "params": {
-        "reporter_iso3": "KOR",
-        "partner_iso3": "WLD",
-        "hs_code": "3901",
-        "period": "202312",
-        "flow": "X"
-      },
-      "note": "3901"
-    },
-    {
-      "spec": "trade__Korea→World_HS_8901",
-      "source": "un_comtrade",
-      "sector": "trade",
-      "name": "Korea→World HS 8901",
-      "rows": 1,
-      "ms": 965.6,
-      "ok": true,
-      "path": "un_comtrade\\trade__Korea→World_HS_8901.csv",
-      "params": {
-        "reporter_iso3": "KOR",
-        "partner_iso3": "WLD",
-        "hs_code": "8901",
-        "period": "202312",
-        "flow": "X"
-      },
-      "note": "8901"
+      "note": "import 10-day country provisional"
     }
   ]
 }

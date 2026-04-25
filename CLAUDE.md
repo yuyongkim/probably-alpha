@@ -59,11 +59,19 @@ python scripts/summarize_data.py
 | imported_krx | 4 | 코스피·코스닥 |
 
 **아직 안 된 것** (재시도/추가 작업 필요):
-- customs 5/6 endpoint — data.go.kr 활용신청 자동승인 lag
+- customs 3/6 endpoint — `Itemtrade/getItemtradeList` (HS 단독), `expDecadeItemList`, `impDecadeItemList` 의 정확한 path 미확보. 사장님이 data.go.kr에서 endpoint URL 한 번 더 알려주면 즉시 가능
 - KOSIS 광공업 동향조사 산업별 — 정확한 tblId 미확보
 - KIS 업종지수 0040+ 코드 (화학/철강/전기전자 등 17개 sub-index) — KIS 업종 코드 시스템 별도 lookup 필요
 - KIS 업종지수 페이지네이션 (1콜=50일 한계, 12개월 만들려면 5-6콜 필요)
 - BDI/SCFI/클락슨/DRAMeXchange — 안정 크롤링 소스 부재 (63셀 영향)
+
+**customs endpoint 검증 현황 (2026-04-26)**:
+- ✓ `nitemtrade/getNitemtradeList`               (품목별 국가별 월별)
+- ✗ `Itemtrade/getItemtradeList`                  (HS 단독 월별 — path 미확인)
+- ✓ `cntyMmUtPrviExpAcrs/getCntyMmUtPrviExpAcrs`  (수출 주요국가별 10일 잠정)
+- ✓ `cntyMmUtPrviImpAcrs/getCntyMmUtPrviImpAcrs`  (수입 주요국가별 10일 잠정)
+- ✗ `<TBD>/getXxxxxxx`                            (수출 주요품목별 10일 잠정)
+- ✗ `<TBD>/getXxxxxxx`                            (수입 주요품목별 10일 잠정)
 
 ---
 

@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-04-25T15:06:57.422008+00:00",
+  "generated_at": "2026-04-25T15:17:38.936168+00:00",
   "data_root": "C:\\Users\\USER\\.ky-platform\\data\\sectors",
-  "total_files": 179,
-  "total_rows": 337396,
-  "total_bytes": 52285661,
+  "total_files": 181,
+  "total_rows": 337400,
+  "total_bytes": 52286045,
   "per_source": {
     "cftc": {
       "files": 5,
@@ -11,9 +11,9 @@
       "bytes": 21061
     },
     "customs": {
-      "files": 24,
-      "rows": 188625,
-      "bytes": 39983856
+      "files": 26,
+      "rows": 188629,
+      "bytes": 39984240
     },
     "dart": {
       "files": 36,
@@ -284,6 +284,20 @@
       "path": "customs/steel__철강제품_수출_(HS_7208-7229_대표_HS72).csv",
       "rows": 8858,
       "size_bytes": 1541174
+    },
+    {
+      "source": "customs",
+      "slug": "trade__국가별_10일_잠정_EXPORT",
+      "path": "customs/trade__국가별_10일_잠정_EXPORT.csv",
+      "rows": 2,
+      "size_bytes": 192
+    },
+    {
+      "source": "customs",
+      "slug": "trade__국가별_10일_잠정_IMPORT",
+      "path": "customs/trade__국가별_10일_잠정_IMPORT.csv",
+      "rows": 2,
+      "size_bytes": 192
     },
     {
       "source": "dart",

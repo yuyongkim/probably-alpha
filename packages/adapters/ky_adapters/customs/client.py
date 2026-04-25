@@ -33,12 +33,12 @@ CUSTOMS_BASE = "https://apis.data.go.kr/1220000"
 # Per-API endpoint registry. The first tuple element is the URL path; the
 # second is whether the API is verified-working (True) or candidate (False).
 ENDPOINTS: dict[str, tuple[str, bool]] = {
-    "hs_country_monthly":   ("/nitemtrade/getNitemtradeList",                                   True),
-    "hs_monthly":           ("/Itemtrade/getItemtradeList",                                     False),
-    "10day_export_item":    ("/expDecadeItemList/getExpDecadeItemList",                         False),
-    "10day_import_item":    ("/impDecadeItemList/getImpDecadeItemList",                         False),
-    "10day_export_country": ("/expDecadeCountryList/getExpDecadeCountryList",                   False),
-    "10day_import_country": ("/impDecadeCountryList/getImpDecadeCountryList",                   False),
+    "hs_country_monthly":   ("/nitemtrade/getNitemtradeList",                                  True),
+    "hs_monthly":           ("/Itemtrade/getItemtradeList",                                    False),  # path TBD
+    "10day_export_country": ("/cntyMmUtPrviExpAcrs/getCntyMmUtPrviExpAcrs",                    True),   # verified 2026-04-26
+    "10day_import_country": ("/cntyMmUtPrviImpAcrs/getCntyMmUtPrviImpAcrs",                    True),   # verified 2026-04-26
+    "10day_export_item":    ("/expDecadeItemList/getExpDecadeItemList",                        False),  # path TBD
+    "10day_import_item":    ("/impDecadeItemList/getImpDecadeItemList",                        False),  # path TBD
 }
 
 
@@ -132,12 +132,8 @@ class CustomsAdapter(BaseAdapter):
         today = date.today()
         ym_end = today.strftime("%Y%m")
         ym_start = (today.replace(day=1)).strftime("%Y%m")
-        # 10-day decade params: most-recent decade
-        decade = (today.day - 1) // 10 + 1
-        if decade > 3:
-            decade = 3
-        decade_str = f"{ym_end}{decade}"
-
+        # 10-day endpoints accept YYYYMM (one row per country per month, with
+        # itemUsdAmt00/01/02 for 초순/중순/하순). No decade slug needed.
         for key, (_, _verified) in ENDPOINTS.items():
             try:
                 if key == "hs_country_monthly":
@@ -145,13 +141,13 @@ class CustomsAdapter(BaseAdapter):
                 elif key == "hs_monthly":
                     rows = self.get_hs_monthly("8542", ym_start, ym_end, num_rows=2)
                 elif key == "10day_export_item":
-                    rows = self.get_10day_export_by_item(decade_str, decade_str, num_rows=2)
+                    rows = self.get_10day_export_by_item(ym_end, ym_end, num_rows=2)
                 elif key == "10day_import_item":
-                    rows = self.get_10day_import_by_item(decade_str, decade_str, num_rows=2)
+                    rows = self.get_10day_import_by_item(ym_end, ym_end, num_rows=2)
                 elif key == "10day_export_country":
-                    rows = self.get_10day_export_by_country(decade_str, decade_str, num_rows=2)
+                    rows = self.get_10day_export_by_country(ym_end, ym_end, num_rows=2)
                 elif key == "10day_import_country":
-                    rows = self.get_10day_import_by_country(decade_str, decade_str, num_rows=2)
+                    rows = self.get_10day_import_by_country(ym_end, ym_end, num_rows=2)
                 else:
                     rows = []
                 results[key] = {"ok": True, "rows": len(rows or [])}
@@ -195,49 +191,52 @@ class CustomsAdapter(BaseAdapter):
 
     def get_10day_export_by_item(
         self,
-        period_start: Optional[str] = None,
-        period_end: Optional[str] = None,
+        year_month_start: Optional[str] = None,
+        year_month_end: Optional[str] = None,
         page_no: int = 1,
         num_rows: int = 100,
     ) -> list[CustomsObservation]:
-        """수출 주요품목별 10일 잠정치. period 형식 YYYYMMD (D=1/2/3)."""
-        params = self._period_params(period_start, period_end, decade=True)
+        """수출 주요품목별 10일 잠정치 (path TBD)."""
+        params = self._period_params(year_month_start, year_month_end, decade=False)
         params["pageNo"] = page_no
         params["numOfRows"] = num_rows
         return self._call("10day_export_item", params)
 
     def get_10day_import_by_item(
         self,
-        period_start: Optional[str] = None,
-        period_end: Optional[str] = None,
+        year_month_start: Optional[str] = None,
+        year_month_end: Optional[str] = None,
         page_no: int = 1,
         num_rows: int = 100,
     ) -> list[CustomsObservation]:
-        params = self._period_params(period_start, period_end, decade=True)
+        params = self._period_params(year_month_start, year_month_end, decade=False)
         params["pageNo"] = page_no
         params["numOfRows"] = num_rows
         return self._call("10day_import_item", params)
 
     def get_10day_export_by_country(
         self,
-        period_start: Optional[str] = None,
-        period_end: Optional[str] = None,
+        year_month_start: Optional[str] = None,
+        year_month_end: Optional[str] = None,
         page_no: int = 1,
         num_rows: int = 100,
     ) -> list[CustomsObservation]:
-        params = self._period_params(period_start, period_end, decade=True)
+        """수출 주요국가별 10일 잠정치 (verified 2026-04-26).
+        Period is YYYYMM. Response splits each row into itemUsdAmt00/01/02
+        which represent 초순/중순/하순 cumulative USD."""
+        params = self._period_params(year_month_start, year_month_end, decade=False)
         params["pageNo"] = page_no
         params["numOfRows"] = num_rows
         return self._call("10day_export_country", params)
 
     def get_10day_import_by_country(
         self,
-        period_start: Optional[str] = None,
-        period_end: Optional[str] = None,
+        year_month_start: Optional[str] = None,
+        year_month_end: Optional[str] = None,
         page_no: int = 1,
         num_rows: int = 100,
     ) -> list[CustomsObservation]:
-        params = self._period_params(period_start, period_end, decade=True)
+        params = self._period_params(year_month_start, year_month_end, decade=False)
         params["pageNo"] = page_no
         params["numOfRows"] = num_rows
         return self._call("10day_import_country", params)
@@ -319,6 +318,27 @@ class CustomsAdapter(BaseAdapter):
                 return float(v.replace(",", ""))
             except ValueError:
                 return None
+
+        # 10-day provisional country/item endpoints use priodMon + priodDt + itemUsdAmt00..10.
+        # We collapse into the canonical schema by treating period = "<priodMon>:<priodDt>"
+        # and value = itemUsdAmt00 (총합). Per-country detail stays in raw.
+        period_mon = _f("priodMon")
+        period_dt = _f("priodDt")
+        if period_mon and period_dt:
+            period = f"{period_mon}:{period_dt}"
+            usd_total = _num("itemUsdAmt00")
+            return CustomsObservation(
+                period=period,
+                hs_code=None,
+                country_code=None,
+                country_name=None,
+                export_usd=usd_total,
+                import_usd=None,
+                export_kg=None,
+                import_kg=None,
+                trade_balance_usd=None,
+                raw=rec,
+            )
 
         period = _f("year", "yymm", "yymmDd", "ttlMm", "yyyymmdd") or ""
         country_name = _f("statKor", "cntyNm", "ctyNm")
