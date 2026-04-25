@@ -1,0 +1,1224 @@
+{
+  "generated_at": "2026-04-25T14:25:49.542549+00:00",
+  "data_root": "C:\\Users\\USER\\.ky-platform\\data\\sectors",
+  "total_files": 164,
+  "total_rows": 327611,
+  "total_bytes": 50869799,
+  "per_source": {
+    "cftc": {
+      "files": 5,
+      "rows": 260,
+      "bytes": 21061
+    },
+    "customs": {
+      "files": 24,
+      "rows": 188625,
+      "bytes": 39983856
+    },
+    "dart": {
+      "files": 36,
+      "rows": 4826,
+      "bytes": 1244341
+    },
+    "ecos": {
+      "files": 7,
+      "rows": 14211,
+      "bytes": 641526
+    },
+    "fred": {
+      "files": 19,
+      "rows": 27797,
+      "bytes": 1193468
+    },
+    "imported_ecos": {
+      "files": 15,
+      "rows": 54985,
+      "bytes": 4355251
+    },
+    "imported_fred": {
+      "files": 22,
+      "rows": 31627,
+      "bytes": 2330714
+    },
+    "imported_krx": {
+      "files": 4,
+      "rows": 1478,
+      "bytes": 117296
+    },
+    "kosis": {
+      "files": 1,
+      "rows": 2200,
+      "bytes": 895575
+    },
+    "oecd": {
+      "files": 5,
+      "rows": 600,
+      "bytes": 46943
+    },
+    "pytrends": {
+      "files": 16,
+      "rows": 848,
+      "bytes": 31230
+    },
+    "un_comtrade": {
+      "files": 4,
+      "rows": 4,
+      "bytes": 487
+    },
+    "worldbank": {
+      "files": 6,
+      "rows": 150,
+      "bytes": 8051
+    }
+  },
+  "entries": [
+    {
+      "source": "cftc",
+      "slug": "macro__COT_—_COPPER",
+      "path": "cftc/macro__COT_—_COPPER.csv",
+      "rows": 52,
+      "size_bytes": 3798
+    },
+    {
+      "source": "cftc",
+      "slug": "macro__COT_—_CRUDE_OIL",
+      "path": "cftc/macro__COT_—_CRUDE_OIL.csv",
+      "rows": 52,
+      "size_bytes": 4566
+    },
+    {
+      "source": "cftc",
+      "slug": "macro__COT_—_EURO_FX",
+      "path": "cftc/macro__COT_—_EURO_FX.csv",
+      "rows": 52,
+      "size_bytes": 4529
+    },
+    {
+      "source": "cftc",
+      "slug": "macro__COT_—_GOLD",
+      "path": "cftc/macro__COT_—_GOLD.csv",
+      "rows": 52,
+      "size_bytes": 3698
+    },
+    {
+      "source": "cftc",
+      "slug": "macro__COT_—_JAPANESE_YEN",
+      "path": "cftc/macro__COT_—_JAPANESE_YEN.csv",
+      "rows": 52,
+      "size_bytes": 4470
+    },
+    {
+      "source": "customs",
+      "slug": "auto__자동차_부품_수출_(HS_8708)",
+      "path": "customs/auto__자동차_부품_수출_(HS_8708).csv",
+      "rows": 14211,
+      "size_bytes": 1527809
+    },
+    {
+      "source": "customs",
+      "slug": "auto__자동차_완성차_수출_(HS_8703)",
+      "path": "customs/auto__자동차_완성차_수출_(HS_8703).csv",
+      "rows": 8768,
+      "size_bytes": 1325739
+    },
+    {
+      "source": "customs",
+      "slug": "chemical__PE_PP_수출_(HS_3902)",
+      "path": "customs/chemical__PE_PP_수출_(HS_3902).csv",
+      "rows": 2438,
+      "size_bytes": 203374
+    },
+    {
+      "source": "customs",
+      "slug": "chemical__기초_폴리머_수출_(HS_3901)",
+      "path": "customs/chemical__기초_폴리머_수출_(HS_3901).csv",
+      "rows": 3000,
+      "size_bytes": 343221
+    },
+    {
+      "source": "customs",
+      "slug": "chemical__기타_폴리머_수출_(HS_3907)",
+      "path": "customs/chemical__기타_폴리머_수출_(HS_3907).csv",
+      "rows": 4373,
+      "size_bytes": 352932
+    },
+    {
+      "source": "customs",
+      "slug": "chemical__플라스틱_제품_수출_(HS_3923)",
+      "path": "customs/chemical__플라스틱_제품_수출_(HS_3923).csv",
+      "rows": 5125,
+      "size_bytes": 540428
+    },
+    {
+      "source": "customs",
+      "slug": "cosmetic__화장품_(HS_3304)",
+      "path": "customs/cosmetic__화장품_(HS_3304).csv",
+      "rows": 6059,
+      "size_bytes": 506929
+    },
+    {
+      "source": "customs",
+      "slug": "display__디스플레이_모듈_수출_(HS_8528)",
+      "path": "customs/display__디스플레이_모듈_수출_(HS_8528).csv",
+      "rows": 2720,
+      "size_bytes": 323631
+    },
+    {
+      "source": "customs",
+      "slug": "electric__전기장비_(HS_85_—_8542_제외_추정)",
+      "path": "customs/electric__전기장비_(HS_85_—_8542_제외_추정).csv",
+      "rows": 39069,
+      "size_bytes": 9979142
+    },
+    {
+      "source": "customs",
+      "slug": "energy__석유제품_(HS_2710)",
+      "path": "customs/energy__석유제품_(HS_2710).csv",
+      "rows": 2009,
+      "size_bytes": 234579
+    },
+    {
+      "source": "customs",
+      "slug": "energy__원유_수입_(HS_2709)",
+      "path": "customs/energy__원유_수입_(HS_2709).csv",
+      "rows": 193,
+      "size_bytes": 23995
+    },
+    {
+      "source": "customs",
+      "slug": "food__농수산식품_(HS_16-22_대표_HS16)",
+      "path": "customs/food__농수산식품_(HS_16-22_대표_HS16).csv",
+      "rows": 1869,
+      "size_bytes": 317290
+    },
+    {
+      "source": "customs",
+      "slug": "handset__휴대폰_수출_(HS_8517)",
+      "path": "customs/handset__휴대폰_수출_(HS_8517).csv",
+      "rows": 4717,
+      "size_bytes": 521683
+    },
+    {
+      "source": "customs",
+      "slug": "machinery__일반기계_(HS_84)",
+      "path": "customs/machinery__일반기계_(HS_84).csv",
+      "rows": 51400,
+      "size_bytes": 13663130
+    },
+    {
+      "source": "customs",
+      "slug": "nonferrous__구리_(HS_74)",
+      "path": "customs/nonferrous__구리_(HS_74).csv",
+      "rows": 6009,
+      "size_bytes": 1049703
+    },
+    {
+      "source": "customs",
+      "slug": "nonferrous__아연_(HS_79)",
+      "path": "customs/nonferrous__아연_(HS_79).csv",
+      "rows": 1279,
+      "size_bytes": 122141
+    },
+    {
+      "source": "customs",
+      "slug": "nonferrous__알루미늄_(HS_76)",
+      "path": "customs/nonferrous__알루미늄_(HS_76).csv",
+      "rows": 6514,
+      "size_bytes": 1304253
+    },
+    {
+      "source": "customs",
+      "slug": "paper__종이_(HS_48)",
+      "path": "customs/paper__종이_(HS_48).csv",
+      "rows": 10713,
+      "size_bytes": 3754693
+    },
+    {
+      "source": "customs",
+      "slug": "paper__펄프_(HS_47)",
+      "path": "customs/paper__펄프_(HS_47).csv",
+      "rows": 769,
+      "size_bytes": 112666
+    },
+    {
+      "source": "customs",
+      "slug": "pharma__의약품_(HS_30)",
+      "path": "customs/pharma__의약품_(HS_30).csv",
+      "rows": 5806,
+      "size_bytes": 1930555
+    },
+    {
+      "source": "customs",
+      "slug": "semiconductor__메모리·반도체_수출_(HS_8542)",
+      "path": "customs/semiconductor__메모리·반도체_수출_(HS_8542).csv",
+      "rows": 2439,
+      "size_bytes": 277442
+    },
+    {
+      "source": "customs",
+      "slug": "ship__선박_부품_(HS_8906)",
+      "path": "customs/ship__선박_부품_(HS_8906).csv",
+      "rows": 66,
+      "size_bytes": 4563
+    },
+    {
+      "source": "customs",
+      "slug": "ship__선박_완성품_(HS_8901)",
+      "path": "customs/ship__선박_완성품_(HS_8901).csv",
+      "rows": 221,
+      "size_bytes": 22784
+    },
+    {
+      "source": "customs",
+      "slug": "steel__철강제품_수출_(HS_7208-7229_대표_HS72)",
+      "path": "customs/steel__철강제품_수출_(HS_7208-7229_대표_HS72).csv",
+      "rows": 8858,
+      "size_bytes": 1541174
+    },
+    {
+      "source": "dart",
+      "slug": "auto__기아_사업보고서_2024",
+      "path": "dart/auto__기아_사업보고서_2024.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "auto__기아_사업보고서_2025",
+      "path": "dart/auto__기아_사업보고서_2025.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "auto__현대자동차_사업보고서_2024",
+      "path": "dart/auto__현대자동차_사업보고서_2024.csv",
+      "rows": 320,
+      "size_bytes": 81908
+    },
+    {
+      "source": "dart",
+      "slug": "auto__현대자동차_사업보고서_2025",
+      "path": "dart/auto__현대자동차_사업보고서_2025.csv",
+      "rows": 312,
+      "size_bytes": 79390
+    },
+    {
+      "source": "dart",
+      "slug": "bank__KB금융지주_사업보고서_2024",
+      "path": "dart/bank__KB금융지주_사업보고서_2024.csv",
+      "rows": 390,
+      "size_bytes": 108018
+    },
+    {
+      "source": "dart",
+      "slug": "bank__KB금융지주_사업보고서_2025",
+      "path": "dart/bank__KB금융지주_사업보고서_2025.csv",
+      "rows": 349,
+      "size_bytes": 92552
+    },
+    {
+      "source": "dart",
+      "slug": "bank__신한지주_사업보고서_2024",
+      "path": "dart/bank__신한지주_사업보고서_2024.csv",
+      "rows": 440,
+      "size_bytes": 120270
+    },
+    {
+      "source": "dart",
+      "slug": "bank__신한지주_사업보고서_2025",
+      "path": "dart/bank__신한지주_사업보고서_2025.csv",
+      "rows": 427,
+      "size_bytes": 116316
+    },
+    {
+      "source": "dart",
+      "slug": "chemical__LG화학_사업보고서_2024",
+      "path": "dart/chemical__LG화학_사업보고서_2024.csv",
+      "rows": 200,
+      "size_bytes": 48438
+    },
+    {
+      "source": "dart",
+      "slug": "chemical__LG화학_사업보고서_2025",
+      "path": "dart/chemical__LG화학_사업보고서_2025.csv",
+      "rows": 207,
+      "size_bytes": 51461
+    },
+    {
+      "source": "dart",
+      "slug": "chemical__SK이노베이션_사업보고서_2024",
+      "path": "dart/chemical__SK이노베이션_사업보고서_2024.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "chemical__SK이노베이션_사업보고서_2025",
+      "path": "dart/chemical__SK이노베이션_사업보고서_2025.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "cosmetic__LG생활건강_사업보고서_2024",
+      "path": "dart/cosmetic__LG생활건강_사업보고서_2024.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "cosmetic__LG생활건강_사업보고서_2025",
+      "path": "dart/cosmetic__LG생활건강_사업보고서_2025.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "defense__한화에어로스페이스_사업보고서_2024",
+      "path": "dart/defense__한화에어로스페이스_사업보고서_2024.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "defense__한화에어로스페이스_사업보고서_2025",
+      "path": "dart/defense__한화에어로스페이스_사업보고서_2025.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "display__LG디스플레이_사업보고서_2024",
+      "path": "dart/display__LG디스플레이_사업보고서_2024.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "display__LG디스플레이_사업보고서_2025",
+      "path": "dart/display__LG디스플레이_사업보고서_2025.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "food__CJ제일제당_사업보고서_2024",
+      "path": "dart/food__CJ제일제당_사업보고서_2024.csv",
+      "rows": 194,
+      "size_bytes": 46253
+    },
+    {
+      "source": "dart",
+      "slug": "food__CJ제일제당_사업보고서_2025",
+      "path": "dart/food__CJ제일제당_사업보고서_2025.csv",
+      "rows": 239,
+      "size_bytes": 59823
+    },
+    {
+      "source": "dart",
+      "slug": "media__JYP_Ent._사업보고서_2024",
+      "path": "dart/media__JYP_Ent._사업보고서_2024.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "media__JYP_Ent._사업보고서_2025",
+      "path": "dart/media__JYP_Ent._사업보고서_2025.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "pharma__셀트리온_사업보고서_2024",
+      "path": "dart/pharma__셀트리온_사업보고서_2024.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "pharma__셀트리온_사업보고서_2025",
+      "path": "dart/pharma__셀트리온_사업보고서_2025.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "retail__이마트_사업보고서_2024",
+      "path": "dart/retail__이마트_사업보고서_2024.csv",
+      "rows": 233,
+      "size_bytes": 60377
+    },
+    {
+      "source": "dart",
+      "slug": "retail__이마트_사업보고서_2025",
+      "path": "dart/retail__이마트_사업보고서_2025.csv",
+      "rows": 234,
+      "size_bytes": 60548
+    },
+    {
+      "source": "dart",
+      "slug": "semiconductor__SK하이닉스_사업보고서_2024",
+      "path": "dart/semiconductor__SK하이닉스_사업보고서_2024.csv",
+      "rows": 236,
+      "size_bytes": 60087
+    },
+    {
+      "source": "dart",
+      "slug": "semiconductor__SK하이닉스_사업보고서_2025",
+      "path": "dart/semiconductor__SK하이닉스_사업보고서_2025.csv",
+      "rows": 230,
+      "size_bytes": 58701
+    },
+    {
+      "source": "dart",
+      "slug": "semiconductor__삼성전자_사업보고서_2024",
+      "path": "dart/semiconductor__삼성전자_사업보고서_2024.csv",
+      "rows": 213,
+      "size_bytes": 53018
+    },
+    {
+      "source": "dart",
+      "slug": "semiconductor__삼성전자_사업보고서_2025",
+      "path": "dart/semiconductor__삼성전자_사업보고서_2025.csv",
+      "rows": 229,
+      "size_bytes": 57392
+    },
+    {
+      "source": "dart",
+      "slug": "ship__HD현대중공업_사업보고서_2024",
+      "path": "dart/ship__HD현대중공업_사업보고서_2024.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "ship__HD현대중공업_사업보고서_2025",
+      "path": "dart/ship__HD현대중공업_사업보고서_2025.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "ship__삼성중공업_사업보고서_2024",
+      "path": "dart/ship__삼성중공업_사업보고서_2024.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "ship__삼성중공업_사업보고서_2025",
+      "path": "dart/ship__삼성중공업_사업보고서_2025.csv",
+      "rows": 0,
+      "size_bytes": 0
+    },
+    {
+      "source": "dart",
+      "slug": "steel__POSCO홀딩스_사업보고서_2024",
+      "path": "dart/steel__POSCO홀딩스_사업보고서_2024.csv",
+      "rows": 182,
+      "size_bytes": 44394
+    },
+    {
+      "source": "dart",
+      "slug": "steel__POSCO홀딩스_사업보고서_2025",
+      "path": "dart/steel__POSCO홀딩스_사업보고서_2025.csv",
+      "rows": 191,
+      "size_bytes": 45395
+    },
+    {
+      "source": "ecos",
+      "slug": "macro__CSI_종합소비자심리지수",
+      "path": "ecos/macro__CSI_종합소비자심리지수.csv",
+      "rows": 136,
+      "size_bytes": 4877
+    },
+    {
+      "source": "ecos",
+      "slug": "macro__국고채_10Y",
+      "path": "ecos/macro__국고채_10Y.csv",
+      "rows": 2788,
+      "size_bytes": 127972
+    },
+    {
+      "source": "ecos",
+      "slug": "macro__국고채_3Y",
+      "path": "ecos/macro__국고채_3Y.csv",
+      "rows": 2788,
+      "size_bytes": 127971
+    },
+    {
+      "source": "ecos",
+      "slug": "macro__원_달러_환율_(종가)",
+      "path": "ecos/macro__원_달러_환율_(종가).csv",
+      "rows": 2788,
+      "size_bytes": 122709
+    },
+    {
+      "source": "ecos",
+      "slug": "macro__원_엔(100엔)_환율",
+      "path": "ecos/macro__원_엔(100엔)_환율.csv",
+      "rows": 2788,
+      "size_bytes": 123806
+    },
+    {
+      "source": "ecos",
+      "slug": "macro__한국_기준금리",
+      "path": "ecos/macro__한국_기준금리.csv",
+      "rows": 135,
+      "size_bytes": 5757
+    },
+    {
+      "source": "ecos",
+      "slug": "macro__회사채_AA-_3Y",
+      "path": "ecos/macro__회사채_AA-_3Y.csv",
+      "rows": 2788,
+      "size_bytes": 128434
+    },
+    {
+      "source": "fred",
+      "slug": "auto__미국_신차_SAAR_(TOTALSA)",
+      "path": "fred/auto__미국_신차_SAAR_(TOTALSA).csv",
+      "rows": 147,
+      "size_bytes": 7365
+    },
+    {
+      "source": "fred",
+      "slug": "construction__미국_신규주택착공",
+      "path": "fred/construction__미국_신규주택착공.csv",
+      "rows": 145,
+      "size_bytes": 7134
+    },
+    {
+      "source": "fred",
+      "slug": "macro__10Y-2Y_스프레드",
+      "path": "fred/macro__10Y-2Y_스프레드.csv",
+      "rows": 3213,
+      "size_bytes": 118655
+    },
+    {
+      "source": "fred",
+      "slug": "macro__10Y-3M_스프레드",
+      "path": "fred/macro__10Y-3M_스프레드.csv",
+      "rows": 3213,
+      "size_bytes": 118804
+    },
+    {
+      "source": "fred",
+      "slug": "macro__10Y_Treasury",
+      "path": "fred/macro__10Y_Treasury.csv",
+      "rows": 3212,
+      "size_bytes": 114848
+    },
+    {
+      "source": "fred",
+      "slug": "macro__2Y_Treasury",
+      "path": "fred/macro__2Y_Treasury.csv",
+      "rows": 3212,
+      "size_bytes": 111623
+    },
+    {
+      "source": "fred",
+      "slug": "macro__30Y_Mortgage_Rate",
+      "path": "fred/macro__30Y_Mortgage_Rate.csv",
+      "rows": 643,
+      "size_bytes": 27620
+    },
+    {
+      "source": "fred",
+      "slug": "macro__Capacity_Utilization",
+      "path": "fred/macro__Capacity_Utilization.csv",
+      "rows": 147,
+      "size_bytes": 5461
+    },
+    {
+      "source": "fred",
+      "slug": "macro__Core_CPI",
+      "path": "fred/macro__Core_CPI.csv",
+      "rows": 147,
+      "size_bytes": 7948
+    },
+    {
+      "source": "fred",
+      "slug": "macro__Dollar_Index_(DXY)",
+      "path": "fred/macro__Dollar_Index_(DXY).csv",
+      "rows": 3208,
+      "size_bytes": 171522
+    },
+    {
+      "source": "fred",
+      "slug": "macro__FED_기준금리",
+      "path": "fred/macro__FED_기준금리.csv",
+      "rows": 147,
+      "size_bytes": 5755
+    },
+    {
+      "source": "fred",
+      "slug": "macro__Industrial_Production",
+      "path": "fred/macro__Industrial_Production.csv",
+      "rows": 147,
+      "size_bytes": 7029
+    },
+    {
+      "source": "fred",
+      "slug": "macro__PCE_Inflation",
+      "path": "fred/macro__PCE_Inflation.csv",
+      "rows": 146,
+      "size_bytes": 6688
+    },
+    {
+      "source": "fred",
+      "slug": "macro__VIX_변동성지수",
+      "path": "fred/macro__VIX_변동성지수.csv",
+      "rows": 3212,
+      "size_bytes": 114849
+    },
+    {
+      "source": "fred",
+      "slug": "macro__미국_ISM_제조업_신규수주",
+      "path": "fred/macro__미국_ISM_제조업_신규수주.csv",
+      "rows": 146,
+      "size_bytes": 7921
+    },
+    {
+      "source": "fred",
+      "slug": "oil__Brent_원유",
+      "path": "fred/oil__Brent_원유.csv",
+      "rows": 3209,
+      "size_bytes": 176091
+    },
+    {
+      "source": "fred",
+      "slug": "oil__WTI_원유",
+      "path": "fred/oil__WTI_원유.csv",
+      "rows": 3209,
+      "size_bytes": 169376
+    },
+    {
+      "source": "fred",
+      "slug": "retail__미국_소매판매",
+      "path": "fred/retail__미국_소매판매.csv",
+      "rows": 147,
+      "size_bytes": 7681
+    },
+    {
+      "source": "fred",
+      "slug": "retail__미국_소비자신뢰지수",
+      "path": "fred/retail__미국_소비자신뢰지수.csv",
+      "rows": 147,
+      "size_bytes": 7098
+    },
+    {
+      "source": "imported_ecos",
+      "slug": "ECOS_20년만기국채금리",
+      "path": "imported/ecos/ECOS_20년만기국채금리.csv",
+      "rows": 4,
+      "size_bytes": 397
+    },
+    {
+      "source": "imported_ecos",
+      "slug": "ECOS_30년만기국채금리",
+      "path": "imported/ecos/ECOS_30년만기국채금리.csv",
+      "rows": 152,
+      "size_bytes": 12873
+    },
+    {
+      "source": "imported_ecos",
+      "slug": "ECOS_3년만기국채금리",
+      "path": "imported/ecos/ECOS_3년만기국채금리.csv",
+      "rows": 382,
+      "size_bytes": 31732
+    },
+    {
+      "source": "imported_ecos",
+      "slug": "ECOS_CD91일물",
+      "path": "imported/ecos/ECOS_CD91일물.csv",
+      "rows": 212,
+      "size_bytes": 13490
+    },
+    {
+      "source": "imported_ecos",
+      "slug": "ECOS_M2통화량",
+      "path": "imported/ecos/ECOS_M2통화량.csv",
+      "rows": 3230,
+      "size_bytes": 228337
+    },
+    {
+      "source": "imported_ecos",
+      "slug": "ECOS_고용률",
+      "path": "imported/ecos/ECOS_고용률.csv",
+      "rows": 6252,
+      "size_bytes": 382976
+    },
+    {
+      "source": "imported_ecos",
+      "slug": "ECOS_근원소비자물가지수",
+      "path": "imported/ecos/ECOS_근원소비자물가지수.csv",
+      "rows": 24,
+      "size_bytes": 2361
+    },
+    {
+      "source": "imported_ecos",
+      "slug": "ECOS_기업경기실사지수",
+      "path": "imported/ecos/ECOS_기업경기실사지수.csv",
+      "rows": 2292,
+      "size_bytes": 240586
+    },
+    {
+      "source": "imported_ecos",
+      "slug": "ECOS_기준금리",
+      "path": "imported/ecos/ECOS_기준금리.csv",
+      "rows": 318,
+      "size_bytes": 23090
+    },
+    {
+      "source": "imported_ecos",
+      "slug": "ECOS_소비자물가지수",
+      "path": "imported/ecos/ECOS_소비자물가지수.csv",
+      "rows": 9988,
+      "size_bytes": 1058369
+    },
+    {
+      "source": "imported_ecos",
+      "slug": "ECOS_소비자심리지수",
+      "path": "imported/ecos/ECOS_소비자심리지수.csv",
+      "rows": 4374,
+      "size_bytes": 358542
+    },
+    {
+      "source": "imported_ecos",
+      "slug": "ECOS_실업률",
+      "path": "imported/ecos/ECOS_실업률.csv",
+      "rows": 9971,
+      "size_bytes": 611697
+    },
+    {
+      "source": "imported_ecos",
+      "slug": "ECOS_코스닥지수",
+      "path": "imported/ecos/ECOS_코스닥지수.csv",
+      "rows": 8997,
+      "size_bytes": 741214
+    },
+    {
+      "source": "imported_ecos",
+      "slug": "ECOS_코스피지수",
+      "path": "imported/ecos/ECOS_코스피지수.csv",
+      "rows": 8577,
+      "size_bytes": 634825
+    },
+    {
+      "source": "imported_ecos",
+      "slug": "ECOS_회사채3년",
+      "path": "imported/ecos/ECOS_회사채3년.csv",
+      "rows": 212,
+      "size_bytes": 14762
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_CONSUMER_SENTIMENT",
+      "path": "imported/fred/FRED_US_CONSUMER_SENTIMENT.csv",
+      "rows": 381,
+      "size_bytes": 32112
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_CPI",
+      "path": "imported/fred/FRED_US_CPI.csv",
+      "rows": 381,
+      "size_bytes": 26012
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_CPI_CORE",
+      "path": "imported/fred/FRED_US_CPI_CORE.csv",
+      "rows": 381,
+      "size_bytes": 30579
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_DOLLAR_INDEX",
+      "path": "imported/fred/FRED_US_DOLLAR_INDEX.csv",
+      "rows": 4973,
+      "size_bytes": 365407
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_DOW_JONES",
+      "path": "imported/fred/FRED_US_DOW_JONES.csv",
+      "rows": 2515,
+      "size_bytes": 231179
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_FED_FUNDS_RATE",
+      "path": "imported/fred/FRED_US_FED_FUNDS_RATE.csv",
+      "rows": 382,
+      "size_bytes": 28281
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_GDP",
+      "path": "imported/fred/FRED_US_GDP.csv",
+      "rows": 126,
+      "size_bytes": 7194
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_GDP_GROWTH",
+      "path": "imported/fred/FRED_US_GDP_GROWTH.csv",
+      "rows": 126,
+      "size_bytes": 7760
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_GDP_NOMINAL",
+      "path": "imported/fred/FRED_US_GDP_NOMINAL.csv",
+      "rows": 31,
+      "size_bytes": 2065
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_INDUSTRIAL_PRODUCTION",
+      "path": "imported/fred/FRED_US_INDUSTRIAL_PRODUCTION.csv",
+      "rows": 380,
+      "size_bytes": 32071
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_LABOR_PARTICIPATION",
+      "path": "imported/fred/FRED_US_LABOR_PARTICIPATION.csv",
+      "rows": 380,
+      "size_bytes": 28938
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_NASDAQ",
+      "path": "imported/fred/FRED_US_NASDAQ.csv",
+      "rows": 8019,
+      "size_bytes": 609670
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_NONFARM_PAYROLLS",
+      "path": "imported/fred/FRED_US_NONFARM_PAYROLLS.csv",
+      "rows": 380,
+      "size_bytes": 31978
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_OIL_PRICE",
+      "path": "imported/fred/FRED_US_OIL_PRICE.csv",
+      "rows": 7991,
+      "size_bytes": 519169
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_PCE",
+      "path": "imported/fred/FRED_US_PCE.csv",
+      "rows": 380,
+      "size_bytes": 29757
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_PERSONAL_CONSUMPTION",
+      "path": "imported/fred/FRED_US_PERSONAL_CONSUMPTION.csv",
+      "rows": 380,
+      "size_bytes": 31416
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_RETAIL_SALES",
+      "path": "imported/fred/FRED_US_RETAIL_SALES.csv",
+      "rows": 380,
+      "size_bytes": 26658
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_SP500",
+      "path": "imported/fred/FRED_US_SP500.csv",
+      "rows": 2515,
+      "size_bytes": 175879
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_TREASURY_10Y",
+      "path": "imported/fred/FRED_US_TREASURY_10Y.csv",
+      "rows": 382,
+      "size_bytes": 30564
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_TREASURY_2Y",
+      "path": "imported/fred/FRED_US_TREASURY_2Y.csv",
+      "rows": 382,
+      "size_bytes": 29822
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_TREASURY_30Y",
+      "path": "imported/fred/FRED_US_TREASURY_30Y.csv",
+      "rows": 382,
+      "size_bytes": 30580
+    },
+    {
+      "source": "imported_fred",
+      "slug": "FRED_US_UNEMPLOYMENT",
+      "path": "imported/fred/FRED_US_UNEMPLOYMENT.csv",
+      "rows": 380,
+      "size_bytes": 23623
+    },
+    {
+      "source": "imported_krx",
+      "slug": "KRX_코스닥지수_재수집",
+      "path": "imported/krx/KRX_코스닥지수_재수집.csv",
+      "rows": 353,
+      "size_bytes": 27877
+    },
+    {
+      "source": "imported_krx",
+      "slug": "KRX_코스닥지수_재수집_duplicate_1",
+      "path": "imported/krx/KRX_코스닥지수_재수집_duplicate_1.csv",
+      "rows": 356,
+      "size_bytes": 28115
+    },
+    {
+      "source": "imported_krx",
+      "slug": "KRX_코스피지수_재수집",
+      "path": "imported/krx/KRX_코스피지수_재수집.csv",
+      "rows": 383,
+      "size_bytes": 30532
+    },
+    {
+      "source": "imported_krx",
+      "slug": "KRX_코스피지수_재수집_duplicate_1",
+      "path": "imported/krx/KRX_코스피지수_재수집_duplicate_1.csv",
+      "rows": 386,
+      "size_bytes": 30772
+    },
+    {
+      "source": "kosis",
+      "slug": "macro__GDP_by_경제활동_(분기)",
+      "path": "kosis/macro__GDP_by_경제활동_(분기).csv",
+      "rows": 2200,
+      "size_bytes": 895575
+    },
+    {
+      "source": "oecd",
+      "slug": "macro__OECD_CLI_CHN",
+      "path": "oecd/macro__OECD_CLI_CHN.csv",
+      "rows": 120,
+      "size_bytes": 9390
+    },
+    {
+      "source": "oecd",
+      "slug": "macro__OECD_CLI_DEU",
+      "path": "oecd/macro__OECD_CLI_DEU.csv",
+      "rows": 120,
+      "size_bytes": 9393
+    },
+    {
+      "source": "oecd",
+      "slug": "macro__OECD_CLI_JPN",
+      "path": "oecd/macro__OECD_CLI_JPN.csv",
+      "rows": 120,
+      "size_bytes": 9383
+    },
+    {
+      "source": "oecd",
+      "slug": "macro__OECD_CLI_KOR",
+      "path": "oecd/macro__OECD_CLI_KOR.csv",
+      "rows": 120,
+      "size_bytes": 9387
+    },
+    {
+      "source": "oecd",
+      "slug": "macro__OECD_CLI_USA",
+      "path": "oecd/macro__OECD_CLI_USA.csv",
+      "rows": 120,
+      "size_bytes": 9390
+    },
+    {
+      "source": "pytrends",
+      "slug": "auto__검색관심도_'EV'",
+      "path": "pytrends/auto__검색관심도_'EV'.csv",
+      "rows": 53,
+      "size_bytes": 1733
+    },
+    {
+      "source": "pytrends",
+      "slug": "auto__검색관심도_'전기차'",
+      "path": "pytrends/auto__검색관심도_'전기차'.csv",
+      "rows": 53,
+      "size_bytes": 2104
+    },
+    {
+      "source": "pytrends",
+      "slug": "cosmetic__검색관심도_'K-beauty'",
+      "path": "pytrends/cosmetic__검색관심도_'K-beauty'.csv",
+      "rows": 53,
+      "size_bytes": 2030
+    },
+    {
+      "source": "pytrends",
+      "slug": "defense__검색관심도_'방산'",
+      "path": "pytrends/defense__검색관심도_'방산'.csv",
+      "rows": 53,
+      "size_bytes": 1945
+    },
+    {
+      "source": "pytrends",
+      "slug": "display__검색관심도_'OLED'",
+      "path": "pytrends/display__검색관심도_'OLED'.csv",
+      "rows": 53,
+      "size_bytes": 1839
+    },
+    {
+      "source": "pytrends",
+      "slug": "food__검색관심도_'라면'",
+      "path": "pytrends/food__검색관심도_'라면'.csv",
+      "rows": 53,
+      "size_bytes": 1945
+    },
+    {
+      "source": "pytrends",
+      "slug": "handset__검색관심도_'Galaxy'",
+      "path": "pytrends/handset__검색관심도_'Galaxy'.csv",
+      "rows": 53,
+      "size_bytes": 1909
+    },
+    {
+      "source": "pytrends",
+      "slug": "handset__검색관심도_'iPhone'",
+      "path": "pytrends/handset__검색관심도_'iPhone'.csv",
+      "rows": 53,
+      "size_bytes": 1924
+    },
+    {
+      "source": "pytrends",
+      "slug": "media__검색관심도_'K-drama'",
+      "path": "pytrends/media__검색관심도_'K-drama'.csv",
+      "rows": 53,
+      "size_bytes": 1968
+    },
+    {
+      "source": "pytrends",
+      "slug": "media__검색관심도_'K-pop'",
+      "path": "pytrends/media__검색관심도_'K-pop'.csv",
+      "rows": 53,
+      "size_bytes": 1881
+    },
+    {
+      "source": "pytrends",
+      "slug": "pharma__검색관심도_'GLP-1'",
+      "path": "pytrends/pharma__검색관심도_'GLP-1'.csv",
+      "rows": 53,
+      "size_bytes": 1871
+    },
+    {
+      "source": "pytrends",
+      "slug": "retail__검색관심도_'쿠팡'",
+      "path": "pytrends/retail__검색관심도_'쿠팡'.csv",
+      "rows": 53,
+      "size_bytes": 1945
+    },
+    {
+      "source": "pytrends",
+      "slug": "semiconductor__검색관심도_'GPU'",
+      "path": "pytrends/semiconductor__검색관심도_'GPU'.csv",
+      "rows": 53,
+      "size_bytes": 1786
+    },
+    {
+      "source": "pytrends",
+      "slug": "semiconductor__검색관심도_'HBM'",
+      "path": "pytrends/semiconductor__검색관심도_'HBM'.csv",
+      "rows": 53,
+      "size_bytes": 1780
+    },
+    {
+      "source": "pytrends",
+      "slug": "semiconductor__검색관심도_'메모리_반도체'",
+      "path": "pytrends/semiconductor__검색관심도_'메모리_반도체'.csv",
+      "rows": 53,
+      "size_bytes": 2625
+    },
+    {
+      "source": "pytrends",
+      "slug": "ship__검색관심도_'조선'",
+      "path": "pytrends/ship__검색관심도_'조선'.csv",
+      "rows": 53,
+      "size_bytes": 1945
+    },
+    {
+      "source": "un_comtrade",
+      "slug": "trade__Korea→World_HS_3901",
+      "path": "un_comtrade/trade__Korea→World_HS_3901.csv",
+      "rows": 1,
+      "size_bytes": 121
+    },
+    {
+      "source": "un_comtrade",
+      "slug": "trade__Korea→World_HS_8542",
+      "path": "un_comtrade/trade__Korea→World_HS_8542.csv",
+      "rows": 1,
+      "size_bytes": 122
+    },
+    {
+      "source": "un_comtrade",
+      "slug": "trade__Korea→World_HS_8703",
+      "path": "un_comtrade/trade__Korea→World_HS_8703.csv",
+      "rows": 1,
+      "size_bytes": 122
+    },
+    {
+      "source": "un_comtrade",
+      "slug": "trade__Korea→World_HS_8901",
+      "path": "un_comtrade/trade__Korea→World_HS_8901.csv",
+      "rows": 1,
+      "size_bytes": 122
+    },
+    {
+      "source": "worldbank",
+      "slug": "macro__미국_GDP_성장률",
+      "path": "worldbank/macro__미국_GDP_성장률.csv",
+      "rows": 25,
+      "size_bytes": 1423
+    },
+    {
+      "source": "worldbank",
+      "slug": "macro__중국_GDP_성장률",
+      "path": "worldbank/macro__중국_GDP_성장률.csv",
+      "rows": 25,
+      "size_bytes": 1414
+    },
+    {
+      "source": "worldbank",
+      "slug": "macro__한국_65세_이상_비중",
+      "path": "worldbank/macro__한국_65세_이상_비중.csv",
+      "rows": 25,
+      "size_bytes": 1414
+    },
+    {
+      "source": "worldbank",
+      "slug": "macro__한국_명목_GDP_(USD)",
+      "path": "worldbank/macro__한국_명목_GDP_(USD).csv",
+      "rows": 25,
+      "size_bytes": 1339
+    },
+    {
+      "source": "worldbank",
+      "slug": "macro__한국_인구",
+      "path": "worldbank/macro__한국_인구.csv",
+      "rows": 25,
+      "size_bytes": 1119
+    },
+    {
+      "source": "worldbank",
+      "slug": "macro__한국_제조업_GDP_비중_(%)",
+      "path": "worldbank/macro__한국_제조업_GDP_비중_(%).csv",
+      "rows": 25,
+      "size_bytes": 1342
+    }
+  ]
+}

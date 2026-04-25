@@ -309,22 +309,17 @@ def _ecos_specs() -> list[IndicatorSpec]:
 # ---------------------------------------------------------------------------
 
 KOSIS_SERIES = [
-    # 광공업 동향 — 산업별 (제조업 전체 + 주요 중분류 5개)
-    ("manufacturing", "제조업 생산지수 (전체)",   "101", "DT_1F31013", "T20",  "M"),
-    ("semiconductor", "반도체·전자부품 생산지수",  "101", "DT_1F31013", "T26",  "M"),
-    ("auto",          "자동차·트레일러 생산지수",   "101", "DT_1F31013", "T29",  "M"),
-    ("chemical",      "화학물질·화학제품 생산지수","101", "DT_1F31013", "T20A", "M"),
-    ("steel",         "1차금속 생산지수",          "101", "DT_1F31013", "T24",  "M"),
-    # 출하지수 (제조업 전체)
-    ("manufacturing", "제조업 출하지수 (전체)",   "101", "DT_1F31023", "T20",  "M"),
-    # 재고지수 (제조업 전체) — 선행지표 (역신호)
-    ("manufacturing", "제조업 재고지수 (전체)",   "101", "DT_1F31033", "T20",  "M"),
+    # 한국은행 분기별 GDP by 경제활동 (산업별) — verified working with ALL/ALL.
+    # 22개 산업분류 × 분기 → 농림어업·제조업·서비스업·건설업 등 모두 포함.
+    ("macro", "GDP by 경제활동 (분기)", "301", "DT_200Y105", "ALL", "ALL", "Q"),
+    # 광공업 동향조사 산업별 생산지수 — 정확한 tblId 추후 확보 (현재 KOSIS API에
+    # 안정적 endpoint 없음). Economic_analysis 임포트로 일부 보충됨.
 ]
 
 
 def _kosis_specs() -> list[IndicatorSpec]:
     out: list[IndicatorSpec] = []
-    for sector, name, org_id, tbl_id, item_code, prd_se in KOSIS_SERIES:
+    for sector, name, org_id, tbl_id, item_code, obj_l1, prd_se in KOSIS_SERIES:
         out.append(
             IndicatorSpec(
                 sector=sector,
@@ -336,12 +331,66 @@ def _kosis_specs() -> list[IndicatorSpec]:
                     "org_id": org_id,
                     "tbl_id": tbl_id,
                     "item_code": item_code,
+                    "obj_l1": obj_l1,
                     "prd_se": prd_se,
-                    "last_n_periods": 120,  # 10년치
+                    "last_n_periods": 40,  # 10년 분기
                 },
-                note=f"{org_id}/{tbl_id}/{item_code}",
+                note=f"{org_id}/{tbl_id}/{item_code}/{obj_l1}",
             )
         )
+    return out
+
+
+# ---------------------------------------------------------------------------
+# DART — quarterly / annual financials for the major sector flagship.
+# corp_code values from DART CORPCODE.xml (publicly available).
+# ---------------------------------------------------------------------------
+
+DART_FLAGSHIP = [
+    # (sector, sector_label, corp_code, name)
+    ("semiconductor", "반도체", "00126380", "삼성전자"),
+    ("semiconductor", "반도체", "00164779", "SK하이닉스"),
+    ("display",       "디스플레이", "00164755", "LG디스플레이"),
+    ("chemical",      "화학",   "00126186", "LG화학"),
+    ("chemical",      "화학",   "01093641", "SK이노베이션"),
+    ("auto",          "자동차", "00164742", "현대자동차"),
+    ("auto",          "자동차", "00164817", "기아"),
+    ("ship",          "조선",   "01023432", "HD현대중공업"),
+    ("ship",          "조선",   "00164826", "삼성중공업"),
+    ("steel",         "철강",   "00126308", "POSCO홀딩스"),
+    ("bank",          "은행",   "00688996", "KB금융지주"),
+    ("bank",          "은행",   "00382199", "신한지주"),
+    ("retail",        "유통",   "00138321", "이마트"),
+    ("media",         "엔터",   "00138717", "JYP Ent."),
+    ("cosmetic",      "화장품", "00125957", "LG생활건강"),
+    ("food",          "식품",   "00266961", "CJ제일제당"),
+    ("pharma",        "제약",   "00164718", "셀트리온"),
+    ("defense",       "방산",   "01075058", "한화에어로스페이스"),
+]
+
+DART_REPORT_YEARS = [2024, 2025]  # 가장 최근 2년 — annual report only
+
+
+def _dart_specs() -> list[IndicatorSpec]:
+    out: list[IndicatorSpec] = []
+    for sector, label, corp, name in DART_FLAGSHIP:
+        for year in DART_REPORT_YEARS:
+            out.append(
+                IndicatorSpec(
+                    sector=sector,
+                    sector_label=label,
+                    name=f"{name} 사업보고서 {year}",
+                    source="dart",
+                    method="get_financial_statements",
+                    params={
+                        "corp_code": corp,
+                        "year": year,
+                        "report_code": "11011",  # annual
+                        "fs_div": "CFS",
+                    },
+                    note=f"{name}/{year}",
+                )
+            )
     return out
 
 
@@ -392,6 +441,8 @@ def all_specs() -> list[IndicatorSpec]:
     return [
         *_customs_specs(),
         *_fred_specs(),
+        *_kosis_specs(),     # GDP by industry (only one verified)
+        *_dart_specs(),      # 18 sector flagships × 2 years annual reports
         *_oecd_specs(),
         *_worldbank_specs(),
         *_pytrends_specs(),

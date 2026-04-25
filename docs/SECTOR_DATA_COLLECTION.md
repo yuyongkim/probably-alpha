@@ -11,29 +11,29 @@
 
 ---
 
-## 디스크 레이아웃
+## 디스크 레이아웃 (2026-04-25 기준 — 최신)
 
 ```
-~/.ky-platform/data/sectors/
-├── _manifest.json                ← API 수집 매니페스트 (collector 결과)
-├── customs/                      ← API. 24 HS 코드 × 12개월 × 국가별 (~39MB)
-├── fred/                         ← API. 19 매크로 시리즈 (~1.2MB)
-├── ecos/                         ← API. 7 핵심 금리·환율·심리 시리즈 (~600KB)
-├── oecd/                         ← API. 5 CLI 시리즈 × 120개월 (~64KB)
-├── worldbank/                    ← API. 6 장기 지표 × 25년 (~28KB)
-├── pytrends/                     ← API. 16 검색관심도 키워드 × 53주 (~68KB)
-├── cftc/                         ← API. 5 COT 마켓 × 52주 (~36KB)
-├── un_comtrade/                  ← API. 4 HS 글로벌 비교 (~8KB)
-└── imported/                     ← 기존 자료 임포트
-    ├── _manifest.json            ← 임포트 매니페스트
-    ├── ecos/                     ← 15 시리즈 (Nov 2025 수집분 — 한은) (~4.2MB)
-    ├── fred/                     ← 22 시리즈 (Nov 2025 수집분 — 미국) (~2.3MB)
-    └── krx/                      ← 4 시리즈 (KRX 코스피·코스닥 월별) (~124KB)
+~/.ky-platform/data/sectors/        총 164 파일, 327,611 rows, 48.5 MB
+├── _manifest.json                ← 최근 API 수집 결과
+├── customs/        24개   38.1MB  HS 코드 × 12개월 × 국가
+├── dart/           36개    1.2MB  18 섹터 대표 종목 × 2년 사업보고서
+├── fred/           19개    1.1MB  매크로 시리즈 2014→
+├── kosis/           1개  874.6KB  GDP by 경제활동 분기 (22 산업)
+├── ecos/            7개  626.5KB  한국 기준금리·국채·환율·CSI
+├── oecd/            5개   45.8KB  CLI 5개국 120개월
+├── pytrends/       16개   30.5KB  검색관심도 키워드
+├── cftc/            5개   20.6KB  COT 1년
+├── worldbank/       6개    7.9KB  GDP·산업비중·인구
+├── un_comtrade/     4개  487.0B   HS 글로벌 cross-check
+└── imported/                      Economic_analysis 임포트 (Nov 2025)
+    ├── ecos/       15개    4.2MB
+    ├── fred/       22개    2.2MB
+    └── krx/         4개  114.5KB
 ```
-
-총 **132개 시리즈, 47MB on disk**.
 
 저장소(`data/`)에는 매니페스트만 커밋합니다 (실데이터는 .gitignore).
+디스크 진실 스냅샷은 `python scripts/summarize_data.py`로 언제든 재생성.
 
 ---
 
