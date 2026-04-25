@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-04-25T16:05:10.607843+00:00",
+  "generated_at": "2026-04-25T16:19:55.996192+00:00",
   "data_root": "C:\\Users\\USER\\.ky-platform\\data\\sectors",
-  "total_files": 188,
-  "total_rows": 662383,
-  "total_bytes": 50293235,
+  "total_files": 203,
+  "total_rows": 665801,
+  "total_bytes": 50635557,
   "per_source": {
     "cftc": {
       "files": 5,
@@ -65,10 +65,20 @@
       "rows": 600,
       "bytes": 46943
     },
+    "openfda": {
+      "files": 1,
+      "rows": 148,
+      "bytes": 3130
+    },
     "pytrends": {
       "files": 16,
       "rows": 848,
       "bytes": 31230
+    },
+    "stooq": {
+      "files": 1,
+      "rows": 1,
+      "bytes": 60
     },
     "un_comtrade": {
       "files": 4,
@@ -79,6 +89,11 @@
       "files": 6,
       "rows": 150,
       "bytes": 8051
+    },
+    "yf_commodities": {
+      "files": 13,
+      "rows": 3269,
+      "bytes": 339132
     }
   },
   "entries": [
@@ -1217,6 +1232,13 @@
       "size_bytes": 9390
     },
     {
+      "source": "openfda",
+      "slug": "pharma__FDA_의약품_승인_건수_(월별)",
+      "path": "openfda/pharma__FDA_의약품_승인_건수_(월별).csv",
+      "rows": 148,
+      "size_bytes": 3130
+    },
+    {
       "source": "pytrends",
       "slug": "auto__검색관심도_'EV'",
       "path": "pytrends/auto__검색관심도_'EV'.csv",
@@ -1329,6 +1351,13 @@
       "size_bytes": 1945
     },
     {
+      "source": "stooq",
+      "slug": "nonferrous__Stooq_알루미늄_(al.c)",
+      "path": "stooq/nonferrous__Stooq_알루미늄_(al.c).csv",
+      "rows": 1,
+      "size_bytes": 60
+    },
+    {
       "source": "un_comtrade",
       "slug": "trade__Korea→World_HS_3901",
       "path": "un_comtrade/trade__Korea→World_HS_3901.csv",
@@ -1397,6 +1426,97 @@
       "path": "worldbank/macro__한국_제조업_GDP_비중_(%).csv",
       "rows": 25,
       "size_bytes": 1342
+    },
+    {
+      "source": "yf_commodities",
+      "slug": "auto__Lithium_ETF_(LIT)",
+      "path": "yf_commodities/auto__Lithium_ETF_(LIT).csv",
+      "rows": 251,
+      "size_bytes": 27914
+    },
+    {
+      "source": "yf_commodities",
+      "slug": "macro__Palladium_(PALL)",
+      "path": "yf_commodities/macro__Palladium_(PALL).csv",
+      "rows": 251,
+      "size_bytes": 28051
+    },
+    {
+      "source": "yf_commodities",
+      "slug": "macro__금_(GC=F)",
+      "path": "yf_commodities/macro__금_(GC=F).csv",
+      "rows": 252,
+      "size_bytes": 23763
+    },
+    {
+      "source": "yf_commodities",
+      "slug": "macro__은_(SI=F)",
+      "path": "yf_commodities/macro__은_(SI=F).csv",
+      "rows": 252,
+      "size_bytes": 27206
+    },
+    {
+      "source": "yf_commodities",
+      "slug": "nonferrous__CME_알루미늄_(ALI=F)",
+      "path": "yf_commodities/nonferrous__CME_알루미늄_(ALI=F).csv",
+      "rows": 251,
+      "size_bytes": 16914
+    },
+    {
+      "source": "yf_commodities",
+      "slug": "nonferrous__COMEX_구리_(HG=F)",
+      "path": "yf_commodities/nonferrous__COMEX_구리_(HG=F).csv",
+      "rows": 252,
+      "size_bytes": 27643
+    },
+    {
+      "source": "yf_commodities",
+      "slug": "nonferrous__Zinc_futures_(ZN=F)",
+      "path": "yf_commodities/nonferrous__Zinc_futures_(ZN=F).csv",
+      "rows": 252,
+      "size_bytes": 20567
+    },
+    {
+      "source": "yf_commodities",
+      "slug": "nonferrous__은_(SI=F)",
+      "path": "yf_commodities/nonferrous__은_(SI=F).csv",
+      "rows": 252,
+      "size_bytes": 27206
+    },
+    {
+      "source": "yf_commodities",
+      "slug": "oil__Natural_Gas_ETF_(BOIL)",
+      "path": "yf_commodities/oil__Natural_Gas_ETF_(BOIL).csv",
+      "rows": 251,
+      "size_bytes": 28527
+    },
+    {
+      "source": "yf_commodities",
+      "slug": "oil__WTI_원유_(CL=F)",
+      "path": "yf_commodities/oil__WTI_원유_(CL=F).csv",
+      "rows": 252,
+      "size_bytes": 27829
+    },
+    {
+      "source": "yf_commodities",
+      "slug": "ship__BDI_ETF_(BDRY)",
+      "path": "yf_commodities/ship__BDI_ETF_(BDRY).csv",
+      "rows": 251,
+      "size_bytes": 27690
+    },
+    {
+      "source": "yf_commodities",
+      "slug": "steel__Iron_Ore_futures_(TIO=F)",
+      "path": "yf_commodities/steel__Iron_Ore_futures_(TIO=F).csv",
+      "rows": 251,
+      "size_bytes": 27435
+    },
+    {
+      "source": "yf_commodities",
+      "slug": "transport__Shipping_ETF_(SEA)",
+      "path": "yf_commodities/transport__Shipping_ETF_(SEA).csv",
+      "rows": 251,
+      "size_bytes": 28387
     }
   ]
 }

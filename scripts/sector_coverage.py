@@ -47,8 +47,8 @@ SOURCE_RESOLVE = {
     "Comtrade": ["un_comtrade"],
     "pytrends": ["pytrends"],
     "CFTC":     ["cftc"],
-    "Crawl":    ["scrapers", "bdi", "scfi"],   # mostly not collected
-    "yfinance": ["yfinance"],
+    "Crawl":    ["scrapers", "bdi", "scfi", "yf_commodities", "openfda", "stooq"],
+    "yfinance": ["yfinance", "yf_commodities"],
     "Polygon":  ["polygon"],
 }
 

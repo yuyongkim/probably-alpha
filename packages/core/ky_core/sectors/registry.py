@@ -529,6 +529,67 @@ def _kis_index_specs() -> list[IndicatorSpec]:
 
 
 # ---------------------------------------------------------------------------
+# Crawler-backed series (yfinance / openFDA / stooq) — formerly the "Crawl⚠"
+# bucket in the WICS-34 map. Stability is lower than institutional APIs.
+# ---------------------------------------------------------------------------
+
+YF_COMMODITIES = [
+    # Direct hits on previously Crawl-only WICS-34 cells (verified 2026-04-26):
+    ("nonferrous",  "COMEX 구리 (HG=F)",         "HG=F"),    # [03] 비철 #1
+    ("nonferrous",  "CME 알루미늄 (ALI=F)",       "ALI=F"),   # [03] 비철 #2
+    ("nonferrous",  "Zinc futures (ZN=F)",      "ZN=F"),    # [03] 비철 #3
+    ("steel",       "Iron Ore futures (TIO=F)", "TIO=F"),   # [04] 철강 #1 중국 철광석 proxy
+    ("ship",        "BDI ETF (BDRY)",           "BDRY"),    # [07] 조선 #2 / [09] 운송 #2
+    ("transport",   "Shipping ETF (SEA)",       "SEA"),     # [09] 운송 일반
+    ("auto",        "Lithium ETF (LIT)",        "LIT"),     # [10] 자동차 #6 리튬
+    ("oil",         "WTI 원유 (CL=F)",            "CL=F"),
+    ("oil",         "Natural Gas ETF (BOIL)",   "BOIL"),    # [30] 유틸리티 보조
+    ("macro",       "은 (SI=F)",                  "SI=F"),
+    ("macro",       "금 (GC=F)",                  "GC=F"),
+    ("macro",       "Palladium (PALL)",          "PALL"),
+]
+
+
+def _yfinance_specs() -> list[IndicatorSpec]:
+    return [
+        IndicatorSpec(
+            sector=sec, sector_label=sec, name=name,
+            source="yf_commodities", method="get_history",
+            params={"symbol": sym, "period": "1y"},
+            note=sym,
+        )
+        for sec, name, sym in YF_COMMODITIES
+    ]
+
+
+def _openfda_specs() -> list[IndicatorSpec]:
+    return [
+        IndicatorSpec(
+            sector="pharma", sector_label="제약·바이오",
+            name="FDA 의약품 승인 건수 (월별)",
+            source="openfda", method="get_drug_approvals_monthly",
+            params={"start_year": 2014},
+            note="FDA drug approvals monthly",
+        ),
+    ]
+
+
+def _stooq_specs() -> list[IndicatorSpec]:
+    # Stooq blocks heavily — keep this minimal. Sleep is enforced by
+    # collect_sectors.py per-source delay. We probe a few extra symbols just
+    # to fill what yfinance can't (al.c cash vs futures, iron ore proxies).
+    return [
+        IndicatorSpec(
+            sector="nonferrous", sector_label="비철금속",
+            name="Stooq 알루미늄 (al.c)",
+            source="stooq", method="get_quote",
+            params={"symbol": "al.c"},
+            note="aluminum cash (Stooq)",
+        ),
+    ]
+
+
+# ---------------------------------------------------------------------------
 # UN Comtrade — global view of Korea's HS exports for cross-validation.
 # Limited to a handful since the public preview tier is lag-y and rate-limited.
 # ---------------------------------------------------------------------------
@@ -579,6 +640,9 @@ def all_specs() -> list[IndicatorSpec]:
         *_eia_specs(),       # 10 US energy series
         *_dart_specs(),      # 18 sector flagships × 2 years annual reports
         *_kis_index_specs(), # 23 KOSPI/KOSDAQ sector indices, daily 12-month OHLCV
+        *_yfinance_specs(),  # 5 global commodity histories (copper/aluminum/silver/gold/oil)
+        *_openfda_specs(),   # FDA drug approvals monthly
+        *_stooq_specs(),     # 1 stooq fallback (aluminum cash)
         *_oecd_specs(),
         *_worldbank_specs(),
         *_pytrends_specs(),

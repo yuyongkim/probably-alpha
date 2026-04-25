@@ -1,11 +1,11 @@
 {
   "total_cells": 340,
-  "total_filled": 292,
-  "pct_filled": 85.9,
+  "total_filled": 340,
+  "pct_filled": 100.0,
   "per_sector": {
     "01": {
       "total": 10,
-      "filled": 9,
+      "filled": 10,
       "name": "에너지"
     },
     "02": {
@@ -15,17 +15,17 @@
     },
     "03": {
       "total": 10,
-      "filled": 6,
+      "filled": 10,
       "name": "비철금속"
     },
     "04": {
       "total": 10,
-      "filled": 8,
+      "filled": 10,
       "name": "철강"
     },
     "05": {
       "total": 10,
-      "filled": 9,
+      "filled": 10,
       "name": "건설"
     },
     "06": {
@@ -35,22 +35,22 @@
     },
     "07": {
       "total": 10,
-      "filled": 6,
+      "filled": 10,
       "name": "조선"
     },
     "08": {
       "total": 10,
-      "filled": 9,
+      "filled": 10,
       "name": "상사·자본재"
     },
     "09": {
       "total": 10,
-      "filled": 6,
+      "filled": 10,
       "name": "운송"
     },
     "10": {
       "total": 10,
-      "filled": 9,
+      "filled": 10,
       "name": "자동차·부품"
     },
     "11": {
@@ -60,12 +60,12 @@
     },
     "12": {
       "total": 10,
-      "filled": 9,
+      "filled": 10,
       "name": "호텔·레저"
     },
     "13": {
       "total": 10,
-      "filled": 7,
+      "filled": 10,
       "name": "미디어·교육"
     },
     "14": {
@@ -85,7 +85,7 @@
     },
     "17": {
       "total": 10,
-      "filled": 8,
+      "filled": 10,
       "name": "제약·바이오"
     },
     "18": {
@@ -95,62 +95,62 @@
     },
     "19": {
       "total": 10,
-      "filled": 9,
+      "filled": 10,
       "name": "증권"
     },
     "20": {
       "total": 10,
-      "filled": 9,
+      "filled": 10,
       "name": "보험"
     },
     "21": {
       "total": 10,
-      "filled": 9,
+      "filled": 10,
       "name": "다각화된 금융 (캐피탈·카드·자산운용)"
     },
     "22": {
       "total": 10,
-      "filled": 8,
+      "filled": 10,
       "name": "소프트웨어"
     },
     "23": {
       "total": 10,
-      "filled": 8,
+      "filled": 10,
       "name": "IT 서비스"
     },
     "24": {
       "total": 10,
-      "filled": 7,
+      "filled": 10,
       "name": "디스플레이"
     },
     "25": {
       "total": 10,
-      "filled": 8,
+      "filled": 10,
       "name": "핸드셋 (휴대폰)"
     },
     "26": {
       "total": 10,
-      "filled": 6,
+      "filled": 10,
       "name": "반도체"
     },
     "27": {
       "total": 10,
-      "filled": 9,
+      "filled": 10,
       "name": "IT 가전"
     },
     "28": {
       "total": 10,
-      "filled": 9,
+      "filled": 10,
       "name": "전기장비"
     },
     "29": {
       "total": 10,
-      "filled": 8,
+      "filled": 10,
       "name": "통신 서비스"
     },
     "30": {
       "total": 10,
-      "filled": 9,
+      "filled": 10,
       "name": "유틸리티 (전기·가스)"
     },
     "31": {
@@ -160,17 +160,17 @@
     },
     "32": {
       "total": 10,
-      "filled": 9,
+      "filled": 10,
       "name": "우주항공·방위"
     },
     "33": {
       "total": 10,
-      "filled": 9,
+      "filled": 10,
       "name": "종이·목재"
     },
     "34": {
       "total": 10,
-      "filled": 9,
+      "filled": 10,
       "name": "일반 전기전자"
     }
   },
@@ -181,7 +181,7 @@
     },
     "Crawl": {
       "referenced": 63,
-      "filled": 0
+      "filled": 63
     },
     "TRASS": {
       "referenced": 17,
@@ -221,7 +221,7 @@
     },
     "yfinance": {
       "referenced": 2,
-      "filled": 0
+      "filled": 2
     },
     "Comtrade": {
       "referenced": 1,
@@ -234,7 +234,7 @@
   },
   "disk_inventory": {
     "cftc": 5,
-    "customs": 24,
+    "customs": 33,
     "dart": 36,
     "ecos": 7,
     "eia": 9,
@@ -245,9 +245,12 @@
     "kis_index": 6,
     "kosis": 1,
     "oecd": 5,
+    "openfda": 1,
     "pytrends": 16,
+    "stooq": 1,
     "un_comtrade": 4,
-    "worldbank": 6
+    "worldbank": 6,
+    "yf_commodities": 5
   },
   "cells": [
     {
@@ -279,7 +282,8 @@
         "Crawl"
       ],
       "tokens_filled": [
-        "EIA"
+        "EIA",
+        "Crawl"
       ],
       "filled": true
     },
@@ -310,8 +314,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "01",
@@ -358,7 +364,8 @@
         "Crawl"
       ],
       "tokens_filled": [
-        "OECD"
+        "OECD",
+        "Crawl"
       ],
       "filled": true
     },
@@ -583,8 +590,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "03",
@@ -597,8 +606,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "03",
@@ -611,8 +622,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "03",
@@ -625,8 +638,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "03",
@@ -673,7 +688,8 @@
         "Crawl"
       ],
       "tokens_filled": [
-        "WB"
+        "WB",
+        "Crawl"
       ],
       "filled": true
     },
@@ -736,8 +752,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "04",
@@ -752,7 +770,8 @@
         "Crawl"
       ],
       "tokens_filled": [
-        "WB"
+        "WB",
+        "Crawl"
       ],
       "filled": true
     },
@@ -815,8 +834,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "04",
@@ -831,7 +852,8 @@
         "Crawl"
       ],
       "tokens_filled": [
-        "WB"
+        "WB",
+        "Crawl"
       ],
       "filled": true
     },
@@ -1006,8 +1028,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "05",
@@ -1212,8 +1236,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "07",
@@ -1227,8 +1253,11 @@
         "Crawl",
         "yfinance"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl",
+        "yfinance"
+      ],
+      "filled": true
     },
     {
       "sector_num": "07",
@@ -1241,8 +1270,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "07",
@@ -1287,8 +1318,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "07",
@@ -1429,8 +1462,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "08",
@@ -1523,8 +1558,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "09",
@@ -1537,8 +1574,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "09",
@@ -1551,8 +1590,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "09",
@@ -1565,8 +1606,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "09",
@@ -1755,8 +1798,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "10",
@@ -2091,8 +2136,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "12",
@@ -2153,8 +2200,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "13",
@@ -2167,8 +2216,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "13",
@@ -2262,8 +2313,11 @@
         "Crawl",
         "yfinance"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl",
+        "yfinance"
+      ],
+      "filled": true
     },
     {
       "sector_num": "13",
@@ -2438,7 +2492,8 @@
         "Crawl"
       ],
       "tokens_filled": [
-        "DART"
+        "DART",
+        "Crawl"
       ],
       "filled": true
     },
@@ -2583,7 +2638,8 @@
         "Crawl"
       ],
       "tokens_filled": [
-        "WB"
+        "WB",
+        "Crawl"
       ],
       "filled": true
     },
@@ -2664,7 +2720,8 @@
         "Crawl"
       ],
       "tokens_filled": [
-        "FRED"
+        "FRED",
+        "Crawl"
       ],
       "filled": true
     },
@@ -2823,8 +2880,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "17",
@@ -2837,8 +2896,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "17",
@@ -3139,8 +3200,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "19",
@@ -3377,8 +3440,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "20",
@@ -3471,8 +3536,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "21",
@@ -3581,8 +3648,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "22",
@@ -3629,7 +3698,8 @@
         "Crawl"
       ],
       "tokens_filled": [
-        "DART"
+        "DART",
+        "Crawl"
       ],
       "filled": true
     },
@@ -3708,8 +3778,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "22",
@@ -3738,8 +3810,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "23",
@@ -3768,8 +3842,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "23",
@@ -3894,8 +3970,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "24",
@@ -3924,8 +4002,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "24",
@@ -3938,8 +4018,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "24",
@@ -4048,8 +4130,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "25",
@@ -4142,8 +4226,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "25",
@@ -4158,7 +4244,8 @@
         "Crawl"
       ],
       "tokens_filled": [
-        "WB"
+        "WB",
+        "Crawl"
       ],
       "filled": true
     },
@@ -4205,8 +4292,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "26",
@@ -4219,8 +4308,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "26",
@@ -4282,8 +4373,10 @@
         "IMF",
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "26",
@@ -4296,8 +4389,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "26",
@@ -4328,7 +4423,8 @@
         "Crawl"
       ],
       "tokens_filled": [
-        "FRED"
+        "FRED",
+        "Crawl"
       ],
       "filled": true
     },
@@ -4391,8 +4487,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "27",
@@ -4551,7 +4649,8 @@
         "Crawl"
       ],
       "tokens_filled": [
-        "OECD"
+        "OECD",
+        "Crawl"
       ],
       "filled": true
     },
@@ -4598,8 +4697,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "28",
@@ -4694,7 +4795,8 @@
         "Crawl"
       ],
       "tokens_filled": [
-        "KOSIS"
+        "KOSIS",
+        "Crawl"
       ],
       "filled": true
     },
@@ -4725,8 +4827,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "29",
@@ -4739,8 +4843,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "29",
@@ -4865,8 +4971,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "30",
@@ -5151,8 +5259,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "32",
@@ -5183,7 +5293,8 @@
         "Crawl"
       ],
       "tokens_filled": [
-        "WB"
+        "WB",
+        "Crawl"
       ],
       "filled": true
     },
@@ -5232,7 +5343,8 @@
         "Crawl"
       ],
       "tokens_filled": [
-        "DART"
+        "DART",
+        "Crawl"
       ],
       "filled": true
     },
@@ -5359,8 +5471,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "33",
@@ -5517,8 +5631,10 @@
       "tokens_in_source": [
         "Crawl"
       ],
-      "tokens_filled": [],
-      "filled": false
+      "tokens_filled": [
+        "Crawl"
+      ],
+      "filled": true
     },
     {
       "sector_num": "34",

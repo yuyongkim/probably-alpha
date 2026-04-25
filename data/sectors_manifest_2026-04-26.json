@@ -1,566 +1,189 @@
 {
-  "started_at": "2026-04-25T16:02:16.868911+00:00",
-  "finished_at": "2026-04-25T16:04:00.066505+00:00",
-  "total_specs": 33,
-  "succeeded": 33,
+  "started_at": "2026-04-25T16:19:29.732918+00:00",
+  "finished_at": "2026-04-25T16:19:33.476349+00:00",
+  "total_specs": 12,
+  "succeeded": 12,
   "failed": 0,
   "entries": [
     {
-      "spec": "semiconductor__메모리·반도체_수출_(HS_8542)",
-      "source": "customs",
-      "sector": "semiconductor",
-      "name": "메모리·반도체 수출 (HS 8542)",
-      "rows": 2439,
-      "ms": 3335.5,
+      "spec": "nonferrous__COMEX_구리_(HG=F)",
+      "source": "yf_commodities",
+      "sector": "nonferrous",
+      "name": "COMEX 구리 (HG=F)",
+      "rows": 252,
+      "ms": 1641.9,
       "ok": true,
-      "path": "customs\\semiconductor__메모리·반도체_수출_(HS_8542).csv",
+      "path": "yf_commodities\\nonferrous__COMEX_구리_(HG=F).csv",
       "params": {
-        "hs_code": "8542",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
+        "symbol": "HG=F",
+        "period": "1y"
       },
-      "note": "HS 8542"
+      "note": "HG=F"
     },
     {
-      "spec": "display__디스플레이_모듈_수출_(HS_8528)",
-      "source": "customs",
-      "sector": "display",
-      "name": "디스플레이 모듈 수출 (HS 8528)",
-      "rows": 2720,
-      "ms": 3226.8,
+      "spec": "nonferrous__CME_알루미늄_(ALI=F)",
+      "source": "yf_commodities",
+      "sector": "nonferrous",
+      "name": "CME 알루미늄 (ALI=F)",
+      "rows": 251,
+      "ms": 135.4,
       "ok": true,
-      "path": "customs\\display__디스플레이_모듈_수출_(HS_8528).csv",
+      "path": "yf_commodities\\nonferrous__CME_알루미늄_(ALI=F).csv",
       "params": {
-        "hs_code": "8528",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
+        "symbol": "ALI=F",
+        "period": "1y"
       },
-      "note": "HS 8528"
+      "note": "ALI=F"
     },
     {
-      "spec": "handset__휴대폰_수출_(HS_8517)",
-      "source": "customs",
-      "sector": "handset",
-      "name": "휴대폰 수출 (HS 8517)",
-      "rows": 4717,
-      "ms": 3918.4,
+      "spec": "nonferrous__Zinc_futures_(ZN=F)",
+      "source": "yf_commodities",
+      "sector": "nonferrous",
+      "name": "Zinc futures (ZN=F)",
+      "rows": 252,
+      "ms": 132.3,
       "ok": true,
-      "path": "customs\\handset__휴대폰_수출_(HS_8517).csv",
+      "path": "yf_commodities\\nonferrous__Zinc_futures_(ZN=F).csv",
       "params": {
-        "hs_code": "8517",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
+        "symbol": "ZN=F",
+        "period": "1y"
       },
-      "note": "HS 8517"
+      "note": "ZN=F"
     },
     {
-      "spec": "auto__자동차_부품_수출_(HS_8708)",
-      "source": "customs",
-      "sector": "auto",
-      "name": "자동차 부품 수출 (HS 8708)",
-      "rows": 14211,
-      "ms": 4722.2,
-      "ok": true,
-      "path": "customs\\auto__자동차_부품_수출_(HS_8708).csv",
-      "params": {
-        "hs_code": "8708",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
-      },
-      "note": "HS 8708"
-    },
-    {
-      "spec": "auto__자동차_완성차_수출_(HS_8703)",
-      "source": "customs",
-      "sector": "auto",
-      "name": "자동차 완성차 수출 (HS 8703)",
-      "rows": 8768,
-      "ms": 3308.5,
-      "ok": true,
-      "path": "customs\\auto__자동차_완성차_수출_(HS_8703).csv",
-      "params": {
-        "hs_code": "8703",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
-      },
-      "note": "HS 8703"
-    },
-    {
-      "spec": "chemical__기초_폴리머_수출_(HS_3901)",
-      "source": "customs",
-      "sector": "chemical",
-      "name": "기초 폴리머 수출 (HS 3901)",
-      "rows": 3000,
-      "ms": 4388.0,
-      "ok": true,
-      "path": "customs\\chemical__기초_폴리머_수출_(HS_3901).csv",
-      "params": {
-        "hs_code": "3901",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
-      },
-      "note": "HS 3901"
-    },
-    {
-      "spec": "chemical__PE_PP_수출_(HS_3902)",
-      "source": "customs",
-      "sector": "chemical",
-      "name": "PE/PP 수출 (HS 3902)",
-      "rows": 2438,
-      "ms": 2142.5,
-      "ok": true,
-      "path": "customs\\chemical__PE_PP_수출_(HS_3902).csv",
-      "params": {
-        "hs_code": "3902",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
-      },
-      "note": "HS 3902"
-    },
-    {
-      "spec": "chemical__기타_폴리머_수출_(HS_3907)",
-      "source": "customs",
-      "sector": "chemical",
-      "name": "기타 폴리머 수출 (HS 3907)",
-      "rows": 4373,
-      "ms": 2209.6,
-      "ok": true,
-      "path": "customs\\chemical__기타_폴리머_수출_(HS_3907).csv",
-      "params": {
-        "hs_code": "3907",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
-      },
-      "note": "HS 3907"
-    },
-    {
-      "spec": "chemical__플라스틱_제품_수출_(HS_3923)",
-      "source": "customs",
-      "sector": "chemical",
-      "name": "플라스틱 제품 수출 (HS 3923)",
-      "rows": 5125,
-      "ms": 2458.1,
-      "ok": true,
-      "path": "customs\\chemical__플라스틱_제품_수출_(HS_3923).csv",
-      "params": {
-        "hs_code": "3923",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
-      },
-      "note": "HS 3923"
-    },
-    {
-      "spec": "steel__철강제품_수출_(HS_7208-7229_대표_HS72)",
-      "source": "customs",
+      "spec": "steel__Iron_Ore_futures_(TIO=F)",
+      "source": "yf_commodities",
       "sector": "steel",
-      "name": "철강제품 수출 (HS 7208-7229 대표 HS72)",
-      "rows": 8858,
-      "ms": 1969.5,
+      "name": "Iron Ore futures (TIO=F)",
+      "rows": 251,
+      "ms": 130.0,
       "ok": true,
-      "path": "customs\\steel__철강제품_수출_(HS_7208-7229_대표_HS72).csv",
+      "path": "yf_commodities\\steel__Iron_Ore_futures_(TIO=F).csv",
       "params": {
-        "hs_code": "72",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
+        "symbol": "TIO=F",
+        "period": "1y"
       },
-      "note": "HS 72"
+      "note": "TIO=F"
     },
     {
-      "spec": "nonferrous__구리_(HS_74)",
-      "source": "customs",
-      "sector": "nonferrous",
-      "name": "구리 (HS 74)",
-      "rows": 6009,
-      "ms": 1892.8,
-      "ok": true,
-      "path": "customs\\nonferrous__구리_(HS_74).csv",
-      "params": {
-        "hs_code": "74",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
-      },
-      "note": "HS 74"
-    },
-    {
-      "spec": "nonferrous__알루미늄_(HS_76)",
-      "source": "customs",
-      "sector": "nonferrous",
-      "name": "알루미늄 (HS 76)",
-      "rows": 6514,
-      "ms": 928.1,
-      "ok": true,
-      "path": "customs\\nonferrous__알루미늄_(HS_76).csv",
-      "params": {
-        "hs_code": "76",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
-      },
-      "note": "HS 76"
-    },
-    {
-      "spec": "nonferrous__아연_(HS_79)",
-      "source": "customs",
-      "sector": "nonferrous",
-      "name": "아연 (HS 79)",
-      "rows": 1279,
-      "ms": 659.1,
-      "ok": true,
-      "path": "customs\\nonferrous__아연_(HS_79).csv",
-      "params": {
-        "hs_code": "79",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
-      },
-      "note": "HS 79"
-    },
-    {
-      "spec": "ship__선박_부품_(HS_8906)",
-      "source": "customs",
+      "spec": "ship__BDI_ETF_(BDRY)",
+      "source": "yf_commodities",
       "sector": "ship",
-      "name": "선박 부품 (HS 8906)",
-      "rows": 66,
-      "ms": 1954.2,
+      "name": "BDI ETF (BDRY)",
+      "rows": 251,
+      "ms": 133.0,
       "ok": true,
-      "path": "customs\\ship__선박_부품_(HS_8906).csv",
+      "path": "yf_commodities\\ship__BDI_ETF_(BDRY).csv",
       "params": {
-        "hs_code": "8906",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
+        "symbol": "BDRY",
+        "period": "1y"
       },
-      "note": "HS 8906"
+      "note": "BDRY"
     },
     {
-      "spec": "ship__선박_완성품_(HS_8901)",
-      "source": "customs",
-      "sector": "ship",
-      "name": "선박 완성품 (HS 8901)",
-      "rows": 221,
-      "ms": 1883.0,
+      "spec": "transport__Shipping_ETF_(SEA)",
+      "source": "yf_commodities",
+      "sector": "transport",
+      "name": "Shipping ETF (SEA)",
+      "rows": 251,
+      "ms": 227.4,
       "ok": true,
-      "path": "customs\\ship__선박_완성품_(HS_8901).csv",
+      "path": "yf_commodities\\transport__Shipping_ETF_(SEA).csv",
       "params": {
-        "hs_code": "8901",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
+        "symbol": "SEA",
+        "period": "1y"
       },
-      "note": "HS 8901"
+      "note": "SEA"
     },
     {
-      "spec": "machinery__일반기계_(HS_84)",
-      "source": "customs",
-      "sector": "machinery",
-      "name": "일반기계 (HS 84)",
-      "rows": 51400,
-      "ms": 5899.9,
+      "spec": "auto__Lithium_ETF_(LIT)",
+      "source": "yf_commodities",
+      "sector": "auto",
+      "name": "Lithium ETF (LIT)",
+      "rows": 251,
+      "ms": 167.5,
       "ok": true,
-      "path": "customs\\machinery__일반기계_(HS_84).csv",
+      "path": "yf_commodities\\auto__Lithium_ETF_(LIT).csv",
       "params": {
-        "hs_code": "84",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
+        "symbol": "LIT",
+        "period": "1y"
       },
-      "note": "HS 84"
+      "note": "LIT"
     },
     {
-      "spec": "electric__전기장비_(HS_85_—_8542_제외_추정)",
-      "source": "customs",
-      "sector": "electric",
-      "name": "전기장비 (HS 85 — 8542 제외 추정)",
-      "rows": 39069,
-      "ms": 4401.9,
+      "spec": "oil__WTI_원유_(CL=F)",
+      "source": "yf_commodities",
+      "sector": "oil",
+      "name": "WTI 원유 (CL=F)",
+      "rows": 252,
+      "ms": 133.7,
       "ok": true,
-      "path": "customs\\electric__전기장비_(HS_85_—_8542_제외_추정).csv",
+      "path": "yf_commodities\\oil__WTI_원유_(CL=F).csv",
       "params": {
-        "hs_code": "85",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
+        "symbol": "CL=F",
+        "period": "1y"
       },
-      "note": "HS 85"
+      "note": "CL=F"
     },
     {
-      "spec": "paper__펄프_(HS_47)",
-      "source": "customs",
-      "sector": "paper",
-      "name": "펄프 (HS 47)",
-      "rows": 769,
-      "ms": 1180.0,
+      "spec": "oil__Natural_Gas_ETF_(BOIL)",
+      "source": "yf_commodities",
+      "sector": "oil",
+      "name": "Natural Gas ETF (BOIL)",
+      "rows": 251,
+      "ms": 134.3,
       "ok": true,
-      "path": "customs\\paper__펄프_(HS_47).csv",
+      "path": "yf_commodities\\oil__Natural_Gas_ETF_(BOIL).csv",
       "params": {
-        "hs_code": "47",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
+        "symbol": "BOIL",
+        "period": "1y"
       },
-      "note": "HS 47"
+      "note": "BOIL"
     },
     {
-      "spec": "paper__종이_(HS_48)",
-      "source": "customs",
-      "sector": "paper",
-      "name": "종이 (HS 48)",
-      "rows": 10713,
-      "ms": 2393.1,
+      "spec": "macro__은_(SI=F)",
+      "source": "yf_commodities",
+      "sector": "macro",
+      "name": "은 (SI=F)",
+      "rows": 252,
+      "ms": 132.2,
       "ok": true,
-      "path": "customs\\paper__종이_(HS_48).csv",
+      "path": "yf_commodities\\macro__은_(SI=F).csv",
       "params": {
-        "hs_code": "48",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
+        "symbol": "SI=F",
+        "period": "1y"
       },
-      "note": "HS 48"
+      "note": "SI=F"
     },
     {
-      "spec": "food__농수산식품_(HS_16-22_대표_HS16)",
-      "source": "customs",
-      "sector": "food",
-      "name": "농수산식품 (HS 16-22 대표 HS16)",
-      "rows": 1869,
-      "ms": 1212.6,
+      "spec": "macro__금_(GC=F)",
+      "source": "yf_commodities",
+      "sector": "macro",
+      "name": "금 (GC=F)",
+      "rows": 252,
+      "ms": 134.3,
       "ok": true,
-      "path": "customs\\food__농수산식품_(HS_16-22_대표_HS16).csv",
+      "path": "yf_commodities\\macro__금_(GC=F).csv",
       "params": {
-        "hs_code": "16",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
+        "symbol": "GC=F",
+        "period": "1y"
       },
-      "note": "HS 16"
+      "note": "GC=F"
     },
     {
-      "spec": "pharma__의약품_(HS_30)",
-      "source": "customs",
-      "sector": "pharma",
-      "name": "의약품 (HS 30)",
-      "rows": 5806,
-      "ms": 1036.7,
+      "spec": "macro__Palladium_(PALL)",
+      "source": "yf_commodities",
+      "sector": "macro",
+      "name": "Palladium (PALL)",
+      "rows": 251,
+      "ms": 138.0,
       "ok": true,
-      "path": "customs\\pharma__의약품_(HS_30).csv",
+      "path": "yf_commodities\\macro__Palladium_(PALL).csv",
       "params": {
-        "hs_code": "30",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
+        "symbol": "PALL",
+        "period": "1y"
       },
-      "note": "HS 30"
-    },
-    {
-      "spec": "cosmetic__화장품_(HS_3304)",
-      "source": "customs",
-      "sector": "cosmetic",
-      "name": "화장품 (HS 3304)",
-      "rows": 6059,
-      "ms": 4202.9,
-      "ok": true,
-      "path": "customs\\cosmetic__화장품_(HS_3304).csv",
-      "params": {
-        "hs_code": "3304",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
-      },
-      "note": "HS 3304"
-    },
-    {
-      "spec": "energy__석유제품_(HS_2710)",
-      "source": "customs",
-      "sector": "energy",
-      "name": "석유제품 (HS 2710)",
-      "rows": 2009,
-      "ms": 2964.6,
-      "ok": true,
-      "path": "customs\\energy__석유제품_(HS_2710).csv",
-      "params": {
-        "hs_code": "2710",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
-      },
-      "note": "HS 2710"
-    },
-    {
-      "spec": "energy__원유_수입_(HS_2709)",
-      "source": "customs",
-      "sector": "energy",
-      "name": "원유 수입 (HS 2709)",
-      "rows": 193,
-      "ms": 2752.1,
-      "ok": true,
-      "path": "customs\\energy__원유_수입_(HS_2709).csv",
-      "params": {
-        "hs_code": "2709",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
-      },
-      "note": "HS 2709"
-    },
-    {
-      "spec": "trade__국가별_10일_잠정_EXPORT",
-      "source": "customs",
-      "sector": "trade",
-      "name": "국가별 10일 잠정 EXPORT",
-      "rows": 2,
-      "ms": 27.3,
-      "ok": true,
-      "path": "customs\\trade__국가별_10일_잠정_EXPORT.csv",
-      "params": {
-        "year_month_start": "202604",
-        "year_month_end": "202604",
-        "num_rows": 200
-      },
-      "note": "export 10-day country provisional"
-    },
-    {
-      "spec": "trade__국가별_10일_잠정_IMPORT",
-      "source": "customs",
-      "sector": "trade",
-      "name": "국가별 10일 잠정 IMPORT",
-      "rows": 2,
-      "ms": 30.3,
-      "ok": true,
-      "path": "customs\\trade__국가별_10일_잠정_IMPORT.csv",
-      "params": {
-        "year_month_start": "202604",
-        "year_month_end": "202604",
-        "num_rows": 200
-      },
-      "note": "import 10-day country provisional"
-    },
-    {
-      "spec": "trade__주요품목_10일_잠정_EXPORT",
-      "source": "customs",
-      "sector": "trade",
-      "name": "주요품목 10일 잠정 EXPORT",
-      "rows": 2,
-      "ms": 737.5,
-      "ok": true,
-      "path": "customs\\trade__주요품목_10일_잠정_EXPORT.csv",
-      "params": {
-        "year_month_start": "202604",
-        "year_month_end": "202604",
-        "num_rows": 200
-      },
-      "note": "export 10-day item provisional"
-    },
-    {
-      "spec": "trade__주요품목_10일_잠정_IMPORT",
-      "source": "customs",
-      "sector": "trade",
-      "name": "주요품목 10일 잠정 IMPORT",
-      "rows": 2,
-      "ms": 38.6,
-      "ok": true,
-      "path": "customs\\trade__주요품목_10일_잠정_IMPORT.csv",
-      "params": {
-        "year_month_start": "202604",
-        "year_month_end": "202604",
-        "num_rows": 200
-      },
-      "note": "import 10-day item provisional"
-    },
-    {
-      "spec": "trade__국가별_월_—_미국(US)",
-      "source": "customs",
-      "sector": "trade",
-      "name": "국가별 월 — 미국(US)",
-      "rows": 71002,
-      "ms": 6667.6,
-      "ok": true,
-      "path": "customs\\trade__국가별_월_—_미국(US).csv",
-      "params": {
-        "country_code": "US",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
-      },
-      "note": "country=US"
-    },
-    {
-      "spec": "trade__국가별_월_—_중국(CN)",
-      "source": "customs",
-      "sector": "trade",
-      "name": "국가별 월 — 중국(CN)",
-      "rows": 86969,
-      "ms": 7799.6,
-      "ok": true,
-      "path": "customs\\trade__국가별_월_—_중국(CN).csv",
-      "params": {
-        "country_code": "CN",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
-      },
-      "note": "country=CN"
-    },
-    {
-      "spec": "trade__국가별_월_—_일본(JP)",
-      "source": "customs",
-      "sector": "trade",
-      "name": "국가별 월 — 일본(JP)",
-      "rows": 66546,
-      "ms": 6257.0,
-      "ok": true,
-      "path": "customs\\trade__국가별_월_—_일본(JP).csv",
-      "params": {
-        "country_code": "JP",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
-      },
-      "note": "country=JP"
-    },
-    {
-      "spec": "trade__국가별_월_—_베트남(VN)",
-      "source": "customs",
-      "sector": "trade",
-      "name": "국가별 월 — 베트남(VN)",
-      "rows": 54799,
-      "ms": 6442.2,
-      "ok": true,
-      "path": "customs\\trade__국가별_월_—_베트남(VN).csv",
-      "params": {
-        "country_code": "VN",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
-      },
-      "note": "country=VN"
-    },
-    {
-      "spec": "trade__국가별_월_—_독일(DE)",
-      "source": "customs",
-      "sector": "trade",
-      "name": "국가별 월 — 독일(DE)",
-      "rows": 45663,
-      "ms": 5958.5,
-      "ok": true,
-      "path": "customs\\trade__국가별_월_—_독일(DE).csv",
-      "params": {
-        "country_code": "DE",
-        "year_month_start": "202505",
-        "year_month_end": "202604",
-        "num_rows": 1000
-      },
-      "note": "country=DE"
+      "note": "PALL"
     }
   ]
 }
