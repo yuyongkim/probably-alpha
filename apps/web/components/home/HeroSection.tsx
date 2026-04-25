@@ -52,17 +52,26 @@ export function HeroSection({ asOf, universeSize, bundle }: Props) {
         {/* LEFT — pitch + CTA */}
         <div>
           <h1
-            className="display leading-[1.05] tracking-tight mb-3"
+            className="display leading-[1.04] tracking-tight mb-2"
             style={{ fontSize: "clamp(2.4rem, 5.2vw, 4.4rem)" }}
           >
-            <span style={{ color: "var(--accent)" }}>가즈아</span>,
-            근거는 챙기고.
+            한강 말고,{" "}
+            <span style={{ color: "var(--accent)" }}>가즈아</span>.
           </h1>
           <p
-            className="text-[12.5px] mono uppercase tracking-widest mb-7"
-            style={{ color: "var(--fg-muted)" }}
+            className="display italic leading-tight mb-5"
+            style={{
+              fontSize: "clamp(1.1rem, 2vw, 1.6rem)",
+              color: "var(--fg-muted)",
+            }}
           >
-            한국 주식 시장을 세 렌즈로 검증하는 리서치 플랫폼
+            단, 근거는 챙기고. 손절선도 두고.
+          </p>
+          <p
+            className="text-[12px] mono uppercase tracking-widest mb-7"
+            style={{ color: "var(--muted)" }}
+          >
+            동학개미를 위한 두 번째 의견 · 4,516 종목 매일 재검증
           </p>
 
           <p
