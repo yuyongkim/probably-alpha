@@ -48,14 +48,23 @@ export default function HomePage() {
         bundle={bundle}
       />
 
-      {/* What the platform does — 3-lens explainer */}
+      {/* Tab directory — moved up so first-time visitors can orient
+          themselves before seeing the dense data panels. Each tab
+          card has a beginner-friendly description, 4 doables, and
+          a "처음이라면" entry point. */}
+      <TabDirectory />
+
+      {/* 3-lens conceptual explainer — sits below tabs as supporting
+          context for the philosophy behind the platform. */}
       <ValueProposition />
 
       {/* Today's live data — market + summary pills */}
       {bundle && (bundle.market.length > 0 || bundle.summary.length > 0) && (
-        <section className="mb-10">
+        <section className="mb-12">
           <div className="flex items-baseline justify-between mb-4 flex-wrap gap-2">
-            <h2 className="display text-xl">오늘의 시장</h2>
+            <h2 className="display text-xl md:text-2xl tracking-tight">
+              오늘의 시장
+            </h2>
             <span className="mono text-[10.5px] text-[color:var(--fg-muted)]">
               LIVE · as-of {bundle.date}
             </span>
@@ -78,9 +87,11 @@ export default function HomePage() {
       )}
 
       {/* Today's picks — sectors + leaders side by side */}
-      <section className="mb-10">
+      <section className="mb-12">
         <div className="flex items-baseline justify-between mb-4 flex-wrap gap-2">
-          <h2 className="display text-xl">오늘의 주도주 · 섹터</h2>
+          <h2 className="display text-xl md:text-2xl tracking-tight">
+            오늘의 주도주 · 섹터
+          </h2>
           <span className="mono text-[10.5px] text-[color:var(--fg-muted)]">
             LEADER · ROTATION
           </span>
@@ -108,9 +119,11 @@ export default function HomePage() {
       </section>
 
       {/* Scanners — wizards / breakouts / stage dist */}
-      <section className="mb-10">
+      <section className="mb-12">
         <div className="flex items-baseline justify-between mb-4 flex-wrap gap-2">
-          <h2 className="display text-xl">오늘의 스캐너</h2>
+          <h2 className="display text-xl md:text-2xl tracking-tight">
+            오늘의 스캐너
+          </h2>
           <span className="mono text-[10.5px] text-[color:var(--fg-muted)]">
             WIZARDS · BREAKOUTS · STAGES
           </span>
@@ -145,9 +158,6 @@ export default function HomePage() {
 
       {/* Data provenance — trust bar */}
       <DataSourcesBar />
-
-      {/* 6-tab directory */}
-      <TabDirectory />
 
       <HomeFooter universeSize={bundle?.universe_size} />
     </div>
