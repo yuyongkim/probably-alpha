@@ -53,6 +53,8 @@ class CustomsObservation:
     import_usd: Optional[float]
     export_kg: Optional[float]
     import_kg: Optional[float]
+    export_count: Optional[int]
+    import_count: Optional[int]
     trade_balance_usd: Optional[float]
     raw: dict[str, Any]
 
@@ -67,6 +69,8 @@ class CustomsObservation:
             "import_usd": self.import_usd,
             "export_kg": self.export_kg,
             "import_kg": self.import_kg,
+            "export_count": self.export_count,
+            "import_count": self.import_count,
             "trade_balance_usd": self.trade_balance_usd,
         }
 
@@ -336,12 +340,14 @@ class CustomsAdapter(BaseAdapter):
                 import_usd=None,
                 export_kg=None,
                 import_kg=None,
+                export_count=None,
+                import_count=None,
                 trade_balance_usd=None,
                 raw=rec,
             )
 
         period = _f("year", "yymm", "yymmDd", "ttlMm", "yyyymmdd") or ""
-        country_name = _f("statKor", "cntyNm", "ctyNm")
+        country_name = _f("statCdCntnKor1", "statKor", "cntyNm", "ctyNm")
         return CustomsObservation(
             period=period,
             hs_code=_f("hsCd", "hsSgn", "hsSgnCd"),
@@ -351,6 +357,8 @@ class CustomsAdapter(BaseAdapter):
             import_usd=_num("impDlr", "impUsd", "impAmt"),
             export_kg=_num("expWgt", "expKg"),
             import_kg=_num("impWgt", "impKg"),
+            export_count=int(_num("expCnt") or 0) if _f("expCnt") else None,
+            import_count=int(_num("impCnt") or 0) if _f("impCnt") else None,
             trade_balance_usd=_num("balPayments"),
             raw=rec,
         )
