@@ -9,21 +9,36 @@
 
 ---
 
-## 현재 구현 상태 (2026-04-25, 갱신)
+## 현재 구현 상태 (2026-04-26, 최신)
 
 | Status | Adapter |
 |---|---|
-| **OK** 구현됨 (14개) | `kis` · `dart` · `ecos` · `kosis` · `fred` · `eia` · `exim` · `naver_fnguide` · **`customs`** · **`oecd`** · **`worldbank`** · **`pytrends`** · **`cftc`** · **`un_comtrade`** |
+| **OK** 구현됨 (15개) | `kis` · `kis_index` · `dart` · `ecos` · `kosis` · `fred` · `eia` · `exim` · `naver_fnguide` · **`customs`** · **`oecd`** · **`worldbank`** · **`pytrends`** · **`cftc`** · **`un_comtrade`** |
 | **TODO 1순위** | `yfinance` · `pykrx` (정책 검토 필요 — KIS-only 정책과의 충돌 여부) |
 | **TODO 2순위** | `imf` · `kita` · `ecb` · `bis` |
 | **TODO 3순위** | `polygon` · `alpha_vantage` · `usda` |
 | 보류 | LME · CME/CBOT · Investing.com (모두 크롤링/제한) · Bloomberg/Refinitiv (유료) |
+| 스크래퍼 (안정성 낮음) | `bdi` (현재 차단됨, 대체 소스 필요) |
 
-### 2026-04-25 추가 어댑터 헬스체크 결과
+### 2026-04-26 customs 6 endpoint 최종
+
+| # | data.go.kr API | path | 상태 |
+|---|---|---|---|
+| 1 | 관세청_품목별 국가별 수출입실적(GW) | `nitemtrade/getNitemtradeList` | OK (HS×국가 월) |
+| 2 | 관세청_수출 주요국가별 10일 단위 잠정치 통계 | `cntyMmUtPrviExpAcrs/getCntyMmUtPrviExpAcrs` | OK |
+| 3 | 관세청_수입 주요국가별 10일 단위 잠정치 통계 | `cntyMmUtPrviImpAcrs/getCntyMmUtPrviImpAcrs` | OK |
+| 4 | 관세청_수출 주요품목별 10일 단위 잠정치 통계 | `prlstMmUtPrviExpAcrs/getPrlstMmUtPrviExpAcrs` | OK |
+| 5 | 관세청_수입 주요품목별 10일 단위 잠정치 통계 | `prlstMmUtPrviImpAcrs/getPrlstMmUtPrviImpAcrs` | OK |
+| 6 | **관세청_품목별 수출입실적(GW)** | `Itemtrade/getItemtradeList` (path 정확) | **403 권한 활성화 대기** |
+
+### 2026-04-26 어댑터 헬스체크 결과 (최신)
 
 | 어댑터 | 응답 시간 | 샘플 행 | 비고 |
 |---|---|---|---|
-| customs | 543ms | 668 | HS×국가 월별 endpoint 검증 완료. 나머지 5개 endpoint는 data.go.kr 활용신청 승인 대기 |
+| customs | 28-540ms | 2~668 | 5/6 endpoint OK; HS×국가 12개월 + 10일 잠정 4종 (국가/품목 × 수출/수입) |
+| dart | 30-100ms | 200-440 | 18 섹터 대표 종목 × 2년 — corp_code 모두 정정 |
+| eia | 350-1000ms | 0-1500 | WTI·Brent·정제가동률·휘발유·재고·천연가스 |
+| kis_index | 290-540ms | 50 | KOSPI/KOSDAQ/200 + 음식료/섬유/종이 6 인덱스 |
 | oecd | 18-40ms | 120 | KOR/USA/CHN/JPN/DEU CLI 120개월 |
 | worldbank | 200-1100ms | 25 | 25년 GDP·제조업비중·인구 |
 | cftc | 700-1400ms | 52 | 원유·금·구리·엔·유로 COT 1년 |
@@ -31,16 +46,18 @@
 | pytrends | 2-3s | 53 | 첫 호출 정상, 연속 호출 시 Google rate-limit |
 | ecos | 188-870ms | 135-2788 | 한국 기준금리·국채·환율·CSI |
 | fred | 130-340ms | 132-3026 | Fed Funds·Treasury·SP500·산업생산 등 |
+| kosis | 660ms | 2200 | GDP by 경제활동 (한은) — 22 산업 × 40 분기 |
 
-### 데이터 수집 현황 (47MB on disk, 132 시리즈)
+### 데이터 수집 현황 (2026-04-26 — 25MB / 183 시리즈)
 
 | 출처 분류 | 시리즈 수 | 비고 |
 |---|---|---|
-| **API 수집** (collect_sectors.py) | 79 → 63 OK | customs 24 + fred 19 + ecos 7 + oecd 5 + worldbank 6 + pytrends 16 + cftc 5 + un_comtrade 4 |
+| **API 수집** (collect_sectors.py) | 142 specs (대다수 OK) | customs 28 + fred 19 + ecos 7 + dart 36 + eia 9 + kosis 1 + kis_index 6 + oecd 5 + worldbank 6 + pytrends 16 + cftc 5 + un_comtrade 4 |
 | **임포트** (import_existing_data.py) | 41 OK | Economic_analysis/economic_indicator/data/raw 의 ECOS 15 + FRED 22 + KRX 4 (2025-11-08 수집분) |
-| **합계** | **132 series** | WICS 34섹터 × 10인디케이터 매트릭스의 ~95% 데이터 백킹 |
+| **합계** | **183 series** | WICS 34섹터 × 10인디케이터 매트릭스의 **292/340 = 85.9%** 셀 백킹 |
 
-상세는 `docs/SECTOR_DATA_COLLECTION.md` 참조.
+상세는 `docs/SECTOR_DATA_COLLECTION.md` 참조. 셀 단위 진척은
+`python scripts/sector_coverage.py` 로 언제든 재계산.
 
 ---
 

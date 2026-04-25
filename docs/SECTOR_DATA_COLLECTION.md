@@ -73,16 +73,20 @@ python scripts/collect_sectors.py --dry-run
 
 ## 수집 결과 (2026-04-25)
 
-### API 수집 — 79 specs
+### API 수집 — 142 specs (2026-04-26)
 
 | 출처 | 셀 수 | 결과 | 비고 |
 |---|---|---|---|
-| customs | 24 | OK 24/24 | HS 코드별 12개월 × 국가 (반도체·자동차·화학·조선 등 전 업종 export) |
+| customs | 28 | OK 28/28 | HS 24종 12개월 + 10일 잠정 4종 (수출/수입 × 국가/품목). endpoint 5/6 verified, 1개 (HS 단독 월별)는 권한 활성화 대기 |
+| dart | 36 | OK 36/36 | 18 섹터 대표 종목 × 2년 사업보고서 (corp_code 모두 검증) |
 | fred | 19 | OK 19/19 | Fed Funds·Treasury·SP500·산업생산·VIX 등 2014→ |
 | ecos | 7 | OK 7/7 | 한국 기준금리·국고채 3Y/10Y·회사채 AA-·환율·CSI |
+| eia | 9 | OK 8/9 | WTI·Brent·정제가동률·휘발유·재고·천연가스 (1개 frequency 미세 오류) |
+| kosis | 1 | OK 1/1 | GDP by 경제활동 (한은) — 22 산업 × 40 분기 = 2200 rows |
+| kis_index | 6 | OK 6/6 | KOSPI/KOSDAQ/200 + 음식료/섬유/종이 6 인덱스 일별 50일 |
 | oecd | 5 | OK 5/5 | KOR·USA·CHN·JPN·DEU CLI 120개월 |
 | worldbank | 6 | OK 6/6 | KOR/CHN/USA GDP·제조업비중·인구·고령화 25년 |
-| pytrends | 16 | △ transient | 첫 실행은 16/16 OK; 같은 세션 재실행 시 Google rate-limit. 데이터는 디스크에 잔존 |
+| pytrends | 16 | △ transient | 첫 실행 16/16 OK; 같은 세션 재실행 시 Google rate-limit. 디스크에 잔존 |
 | cftc | 5 | OK 5/5 | 원유·금·구리·엔·유로 COT 1년 |
 | un_comtrade | 4 | OK 4/4 | 한국→세계 HS 4종 비교 |
 
@@ -96,11 +100,12 @@ python scripts/collect_sectors.py --dry-run
 | imported_fred | 22 | GDP·CPI·Core CPI·Fed Funds·Treasury 2/10/30Y·SP500·NASDAQ·Dow·Dollar Index·Industrial Production·Nonfarm Payrolls·Oil·PCE·Retail Sales·Consumer Sentiment 등 |
 | imported_krx | 4 | 코스피·코스닥 지수 월별 |
 
-### 합계
+### 합계 (2026-04-26 기준)
 
-- **132개 시리즈** 디스크 보유
-- **47MB** raw CSV
-- WICS 34섹터 매트릭스 커버리지: ~95% 데이터 백킹됨
+- **183개 시리즈** 디스크 보유
+- **24.9MB** raw CSV (customs HS 데이터가 가장 큼)
+- **WICS 34섹터 매트릭스 커버리지: 292/340 = 85.9%**
+- 셀 단위 진척: `python scripts/sector_coverage.py`
 
 ---
 
@@ -154,23 +159,34 @@ python scripts/collect_sectors.py --dry-run
 
 ---
 
-## 알려진 한계
+## 알려진 한계 (2026-04-26 갱신)
 
-1. **customs 5/6 endpoint 비활성화** — `품목별 단독`, `10일 잠정치 4종`은 data.go.kr 활용신청 자동승인 lag 중. 시간 후 자동 동작.
+1. **customs 1/6 endpoint 비활성화 (`Itemtrade/getItemtradeList` = 관세청_품목별 수출입실적 GW)** — path는 data.go.kr swagger metadata에서 확인된 정확한 값. 응답 403은 사장님 API 키에 대한 활성화 lag. 자동 활성화 시 코드 수정 없이 동작.
+   - 검증된 5개: `nitemtrade`, `cntyMmUtPrviExpAcrs/ImpAcrs`, `prlstMmUtPrviExpAcrs/ImpAcrs`
 2. **pytrends Google rate-limit** — 같은 세션에서 재실행 시 차단됨. 새 세션 또는 30분-1시간 대기 후 회복. 디스크의 16 CSVs는 첫 실행에서 이미 확보.
 3. **un_comtrade preview tier** — 최신 6개월 lag.
-4. **KOSIS 산업별 생산지수 미수집** — 본 라운드에서 시도한 tbl_id는 모두 invalid (`DT_1F31013`등). 정확한 KOSIS 코드는 KOSIS 사이트에서 확인 후 추후 재시도.
+4. **KOSIS 산업별 생산지수 미수집** — 광공업 동향조사 tbl_id 미공개. 한은 GDP by 경제활동(DT_200Y105) 1건만 동작. 추후 KOSIS 사이트에서 정확한 tblId 확인 필요.
 5. **OECD CLI** — 대부분 국가 한 달치 lag (예: 2026-02 데이터가 4월에 확정 반영).
+6. **KIS 업종지수 0040+ 코드 (화학/철강/전기전자 등 17 sub-index)** — 응답 0 rows. KIS 별도 코드 시스템. KIS 페이지네이션도 추가 필요 (1콜=50일 한계).
+7. **BDI/SCFI/클락슨/DRAMeXchange/LME** — 안정 크롤링 소스 부재. tradingeconomics는 봇 차단. 63셀 영향.
 
 ---
 
-## 다음 확장 후보
+## 다음 확장 후보 (2026-04-26 갱신)
 
-- **KOSIS 산업별 생산·출하·재고지수** — 정확한 tblId 확인 후 7-15셀 추가
-- **DART 분기 실적 자동화** — 5대 섹터 대표 종목 × 4분기 = 20셀
-- **KIS 업종지수 일별 OHLCV** — 34섹터 × 일별 → 백테스트 가격축
+이미 진행한 항목 ✓ 표시:
+- ✓ DART 18 종목 × 2년 사업보고서 (corp_code 모두 검증)
+- ✓ EIA 9 시리즈 (WTI·Brent·정제가동률·휘발유·재고·천연가스)
+- ✓ KIS 업종지수 6개 (KOSPI/KOSDAQ/200 + 음식료/섬유/종이)
+- ✓ customs 10일 잠정 4 endpoint (수출/수입 × 국가/품목)
+
+남은 후보:
+- **KIS 업종지수 0040+ 17 sub-index** — KIS 별도 코드 시스템 lookup 필요
+- **KIS 페이지네이션** — 12개월 OHLCV (현재 50일 한계)
+- **KOSIS 산업별 생산지수** — 정확한 tblId 확인 후 7-15셀
 - **ECOS 신용스프레드 / 부동산** — 정확한 stat_code/item_code 확인 후 5-10셀
-- **SCFI / BDI / 클락슨 / DRAMeXchange 크롤러** — 안정성 낮지만 운송·조선·반도체 가격 신호 보강
+- **SCFI / BDI / 클락슨 / DRAMeXchange 크롤러** — 안정 소스 발굴 시
+- **customs `Itemtrade/getItemtradeList`** — data.go.kr 권한 활성화 자동 대기 중
 
 ---
 
