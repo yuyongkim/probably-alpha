@@ -9,15 +9,26 @@
 
 ---
 
-## 현재 구현 상태 (2026-04-25)
+## 현재 구현 상태 (2026-04-25, 갱신)
 
 | Status | Adapter |
 |---|---|
-| **OK** 구현됨 | `kis` · `dart` · `ecos` · `kosis` · `fred` · `eia` · `exim` (수출입은행 환율) · `naver_fnguide` |
-| **TODO 1순위** | `yfinance` · `pykrx` · `oecd` · `worldbank` · `customs` (관세청 TRASS) |
-| **TODO 2순위** | `imf` · `un_comtrade` · `pytrends` · `cftc` (COT) |
-| **TODO 3순위** | `polygon` · `alpha_vantage` · `usda` · `kita` · `ecb` · `bis` |
+| **OK** 구현됨 (14개) | `kis` · `dart` · `ecos` · `kosis` · `fred` · `eia` · `exim` · `naver_fnguide` · **`customs`** · **`oecd`** · **`worldbank`** · **`pytrends`** · **`cftc`** · **`un_comtrade`** |
+| **TODO 1순위** | `yfinance` · `pykrx` (정책 검토 필요 — KIS-only 정책과의 충돌 여부) |
+| **TODO 2순위** | `imf` · `kita` · `ecb` · `bis` |
+| **TODO 3순위** | `polygon` · `alpha_vantage` · `usda` |
 | 보류 | LME · CME/CBOT · Investing.com (모두 크롤링/제한) · Bloomberg/Refinitiv (유료) |
+
+### 2026-04-25 추가 어댑터 헬스체크 결과
+
+| 어댑터 | 응답 시간 | 샘플 행 | 비고 |
+|---|---|---|---|
+| customs | 543ms | 668 | HS×국가 월별 endpoint 검증 완료. 나머지 5개 endpoint는 data.go.kr 활용신청 승인 대기 |
+| oecd | 3.2s | 3 | 한국 CLI 시리즈 정상 |
+| worldbank | 639ms | 5 | 한국 GDP 5년치 정상 |
+| cftc | 1.1s | 5 | CRUDE OIL COT 검색 정상 |
+| un_comtrade | 940ms | 0 | 응답 정상, 최신 6개월 lag 데이터는 미공개 (예상) |
+| pytrends | 3.0s | 91 | 한국 검색어 '반도체' 3개월 정상 |
 
 ---
 
