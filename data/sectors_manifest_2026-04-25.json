@@ -1,6 +1,6 @@
 {
-  "started_at": "2026-04-25T13:30:36.893880+00:00",
-  "finished_at": "2026-04-25T13:33:02.949018+00:00",
+  "started_at": "2026-04-25T14:01:32.307012+00:00",
+  "finished_at": "2026-04-25T14:05:16.578661+00:00",
   "total_specs": 79,
   "succeeded": 63,
   "failed": 16,
@@ -11,7 +11,7 @@
       "sector": "semiconductor",
       "name": "메모리·반도체 수출 (HS 8542)",
       "rows": 2439,
-      "ms": 2155.9,
+      "ms": 6930.7,
       "ok": true,
       "path": "customs\\semiconductor__메모리·반도체_수출_(HS_8542).csv",
       "params": {
@@ -28,7 +28,7 @@
       "sector": "display",
       "name": "디스플레이 모듈 수출 (HS 8528)",
       "rows": 2720,
-      "ms": 1964.2,
+      "ms": 5343.6,
       "ok": true,
       "path": "customs\\display__디스플레이_모듈_수출_(HS_8528).csv",
       "params": {
@@ -45,7 +45,7 @@
       "sector": "handset",
       "name": "휴대폰 수출 (HS 8517)",
       "rows": 4717,
-      "ms": 2043.0,
+      "ms": 5329.8,
       "ok": true,
       "path": "customs\\handset__휴대폰_수출_(HS_8517).csv",
       "params": {
@@ -62,7 +62,7 @@
       "sector": "auto",
       "name": "자동차 부품 수출 (HS 8708)",
       "rows": 14211,
-      "ms": 3272.1,
+      "ms": 3520.6,
       "ok": true,
       "path": "customs\\auto__자동차_부품_수출_(HS_8708).csv",
       "params": {
@@ -79,7 +79,7 @@
       "sector": "auto",
       "name": "자동차 완성차 수출 (HS 8703)",
       "rows": 8768,
-      "ms": 2703.2,
+      "ms": 3300.9,
       "ok": true,
       "path": "customs\\auto__자동차_완성차_수출_(HS_8703).csv",
       "params": {
@@ -96,7 +96,7 @@
       "sector": "chemical",
       "name": "기초 폴리머 수출 (HS 3901)",
       "rows": 3000,
-      "ms": 1882.0,
+      "ms": 2066.5,
       "ok": true,
       "path": "customs\\chemical__기초_폴리머_수출_(HS_3901).csv",
       "params": {
@@ -113,7 +113,7 @@
       "sector": "chemical",
       "name": "PE/PP 수출 (HS 3902)",
       "rows": 2438,
-      "ms": 1948.8,
+      "ms": 3173.7,
       "ok": true,
       "path": "customs\\chemical__PE_PP_수출_(HS_3902).csv",
       "params": {
@@ -130,7 +130,7 @@
       "sector": "chemical",
       "name": "기타 폴리머 수출 (HS 3907)",
       "rows": 4373,
-      "ms": 2215.6,
+      "ms": 3183.7,
       "ok": true,
       "path": "customs\\chemical__기타_폴리머_수출_(HS_3907).csv",
       "params": {
@@ -147,7 +147,7 @@
       "sector": "chemical",
       "name": "플라스틱 제품 수출 (HS 3923)",
       "rows": 5125,
-      "ms": 2094.7,
+      "ms": 4498.9,
       "ok": true,
       "path": "customs\\chemical__플라스틱_제품_수출_(HS_3923).csv",
       "params": {
@@ -164,7 +164,7 @@
       "sector": "steel",
       "name": "철강제품 수출 (HS 7208-7229 대표 HS72)",
       "rows": 8858,
-      "ms": 1010.9,
+      "ms": 2209.7,
       "ok": true,
       "path": "customs\\steel__철강제품_수출_(HS_7208-7229_대표_HS72).csv",
       "params": {
@@ -181,7 +181,7 @@
       "sector": "nonferrous",
       "name": "구리 (HS 74)",
       "rows": 6009,
-      "ms": 749.6,
+      "ms": 1114.0,
       "ok": true,
       "path": "customs\\nonferrous__구리_(HS_74).csv",
       "params": {
@@ -198,7 +198,7 @@
       "sector": "nonferrous",
       "name": "알루미늄 (HS 76)",
       "rows": 6514,
-      "ms": 830.9,
+      "ms": 2244.0,
       "ok": true,
       "path": "customs\\nonferrous__알루미늄_(HS_76).csv",
       "params": {
@@ -215,7 +215,7 @@
       "sector": "nonferrous",
       "name": "아연 (HS 79)",
       "rows": 1279,
-      "ms": 813.8,
+      "ms": 1871.3,
       "ok": true,
       "path": "customs\\nonferrous__아연_(HS_79).csv",
       "params": {
@@ -232,7 +232,7 @@
       "sector": "ship",
       "name": "선박 부품 (HS 8906)",
       "rows": 66,
-      "ms": 1824.5,
+      "ms": 3878.4,
       "ok": true,
       "path": "customs\\ship__선박_부품_(HS_8906).csv",
       "params": {
@@ -249,7 +249,7 @@
       "sector": "ship",
       "name": "선박 완성품 (HS 8901)",
       "rows": 221,
-      "ms": 1659.6,
+      "ms": 2498.2,
       "ok": true,
       "path": "customs\\ship__선박_완성품_(HS_8901).csv",
       "params": {
@@ -266,7 +266,7 @@
       "sector": "machinery",
       "name": "일반기계 (HS 84)",
       "rows": 51400,
-      "ms": 5719.6,
+      "ms": 7367.1,
       "ok": true,
       "path": "customs\\machinery__일반기계_(HS_84).csv",
       "params": {
@@ -283,7 +283,7 @@
       "sector": "electric",
       "name": "전기장비 (HS 85 — 8542 제외 추정)",
       "rows": 39069,
-      "ms": 4468.6,
+      "ms": 4552.0,
       "ok": true,
       "path": "customs\\electric__전기장비_(HS_85_—_8542_제외_추정).csv",
       "params": {
@@ -300,7 +300,7 @@
       "sector": "paper",
       "name": "펄프 (HS 47)",
       "rows": 769,
-      "ms": 815.5,
+      "ms": 641.5,
       "ok": true,
       "path": "customs\\paper__펄프_(HS_47).csv",
       "params": {
@@ -317,7 +317,7 @@
       "sector": "paper",
       "name": "종이 (HS 48)",
       "rows": 10713,
-      "ms": 1979.9,
+      "ms": 2900.5,
       "ok": true,
       "path": "customs\\paper__종이_(HS_48).csv",
       "params": {
@@ -334,7 +334,7 @@
       "sector": "food",
       "name": "농수산식품 (HS 16-22 대표 HS16)",
       "rows": 1869,
-      "ms": 382.1,
+      "ms": 2126.4,
       "ok": true,
       "path": "customs\\food__농수산식품_(HS_16-22_대표_HS16).csv",
       "params": {
@@ -351,7 +351,7 @@
       "sector": "pharma",
       "name": "의약품 (HS 30)",
       "rows": 5806,
-      "ms": 1315.2,
+      "ms": 2398.9,
       "ok": true,
       "path": "customs\\pharma__의약품_(HS_30).csv",
       "params": {
@@ -368,7 +368,7 @@
       "sector": "cosmetic",
       "name": "화장품 (HS 3304)",
       "rows": 6059,
-      "ms": 2200.7,
+      "ms": 2407.3,
       "ok": true,
       "path": "customs\\cosmetic__화장품_(HS_3304).csv",
       "params": {
@@ -385,7 +385,7 @@
       "sector": "energy",
       "name": "석유제품 (HS 2710)",
       "rows": 2009,
-      "ms": 1834.4,
+      "ms": 1966.1,
       "ok": true,
       "path": "customs\\energy__석유제품_(HS_2710).csv",
       "params": {
@@ -402,7 +402,7 @@
       "sector": "energy",
       "name": "원유 수입 (HS 2709)",
       "rows": 193,
-      "ms": 1884.7,
+      "ms": 1992.4,
       "ok": true,
       "path": "customs\\energy__원유_수입_(HS_2709).csv",
       "params": {
@@ -419,7 +419,7 @@
       "sector": "macro",
       "name": "FED 기준금리",
       "rows": 147,
-      "ms": 1327.2,
+      "ms": 641.3,
       "ok": true,
       "path": "fred\\macro__FED_기준금리.csv",
       "params": {
@@ -434,7 +434,7 @@
       "sector": "macro",
       "name": "10Y Treasury",
       "rows": 3212,
-      "ms": 1677.7,
+      "ms": 884.1,
       "ok": true,
       "path": "fred\\macro__10Y_Treasury.csv",
       "params": {
@@ -449,7 +449,7 @@
       "sector": "macro",
       "name": "2Y Treasury",
       "rows": 3212,
-      "ms": 4040.1,
+      "ms": 3049.1,
       "ok": true,
       "path": "fred\\macro__2Y_Treasury.csv",
       "params": {
@@ -464,7 +464,7 @@
       "sector": "macro",
       "name": "10Y-2Y 스프레드",
       "rows": 3213,
-      "ms": 3861.8,
+      "ms": 472.6,
       "ok": true,
       "path": "fred\\macro__10Y-2Y_스프레드.csv",
       "params": {
@@ -479,7 +479,7 @@
       "sector": "macro",
       "name": "10Y-3M 스프레드",
       "rows": 3213,
-      "ms": 2935.3,
+      "ms": 711.7,
       "ok": true,
       "path": "fred\\macro__10Y-3M_스프레드.csv",
       "params": {
@@ -494,7 +494,7 @@
       "sector": "macro",
       "name": "30Y Mortgage Rate",
       "rows": 643,
-      "ms": 2998.5,
+      "ms": 1028.8,
       "ok": true,
       "path": "fred\\macro__30Y_Mortgage_Rate.csv",
       "params": {
@@ -509,7 +509,7 @@
       "sector": "macro",
       "name": "Dollar Index (DXY)",
       "rows": 3208,
-      "ms": 837.8,
+      "ms": 1125.2,
       "ok": true,
       "path": "fred\\macro__Dollar_Index_(DXY).csv",
       "params": {
@@ -524,7 +524,7 @@
       "sector": "macro",
       "name": "VIX 변동성지수",
       "rows": 3212,
-      "ms": 507.1,
+      "ms": 762.6,
       "ok": true,
       "path": "fred\\macro__VIX_변동성지수.csv",
       "params": {
@@ -539,7 +539,7 @@
       "sector": "macro",
       "name": "Industrial Production",
       "rows": 147,
-      "ms": 562.2,
+      "ms": 1367.9,
       "ok": true,
       "path": "fred\\macro__Industrial_Production.csv",
       "params": {
@@ -554,7 +554,7 @@
       "sector": "macro",
       "name": "Capacity Utilization",
       "rows": 147,
-      "ms": 3952.7,
+      "ms": 511.6,
       "ok": true,
       "path": "fred\\macro__Capacity_Utilization.csv",
       "params": {
@@ -569,7 +569,7 @@
       "sector": "auto",
       "name": "미국 신차 SAAR (TOTALSA)",
       "rows": 147,
-      "ms": 1549.5,
+      "ms": 959.5,
       "ok": true,
       "path": "fred\\auto__미국_신차_SAAR_(TOTALSA).csv",
       "params": {
@@ -584,7 +584,7 @@
       "sector": "retail",
       "name": "미국 소매판매",
       "rows": 147,
-      "ms": 983.3,
+      "ms": 537.5,
       "ok": true,
       "path": "fred\\retail__미국_소매판매.csv",
       "params": {
@@ -599,7 +599,7 @@
       "sector": "retail",
       "name": "미국 소비자신뢰지수",
       "rows": 147,
-      "ms": 643.5,
+      "ms": 1033.0,
       "ok": true,
       "path": "fred\\retail__미국_소비자신뢰지수.csv",
       "params": {
@@ -614,7 +614,7 @@
       "sector": "construction",
       "name": "미국 신규주택착공",
       "rows": 145,
-      "ms": 1149.5,
+      "ms": 625.6,
       "ok": true,
       "path": "fred\\construction__미국_신규주택착공.csv",
       "params": {
@@ -629,7 +629,7 @@
       "sector": "oil",
       "name": "WTI 원유",
       "rows": 3209,
-      "ms": 522.4,
+      "ms": 771.1,
       "ok": true,
       "path": "fred\\oil__WTI_원유.csv",
       "params": {
@@ -644,7 +644,7 @@
       "sector": "oil",
       "name": "Brent 원유",
       "rows": 3209,
-      "ms": 479.2,
+      "ms": 826.8,
       "ok": true,
       "path": "fred\\oil__Brent_원유.csv",
       "params": {
@@ -659,7 +659,7 @@
       "sector": "macro",
       "name": "미국 ISM 제조업 신규수주",
       "rows": 146,
-      "ms": 496.6,
+      "ms": 684.1,
       "ok": true,
       "path": "fred\\macro__미국_ISM_제조업_신규수주.csv",
       "params": {
@@ -674,7 +674,7 @@
       "sector": "macro",
       "name": "PCE Inflation",
       "rows": 146,
-      "ms": 644.6,
+      "ms": 631.1,
       "ok": true,
       "path": "fred\\macro__PCE_Inflation.csv",
       "params": {
@@ -689,7 +689,7 @@
       "sector": "macro",
       "name": "Core CPI",
       "rows": 147,
-      "ms": 767.6,
+      "ms": 599.3,
       "ok": true,
       "path": "fred\\macro__Core_CPI.csv",
       "params": {
@@ -704,7 +704,7 @@
       "sector": "macro",
       "name": "OECD CLI KOR",
       "rows": 120,
-      "ms": 28.8,
+      "ms": 176.4,
       "ok": true,
       "path": "oecd\\macro__OECD_CLI_KOR.csv",
       "params": {
@@ -719,7 +719,7 @@
       "sector": "macro",
       "name": "OECD CLI USA",
       "rows": 120,
-      "ms": 18.6,
+      "ms": 16.5,
       "ok": true,
       "path": "oecd\\macro__OECD_CLI_USA.csv",
       "params": {
@@ -734,7 +734,7 @@
       "sector": "macro",
       "name": "OECD CLI CHN",
       "rows": 120,
-      "ms": 17.7,
+      "ms": 20.6,
       "ok": true,
       "path": "oecd\\macro__OECD_CLI_CHN.csv",
       "params": {
@@ -749,7 +749,7 @@
       "sector": "macro",
       "name": "OECD CLI JPN",
       "rows": 120,
-      "ms": 15.6,
+      "ms": 14.3,
       "ok": true,
       "path": "oecd\\macro__OECD_CLI_JPN.csv",
       "params": {
@@ -764,7 +764,7 @@
       "sector": "macro",
       "name": "OECD CLI DEU",
       "rows": 120,
-      "ms": 15.6,
+      "ms": 14.2,
       "ok": true,
       "path": "oecd\\macro__OECD_CLI_DEU.csv",
       "params": {
@@ -779,7 +779,7 @@
       "sector": "macro",
       "name": "한국 명목 GDP (USD)",
       "rows": 25,
-      "ms": 268.1,
+      "ms": 273.2,
       "ok": true,
       "path": "worldbank\\macro__한국_명목_GDP_(USD).csv",
       "params": {
@@ -795,7 +795,7 @@
       "sector": "macro",
       "name": "한국 제조업 GDP 비중 (%)",
       "rows": 25,
-      "ms": 235.1,
+      "ms": 247.6,
       "ok": true,
       "path": "worldbank\\macro__한국_제조업_GDP_비중_(%).csv",
       "params": {
@@ -811,7 +811,7 @@
       "sector": "macro",
       "name": "중국 GDP 성장률",
       "rows": 25,
-      "ms": 244.6,
+      "ms": 243.5,
       "ok": true,
       "path": "worldbank\\macro__중국_GDP_성장률.csv",
       "params": {
@@ -827,7 +827,7 @@
       "sector": "macro",
       "name": "미국 GDP 성장률",
       "rows": 25,
-      "ms": 245.9,
+      "ms": 255.6,
       "ok": true,
       "path": "worldbank\\macro__미국_GDP_성장률.csv",
       "params": {
@@ -843,7 +843,7 @@
       "sector": "macro",
       "name": "한국 인구",
       "rows": 25,
-      "ms": 245.0,
+      "ms": 234.9,
       "ok": true,
       "path": "worldbank\\macro__한국_인구.csv",
       "params": {
@@ -859,7 +859,7 @@
       "sector": "macro",
       "name": "한국 65세 이상 비중",
       "rows": 25,
-      "ms": 255.3,
+      "ms": 238.1,
       "ok": true,
       "path": "worldbank\\macro__한국_65세_이상_비중.csv",
       "params": {
@@ -1131,7 +1131,7 @@
       "sector": "macro",
       "name": "COT — CRUDE OIL",
       "rows": 52,
-      "ms": 1778.9,
+      "ms": 1728.3,
       "ok": true,
       "path": "cftc\\macro__COT_—_CRUDE_OIL.csv",
       "params": {
@@ -1146,7 +1146,7 @@
       "sector": "macro",
       "name": "COT — GOLD",
       "rows": 52,
-      "ms": 1000.3,
+      "ms": 907.3,
       "ok": true,
       "path": "cftc\\macro__COT_—_GOLD.csv",
       "params": {
@@ -1161,7 +1161,7 @@
       "sector": "macro",
       "name": "COT — COPPER",
       "rows": 52,
-      "ms": 922.5,
+      "ms": 1096.2,
       "ok": true,
       "path": "cftc\\macro__COT_—_COPPER.csv",
       "params": {
@@ -1176,7 +1176,7 @@
       "sector": "macro",
       "name": "COT — JAPANESE YEN",
       "rows": 52,
-      "ms": 1408.8,
+      "ms": 815.2,
       "ok": true,
       "path": "cftc\\macro__COT_—_JAPANESE_YEN.csv",
       "params": {
@@ -1191,7 +1191,7 @@
       "sector": "macro",
       "name": "COT — EURO FX",
       "rows": 52,
-      "ms": 832.3,
+      "ms": 1001.3,
       "ok": true,
       "path": "cftc\\macro__COT_—_EURO_FX.csv",
       "params": {
@@ -1206,7 +1206,7 @@
       "sector": "trade",
       "name": "Korea→World HS 8542",
       "rows": 1,
-      "ms": 3083.7,
+      "ms": 1298.0,
       "ok": true,
       "path": "un_comtrade\\trade__Korea→World_HS_8542.csv",
       "params": {
@@ -1224,7 +1224,7 @@
       "sector": "trade",
       "name": "Korea→World HS 8703",
       "rows": 1,
-      "ms": 1793.5,
+      "ms": 400.8,
       "ok": true,
       "path": "un_comtrade\\trade__Korea→World_HS_8703.csv",
       "params": {
@@ -1242,7 +1242,7 @@
       "sector": "trade",
       "name": "Korea→World HS 3901",
       "rows": 1,
-      "ms": 1179.6,
+      "ms": 449.3,
       "ok": true,
       "path": "un_comtrade\\trade__Korea→World_HS_3901.csv",
       "params": {
@@ -1260,7 +1260,7 @@
       "sector": "trade",
       "name": "Korea→World HS 8901",
       "rows": 1,
-      "ms": 1181.2,
+      "ms": 401.2,
       "ok": true,
       "path": "un_comtrade\\trade__Korea→World_HS_8901.csv",
       "params": {

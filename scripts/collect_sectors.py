@@ -146,8 +146,17 @@ def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     p.add_argument("--source", help="restrict to one source (customs/fred/oecd/...)")
     p.add_argument("--dry-run", action="store_true")
+    p.add_argument(
+        "--source-sleep",
+        type=float,
+        default=None,
+        help="seconds to sleep between calls for the given --source (e.g. 4 for pytrends)",
+    )
     p.add_argument("-v", "--verbose", action="store_true")
     args = p.parse_args(argv)
+
+    # Per-source default delays — pytrends is rate-limited heavily by Google.
+    DEFAULT_SLEEP = {"pytrends": 4.0, "un_comtrade": 0.8}
 
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
@@ -216,6 +225,13 @@ def main(argv: list[str] | None = None) -> int:
             if args.verbose:
                 logger.debug(traceback.format_exc())
         manifest_entries.append(entry)
+
+        # Respect per-source rate limits between consecutive calls.
+        sleep_s = args.source_sleep
+        if sleep_s is None:
+            sleep_s = DEFAULT_SLEEP.get(spec.source, 0.0)
+        if sleep_s and i < len(specs):
+            time.sleep(sleep_s)
 
     finished_at = datetime.now(timezone.utc).isoformat()
     manifest = {

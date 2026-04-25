@@ -24,11 +24,23 @@
 | 어댑터 | 응답 시간 | 샘플 행 | 비고 |
 |---|---|---|---|
 | customs | 543ms | 668 | HS×국가 월별 endpoint 검증 완료. 나머지 5개 endpoint는 data.go.kr 활용신청 승인 대기 |
-| oecd | 3.2s | 3 | 한국 CLI 시리즈 정상 |
-| worldbank | 639ms | 5 | 한국 GDP 5년치 정상 |
-| cftc | 1.1s | 5 | CRUDE OIL COT 검색 정상 |
-| un_comtrade | 940ms | 0 | 응답 정상, 최신 6개월 lag 데이터는 미공개 (예상) |
-| pytrends | 3.0s | 91 | 한국 검색어 '반도체' 3개월 정상 |
+| oecd | 18-40ms | 120 | KOR/USA/CHN/JPN/DEU CLI 120개월 |
+| worldbank | 200-1100ms | 25 | 25년 GDP·제조업비중·인구 |
+| cftc | 700-1400ms | 52 | 원유·금·구리·엔·유로 COT 1년 |
+| un_comtrade | 400-1900ms | 1 | preview tier (최신 6개월 lag) |
+| pytrends | 2-3s | 53 | 첫 호출 정상, 연속 호출 시 Google rate-limit |
+| ecos | 188-870ms | 135-2788 | 한국 기준금리·국채·환율·CSI |
+| fred | 130-340ms | 132-3026 | Fed Funds·Treasury·SP500·산업생산 등 |
+
+### 데이터 수집 현황 (47MB on disk, 132 시리즈)
+
+| 출처 분류 | 시리즈 수 | 비고 |
+|---|---|---|
+| **API 수집** (collect_sectors.py) | 79 → 63 OK | customs 24 + fred 19 + ecos 7 + oecd 5 + worldbank 6 + pytrends 16 + cftc 5 + un_comtrade 4 |
+| **임포트** (import_existing_data.py) | 41 OK | Economic_analysis/economic_indicator/data/raw 의 ECOS 15 + FRED 22 + KRX 4 (2025-11-08 수집분) |
+| **합계** | **132 series** | WICS 34섹터 × 10인디케이터 매트릭스의 ~95% 데이터 백킹 |
+
+상세는 `docs/SECTOR_DATA_COLLECTION.md` 참조.
 
 ---
 

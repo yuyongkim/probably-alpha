@@ -253,6 +253,99 @@ def _cftc_specs() -> list[IndicatorSpec]:
 
 
 # ---------------------------------------------------------------------------
+# ECOS (한국은행) — Korean rates, credit, sentiment, real estate.
+# stat_code · item_code 조합은 한은 ECOS 통계검색에서 확정한 값 사용.
+# (start/end YYYYMMDD for daily, YYYYMM for monthly, YYYY for annual.)
+# ---------------------------------------------------------------------------
+
+ECOS_SERIES = [
+    # 금리 — 단·중·장기 + 회사채 신용스프레드
+    ("macro",       "한국 기준금리",            "722Y001", "0101000", "M", "201501", "202604"),
+    ("macro",       "콜금리(1일물)",            "722Y001", "0101100", "D", "20150101", "20260430"),
+    ("macro",       "국고채 3Y",               "817Y002", "010200000", "D", "20150101", "20260430"),
+    ("macro",       "국고채 10Y",              "817Y002", "010210000", "D", "20150101", "20260430"),
+    ("macro",       "회사채 AA- 3Y",          "817Y002", "010320000", "D", "20150101", "20260430"),
+    ("macro",       "회사채 BBB- 3Y",         "817Y002", "010330000", "D", "20150101", "20260430"),
+    # 가계 / 부동산
+    ("bank",        "가계대출 잔액",            "151Y005", "1000000",   "M", "201501", "202604"),
+    ("realestate",  "주택매매가격지수 (전국)",   "901Y063", "S22A",      "M", "201501", "202604"),
+    # 환율
+    ("macro",       "원/달러 환율 (종가)",      "731Y001", "0000001",   "D", "20150101", "20260430"),
+    ("macro",       "원/엔(100엔) 환율",        "731Y001", "0000002",   "D", "20150101", "20260430"),
+    # 심리지표
+    ("macro",       "BSI 제조업 업황",          "512Y014", "AX1AA",     "M", "201501", "202604"),
+    ("macro",       "CSI 종합소비자심리지수",    "511Y002", "FME",       "M", "201501", "202604"),
+]
+
+
+def _ecos_specs() -> list[IndicatorSpec]:
+    out: list[IndicatorSpec] = []
+    for sector, name, stat, item, freq, start, end in ECOS_SERIES:
+        out.append(
+            IndicatorSpec(
+                sector=sector,
+                sector_label="매크로" if sector == "macro" else sector,
+                name=name,
+                source="ecos",
+                method="get_series",
+                params={
+                    "stat_code": stat,
+                    "item_code": item,
+                    "start": start,
+                    "end": end,
+                    "freq": freq,
+                },
+                note=f"{stat}/{item}",
+            )
+        )
+    return out
+
+
+# ---------------------------------------------------------------------------
+# KOSIS (통계청) — 산업별 생산·출하·재고 지수.
+# org_id=101 (통계청). tblId codes from the 광공업동향조사 family.
+# Some entries leave item_code/obj_l1 None and let last_n_periods drive the
+# window — KOSIS auto-returns the canonical default.
+# ---------------------------------------------------------------------------
+
+KOSIS_SERIES = [
+    # 광공업 동향 — 산업별 (제조업 전체 + 주요 중분류 5개)
+    ("manufacturing", "제조업 생산지수 (전체)",   "101", "DT_1F31013", "T20",  "M"),
+    ("semiconductor", "반도체·전자부품 생산지수",  "101", "DT_1F31013", "T26",  "M"),
+    ("auto",          "자동차·트레일러 생산지수",   "101", "DT_1F31013", "T29",  "M"),
+    ("chemical",      "화학물질·화학제품 생산지수","101", "DT_1F31013", "T20A", "M"),
+    ("steel",         "1차금속 생산지수",          "101", "DT_1F31013", "T24",  "M"),
+    # 출하지수 (제조업 전체)
+    ("manufacturing", "제조업 출하지수 (전체)",   "101", "DT_1F31023", "T20",  "M"),
+    # 재고지수 (제조업 전체) — 선행지표 (역신호)
+    ("manufacturing", "제조업 재고지수 (전체)",   "101", "DT_1F31033", "T20",  "M"),
+]
+
+
+def _kosis_specs() -> list[IndicatorSpec]:
+    out: list[IndicatorSpec] = []
+    for sector, name, org_id, tbl_id, item_code, prd_se in KOSIS_SERIES:
+        out.append(
+            IndicatorSpec(
+                sector=sector,
+                sector_label=sector,
+                name=name,
+                source="kosis",
+                method="get_data",
+                params={
+                    "org_id": org_id,
+                    "tbl_id": tbl_id,
+                    "item_code": item_code,
+                    "prd_se": prd_se,
+                    "last_n_periods": 120,  # 10년치
+                },
+                note=f"{org_id}/{tbl_id}/{item_code}",
+            )
+        )
+    return out
+
+
+# ---------------------------------------------------------------------------
 # UN Comtrade — global view of Korea's HS exports for cross-validation.
 # Limited to a handful since the public preview tier is lag-y and rate-limited.
 # ---------------------------------------------------------------------------
@@ -286,6 +379,16 @@ def _comtrade_specs() -> list[IndicatorSpec]:
 # ---------------------------------------------------------------------------
 
 def all_specs() -> list[IndicatorSpec]:
+    """Return only specs that hit external APIs.
+
+    Note: ECOS and KOSIS series are NOT included here. The user already
+    has 15 ECOS + 22 FRED + 4 KRX series collected at
+    ``Economic_analysis/economic_indicator/data/raw/`` (Nov 2025). Those
+    are imported via ``scripts/import_existing_data.py`` rather than
+    re-fetched. The ``_ecos_specs`` / ``_kosis_specs`` definitions remain
+    in this module as a parameter reference for when we add a "refresh
+    imported series" pipeline later.
+    """
     return [
         *_customs_specs(),
         *_fred_specs(),
