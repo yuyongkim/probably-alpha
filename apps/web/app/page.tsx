@@ -41,8 +41,12 @@ export default function HomePage() {
 
   return (
     <div className="w-full">
-      {/* Hero — who + what + primary actions */}
-      <HeroSection asOf={bundle?.date} universeSize={bundle?.universe_size} />
+      {/* Hero — who + what + primary actions + live snapshot */}
+      <HeroSection
+        asOf={bundle?.date}
+        universeSize={bundle?.universe_size}
+        bundle={bundle}
+      />
 
       {/* What the platform does — 3-lens explainer */}
       <ValueProposition />
