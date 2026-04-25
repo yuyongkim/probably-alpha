@@ -86,15 +86,19 @@ def _customs_specs() -> list[IndicatorSpec]:
                 note=f"HS {hs}",
             )
         )
-    # 10-day provisional country-side (verified 2026-04-26).
-    # Each row = (country, month) with itemUsdAmt00/01/02 = 초순/중순/하순 USD.
-    for flow, method in (("export", "get_10day_export_by_country"),
-                         ("import", "get_10day_import_by_country")):
+    # 10-day provisional (verified 2026-04-26) — country & item dimensions.
+    # priodYear / priodMon / priodDt + itemUsdAmt00..10 (00=총합, 01-10=TOP 10).
+    for dim, dim_label, flow, method in (
+        ("country", "국가별", "export", "get_10day_export_by_country"),
+        ("country", "국가별", "import", "get_10day_import_by_country"),
+        ("item",    "주요품목", "export", "get_10day_export_by_item"),
+        ("item",    "주요품목", "import", "get_10day_import_by_item"),
+    ):
         out.append(
             IndicatorSpec(
                 sector="trade",
                 sector_label="무역",
-                name=f"국가별 10일 잠정 {flow.upper()}",
+                name=f"{dim_label} 10일 잠정 {flow.upper()}",
                 source="customs",
                 method=method,
                 params={
@@ -102,7 +106,7 @@ def _customs_specs() -> list[IndicatorSpec]:
                     "year_month_end":   "202604",
                     "num_rows": 200,
                 },
-                note=f"{flow} 10-day country provisional",
+                note=f"{flow} 10-day {dim} provisional",
             )
         )
     return out

@@ -37,8 +37,8 @@ ENDPOINTS: dict[str, tuple[str, bool]] = {
     "hs_monthly":           ("/Itemtrade/getItemtradeList",                                    False),  # path TBD
     "10day_export_country": ("/cntyMmUtPrviExpAcrs/getCntyMmUtPrviExpAcrs",                    True),   # verified 2026-04-26
     "10day_import_country": ("/cntyMmUtPrviImpAcrs/getCntyMmUtPrviImpAcrs",                    True),   # verified 2026-04-26
-    "10day_export_item":    ("/expDecadeItemList/getExpDecadeItemList",                        False),  # path TBD
-    "10day_import_item":    ("/impDecadeItemList/getImpDecadeItemList",                        False),  # path TBD
+    "10day_export_item":    ("/prlstMmUtPrviExpAcrs/getPrlstMmUtPrviExpAcrs",                  True),   # verified 2026-04-26 (prlst = 주요품목)
+    "10day_import_item":    ("/prlstMmUtPrviImpAcrs/getPrlstMmUtPrviImpAcrs",                  True),   # verified 2026-04-26
 }
 
 
