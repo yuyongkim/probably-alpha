@@ -34,7 +34,7 @@ CUSTOMS_BASE = "https://apis.data.go.kr/1220000"
 # second is whether the API is verified-working (True) or candidate (False).
 ENDPOINTS: dict[str, tuple[str, bool]] = {
     "hs_country_monthly":   ("/nitemtrade/getNitemtradeList",                                  True),
-    "hs_monthly":           ("/Itemtrade/getItemtradeList",                                    False),  # path TBD
+    "hs_monthly":           ("/Itemtrade/getItemtradeList",                                    False),  # path verified, API key 권한 활성화 대기 (403)
     "10day_export_country": ("/cntyMmUtPrviExpAcrs/getCntyMmUtPrviExpAcrs",                    True),   # verified 2026-04-26
     "10day_import_country": ("/cntyMmUtPrviImpAcrs/getCntyMmUtPrviImpAcrs",                    True),   # verified 2026-04-26
     "10day_export_item":    ("/prlstMmUtPrviExpAcrs/getPrlstMmUtPrviExpAcrs",                  True),   # verified 2026-04-26 (prlst = 주요품목)

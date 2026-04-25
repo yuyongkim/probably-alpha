@@ -67,7 +67,7 @@ python scripts/summarize_data.py
 
 **customs endpoint 검증 현황 (2026-04-26)**: 5/6 verified
 - ✓ `nitemtrade/getNitemtradeList`                (품목별 국가별 월별; hsSgn 비우면 국가별 전체)
-- ✗ `Itemtrade/getItemtradeList`                  (HS 단독 월별 — path 미확인, 403)
+- 권한대기 `Itemtrade/getItemtradeList`           (HS 단독 월별 — path 정확, data.go.kr 측 활용신청 활성화 대기 중. 403 반환)
 - ✓ `cntyMmUtPrviExpAcrs/getCntyMmUtPrviExpAcrs`  (수출 주요국가별 10일 잠정)
 - ✓ `cntyMmUtPrviImpAcrs/getCntyMmUtPrviImpAcrs`  (수입 주요국가별 10일 잠정)
 - ✓ `prlstMmUtPrviExpAcrs/getPrlstMmUtPrviExpAcrs` (수출 주요품목별 10일 잠정; prlst = 주요품목)
